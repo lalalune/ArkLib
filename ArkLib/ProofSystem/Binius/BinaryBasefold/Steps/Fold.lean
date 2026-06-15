@@ -314,11 +314,6 @@ theorem foldOracleReduction_perfectCompleteness (hInit : NeverFail init) (i : Fi
         Set.mem_iUnion, exists_prop]
       simp only [OptionT.simulateQ_failure]
       erw [_root_.simulateQ_pure]
-    set V_check := step.verifierCheck stmtIn
-      (FullTranscript.mk2
-        (msg0 := inputState.1)
-        (msg1 := (FullTranscript.mk2 (foldProverComputeMsg 𝔽q β i witIn) r_i').challenges ⟨1, rfl⟩))
-      with h_V_check_def
     obtain ⟨h_V_check, h_rel, h_agree⟩ := strongly_complete (stmtIn := stmtIn)
       (witIn := witIn) (h_relIn := h_relIn) (challenges :=
       fun ⟨j, hj⟩ => by
@@ -333,13 +328,24 @@ theorem foldOracleReduction_perfectCompleteness (hInit : NeverFail init) (i : Fi
       )
     -- the verifier reads `inputState.1` as the prover message; the prover sent
     -- `foldProverComputeMsg` (so `inputState = ⟨foldProverComputeMsg, …⟩`), matching `h_V_check`.
-    have h_V_check_is_true : V_check := by
-      rw [h_V_check_def, hInputState_mem_support]
-      exact h_V_check
-    simp only [h_V_check_is_true, ↓reduceIte, support_pure, Set.mem_singleton_iff, Fin.isValue,
-      exists_eq_left, OptionT.support_OptionT_pure_run] at h_vStmtOut_mem_support
-    rw [h_vStmtOut_mem_support]
-    simp only [OptionT.run_pure, probOutput_pure, reduceCtorEq, ↓reduceIte]
+    -- Prove the (clean-form) verifier check directly — no `set`, which would freeze the verifier
+    -- body and leak the answer-form `msg0` metavariable into the shared `let step`/`refine` context.
+    have h_V_check_is_true :
+        step.verifierCheck stmtIn (FullTranscript.mk2 (msg0 := inputState.1) (msg1 := r_i')) := by
+      have h := h_V_check
+      rw [hInputState_mem_support]
+      exact h
+    -- The `if`-condition in `h_vStmtOut_mem_support` is defeq to the (true) `h_V_check_is_true`.
+    -- `split` reduces the membership to the `then`-branch `{some ()}` (whence `vStmtOut = some ()`,
+    -- closing the goal) or the impossible `else`-branch (the condition is false, contradicting
+    -- `h_V_check_is_true`).
+    split at h_vStmtOut_mem_support
+    · simp only [support_pure, Set.mem_singleton_iff, Fin.isValue,
+        exists_eq_left, OptionT.support_OptionT_pure_run] at h_vStmtOut_mem_support
+      rw [h_vStmtOut_mem_support]
+      simp only [OptionT.run_pure, probOutput_pure, reduceCtorEq, ↓reduceIte]
+    · rename_i h_cond_false
+      exact (h_cond_false h_V_check_is_true).elim
   · -- GOAL 2: CORRECTNESS - Prove all outputs in support satisfy the relation
     intro x hx_mem_support
     rcases x with ⟨⟨prvStmtOut, prvOStmtOut⟩, ⟨verStmtOut, verOStmtOut⟩, witOut⟩
