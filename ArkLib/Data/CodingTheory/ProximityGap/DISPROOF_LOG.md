@@ -10663,3 +10663,80 @@ Khovanskii fewnomial theory bounds solution counts of a sparse system by the num
 theory adds nothing tighter. Probe: `scripts/probes/probe_wf3NK_fewnomial_incidence.py` (self-
 contained, fast). Tag: **refuted** as a tight degree-free/p-free bound on I(n); the (k+2)-sparsity
 and the precise failure mode are proven-per-fixed-n. — wf-NK
+
+## 2026-06-14 (#444 A2): Mann/antipodal PINS the crossing incidence EXACTLY; the log2(n) candidate is REFUTED
+
+**Task A2.** Settle whether the char-0 worst-case far-line incidence I_0(δ), at the band where it
+crosses budget = n (which fixes δ* = (n−w_cross)/n), is derivable EXACTLY from antipodal-pairing
+(Mann / Conway–Jones: the only primitive vanishing relation over μ_{2^μ} is z + (−z) = 0). Method:
+the prime-size-independent (k+1)-subset solve (q-stable, char-0-faithful p ≫ n^3); for each
+(k+1)-subset solve the system for (g, γ), record γ → full-domain agreement set R; I_0(w) =
+#{distinct γ with |R| ≥ w}, worst over far pencils (a,b). Probes:
+`scripts/probes/probe_a2_mann_crossing_pin.py`, `probe_a2_corrected_crossing_mann.py`,
+`probe_a2_crossing_inclexcl_half.py`, `probe_a2_n32_orbit_plateau.py`, `probe_a2_mann_evenodd_n32.py`,
+`probe_a2_repro_candidate_logn.py`.
+
+### POSITIVE RESULT (the A2 question, ANSWERED YES): Mann closes the crossing incidence EXACTLY.
+At the crossing band w_cross, every rich witness set R (|R| ≥ w_cross) of the worst far pencil
+decomposes into antipodal pairs {j, j+n/2} plus AT MOST ONE leftover index (the single free
+interpolation slot beyond the k+1 anchors). Define Mann_core(w) = #{γ : best R has ≤ 1 unpaired
+index}. Then **I_0(w_cross) = Mann_core(w_cross) EXACTLY** (not just ≤), q-stable, on every tested
+point:
+
+| n  | k  | ρ    | w_cross | I_0 | Mann_core | EXACT |
+|----|----|------|---------|-----|-----------|-------|
+| 8  | 4  | 1/2  | 6 (even)| 4   | 4         | YES   |
+| 16 | 2  | 1/8  | 5 (odd) | 16  | 16        | YES   |
+| 16 | 4  | 1/4  | 7 (odd) | 8   | 8         | YES   |
+| 16 | 8  | 1/2  | 11(odd) | 4   | 4         | YES   |
+| 16 | 12 | 3/4  | 14(even)| 8   | 8         | YES   |
+| 32 | 4  | 1/8  | 6→plat  | 16  | 16        | YES   |
+
+(Sub-finding: FULL antipodal-closure `anti(R)` — every index paired, no leftover — closes only when
+w_cross is EVEN, since an odd-size set cannot be antipodally closed; the correct invariant is the
+"≤1 leftover" core, which closes at both parities.) The only non-match is (8,2) under a literal
+budget = n first-crossing rule, a 1-band granularity artifact at tiny n where I_0 plateaus at 8 over
+w ∈ {4,5}; at the established gt crossing w = 5 there too Mann_core = I_0 = 8. **Mechanism, now
+explicit:** the crossing band is exactly where the incidence collapses onto a single *dilation
+orbit* of γ, and that orbit's agreement witnesses ARE antipodal-pair unions — so the crossing count
+= orbit size = n/gcd(b−a,n), which is a Mann/Lam–Leung object. This is the band where the earlier
+P4 refutation (`probe_407_mann_agreement_count.py`: Mann strictly undercounts I_0 in the WINDOW
+INTERIOR, w well below the crossing) STOPS applying — Mann is the wrong governing structure deep in
+the window (free-coefficient interpolation), but is the EXACT structure AT the crossing. The two
+results are consistent: the window interior is floppy/analytic, the crossing is rigid/antipodal.
+
+### NEGATIVE RESULT (refutes the candidate `δ* = (1−ρ) − log2(n)/n`): w_cross − k ≠ log2(n).
+The candidate (`docs/kb/deltastar-407-char0-logn-over-n-candidate-2026-06-14.md`) claimed
+n·(cap − δ*) = w_cross − k = log2(n) exactly for ρ = 1/8 at n = 16, 32. Recomputed q-stably with the
+SAME (k+1)-subset method under the STANDARD crossing rule (smallest w with worst I_0 ≤ n and previous
+band > n), w_cross − k is **{2, 3}, NOT log2(n), at every point**, under BOTH the include-n/2 and
+exclude-n/2 direction conventions:
+
+| n  | k  | ρ    | w_cross − k | log2(n) | match |
+|----|----|------|-------------|---------|-------|
+| 8  | 4  | 1/2  | 2           | 3       | NO    |
+| 16 | 2  | 1/8  | 3           | 4       | NO    |
+| 16 | 4  | 1/4  | 3           | 4       | NO    |
+| 16 | 8  | 1/2  | 3           | 4       | NO    |
+
+**Root cause of the candidate's apparent log2(n) (reproduced exactly,
+`probe_a2_repro_candidate_logn.py`):** the original probe (i) EXCLUDED the a = n/2 antipodal-coset
+generator — the genuinely worst far line, which the in-tree δ* law maxes over — and (ii) used a
+first-crossing rule on a profile where the worst-direction incidence sits on a *plateau* equal to the
+dilation-orbit size (e.g. n = 16, ρ = 1/8: I_0 = 16 from the (8,9) orbit is constant across
+w = 5…9; n = 32, ρ = 1/8: I_0 = 16 from the (16,18) orbit, b−a = 2, is constant from w = 6 on). The
+"crossing" is then pinned by WHERE you enter the plateau, which is a function of the chosen direction's
+orbit size n/gcd(b−a,n) and the n/2-exclusion, NOT of log2(n). With the worst (n/2-touching) direction
+included and the standard crossing rule, the log2(n) coincidence (which held at only 2 hand-picked
+points) evaporates. δ* = (1−ρ) − log2(n)/n is therefore **not** the char-0 closed form. (The surviving
+honest constraint remains |δ* − (1−√ρ)| ≤ 1/n; this does NOT establish the Θ(log n/n) gap below
+capacity the candidate proposed.)
+
+### Consequence for the prize. The A2 positive result is real but LIMITED: Mann/Lam–Leung
+(PROVEN) pins the incidence only AT the crossing band, where it equals a dilation-orbit size — the
+already-classical regime. It does NOT pin the window-interior incidence (the prize target, recognized
+open / BGK-Paley sup-norm wall per the #444 synthesis), where coefficients are free and Mann
+undercounts. So A2 does NOT yield a Mann-only closure of δ*; it confirms (with exact witness
+decompositions) that the antipodal structure governs precisely the boundary, consistent with the
+standing reduction. No Lean change (empirical, q-stable, dual-convention; the open core stands
+correctly named). Probe-first, honest on scope, refutation of the log2(n) lead recorded.
