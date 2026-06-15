@@ -3018,3 +3018,16 @@ orbit-rep structure. The rule-3 FAIL is TOTAL -- there is no residual thin signa
 structure. Confirms + completes 563fc7f85: the shallow resonance is a generic 2-power-subgroup cyclotomic
 object, not a thin-essential prize lever, at the count AND the structural level. CORE not closed, not faked.
 Pure-Python exact, no Lean => axiom-clean trivially. probe_407_resonance_e1set_structure_rule3.py.
+
+================================================================================
+2026-06-15 n=64 octave confirms the shallow-resonance thickness-invariance brick
+(K(64,4)=15 across thick+thin) (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+Extension of push 563fc7f85 to the dossier's enumeration frontier n=64 (the thick-beta n=64 control was
+never run; e2_K_w4_n64 did only the thin prize prime). probe_407_resonance_n64_thickness.py, exact,
+C(64,4)=635376, 2 primes/beta, proper subgroup, never n=q-1.
+RESULT: K(64,4)=15 (=n/4-1) IDENTICAL across thick beta=2.3 (p=14401,14593), thick beta=3.0
+(p=262337,262657) AND thin beta=4.0 (p=16777601,16777729); #bad=960=64*15 exactly, p-independent, 6/6.
+VERDICT: the thickness-invariance of the shallow e2=0 resonance now holds at n=16,32,64 -- three octaves
+to the enumeration frontier. The rule-3 FAIL is robust across scale. CORE not closed, not faked.
+Pure-Python exact, no Lean => axiom-clean trivially. probe_407_resonance_n64_thickness.py.
