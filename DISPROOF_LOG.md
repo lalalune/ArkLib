@@ -690,3 +690,33 @@ a SUB-JOHNSON object for ρ<1/4 — definitively NOT the prize δ* (which is in 
 above Johnson). This RESOLVES "does far-line track the floor" with a sharp ρ-criterion: NO for ρ≤1/4 (it tends
 to ½ ≤ Johnson). The prize floor needs the true MCA object (BGK gap), exactly as localized. NOT a closure.
 Engine scripts/rust-pg (full + bmax cross-checked). n≤24 exact. Refines the regime note (rule-6 self-sharpening).
+
+## odd-moment / odd-Sidon-depth lever — REFUTED as a sup handle; rigid -n^r identity + non-proving depth (2026-06-15)
+
+Lens: the deep-Sidon frontier (the narrowed rule-3 lever, r~log n). Tested whether the ODD signed
+period moments A_r := Σ_{b≠0} η_b^r carry a thinness-essential sup handle. (η_b REAL since μ_n is
+closed under negation, so odd moments are real and sign-sensitive — the natural place for genuine
+signed cancellation, unlike the |·| even moments already mapped thickness-invariant.)
+
+Probes: scripts/probes/probe_407_{odd_moment_thinness,oddmom_scaling,Wr_odd_depth,depth_vs_M}.py
+(exact integer zero-sum convolution + FFT-exact periods; proper subgroups μ_n⊊F_p*, odd-m primes
+β≈2.2→4.6; n=8,16).
+
+EXACT IDENTITY (landed axiom-clean, Frontier/_GaussPeriodMomentCensus.lean, push 76715441a):
+  Σ_{b∈F} η_b^r = |F|·W_r,  W_r = #{(y_1..y_r)∈G^r : Σy_i=0}  (zero-sum census).
+  ⟹ A_r = |F|·W_r − n^r.  Verified to machine precision (n=8,16, thick+thin).
+
+REFUTATION (two parts):
+1. The "odd-moment signed cancellation" A_r/(p·M^r) → 0 (as β grows) is a NORMALIZATION ARTIFACT:
+   to the Sidon depth W_r=0 ⟹ A_r = −n^r EXACTLY (rigid, p-independent), so A_r/(p·M^r) = −n^r/(p·M^r)
+   → 0 trivially (constant numerator / growing p·M^r). A_r carries ZERO information about
+   M=max_{b≠0}‖η_b‖. Same shape as the refuted NC3 rigid-equation no-go.
+2. The genuine thinness invariant — the odd zero-sum onset depth d_odd (first odd r with W_r>0) —
+   GROWS with thinness (n=16: 7→9→11→none across β=2.45→4.6; n=8: 7→9→none) ⟹ rule-3-COMPATIBLE.
+   BUT it does NOT control the normalized sup: M/√(n·log(p/n)) is flat ~1.1–1.3 across d_odd=5..13
+   (non-monotone). So d_odd is a TRUE thinness invariant that is NON-PROVING for M at accessible scale.
+
+WALL: the odd-moment / odd-Sidon-depth object splits into (a) a rigid identity that pins A_r=−n^r
+to depth but says nothing about M, and (b) a thinness-essential depth that decouples from the sup.
+The "deeper Sidon depth ⟹ smaller M" bootstrap FAILS empirically here. No CORE closure; the brick
+is the exact moment↔census substrate, the wall is honest. Small n (8,16 exact).

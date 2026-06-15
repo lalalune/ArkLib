@@ -973,6 +973,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E2VanishWidthFourLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EVTFloorRoute
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FoldRankNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GaussPeriodFirstMoment
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GaussPeriodMomentCensus
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GaussPeriodRealValued
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GrossKoblitzPhaseNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._HankelPronyCore
