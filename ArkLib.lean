@@ -744,6 +744,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CyclotomicResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.CyclotomicSidonLift
 import ArkLib.Data.CodingTheory.ProximityGap.DCMomentSupBound
 import ArkLib.Data.CodingTheory.ProximityGap.DCSubtractedMoment
+import ArkLib.Data.CodingTheory.ProximityGap.DCSupNormBound
 import ArkLib.Data.CodingTheory.ProximityGap.DG25
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.Basic
 import ArkLib.Data.CodingTheory.ProximityGap.DG25.Contrapositive
