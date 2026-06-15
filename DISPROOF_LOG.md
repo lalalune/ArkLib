@@ -1077,3 +1077,286 @@ LOWER proxy for the full collective depth profile (smallest vanisher); a growing
 sufficient, for the collective CORE route. The n=32/beta=4 r_min=11 is exact-verified (witness
 [9,14,16,17,19,21,22,23,26,28,31], sum=0 mod 1048609, non-antipodal). CORE not closed; the surviving thin
 mechanism's scaling is positively confirmed for the first time. Python-only, no Lean => axiom-clean trivially.
+
+### crossCell DYADIC-TOWER ITERATION does NOT certify CORE even GRANTING BCHKS-1.12: it leaks to the TRIVIAL M(n)<=n (2026-06-15)
+
+Maps an asserted-but-unproven CLOSURE step in CrossCellShkredovBound.lean. That file names the one open
+lever of the dyadic cumulant descent N0(G,r)=2*N0(H,r)+crossCell(H,zeta,r) (G=mu_n=H u zeta*H, H=mu_{n/2}),
+states the OPEN absolute bound CrossCellAbsoluteBound = BCHKS25 Conj 1.12 (crossCell*q <= 2^r*|H|^r), and
+proves the per-level consumer N0_gap_of_absoluteBound: N0(G,r) <= 2*N0(H,r) + 2^r*|H|^r/q. Its docstring
+then ASSERTS that iterating this down the 2-power tower with q~n*2^128 "keeps the cross mass below the
+diagonal and converges to the clean closed form N0(G,r)~2*N0(H,r) -- the closure mechanism, conditional on
+the open bound," and references a consumer `prize_of_ShkredovSubTrivialBound` which is NOT present as a
+theorem (only the per-level N0_gap_of_absoluteBound exists).
+
+TESTED the asserted closure IMPLICATION exactly (char-0 exact bigint on the bound itself, independent of
+whether the open bound is true). Tower recursion (absolute bound at EACH level, q FIXED, T_j:=q*N0(2^j,r)):
+  T_{j+1}(r) = 2*T_j(r) + 2^r*(2^j)^r,   T_1(r) = q*C(r,r/2) [r even else 0].
+Fed into the in-tree raw-moment certificate M(n) <= min_r (sum_{b!=0}|eta_b|^{2r})^{1/2r},
+  sum_{b!=0}|eta_b|^{2r} = q*N0(G,2r) - n^{2r}.  Probe probe_407_crosscell_tower_iteration_nogo.py.
+
+RESULT (sound, floor-checked against the proven floor M >= sqrt(n(q-n)/(q-1))):
+  | mu | n     | floor=.5log2(n..) | CORE=.5log2(n log m) | abs(BCHKS) log2 M | verdict |
+  |  5 | 32    | 2.50              | 5.74                 | 4.003             | = log2 n (TRIVIAL) |
+  |  8 | 256   | 4.00              | 7.24                 | 7.003             | = log2 n (TRIVIAL) |
+  | 12 | 4096  | 6.00              | 9.24                 | 11.003            | = log2 n (TRIVIAL) |
+  | 17 | 131072| 8.50              | 11.74                | 16.003            | = log2 n (TRIVIAL) |
+Granting CrossCellAbsoluteBound, the iterated certificate is SOUND (always >= floor) and floors EXACTLY at
+log2 M(n) ~ log2 n => M(n) <= n (the TRIVIAL L^1 bound), never sqrt(n log m) (CORE) and not even sqrt(n)
+(Johnson). MECHANISM (decomposition audit): the top-level cross injection is 2^r*|H|^r = 2^r*(n/2)^r =
+n^r-scale, so q*N0(G,2r) accumulates an n^{2r}-scale cross mass; q*N0(G,2r) - n^{2r} floors at n^{2r}, and
+(n^{2r})^{1/2r} = n. The cross term injected by the (granted) bound is exactly the size that pins the
+certificate at the trivial n.
+
+SOUNDNESS GUARDS (rule 6): (a) the IDEAL crossCell=0 case (= the docstring's "clean closed form", perfect
+halving N0(2^{j+1})=2*N0(2^j)) goes VACUOUS (moment <= 0) past low r => yields no usable bound either, so
+the "clean closed form" does NOT certify CORE on its own. (b) the measured "random-count" injection form
+(2^r-2)|H|^r/q gives certificates that VIOLATE the proven floor (log2 M < .5 log2 n) => UNSOUND, discarded
+(it measures a vanishing gap, not a valid M upper bound). Only the absolute-bound certificate is sound, and
+it is trivial.
+
+VERDICT (rule-4 constraint map; NOT a CORE result, NOT a refutation of BCHKS-1.12 itself): the dyadic-tower
+ITERATION of the crossCell gap is NOT a CORE-closure mechanism. Even granting the open BCHKS-1.12 absolute
+bound, iterating the per-level gap leaks to the trivial M(n)<=n. The CrossCellShkredovBound.lean docstring's
+claim that the iteration "converges to the clean closed form ... the closure mechanism, conditional on the
+open bound" OVERSTATES what the iteration yields; the referenced `prize_of_ShkredovSubTrivialBound` consumer
+cannot deliver CORE in this shape. This is CONSISTENT with the meta-theorem (Sec.4: every second-order/moment
+method caps at the trivial n via (q E_r)^{1/2r} >= n) but is NOT a re-derivation: the meta-theorem covers
+SINGLE-DEPTH moment methods; this maps the specific ITERATED-TOWER consumer conditional on the named open
+crossCell bound, closing a gap between "the open bound" and "a CORE proof" that the file's docstring left
+implicit. The genuine open input (per the file's own conclusion) must come from the ARITHMETIC of the
+q-reduction (spurious mod-p collisions making crossCell sub-random), NOT from the granted absolute bound fed
+through the tower. Thinness-blind (a NO-GO need not be thin-essential, rule 3 OK for refutations). CORE not
+closed. Python-only, exact bigint, no Lean changed => axiom-clean trivially.
+
+## ⚠️ REFUTATION (surviving-lane, rule-3 PASS but WRONG SIGN) — the COLLECTIVE EVEN census/energy profile of mu_n is NOT suppressed below random; it is INFLATED, super-multiplicatively in r (2026-06-15, opus-4-8 subagent)
+
+LENS: the surviving live object isolated by the full-depth-BIND refutation (ef5f12fb1) + handoffs: "the
+COLLECTIVE thin depth profile (moment / sqrt-cancellation), NOT a per-S no-vanisher statement." Prior work
+measured only (a) r_min = smallest single vanisher (e7b5e6125: thin DEEPER), (b) d_odd onset (odd_moment
+entry: thin deeper, but A_r=-n^r RIGID, decouples from M), (c) A_r/Wick RATIO at the optimizer r* + its
+n-trend (step_at_rstar: margin erodes). NONE measured the per-r EVEN energy moment PROFILE E_{2r}(mu_n) =
+sum_{b!=0}|eta_b|^{2r} (the object feeding A_r = E_r - n^{2r}/q <= Wick, the genuine prize moment) against a
+thin-density RANDOM control, to test whether the thin advantage COMPOUNDS (collective) or is single-depth.
+This is that measurement -- and it kills the "thin advantage helps the moment route" hope at the EVEN level.
+
+METHOD (exact, rule-2 + rule-3 clean): eta_b = exact integer DFT of indicator(mu_n) in F_p; mu_n = <g^m>,
+m=(p-1)/n > 1 PROPER (NEVER n=q-1). prize-band primes p~n^beta, beta in {4.0,4.5}, incl. one non-Fermat.
+RANDOM control = median over 5 random n-element subsets of F_p* (same thin density). Probes
+scripts/probes/probe_407_even_census_profile.py + probe_407_even_census_dcsub.py (adversarial re-audit).
+
+RESULT 1 -- E_{2r}(thin)/E_{2r}(random) GROWS with r (thin is LARGER, not suppressed):
+| n  | beta | E2r ratio r=1..6                              |
+|----|------|----------------------------------------------|
+| 16 | 4.0  | 1.00, 1.45, 2.27, 3.59, 5.68, 8.85           |
+| 16 | 4.5  | 1.00, 1.45, 2.27, 3.59, 5.67, 8.80 [non-Fermat]|
+| 32 | 4.0  | 1.00, 1.48, 2.38, 3.98, 6.75, 11.57          |
+The thin even-energy moment is BIGGER than random at every r>=2 and the gap COMPOUNDS upward. Since A_{2r} =
+|F|*W_{2r} - n^{2r} tracks E_{2r}, the thin A_{2r} is FURTHER from suppression than random, worse with depth.
+
+RESULT 2 (ADVERSARIAL re-audit, rule 6 -- is this just the known "thin M>=random M" sup fact re-seen?): NO.
+(a) COLLECTIVE shape: the thin/random ratio of the t-th LARGEST |eta_b| is >=1.1 not only at t=1 (sup) but at
+    t=1,2,4,...,128, and GROWS into the spectrum body (n=32: 1.157 @t=1 -> 1.309 @t=128). The ENTIRE top of the
+    period spectrum is inflated in thin, not one extreme outlier -- genuine collective over-concentration.
+(b) The even-moment ratio EXCEEDS the sup-only prediction (M_thin/M_rand)^{2r} at deep r: n=16 r=6 ratio 8.58
+    vs sup-pred 3.47; n=32 r=6 ratio 11.40 vs sup-pred 5.77. So the moment growth is NOT explained by the sup
+    alone -- the BODY of the spectrum contributes a genuine extra (super-sup) factor. New collective signal.
+
+VERDICT (rule-4 mapped wall; rule-3 PASS but the thinness-essentiality has the WRONG SIGN for CORE):
+1. mu_n's even period-energy profile IS thinness-essential (thin differs from random) -- but in the direction
+   that makes the moment object HARDER, not easier: thin is collectively MORE concentrated (top-heavy at every
+   quantile), so A_{2r}(thin) > A_{2r}(random), and the excess COMPOUNDS super-multiplicatively in r.
+2. This WALLS the "surviving collective thin depth profile -> smaller M via moments" hope at the EVEN level:
+   the thin advantage that exists at the ODD signed-vanisher level (r_min, d_odd deeper) does NOT carry to the
+   EVEN energy moments -- the very ones in A_r <= Wick. The collective even profile is anti-helpful.
+3. RECONCILES + SHARPENS ILO (852e0fa27, "thin anti-concentrated worse, sup only") + the moment thickness-
+   invariance note: it's not only the sup -- the WHOLE even spectrum is collectively inflated, and the
+   inflation grows with moment order. The signed/odd thin depth and the even-energy concentration point
+   OPPOSITE ways; the moment route needs the even one, which is adverse.
+HONEST SCOPE: small n (16,32 exact), p~n^{4-4.5}. Random control is finite-sample median (5 draws). This is a
+COLLECTIVE refutation of the even-moment thin-suppression hope, NOT a CORE closure nor a prize refutation:
+the surviving structural hope is the ODD signed family-level Sidon bootstrap (B_inf<-B_{log n}), which lives
+in the signed/odd object, NOT the even energy profile measured here. CORE not closed. Python-only, no Lean =>
+axiom-clean trivially. Multi-prime (incl. non-Fermat) -> not a Fermat artifact.
+
+### crossCell is p-INDEPENDENT (char-0 structural) + SUPER-random in the thin regime: the proposed "sub-random via mod-p collisions" open input is WALLED (2026-06-15)
+
+Follow-up to the crossCell dyadic-tower no-go (push ad90dc8d5). That entry showed iterating the per-level
+crossCell gap (granting BCHKS-1.12) leaks to trivial M<=n. CrossCellShkredovBound.lean's own CONCLUSION then
+proposes that the genuine open input "must come from the ARITHMETIC of the q-reduction (spurious mod-p
+collisions)" -- i.e. it hopes crossCell is SUB-random (< the BCHKS-1.12 expectation) because collisions cancel
+structure. This entry tests that hope directly in the thin prize regime and WALLS it.
+
+OBJECT (exact char-p, proper subgroup, NEVER n=q-1): G=mu_n=H u zeta*H, H=mu_{n/2}, crossCell(r)=
+N0(G,r)-2*N0(H,r) (>=0 by the descent). Random/BCHKS-1.12 expectation E_rand(r)=(2^r-2)|H|^r/p.
+Probe probe_407_crosscell_superrandom_pindep.py (exact running-sum DP counting, multi-prime, rule-3 control).
+
+RESULTS:
+1. crossCell is PERFECTLY p-INDEPENDENT in the thin regime (beta>=4): n=8 -> 96 (r=4), 4320 (r=6) at EVERY
+   prime {4129,4153,4177,4201}; n=16 -> 384, 40320 at EVERY prime {65537,65617,65633,65713}. => it is the
+   char-0 STRUCTURAL relation count (#{sum u + zeta sum w = 0} holding over Z, hence at every large p), with
+   ZERO spurious mod-p collision component (collisions scale like 1/p; crossCell does not move at all).
+2. SUPER-random, diverging with thinness: ratio crossCell/E_rand ~ (p-indep count)/(C/p) ~ p. beta=4: n=8
+   r=4 ratio 110x, n=16 r=4 438x; beta=5: 878x / 7022x. crossCell is FAR ABOVE random, never below.
+3. rule-3 THINNESS control: thick beta=2.3 ratio O(1)-4x; thin beta=4-5 ratio 100x-7000x. The super-random
+   excess is the char-0 structural floor dominating as p->infty -- thinness-ESSENTIAL, not a collision artifact.
+4. At thick/small p the count can EXCEED the char-0 value (n=16 r=6: 48000 at p=593 vs 40320 char-0) =>
+   collisions only ADD to crossCell, never give a sub-random saving.
+
+VERDICT (rule-4 constraint map; NOT a CORE result, NOT a prize refutation): there is NO sub-random saving in
+crossCell to extract. crossCell >= its char-0 structural count at all p (collisions only add). The proposed
+"arithmetic-of-the-q-reduction / mod-p-collision" open input of CrossCellShkredovBound.lean is WALLED: the
+binding object is the p-INDEPENDENT char-0 structural relation count, exactly the (super-random,
+BCHKS-1.12-saturating) quantity, with no mod-p cancellation available. CONSEQUENCE: any CORE proof routing
+through crossCell must bound the CHAR-0 structural count itself (= vanishing-sums-of-roots-of-unity /
+Lam-Leung over the 2-power tower), NOT hope for collision savings -- which re-localizes the open content onto
+the already-mapped char-0 antipodal/Sidon object (ConverseLamLeung2Power, the surviving thin Sidon bootstrap),
+NOT a new arithmetic mechanism. Combined with the tower no-go (ad90dc8d5): granting BCHKS-1.12 doesn't close
+(tower leaks to n), AND the proposed route to PROVE a sub-BCHKS crossCell bound (collisions) is empty. CORE
+not closed. Python-only, exact DP, multi-prime (Fermat + non-Fermat), no Lean => axiom-clean trivially.
+
+### A3 REVERSE-DICTIONARY FLOOR-PUSH is THICKNESS-INVARIANT at the (halfJ,J)-window radius -- not the thin lever (2026-06-15)
+
+LANE: #444 §1 A3 -- "push delta* UP past half-Johnson via the reverse LD=>MCA dictionary at larger n",
+the orchestrator's explicitly-flagged "genuinely-unattacked OTHER HALF of the prize" / fallback. First
+RULE-3 thinness gate applied to the reverse dictionary (ReverseDictionary.exists_interleavedList_card_gt_of_epsMCA_gt).
+
+OBJECT (exact, in-tree axiom-clean): forward eps_mca(C,delta) <= (1+(n-a)*L)/q; reverse contrapositive
+=> L_force = floor((incid-2)/(n-a)) is a machine-checkable LOWER bound on some pair's interleaved list
+size at collapse radius a, incid = eps_mca*q. Proven floor = half-Johnson delta* >= (1-sqrt rho)/2
+(HalfJohnsonDeltaStar); full Johnson 1-sqrt rho is the OPEN all-pairs target (SmallSubgroupGoodList).
+A3 hope: smooth mu_n forces a SMALLER list than random at radii in (halfJ,J) => a higher thin floor.
+
+METHOD (probe-first, exact mod-p, PROPER smooth subgroup mu_n, never n=q-1): exact eps_mca bad-LINE
+incidence at the (halfJ,J)-window radius, SMOOTH mu_n vs RANDOM domain, prime sweep (q-invariance +
+rule-3). n-k=2 exact-feasible cases. probe_407_a3_fast.py + probe_407_a3_window_map.py.
+
+RESULT (rule-4 mapped constraint; rule-3 verdict):
+| n | k | rho | window radius delta in (halfJ,J) | smooth incid | random incid | q-invariant | thin |
+|---|---|-----|----------------------------------|--------------|--------------|-------------|------|
+| 4 | 2 | 0.500 | 0.250 (halfJ 0.146, J 0.293) | 4 = n | 4 = n | YES (13,17,29,37,41) | smooth==random |
+| 6 | 4 | 0.667 | 0.167 (halfJ 0.092, J 0.184) | 6 = n | 6 = n | YES (7,13,19,31,37)  | smooth==random |
+Full radius profile: the UNIQUE radius in (halfJ,J) sits at incidence = n = the budget exactly; next
+radius down (delta=0, <halfJ) has incidence 1.
+
+VERDICT (two-sided, honest):
+ POSITIVE (generic): eps_mca = incid/q = n/q = budget eps* exactly at this radius => delta* reaches the
+   (halfJ,J) window (0.25 > halfJ 0.146) GENERICALLY; reverse L_force (>=2 at n=4, >=4 at n=6) is a real
+   forced interleaved-list lower bound at the budget-binding radius.
+ NEGATIVE (decisive): the mechanism is THICKNESS-INVARIANT -- smooth mu_n and a random generic domain
+   give the IDENTICAL incidence (=n) at every tested prime in (halfJ,J). By rule 3 (CORE false in the
+   thick window => thickness-invariant method neither proves nor refutes CORE), the reverse-dictionary
+   floor-push at the window-top radius is NOT thinness-essential: A3's hope (smooth smaller list => higher
+   thin floor) is REFUTED at the feasible radii -- no smooth-vs-random gap exists. The factor-of-two to
+   full Johnson 1-sqrt rho is NOT closable by the reverse dictionary here; it genuinely needs the
+   all-pairs / thin-essential input (SmallSubgroupGoodList), confirming HalfJohnsonDeltaStar's stated
+   open problem from the floor side.
+
+HONEST SCOPE (rule 6): only n-k=2 (rho 1/2, 2/3) is exact-feasible at small primes; the genuinely-thin
+prize cone (rho 1/4-1/8) needs small n-k at large n (exact-infeasible -- same wall every worker hits). So
+this is thickness-invariance at MODERATE rho; the DIRECTION (no thin gap at the window-top radius) is
+robust over both rho and all primes, but the thin-rho extrapolation is NOT proven (future work, needs MITM
+infra). WALLS the reverse-dictionary route to the floor-push at the tested radii; does NOT refute CORE.
+Python-only, no Lean changed => axiom-clean trivially. First rule-3 gate on the reverse dictionary (grep:
+"reverse" had 0 prior DISPROOF entries outside the lacunary one).
+
+## ⚠️ REFUTATION (completes the even+odd picture) — the SIGNED odd moment beyond the Sidon depth: thin's deep-Sidon RIGIDITY makes signed cancellation WORSE, not better (2026-06-15, opus-4-8 subagent)
+
+LENS: companion to the even-census-profile refutation (6feb11b53, even E_{2r} thin INFLATED). The surviving
+thin advantage lives in the ODD/SIGNED object (r_min, d_odd deeper). Since mu_n is negation-closed, eta_b is
+REAL, so odd moments A_r = sum_{b!=0} eta_b^r are real + sign-sensitive -- the natural home for the signed
+cancellation the B_inf<-B_{log n} bootstrap needs. The odd_moment entry showed A_r=-n^r RIGID below d_odd
+(W_r=0, no info). UNPROBED until now: does the SIGNED cancellation BEYOND d_odd (W_r>0) compound FAVORABLY
+(thin cancels MORE => helps), measured against the RIGHT control?
+
+RULE-3 CONTROL FIX: a random n-subset is NOT negation-closed (odd moments not even real). The correct control
+that isolates the 2-POWER-SUBGROUP structure from mere negation-closure is a NEGATION-CLOSED random set: a
+random union of n/2 antipodal pairs {x,p-x}. Compared thin vs this control via the signed-cancellation
+EFFICIENCY eff_r := |A_r|/sqrt(E_{2r}) (Cauchy-Schwarz normalized; 1 = no cancellation, ->0 = full signed
+cancellation). Exact real periods eta_b = sum_{x in S} cos(2pi b x/p); proper mu_n (m>1, never n=q-1);
+prize primes p~n^{4-4.5} incl. non-Fermat. Probe scripts/probes/probe_407_signed_odd_profile.py.
+
+RESULT (the separation appears at n=32, where d_odd is crossed within reach):
+- n=16 (b=4.0, 4.5[nf]): thin AND neg-closed-random BOTH stay rigid A_r=-n^r through r=9 (d_odd>9 for both)
+  -- no separation yet at reach (honest: small-n censored).
+- n=32 (b=4.0, p=1048609): thin stays RIGID (A_r=-32^r EXACTLY) through r=7, non-rigid only at r=9. The
+  neg-closed RANDOM control breaks rigidity EARLIER: r=7 random A_7=-1.32e10 != -32^7=-3.44e10; r=9 random
+  -5.69e12 vs thin -1.54e13. CONSEQUENCE on the efficiency:
+    r=7: eff_thin=0.695 vs eff_rand=0.270  (thin 2.6x WORSE at signed cancellation)
+    r=9: eff_thin=0.796 vs eff_rand=0.301  (thin 2.7x WORSE)
+  |A_r|(thin)/|A_r|(rand) = 2.60 (r=7), 2.71 (r=9): thin's |A_r| is LARGER.
+
+MECHANISM (clean): thin's deep-Sidon RIGIDITY PINS A_r at the full -n^r (zero cancellation among the b's,
+since W_r=0 forces A_r=-n^r exactly), while the random control's EARLIER d_odd onset lets its signed moments
+CANCEL DOWN BELOW n^r. So "deeper Sidon" is ANTI-HELPFUL for signed cancellation: rigidity = no cancellation
+= |A_r| pinned HIGH at n^r, the opposite of the suppression the bootstrap needs.
+
+VERDICT (rule-4 mapped wall; completes the even+odd picture): the thin advantage in DEPTH (r_min, d_odd
+deeper) does NOT translate to better moment cancellation in EITHER parity --
+  EVEN (6feb11b53): thin energy E_{2r} collectively INFLATED, super-multiplicatively in r.
+  ODD/SIGNED (here): thin's deep-Sidon rigidity PINS |A_r|=n^r, so signed-cancellation efficiency is 2.6-2.7x
+  WORSE than the neg-closed random control beyond d_odd.
+Both faces of the "collective thin depth profile -> smaller M via moments" hope are now mapped as adverse:
+the very rigidity/Sidon-depth that the bootstrap touts is what KEEPS the moments large. The surviving hope is
+NOT a moment/cancellation argument at all (both parities adverse) -- it must be a per-frequency / structural
+estimate that does not pass through the period MOMENTS. CORE not closed, not faked. Small n (16 censored, 32
+shows the separation), multi-prime incl. non-Fermat. Python-only, no Lean => axiom-clean trivially.
+
+### The STATED CrossCellAbsoluteBound (BCHKS-1.12 as written) is FALSE at every prize-relevant depth -- NOT "the open wall" (2026-06-15)
+
+Completes the crossCell-lever mapping (companions: tower no-go ad90dc8d5, super-random/p-indep 5a8d7fd42).
+CrossCellShkredovBound.lean DEFINES and labels "the correct OPEN form ... NOT refuted; remains the wall":
+  CrossCellAbsoluteBound :  forall r>=2,  crossCell(H,zeta,r)*q <= 2^r*|H|^r,  |H|=n/2  (= BCHKS Conj 1.12).
+The per-level consumer N0_gap_of_absoluteBound uses exactly this. We show the STATED Prop is FALSE at every
+feasible/prize-relevant depth.
+
+KEY EXACT FACT: crossCell(n,4) = 3n^2/2, EXACTLY, char-0, p-independent. Derivation from in-tree bricks:
+crossCell(n,4) = N0(G,4) - 2*N0(H,4) = E(mu_n) - 2*E(mu_{n/2}) = (3n^2-3n) - 2*(3(n/2)^2-3(n/2)) = 3n^2/2,
+using AdditiveEnergyNegClosedLower E(mu_n)=3n^2-3n. Verified exactly: n=8->96, n=16->384, n=32->1536 (=3n^2/2).
+
+(A) STATED bound at r=4:  (3n^2/2)*q <= 2^4*(n/2)^4 = n^4  <=>  q <= (2/3)*n^2.  Prize q~n*2^128 >> n^2 =>
+    VIOLATED by ~2^128.  Exact at prize-shaped primes: n=8 b=4 p=4129: LHS=396384 > RHS=4096 (97x);
+    n=16 b=4 p=65537: 25166208 > 65536 (384x); n=32 b=4: 1.6e9 > 1.05e6 (1536x).  False at thick b=2.3 too.
+(B) depth threshold r0(n): the bound n^r >= crossCell(r)*q holds only once r*log2 n >= log2 crossCell(r) +
+    log2 q (log2 q ~ log2 n + 128).  crossCell(r) is the FIXED char-0 structural count (p-indep), so r0 is
+    LARGE: measured/extrapolated r0(8)~465, r0(16)~206 -- both >> the prize BINDING depth r ~ ln q ~ 89.
+    So the stated inequality is FALSE at r=4..89 (every prize-relevant order) and only becomes true at an
+    astronomically large, useless r0.
+
+RECONCILIATION with the file's own probe ("crossCell tracks the random BCHKS-1.12 expectation (2^r-2)|H|^r/p
+to O(1)"): that was measured at SMALL accessible primes (p ~ relation height) where crossCell ~ random. At
+PRIZE primes (p ~ 2^128) the two DIVERGE by ~2^128 -- crossCell frozen at the char-0 structural value, the
+random expectation -> 0.  The "to O(1)" agreement does NOT survive to the prize regime, which is exactly why
+the stated absolute bound fails there.
+
+VERDICT (rule-4 constraint map; precise correction, NOT a CORE result, NOT a refutation of the TRUE BCHKS
+Conj 1.12 which is an asymptotic statement): the Lean Prop CrossCellAbsoluteBound, as written (forall r>=2,
+crossCell*q <= 2^r|H|^r), is FALSE at every prize-relevant depth and is NOT the open wall the file labels it.
+The genuine open object is a DEPTH-CORRECT, p-independent STRUCTURAL count bound at the binding depth r~ln q
+(= the char-0 vanishing-sums-of-roots-of-unity / Lam-Leung object, in-tree ConverseLamLeung2Power), NOT the
+literal 2^r|H|^r/q random count.  CONSISTENT with + completes the two companion crossCell results: (1) even
+granting the (false-as-written) bound the tower iteration leaks to trivial M<=n; (2) the proposed sub-random
+proof route is empty (crossCell super-random); (3) HERE: the bound as stated is itself false at feasible
+depth.  All three pin the crossCell lever as mis-stated/non-closing in its current form; the live content is
+the char-0 structural count (sibling-active thin-Sidon object), not a new arithmetic mechanism. CORE not
+closed. probe_407_crosscell_absbound_false_at_prize.py. Exact DP, multi-prime, no Lean => axiom-clean trivially.
+
+## ✓ RULE-6 RE-AUDIT (confirms 6feb11b53 robustly + one honest onset refinement) (2026-06-15, opus-4-8 subagent)
+
+Adversarial re-audit of the even-moment-inflation push 6feb11b53, addressing two worries: (W1) "exceeds the
+(M_thin/M_rand)^{2r} sup prediction" could be a cross-draw artifact (random median moment vs random median sup
+from DIFFERENT draws); (W2) the inflation could be 5-draw variance. FIX: 21 random draws, per-draw
+self-consistent (each draw's M and E_{2r} from the SAME spectrum), apples-to-apples sup prediction (the
+max-MOMENT draw's OWN M). Probe scripts/probes/probe_407_even_reaudit.py.
+
+RESULT (n=16, β=4.0 + β=4.5[non-Fermat]):
+1. INFLATION IS ROBUST, NOT VARIANCE: thin E_{2r} exceeds the MAX-moment random draw (most concentrated of
+   21) at EVERY r≥2 — 21/21 draws below thin. Not a median artifact.
+2. "EXCEEDS sup prediction" CONFIRMED but onset is r≥4 (apples-to-apples), not r≥3 as the original
+   cross-draw comparison suggested at β=4.5: β=4.0 exceeds from r≥3 (thin/maxdraw 2.165 > sup-pred 1.943);
+   β=4.5[nf] exceeds from r≥4 (r=3: 2.162 vs 2.238, just BELOW; r=4: 3.281 > 2.927). HONEST REFINEMENT: the
+   "exceeds sup" claim holds at DEEP r (r≥4 robustly, r≥3 at β=4.0), with growing margin — my receipt's "at
+   deep r" wording is accurate; the exact onset is r≥4 under the strict apples-to-apples test.
+NET: 6feb11b53's two claims (collective inflation; exceeds sup at deep r) both STAND under 21-draw
+self-consistent re-audit; the only adjustment is the precise onset (r≥4 strict, vs r≥3 loose). No overclaim
+survives; the finding is robust. Python-only => axiom-clean trivially.
