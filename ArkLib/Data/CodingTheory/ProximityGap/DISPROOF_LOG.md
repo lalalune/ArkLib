@@ -10377,3 +10377,45 @@ offset 3 != log2(16)=4. So `delta*=(1-rho)-log2(n)/n` (probe_char0_deltastar_pin
 holds ONLY at rho=1/8 -- the crossing offset is RATE-DEPENDENT, refuting it as a rho-uniform
 closed form. (n=32 used a binder-region a-scan justified by the n=16 binder=x^k low-exponent
 direction; the full a-sweep is compute-bound but the binder localizes the worst pencil.)
+
+---
+
+## ORBIT-COUNT lever is RULE-3-INCOMPATIBLE (thickness-invariant) — 2026-06-15
+
+**Object:** the orbit count `N_pencil(δ) = #orbits` of the bad-α set under `α ↦ α·ω^{b−a}`, the governing
+count in the in-tree crossing law `OrbitCountCrossingLaw.lean`: `I_pencil(δ) ≤ n ⟺ N_pencil(δ) ≤ gcd(b−a,n)`.
+The file's "Honest scope" leaves OPEN whether `N_pencil` stays bounded (O(1)) at constant rate in the
+small-gap window. This is the rule-3 (thinness-essentiality) audit of that object.
+
+**Probe:** `scripts/probes/probe_407_orbit_count_thinness.py`. Exact, subset-driven (a bad-α at threshold
+t is an over-determined t-subset whose order-k divided-difference windows all vanish; each DD is AFFINE in
+α, so per t-subset ≤1 candidate α = common root over the t−k windows; union over far t-subsets = exact bad
+set, NO O(q) scan). PROPER subgroups μ_n < F_q*, multiple primes per (n,k) spanning thick β≈2.06 → thin β≈4.5.
+
+**Result (n=8, k=2, ρ=1/4 = prize rate), 5 primes p∈{73,193,521,4073,11593}, β=2.06,2.53,3.01,4.00,4.50:**
+  max-over-far-pencils orbit count at the binding band:
+    thr=3 (δ=0.625): maxN = 6 — IDENTICAL across all 5 β (same extremal pencil (2,6)).
+    thr=4 (δ=0.500): maxN = 2 — IDENTICAL.
+    thr=5 (δ=0.375): maxN = 1 — IDENTICAL.
+  EXACTLY thickness-invariant: same value, same extremal direction, β=2.06 → 4.50.
+
+**Confirmation (n=16, k=4, ρ=1/4, thr=7 = the δ*=9/16 binding band):**
+  THICK p=257 (β=2.00): maxN=2, extremal pencil (4,12).
+  THIN  p=65537 (β=4.00, Fermat): pencil (4,12) maxN=2, I=4 — IDENTICAL on the worst direction.
+
+**Verdict:** `max_pencils N_pencil` at the binding band is thickness-invariant ⟹ a thickness-monotone
+orbit-count bound CANNOT prove CORE (false in the thick window, rule 3). The orbit-count REFORMULATION
+inherits the SAME rule-3 obstruction as the moment/energy family: the crossing law is an exact, axiom-clean,
+BGK-FREE structural restatement, but the governing count is thickness-invariant — the orbit basis buys
+structure, not a thinness discriminator. Extends the route-elimination map to the orbit-count brick (#5).
+
+**Nuance (honest):** the free-action factorization `I = N·S` holds on the extremal pencil (verified n=8
+pencil (2,6): I=12=6·2, all orbits size 2, α=0∉bad, p-independent across p=73,4073) but `factOK` over the
+FULL sweep goes False at low thr — some pencils have mixed orbit sizes (degenerate near-directions /
+fixed-point orbit), so the clean `I=N·S` is a per-pencil (worst-direction) statement, looser than a uniform
+hypothesis. Consistent with the file's α=0-fixed-point caveat; the in-tree theorems remain correct.
+
+**Scope:** small n (8 full band, 16 worst-pencil); maps the rule-3 CHARACTER of the orbit-count object,
+does NOT prove the asymptotic. p-independence of the count is consistent with the campaign's PROVEN
+p-independence. No Lean change (empirical thickness-invariance; proving const-slack would be BGK). No CORE
+closure. Probe-first, exact, honest.
