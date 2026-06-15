@@ -10663,3 +10663,56 @@ Khovanskii fewnomial theory bounds solution counts of a sparse system by the num
 theory adds nothing tighter. Probe: `scripts/probes/probe_wf3NK_fewnomial_incidence.py` (self-
 contained, fast). Tag: **refuted** as a tight degree-free/p-free bound on I(n); the (k+2)-sparsity
 and the precise failure mode are proven-per-fixed-n. — wf-NK
+
+## cosh-MGF / exact-Bessel-saddle CORE bound CAPS at √(β/(β−1))·floor — "beats at n=8" is a small-n artifact (§7.8, #444) — 2026-06-15
+
+**Lane.** §7.8 of #444: the cosh-MGF identity (`Frontier/CoshMGFIdentity.lean`, axiom-clean in-tree)
+`Σ_b cosh(‖η_b‖y) = Σ_r (q·E_r/(2r)!) y^{2r}` gives, by per-b domination, the root-free max-free CORE
+upper bound `M(n) = max_b‖η_b‖ ≤ B(y) = arccosh(Σ_b cosh(‖η_b‖y))/y` (∀y>0). For G=μ_n the char-0
+even-moment GF is the Bessel law (`DyadicEnergyK1.lean`): `Σ_r E_r y^{2r}/(2r)! = I₀(2y)^{n/2}`, so the
+CHAR-0-IDEALIZED bound (the BEST the mechanism gives IF char-0 energies held char-p) is
+`B_char0(n,p) = min_{y>0} arccosh(p·I₀(2y)^{n/2})/y`. The dossier (§7.8) flags it as beating the floor
+`√(2n log m)` at n=8 (8.56<9.99). NO prior worker probed whether this survives to larger n.
+
+**RESULT 1 — "beats at n=8" is a SMALL-n ARTIFACT; the bound asymptotes to ~1.155×floor, never AT it.**
+PART A (β=4, p~n^4, m~n^3, char-0-idealized, wide-saddle):
+| n | floor | B_char0 | B/floor | verdict |
+|---|-------|---------|---------|---------|
+| 8 | 9.99 | 7.90 | 0.791 | BEATS |
+| 16 | 16.32 | 15.06 | 0.923 | BEATS |
+| 32 | 25.80 | 26.58 | 1.030 | WORSE |
+| 256 | 92.29 | 105.75 | 1.146 | WORSE |
+| 16384 | 976.7 | 1137.1 | 1.164 | WORSE |
+| 1048576 | 9339 | 10851 | 1.162 | WORSE |
+B/floor → ~1.16 (a CONSTANT factor ABOVE the floor), never reaching it. BEATS only n≤16 at β=4
+(n≤512 at fixed prize m=2^128, then crosses + grows). The n=8 BEATS is finite-n only.
+
+**RESULT 2 — MECHANISM (analytic): the saddle COLLAPSES the exact Bessel to its GAUSSIAN/Wick leading term.**
+At small y, `log I₀(2y) = y² − (1/4)y⁴ + …`, so `(n/2)log I₀(2y) ~ (n/2)y²` — THE WICK TERM (the −y⁴/4
+curvature is lower-order). Then `B ~ min_y [log p + (n/2)y²]/y = √(2n log p)` at `y* = √(2 log p/n)`.
+Floor = `√(2n log m)`. So **B_char0/floor → √(log p/log m) = √(β/(β−1))** (m~n^{β−1}, p~n^β). β=4 ⟹
+**√(4/3)=1.1547** (numeric 1.16); β=5 ⟹ 1.118. NUMERIC CONFIRMATION (B_char0 vs √(2n log p), β=4):
+MATCH to <0.5% at n=256..16M. The Bessel curvature (the only place a thin advantage could live) is
+provably LOWER-ORDER and cannot close the log p/log m ratio.
+
+**RESULT 3 — the char-0 bound is a VALID upper bound on the TRUE char-p M (PART B, exact FFT, multi-prime).**
+n=8 at p=4129/28697/2000081 and n=16,32 at prize-band primes: B_char0 ≥ M_true (FFT period sup) at
+every prime — the idealized bound is a genuine over-estimate of the real periods, so the cap is on a
+VALID upper-bound mechanism, not a broken bound.
+
+**RESULT 4 — RULE-3 thinness gate (PART C): thin-sensitive but only LOWER-ORDER.**
+Thin 2-power Bessel `I₀(2y)^{n/2}` vs Gaussian/Wick `e^{ny²/2}` feeding the SAME bound: THIN-BEATS-GAUSS
+at EVERY n (n=8: 8.31<12.01; n=32768: 1664.1<1664.9). So the I₀ curvature IS a genuine thin advantage
+over generic-Wick (rule-3 PASS), but the gap thin-vs-gauss shrinks relative to the floor as n grows ⟹
+insufficient: the thin win is real but cannot cross the √(β/(β−1)) wall.
+
+**VERDICT (rule-4 mapped wall; CORE not closed, not faked).** The cosh-MGF / exact-Bessel-saddle
+mechanism (§7.8) caps at **√(β/(β−1))·floor** (≈1.155× at β=4), NEVER at the floor, EVEN granted the
+char-0 energies — so it fails BEFORE the §2 char-p DC-term obstruction (independent of it). The dossier's
+"beats the floor at n=8" is a genuine small-n artifact. The decisive structural reason: at the saddle the
+exact Bessel `(n/2)log I₀(2y)` collapses to its Wick leading term `(n/2)y²` — so this IS the §4
+second-order/meta-theorem wall at the MGF level, now QUANTIFIED as the √(β/(β−1)) log-ratio gap. Removes
+§7.8 as a live hope: the cosh-MGF is a sharper SUBSTRATE but not a sharper BOUND. Probe:
+`scripts/probes/probe_407_cosh_bessel_saddle_scaling.py` (wide geometric-grid saddle, large-z I₀
+asymptotic, exact-FFT char-p cross-check, rule-3 thinness gate, analytic confirmation). Axiom-clean
+(Python-only, no Lean changed). Co-authored wakesync.
