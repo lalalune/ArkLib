@@ -2,6 +2,54 @@
 
 Machine-checked refutations and precise pins. Each entry: lens, test, exact result, wall.
 
+## BIND-gate-scope — the §5.0 (BIND)/house gate route does NOT generalize: non-antipodal mod-p vanishers EXIST at thin prize-β primes once (#S)^φ > p (2026-06-15)
+
+Lens: §5.0 reduces CORE to (BIND) — "no spurious non-antipodal vanishing `Σ_{i∈S} ω^i ≡ 0 (p)` with S
+not antipodal" — and proves it via the height gate `HeightGateNormBound.gate_2power_antipodal`, whose
+HYPOTHESIS is `hp : (#S)^φ(n) < p` (house bound `|N(β)| ≤ (#S)^φ < p`, then `p|N ⇒ N=0 ⇒` antipodal).
+The body claims "NoSpuriousVanishing is a proved theorem for n≤32" + "realized-height extends to n≤64,
+heuristically n≤96", and frames the open part as "need a structure-aware norm bound (not trivial house)
+to get |N|<p at n≥112."
+
+TEST 1 (worst-case realized norm vs the fixed prize budget p~2^128). Hill-climbed max over reduced
+coeff vectors c∈{-1,0,1}^{n/2} (the worst non-antipodal residue pattern; exact integer norm via
+`Res(x^{n/2}+1, c(x))`, cross-checked high-precision):
+  n=64:  max log2|N| = 78.9  (< 128, closeable — matches H(64)<2^128)
+  n=96:  max log2|N| = 131.1 (> 128)
+  n=112: max log2|N| = 160.5 (> 128)
+  n=128: max log2|N| = 188.0 (> 128; vs ABF p~2^136 still >)
+Growth ~0.184·n·log2(n) (a CONSTANT fraction ~37% of the house (n/2)log2(n/2) — the house slack does
+NOT vanish). CROSSOVER between n=64 and n=96. The single 56-element witness cited in §5.0 (2^131) is
+NON-worst-case; the true worst at n=96 already exceeds p. (scripts/probes/issue407-bind/probe_bind_realized_norm_max.py,
+probe_bind_norm_crossover.py)
+
+CONSEQUENCE: a "structure-aware UPPER bound giving |N|<p" CANNOT exist at the worst-case binding
+weight for n≥96 — the realized worst-case norm itself exceeds p. The §5.0 open-route as stated
+("replace the loose house by a tighter |N|<p") is a no-go past the crossover.
+
+TEST 2 (the mechanism is real: explicit, INDEPENDENTLY-VERIFIED non-antipodal mod-p vanishers at thin
+prize-β primes). For thin primes p (p>n^3, n|p-1, β=log_n p in the prize band 4–4.8) we exhibit
+non-antipodal S with `Σ_{i∈S} ω^i ≡ 0 (mod p)` (ω a primitive n-th root in F_p), directly verified
+(not via the bridge — the sum is computed in F_p and equals 0 on the chosen ω):
+  • n=32,  p=14814881  (β=4.764): S={1,2,7,8,9,10,12,13,19,22,27} (#S=11), non-antipodal, Σω^i≡0.
+  • n=64,  p=136085377 (β=4.503): #S=24 set, non-antipodal, Σω^i≡0.
+  • n=128, p=268437889 (β=4.000): S={6,17,24,27,29,38,43,52,59,65,70,77,82,87,94,97,107,112,117}
+    (#S=19), non-antipodal, Σω^i≡0; here house 19^64~2^272 ≫ p~2^28 (gate hyp `(#S)^φ<p` FALSE).
+(scripts/probes/issue407-bind/probe_bind_counterexample_search.py + verify_bind_counterexamples.py
+[standalone, from-scratch], probe_bind_n128_counterexample.py)
+
+WALL / precise scope (NO prize refutation — honesty): these counterexamples use SMALL primes (p~2^24–2^28),
+NOT the actual prize budget p~2^128, so the PRIZE is NOT refuted. What is refuted is the GENERALITY of
+the gate route: (BIND) is FALSE as a ∀-thin-prime statement; non-antipodal vanishing genuinely occurs
+exactly when `(#S)^φ(n) > p`. §5.0's "NoSpuriousVanishing proved for n≤32" is correct ONLY because at
+the prize budget p~2^128 and n≤64 the house hypothesis `(#S)^φ < p` happens to hold for ALL relevant #S
+(e.g. n=32: p^{1/φ}=2^8=256 > n). Once n grows so that (n/4)^{n/2} > 2^128 (i.e. n≥~112 at the binding
+size), the house hypothesis fails AND — by Test 1 — no realized-norm replacement can rescue it. The
+gate/house lane is therefore CAPPED at the crossover; closing CORE at n≥112 needs a genuinely different
+mechanism (the thinness-essential B_∞←B_{log n} Sidon bootstrap), not a sharper norm bound on the gate.
+Constraint lemma: `∃ non-antipodal S, ω prim. n-th root in F_p : Σ_{i∈S}ω^i=0` for every thin p with
+(#S)^{φ(n)}>p — so the gate's safety margin is exactly `house < p`, nothing more.
+
 ## wf-NC — Gross-Koblitz / p-adic Γ_p refinement of Stickelberger (UNIT part) — PINNED (2026-06-14)
 
 Lens: GK expresses g(χ^{−a}) = −π^a·Γ_p(⟨a/(p−1)⟩) (q=p prime ⇒ residue degree f=1);
