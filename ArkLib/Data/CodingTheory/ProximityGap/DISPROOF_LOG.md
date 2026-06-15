@@ -10294,3 +10294,41 @@ free-coefficient interpolation incidence I(delta) of the governing law — the S
 BGK/counting object, NOT closeable via Mann. (Consistent with `probe_actionorbit_count.py`:
 "#orbits=O(1)" is a restatement of "#bad=O(n)", the floor itself.) Probes committed:
 `probe_407_mann_agreement_count.py`, `probe_407_mann_diag.py`.
+
+## 2026-06-14 (#407 P2): RUTHLESS refutation campaign — NO clean closed-form delta* survives
+**Engine.** `scripts/probes/probe_407_deltastar_refute_campaign.py` computes the EXACT in-tree
+governing-law delta* via the far-line incidence object `I(a,b;r) = #{gamma : x^a+gamma x^b on mu_n
+agrees with some RS[k] codeword on >= n-r pts}` (epsMCA_ge_far_incidence / badScalars_eq_explainable),
+no codeword enumeration / no sqrt-loss (affine-in-gamma per agreement set via left null space).
+budget = q*eps* = n. Prize char-0 direction: proper mu_n (n=2^mu), p PRIME, p >> n^3; verified
+char-faithful (identical maxI & binders) at p=200009/700001 (n=8) and p=200017/700001 (n=16).
+
+**EXACT ground truth (budget=n):**
+- n=16 k=1 rho=1/16: delta*=0.6875 (Johnson 0.7500) — BELOW Johnson
+- n=16 k=2 rho=1/8 : delta*=0.6250 (Johnson 0.6464) — BELOW Johnson
+- n= 8 k=1 rho=1/8 : delta*=0.6250 (Johnson 0.6464) — BELOW Johnson
+- n=16 k=4 rho=1/4 : delta*=0.5625 (Johnson 0.5000) — ABOVE Johnson (the one +1 rung)
+- n= 8 k=2 rho=1/4 : delta*=0.3750 (Johnson 0.5000) — BELOW Johnson
+- n= 8 k=4 / n=16 k=8 rho=1/2: far-window [k+1,n-k-1] EMPTY at budget=n => NO beyond-Johnson r.
+
+**REFUTED:**
+- **Kambire edge** `1-rho-2rho ln(1/2rho)/log2(q eps*)`: OVERSHOOTS exact delta* at 5/5 points by
+  0.10–0.26, and the margin does NOT shrink with n (0.13@n=8 vs 0.16@n=16 for rho=1/8). STRUCTURAL
+  kill: at rho=1/2 it predicts 0.5 > Johnson 0.2929, but the exact far-window is EMPTY there
+  (delta* <= Johnson). Predicts substantially MORE proximity than the law permits.
+- **Entropy pin** `1-rho-H(rho)/(beta log n)` (beta=1): overshoots at n=16 k=1,2; and it is
+  monotone-decreasing in rho while the exact (delta*-Johnson) FLIPS sign — no single beta fixes it
+  (only a fitted beta(n,rho), i.e. not a clean closed form).
+- **Any "always beyond Johnson" / monotone clean form**: sign(delta*-Johnson) = [-,-,-,+,-] over
+  the sweep — it FLIPS. delta* is below Johnson at rho in {1/16,1/8} and at rho=1/4@n=8; above only
+  at rho=1/4@n=16.
+- **List ~ 2(n-a)+1**: the binding incidence is a STEP (O(1)/O(n) just below the crossover, e.g.
+  maxI 5; then >>budget just above, e.g. 17–18), not ~2r+1 (~23–29) near the crossover.
+
+**SURVIVOR (the only clean relation):** `|delta* - (1-sqrt(rho))| <= 1/n` holds at ALL sampled
+points (n=8 k=2 exactly at the 1/n boundary). I.e. delta* = Johnson ± one rung — there is NO simple
+beyond-Johnson closed form at these computable n; the gain over Johnson (if any) is sub-rung. This is
+CONSISTENT WITH THE PRIZE BEING OPEN: no candidate clean formula withstands adequate refutation.
+**Honest scope:** small computable n only (full enumeration is O(C(n,n-r)) per pencil; n=32 rho=1/4
+infeasible, C(32,9)=28M). Establishes NO delta* bound at prize scale (n=2^mu, mu>=10). Refutation, not
+proof. Probe committed: `scripts/probes/probe_407_deltastar_refute_campaign.py` (self-checks via --compute).
