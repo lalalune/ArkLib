@@ -256,3 +256,23 @@ either averages (killed by total-twist=q|G|) or is worst-case-pointwise (= BGK).
 reduce to BGK — not coincidence but a structural inevitability the 5 bricks now make rigorous. A genuinely
 new attack must inject NON-elementary input (an explicit equidistribution/cancellation estimate for
 dyadic-subgroup sums mod p — di Benedetto-type, currently n^0.989, prize needs n^0.5).
+
+## BGK ladder sharpened: r=1,2 discharged UNCONDITIONALLY, r≥3 open (2026-06-14)
+The corrected reduction's open input is `DCEnergyBound G r` (`A_r ≤ Wick`, i.e. `E_r ≤ (2r−1)‼·n^r`) at
+`r ≈ ln q`. Pinned exactly how far the ladder reaches with current in-tree energy results:
+
+- **r=1: UNCONDITIONAL** (`DCEnergyBaseCase.dcEnergyBound_one`) — Parseval `E_1 = n`.
+- **r=2: UNCONDITIONAL** (`DCEnergyRungTwo.dcEnergyBound_two_rootsOfUnity`, landed bfcacefe0) — the
+  EXACT Sidon-mod-negation energy `E_2(μ_{2^m}) = 3n²−3n ≤ 3n²=Wick(2)` (in-tree
+  `rootsOfUnity_additiveEnergy_eq_improved`) gives `q(3n²−3n)−n⁴ ≤ 3qn² ⟺ −3qn−n⁴≤0`, true always.
+  Bridge `rEnergy G 2 = addEnergy G` read off the two fourth-moment Parsevals; `addEnergy=additiveEnergy`.
+- **r≥3: OPEN.** The in-tree iterates give only `E_r ≤ n^{2r−1}` (`rEnergy_le_pow_sharp`), VACUOUS at the
+  prize (r=3: `E_3 ≤ n^5`, but `DCEnergyBound G 3` needs `E_3 ≤ 15n³ + n^6/q ≈ 15n³`; `n^5 ≫ 15n³`). No
+  in-tree Wick-strength `E_3 ≤ 15n³` exists; `CosetReducedEnergyBound` is conditional on the energy
+  hypothesis. The genuine r=3 input is the **6-fold additive energy** `E_3(μ_{2^m}) ≤ 15n³` = the higher
+  Lam–Leung (count the 15=5‼ matchings of 6 roots + no small ±1-relations mod p) — proven char-0, the
+  char-p transfer at the prime threshold is open = BGK.
+
+**SHARPENED OPEN CORE:** not "all r open" but specifically **`E_r(μ_{2^m}) ≤ (2r−1)‼·n^r` for r≥3** (the
+higher-order additive-energy Wick bound in char-p, r≈ln q). r=1,2 are theorems. Each successive rung
+needs the exact/Wick higher additive energy; r=2 had it (Sidon), r≥3 is the open Lam–Leung transfer.
