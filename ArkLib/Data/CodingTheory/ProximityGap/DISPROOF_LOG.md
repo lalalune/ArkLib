@@ -10222,3 +10222,158 @@ conclusion fails as an N0 bound). Genuinely new INPUT not provided; precise stru
 BGK re-label. NEXT LEVER for any future rank attempt: must bound an OFF-diagonal (r-1)-dim variety
 count, which no diagonal/partition rank delivers -- would need a fundamentally non-rank polynomial
 identity (e.g. a Combinatorial Nullstellensatz coefficient extraction on the relation, untried).
+
+### P7 [2026-06-14] Explicit mu_n higher-order-MDS / BGM relaxation — corank is Theta(a), NOT O(1)
+
+**Lane:** P7-bgm-rmds-explicit (relaxed HOMDS / Brakensiek-Gopi-Makam / Roth route for the
+explicit prize subgroup mu_{2^mu} at constant rate).  **Verdict: route CONFIRMED CLOSED for
+explicit mu_n; the rMDS_d-with-d=O(1) crack hypothesis is REFUTED.**
+
+The lever was: strict HOMDS needs exponential field (Brakensiek-Dhar-Gopi), but the RELAXED
+rMDS_d(ell) only needs corank <= d for the SPECIFIC mu_n window configs.  If d were O(1) and
+char-faithful at thick p, the list would stay generic-MDS (= O(1/rho), below capacity) and the
+prize would crack.  Three machine-checked exact measurements (probes
+probe_407_P7_homds_{orderL_corank,growth_law,admissibility}.py; thick primes p = 1 mod n,
+log_n p in [2.5,3.5], p >> n^2, the char-0-faithful prize direction; NEVER the n=p-1 full-group
+trap):
+
+1. **char-FAITHFUL (closed form, 2400/2400 exact):** the order-ell generalized-Vandermonde
+   intersection corank on a sub-subgroup-coset agreement set A = mu_a (a = 2^j | n) satisfies
+   `corank_Fp(mu_a; E) = a - #distinct(e mod a)` at thick p, matching the char-0
+   Schur/AbacusNCore hook-content prediction EXACTLY.  The rank-drop locus is NOT a char-p
+   artifact (answers P7(b)).  Generic points have corank 0 on the same windows (drop is purely
+   the multiplicative x^n=1 structure).
+
+2. **growth law (answers P7(a)):** the genuine mu_n-specific structural excess corank GROWS
+   `~ Theta(a)` at the window-interior agreement a = n/2.  Ratio L_max/(a-1) -> 1/2:
+   0.667, 0.571, 0.533, 0.516, 0.508, 0.504 for n = 8,16,32,64,128,256.  d is LINEAR in the
+   agreement size, NOT O(1) and NOT O(log n).
+
+3. **list/capacity + quasipoly (answers P7(c)):** restriction rank V(mu_a; deg<k) = min(a,k)
+   (236/236), so a single agreement gives a unique codeword and the HOMDS list excess is
+   intrinsically the order-ell multi-set corank.  Since d = Theta(a) = Theta(n), the order
+   needed to be MDS(ell) (no corank) is ell ~ corank ~ Theta(n), giving required field
+   `n^{Theta(n)} = 2^{Theta(n log n)} >> prize`.  HOMDS does NOT relax to the prize field at
+   the window order.
+
+result_type = explicit-mu_n-HOMDS-corank-is-linear-in-agreement (char-faithful structural drop
+of full Theta(a) scale, no O(1) relaxation).  The algebraic higher-order-MDS gap of mu_{2^mu}
+EQUALS the analytic BGK wall, CONFIRMED on the explicit subgroup (not just asserted).  No crack.
+NEXT LEVER for any future HOMDS attempt: would need agreement sets that are NOT sub-subgroup
+cosets yet still beyond Johnson -- but the corank closed form shows the drop is exactly the
+mu_a-residue collision, so any structured (orbit/coset) window inherits Theta(a) corank.
+
+## 2026-06-14 (#407 P4): MANN/LAM-LEUNG does NOT pin the char-0 agreement-set count — REFUTED
+**Route under test:** the far monomial pencil `x^a + alpha*x^b` gives `f(x)=x^a+alpha*x^b-g(x)`
+(`g` deg `<k`), support `{0..k-1} U {a,b}` (`<=k+2` terms). Its agreement set `R` (size `w`) =
+roots of `f` in `mu_n`; each root is a vanishing sum of `<=k+2` roots of unity. Proposed closure:
+for `mu_{2^mu}` (Lam-Leung) minimal vanishing relations are antipodal pairs, so the achievable
+agreement sets — hence the orbit/incidence count — are governed by the PROVEN Mann/Lam-Leung
+antipodal combinatorics (=> closeable without the BGK analytic wall).
+
+**Test (probe `scripts/probes/probe_407_mann_agreement_count.py`, q-stable across q=262193,
+2621569; char-0 faithful q>>n^4):** compare `Mann_anti(a,b;w)` = #{distinct alpha admitting an
+antipodally-closed witness R} against the exact char-0 incidence `I_0(a,b;w)`.
+
+**Result — clean MISMATCH (Mann strictly undercounts in the window interior):**
+  n=16 k=4 (rho=1/4):  w=5 (delta .688) I0=3696 Mann_anti=0;  w=6 (.625) I0=88 Mann_anti=24;
+  w=7 (.562) I0=8 Mann_anti=0;  w=8 (.500, Johnson edge) I0=8 Mann_anti=8 EXACT;  w=9 (.438)
+  I0=16 Mann_anti=0.  Mann is EXACT only at the large-`w` Johnson edge (w=n/2), where EVERY
+  agreement set R is forced antipodally closed (diagnostic part (3): all w=8 R are antipodal).
+
+**Mechanism (root cause):** `g` carries `k` FREE field coefficients and `alpha` is free, so the
+vanishing sum at `zeta^j` has ARBITRARY coefficients. Lam-Leung/Mann governs vanishing sums with
++-1 / root-of-unity coefficients ONLY. With free coefficients ANY size-`(k+1)` set `R` can be
+interpolated into an agreement set (at w=k+1=5, n=16: 2256 of C(16,5)=4368 subsets each force a
+distinct alpha). Window-interior agreement sets are contiguous arcs like R=(0,1,2,3,4), NOT
+antipodal-pair unions — they are LINEAR-ALGEBRA (interpolation) realizable, not antipodal.
+
+**Verdict:** Mann/Lam-Leung pins the agreement count ONLY in the already-known near/below-Johnson
+regime. In the prize WINDOW INTERIOR (beyond Johnson, below capacity) the count is the
+free-coefficient interpolation incidence I(delta) of the governing law — the SAME open
+BGK/counting object, NOT closeable via Mann. (Consistent with `probe_actionorbit_count.py`:
+"#orbits=O(1)" is a restatement of "#bad=O(n)", the floor itself.) Probes committed:
+`probe_407_mann_agreement_count.py`, `probe_407_mann_diag.py`.
+
+## 2026-06-14 (#407 P2): RUTHLESS refutation campaign — NO clean closed-form delta* survives
+**Engine.** `scripts/probes/probe_407_deltastar_refute_campaign.py` computes the EXACT in-tree
+governing-law delta* via the far-line incidence object `I(a,b;r) = #{gamma : x^a+gamma x^b on mu_n
+agrees with some RS[k] codeword on >= n-r pts}` (epsMCA_ge_far_incidence / badScalars_eq_explainable),
+no codeword enumeration / no sqrt-loss (affine-in-gamma per agreement set via left null space).
+budget = q*eps* = n. Prize char-0 direction: proper mu_n (n=2^mu), p PRIME, p >> n^3; verified
+char-faithful (identical maxI & binders) at p=200009/700001 (n=8) and p=200017/700001 (n=16).
+
+**EXACT ground truth (budget=n):**
+- n=16 k=1 rho=1/16: delta*=0.6875 (Johnson 0.7500) — BELOW Johnson
+- n=16 k=2 rho=1/8 : delta*=0.6250 (Johnson 0.6464) — BELOW Johnson
+- n= 8 k=1 rho=1/8 : delta*=0.6250 (Johnson 0.6464) — BELOW Johnson
+- n=16 k=4 rho=1/4 : delta*=0.5625 (Johnson 0.5000) — ABOVE Johnson (the one +1 rung)
+- n= 8 k=2 rho=1/4 : delta*=0.3750 (Johnson 0.5000) — BELOW Johnson
+- n= 8 k=4 / n=16 k=8 rho=1/2: far-window [k+1,n-k-1] EMPTY at budget=n => NO beyond-Johnson r.
+
+**REFUTED:**
+- **Kambire edge** `1-rho-2rho ln(1/2rho)/log2(q eps*)`: OVERSHOOTS exact delta* at 5/5 points by
+  0.10–0.26, and the margin does NOT shrink with n (0.13@n=8 vs 0.16@n=16 for rho=1/8). STRUCTURAL
+  kill: at rho=1/2 it predicts 0.5 > Johnson 0.2929, but the exact far-window is EMPTY there
+  (delta* <= Johnson). Predicts substantially MORE proximity than the law permits.
+- **Entropy pin** `1-rho-H(rho)/(beta log n)` (beta=1): overshoots at n=16 k=1,2; and it is
+  monotone-decreasing in rho while the exact (delta*-Johnson) FLIPS sign — no single beta fixes it
+  (only a fitted beta(n,rho), i.e. not a clean closed form).
+- **Any "always beyond Johnson" / monotone clean form**: sign(delta*-Johnson) = [-,-,-,+,-] over
+  the sweep — it FLIPS. delta* is below Johnson at rho in {1/16,1/8} and at rho=1/4@n=8; above only
+  at rho=1/4@n=16.
+- **List ~ 2(n-a)+1**: the binding incidence is a STEP (O(1)/O(n) just below the crossover, e.g.
+  maxI 5; then >>budget just above, e.g. 17–18), not ~2r+1 (~23–29) near the crossover.
+
+**SURVIVOR (the only clean relation):** `|delta* - (1-sqrt(rho))| <= 1/n` holds at ALL sampled
+points (n=8 k=2 exactly at the 1/n boundary). I.e. delta* = Johnson ± one rung — there is NO simple
+beyond-Johnson closed form at these computable n; the gain over Johnson (if any) is sub-rung. This is
+CONSISTENT WITH THE PRIZE BEING OPEN: no candidate clean formula withstands adequate refutation.
+**Honest scope:** small computable n only (full enumeration is O(C(n,n-r)) per pencil; n=32 rho=1/4
+infeasible, C(32,9)=28M). Establishes NO delta* bound at prize scale (n=2^mu, mu>=10). Refutation, not
+proof. Probe committed: `scripts/probes/probe_407_deltastar_refute_campaign.py` (self-checks via --compute).
+
+## 2026-06-14 (#407 P1): char-0 I_0(delta) has NO clean rho-uniform CLOSED FORM in the window — confirms BGK-open
+**Question tested:** does the CHAR-0 (q-free; p>>n^3) worst-case far-line incidence
+`I_0(delta) = max over far pencils (a,b>=k, b!=n/2) of #{gamma in F_p : (x^a+gamma x^b)|_{mu_n}
+within Hamming dist floor(delta n) of RS[mu_n,k]}` have a CLOSED FORM (=> reduces delta* to
+proven Mann/Lam-Leung), or grow uncontrollably (=> open)?
+
+**Method (probes `probe_p1_char0.py`, `probe_p1_analysis.py`; prime-size-independent):**
+exact (k+1)-subset gamma-solve + multiplicity prefilter `mult>=C(n-r,k+1)` + exact agreement test.
+VALIDATED four independent ways: (k+1)-method == brute agreement-set enumerator (n=8 exhaustive,
+b!=n/2); numpy histogram == pure-Python histogram (n=16, all dirs); numpy AgreeEngine ==
+pure-Python agreement (n=16, 200 survivors); full pipeline reproduces probe_farline_incidence_exact
+(n=16 k=4: r=10->I=89 first-bad, binder (a=10,b=4=x^k), delta*=9/16). All counts p-INDEPENDENT
+(identical across 2-3 primes per point), confirming the char-0-faithful regime.
+
+**Exact, p-independent data (budget = n):**
+  n=16 k=2 (rho=1/8): I_0(r) r=8..13 = 2, 5, 5, 17, 97, 464.  delta* = 10/16 = 0.625 (first bad r=11).
+  n=16 k=4 (rho=1/4): I_0(r) r=8..11 = 9, 9, 89, 3696.        delta* =  9/16 = 0.5625 (first bad r=10).
+  (matches independent P4 Mann probe I0 up to the +1 gamma=0 edge: their w=6->88 vs r=10->89, etc.)
+
+**Verdict — NO clean closed form (REFUTES the Mann/Lam-Leung reduction):**
+1. SUPER-POLYNOMIAL growth past the crossing: k=4 gives 9 -> 89 -> 3696 (ratios ~10x, ~42x);
+   I_0/C(n,r) -> 1 only at the EXTREME high-radius boundary (r=13: 0.83), NOT in the window interior.
+   No binomial/antipodal closed form (C(t,k), C(r,k), antipodal counts) matches the window values.
+2. The clean candidate `delta* = (1-rho) - log2(n)/n` (committed
+   `probe_char0_deltastar_pin_constrate.py`, holds for rho=1/8 at n=16,32) is RATE-SPECIFIC: the
+   crossing offset n*(cap-delta*) = w*-k = 4 at rho=1/8 but 3 at rho=1/4 (both n=16, EXACT). The
+   "log2(n)" is a rho=1/8 coincidence; the additive constant is rate-dependent.
+3. At n=16 delta* numerically coincides with DIFFERENT closed forms per rate (k=2: 1-rho-1/log2 n;
+   k=4: Johnson+1/n) -- a discretization artifact (delta* is a rung r/n; many forms land within
+   +-1/32 of the granular value). NOT a genuine closed form.
+
+**Consistency:** matches the committed P4 refutation (Mann/Lam-Leung does not pin the agreement-set
+count: free `g`-coefficients + free `gamma` make the witness sets free-interpolation-realizable
+arcs, not antipodal unions). The char-0 window-interior incidence is the SAME open BGK/counting
+object as the field-universal sup-norm wall -- it does NOT reduce to a proven closed form.
+Probes committed: `scripts/probes/probe_p1_char0.py`, `scripts/probes/probe_p1_analysis.py`.
+
+**UPDATE (n=32 confirmation, same probes):** the rho=1/8 crossing offset w*-k = log2(n) is now
+confirmed at TWO sizes (n=16: offset 4; n=32: r=23 GOOD worst I=2 binder (20,4)=x^k, r=24 BAD
+worst I>=97 binder (18,4)=x^k => delta*=23/32, offset 5 = log2(32)), while rho=1/4 n=16 gives
+offset 3 != log2(16)=4. So `delta*=(1-rho)-log2(n)/n` (probe_char0_deltastar_pin_constrate.py)
+holds ONLY at rho=1/8 -- the crossing offset is RATE-DEPENDENT, refuting it as a rho-uniform
+closed form. (n=32 used a binder-region a-scan justified by the n=16 binder=x^k low-exponent
+direction; the full a-sweep is compute-bound but the binder localizes the worst pencil.)
