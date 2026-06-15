@@ -538,11 +538,9 @@ the COUNTING (#non-antipodal S with `p|N` at the binding band) = the BGK √-can
 
 **Honest net:** the Mahler/Littlewood lens is a genuine NEW equivalent framing (different community, ML5 even bridges to character sums), and it DECIDES the §5.0 norm-bound sub-question NEGATIVELY: flat polynomials obstruct any `|N|<p` upper bound, so the wall is the counting/√-cancellation, not a loose house bound.
 
-## 2026-06-14 — δ* as a lacunary-polynomial root count (analytic handoff)
-The far-line list-decoding radius s*(n,k) = max #(μ_n-roots) of a (k+2)-term lacunary polynomial with support
-{a,b}∪{0..k-1}. Johnson-vs-floor = can such a polynomial have k+Θ(n/log n) roots in μ_n. Citable theory:
-- Bombieri–Zannier, algebraic/torsion points on subvarieties of G_m^n.
-- Filaseta–Lenstra; Lenstra, sparse/cyclotomic factors of x^n−1 and of lacunary polynomials.
-- Conway–Jones, "Trigonometric Diophantine equations"; Mann, "On linear relations between roots of unity".
-Connect to GG25 curve-decodability (list-size for 2-sparse-spectrum RS words). See
-docs/kb/deltastar-as-lacunary-polynomial-root-count.md.
+## 2026-06-15 — eprint 2025/2110 (Hab25, MCA-for-RS) OBTAINED + read in full
+At ~/papers/arklib/eprint-2025-2110-Hab25.pdf. VERDICT: NOT a bypass. Proves RS satisfies MCA exactly UP TO the
+Johnson radius γ=1−√(1−δ) (confirms ACFY24 conjecture), bound |E|≤(ℓ⁷/3)(ρn)², ℓ=(m+1/2)/√ρ — "essentially the
+same as ordinary CA in BCI+20." Method: GS list-decoder over F_q(Z). Zero window-interior content; window past
+Johnson for explicit RS remains the open core. Verbose update w/ BCH+25 (2025/2055) improvements promised.
+Extraction: docs/kb/hab25-2025-2110-MCA-for-RS-extracted.md.

@@ -366,6 +366,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AveragingListLowerBoundRS
 import ArkLib.Data.CodingTheory.ProximityGap.AveragingReachNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.B1CountLawUnconditional
 import ArkLib.Data.CodingTheory.ProximityGap.B1IncidenceBridge
+import ArkLib.Data.CodingTheory.ProximityGap.B1IncidenceInjectionBridge
 import ArkLib.Data.CodingTheory.ProximityGap.B1TopDirectionCountLaw
 import ArkLib.Data.CodingTheory.ProximityGap.B5DeepBandSaturation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20
@@ -876,6 +877,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.EsymmFiberCodewordList
 import ArkLib.Data.CodingTheory.ProximityGap.EtaComplementFlip
 import ArkLib.Data.CodingTheory.ProximityGap.EtaCosetSplit
 import ArkLib.Data.CodingTheory.ProximityGap.EtaQuarticUncond
+import ArkLib.Data.CodingTheory.ProximityGap.EtaShallowTailUncond
 import ArkLib.Data.CodingTheory.ProximityGap.EvenOddAntipodalCharFree
 import ArkLib.Data.CodingTheory.ProximityGap.EvenTowerSupplyGrowth
 import ArkLib.Data.CodingTheory.ProximityGap.ExactCoherenceCount
@@ -1018,6 +1020,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf2NA_restriction_moment_
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf2ND_theta_fixedpoint
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf2NG_partition_rank_vacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf2NH_overdet_single_gamma
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf3D4_monomial_worst_orbit
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLB2_Q1Direct_d16
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLB_Q1RouteICharPGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLD_crossparity_evensvp
@@ -1174,6 +1177,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.HeightGateAMGM
 import ArkLib.Data.CodingTheory.ProximityGap.HeightGateAMGMWire
 import ArkLib.Data.CodingTheory.ProximityGap.HeightGateBindingDepthVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.HeightGateNormBound
+import ArkLib.Data.CodingTheory.ProximityGap.HeightGatePowerMean
 import ArkLib.Data.CodingTheory.ProximityGap.HeightGateThresholdAnalysis
 import ArkLib.Data.CodingTheory.ProximityGap.HenselNumeratorWeightWitness
 import ArkLib.Data.CodingTheory.ProximityGap.HighMultiplicityBadCount
@@ -1994,6 +1998,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SudanListBoundFull
 import ArkLib.Data.CodingTheory.ProximityGap.SumProductBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SumZeroSubsetsBound
 import ArkLib.Data.CodingTheory.ProximityGap.SumsetDistinctDissociation
+import ArkLib.Data.CodingTheory.ProximityGap.SumsetExtremalityReduction
 import ArkLib.Data.CodingTheory.ProximityGap.SumsetLowerBoundMuN
 import ArkLib.Data.CodingTheory.ProximityGap.SupNormBracket
 import ArkLib.Data.CodingTheory.ProximityGap.SuperCodeListBridge
