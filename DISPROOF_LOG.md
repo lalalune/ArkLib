@@ -27,3 +27,36 @@ Why NEW (vs section-6 Stickelberger MAGNITUDE no-go): this is the complementary 
 unit/Γ_p part (the thing section-6 excludes) carries NO archimedean SUP info at f=1, and the only
 digit-sum handle lives at f≥2 off the prize. The reflection formula reduces to the already-refuted
 antipodal char-0 symmetry (T09-leak). Wall: GK adds nothing to max_b|η_b| for q prime.
+
+## census<->CORE — the universal census bound is LOSSY, caps at Johnson, NOT equivalent to CORE (2026-06-14)
+
+Lens: the count/census lane (`UniversalAlignmentLaw.badScalars_card_le_alignableSets`) bounds
+`#{bad γ} ≤ #alignableSets(dom,k,a,u0,u1)`, feeding δ* via `epsMCA_le_of_alignableSets_card_le`.
+#407 brief flags the "census ⟺ CORE equivalence" as ASSERTED-BUT-NEVER-PROVEN. Tested the tightness
+directly: exact `#bad` (the CORE/incidence object) vs exact `#alignableSets` (census), thin proper
+μ_16 ⊊ F_p*, large primes p≫n³, binding monomial direction u0=x^10,u1=x^4.
+Probe: `scripts/probes/probe_407_census_core_tightness.py` (exact, no enumeration; left-null affine-γ).
+
+- RESULT (p-INDEPENDENT across p=200017/500113/1000033):
+  | r (a=n−r) | δ=r/n | #bad (CORE) | #alignableSets (census) | ratio |
+  |---|---|---|---|---|
+  | 8 (a=8) | .5000 | 9  | 10  | 1.11 |
+  | 9 (a=7) | .5625 | 9  | 80  | 8.89 |
+  | 10 (a=6)| .6250 | 89 | 456 | 5.12 |
+  Budget = n = 16. **True δ* = 9/16** (#bad ≤ 16 through r=9, first bad r=10).
+  **Census δ* = 8/16 = JOHNSON** (#alignableSets first exceeds 16 at r=9: 80 > 16).
+
+- WALL / CONSTRAINT LEMMA: the census bound is **strictly lossy by a p-independent factor
+  (5–9×) that turns on exactly at the beyond-Johnson rung**. Census `#alignableSets ≤ budget`
+  fails at r=9 while the true incidence `#bad ≤ budget` holds, so **any δ* bound proven through
+  the census/alignable-set count recovers at most JOHNSON (δ*=8/16), never the beyond-Johnson
+  window**. The census overshoot = (every a-set that aligns for SOME γ is counted, but distinct
+  aligned a-sets share γ's; `Aligned.gamma_eq` injectivity gives the ≤ direction but the reverse
+  is many-to-one) ⟹ census counts aligned-sets, CORE counts γ's; the fibers have p-independent
+  size 5–9 at the binding radii.
+- THEREFORE: "census ⟺ CORE" is **FALSE**. Proving the count-lane bound (ExplainableCoreSupply /
+  CensusDomination / SubJohnsonListBound) is NOT proving CORE in the prize window — it is a strictly
+  weaker (Johnson-capped) handle. This is independent of, and complementary to, the §3 second-order
+  cap (B5 already showed the count-lane is exponential-class, not second-order; THIS shows that even
+  so, its δ* CERTIFICATE is Johnson-capped by the alignable-set overshoot). The beyond-Johnson rung
+  is carried only by the γ-incidence (CORE/F2) count, which the census cannot see.
