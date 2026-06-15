@@ -287,3 +287,20 @@ DCEnergyBound G r at a FIXED small r gives M ≤ (q·(2r−1)‼·n^r)^{1/(2r)};
 at prize), then optimize r. So the irreducible core is precisely: **E_r(μ_{2^m}) ≤ (2r−1)‼·n^r holding
 UNIFORMLY for all r ≤ ~ln q in char-p at the prize prime** — proven r=1,2 (low end), open at r~ln q (BGK).
 The r=2 discharge is a genuine ladder rung + method-validation, NOT prize-closing (correctly scoped).
+
+## r=3 rung fully mapped: RepThree CHAR-0 TRUE; only char-p transfer open (probe /tmp/probe_repthree.py)
+The in-tree `GaussianEnergyThreeRepThree.gaussianEnergyBound_three_of_repThree` already REDUCES the r=3
+Wick energy `E_3(G) ≤ 15n³` to ONE clean residual `RepThree G` (every zero-sum sextuple Fin6→G is an
+antipodal pairing: ∃σ pairing, c(σi)=−c i). Decisively verified: **RepThree HOLDS in char-0** for
+μ₄,μ₈,μ₁₆ — ZERO non-antipodal zero-sum sextuples (counts 400/5120/50560 = exactly the E_3 values, since
+E_3=zeroSumCount via the negation bijection). So the r=3 reduction targets a TRUE hypothesis (not vacuous).
+
+CHAR-0 PROOF (clean): {ω^j : j<2^{m-1}} is a ℚ-basis of ℚ(ζ_{2^m}) and ω^{2^{m-1}}=−1, so every 2^m-th
+root is ±ω^j (j<2^{m-1}); a vanishing sum forces each basis coefficient = 0 ⟺ equal #(+ω^j) and #(−ω^j)
+⟺ antipodal pairing. (Works for ANY tuple length, the prime-power p=2 case of Lam–Leung/Mann.)
+
+OPEN = char-p transfer of RepThree(μ_{2^m}) at a prime threshold — the EXACT r=3 analog of the PROVEN
+r=2 `sidonModNeg_rootsOfUnity_improved` (which transferred the 4-term antipodal condition via pairSumFolded
+resultant bounds at 12^φ(n)<p²). The r=3 transfer needs a 6-term rigidity (tripleSum analog of
+PairSumRigidityModP) — substantial but structurally identical to the landed r=2 machinery. THIS is the
+concrete next brick for the r=3 rung; the prize needs it uniformly to r~ln q (the BGK wall).
