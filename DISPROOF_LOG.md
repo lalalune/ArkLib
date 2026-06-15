@@ -2730,3 +2730,34 @@ turns over at n=64) = INSIDE the prize-allowed C*sqrt(log(p/n)) envelope. An ear
 faster-than-sqrt-log read was a finite-size artifact. No prize-tension at accessible n.
 
 Does NOT close/refute CORE. Removes one hoped-for mechanism + one false-alarm read.
+
+================================================================================
+2026-06-15 The bad-prime ANOMALY Anom_r is prime-selective + QUANTIZED, and its
+ONSET DEPTH r0(n) DECREASES with n (4->4->3 over n=16,32,64), descending toward
+the prize rung r=2 (but r0>2 at n<=64 => prize rung still anomaly-clean) (opus-4-8)
+--------------------------------------------------------------------------------
+LANE (follow-up to sibling 1c48ff7cd + my 41980aa29): those leave the prize ENTIRELY in the bad-prime
+anomaly Anom_r=E_r^(p)-E_r^(0). No worker pinned the ANOMALY's onset structure. Did it.
+ENGINE: exact integer Ep (mod-p r-fold conv) + E0_ring (char-0 cyclotomic lattice), reused from
+probe_407_anom_worst_rtraj_n32.py. proper mu_n, in-window beta~4 primes, never n=q-1.
+probe_407_anomaly_onset_depth.py.
+
+FACT 1 -- the anomaly is PRIME-SELECTIVE + QUANTIZED (not a smooth n^{2r}/p law):
+  At a GENERIC in-window prime Anom_r=0. n=16 r=4: only 1/30 nonzero (the Fermat prime 65537).
+  Fraction nonzero GROWS with n (n=16:3%, n=32:65% at r=4). At n=32 r=4 every nonzero Anom_4 is an
+  integer multiple of GCD=53760=2^9*3*5*7, multipliers {2,3,4,6,9,10,12,14,18,24,28,30} (discrete ladder).
+
+FACT 2 -- ANOMALY ONSET DEPTH r0(n)=smallest r with some in-window Anom_r>0:
+    n=8: r0>6 (no anomaly in window)   n=16: r0=4   n=32: r0=4   n=64: r0=3.
+  r0(n) DECREASES with n -- the bad-prime anomaly onsets at SHALLOWER moment-depth as n grows,
+  descending toward the prize rung r=2 (where M^4<=p*A_2 defines the prize).
+
+VERDICT (rule-4 wall map, rule-6 honest, NOT a closure/refutation):
+  - The NEG-CLOSURE-GENERIC part E_r^(0)/Wick is thin-blind + saturates to 1 (my 41980aa29).
+  - The PRIZE-CARRYING part is Anom_r: 0 at shallow r<r0, onsets at r0(n) DECREASING in n.
+  - At n<=64, r0>=3>2, so the r=2 PRIZE RUNG is STILL anomaly-free in-window => the worst in-window
+    prime does NOT yet crack A_2<=Wick at the prize rung at these n. OPEN: does r0(n)->2 (anomaly
+    reaches the prize rung, candidate crack) or plateau at r0>=3 (prize rung stays clean)?
+  - Does NOT close/refute CORE; MAPS the precise depth-of-entry of the bad-prime anomaly and that it
+    descends with n. Pure-Python exact integer counts, no Lean => axiom-clean trivially.
+    probe_407_anomaly_onset_depth.py.
