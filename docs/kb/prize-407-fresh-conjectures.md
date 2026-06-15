@@ -66,3 +66,11 @@ be near-maximal) ⟺ the Paley-graph max eigenvalue has low multiplicity / few n
 If `ratio_μ ≤ c`, then `M ≤ n^{1/2·log₂(4c)}` (c=1/2 ⟹ √n exactly; measured c≈0.7 ⟹ n^{0.74-0.88}).
 **ATTACK NEXT:** (1) is ratio_μ ≤ c<1 uniform & provable? (2) does the deficit deepen at higher levels
 toward c=1/2? Probe /tmp/probe_c1_clean.py. novelty 9, insight 9, proximity 9, feasibility 6 (deficit-proof open).
+
+### C1 extended (n=64..512, moderate p) — improvement but PLATEAUS, not √n
+Implied M exponent: 0.736, 0.755, 0.796, 0.736 (n=64,128,256,512) — fluctuates ~0.75, mean deficit
+ratio ~0.7 (NOT →0.5). So C1 gives **M ≤ ~n^{0.75}** (beats di Benedetto n^{0.989} by ~0.24 in exponent)
+IF the per-level deficit ratio≤~0.7 is provable — but does NOT reach prize √n (needs ratio=0.5; observed
+~0.7, plateaus). HONEST: C1 = a potential new ELEMENTARY SOTA (n^{0.75}) via the dyadic tower, NOT a
+prize solution. The gap from 0.75 to 0.5 is the residual √-cancellation (the levels don't all deficit to
+0.5). Value: first dyadic-specific method beating the analytic SOTA; the deficit-proof is the open brick.
