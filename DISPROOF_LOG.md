@@ -2,6 +2,47 @@
 
 Machine-checked refutations and precise pins. Each entry: lens, test, exact result, wall.
 
+## ILO / anti-concentration is NOT the lever — thin μ_n is anti-concentrated WORSE than random (larger sup-norm, larger small-ball); reconciles the thin depth-advantage with the large thin sup-norm (2026-06-15)
+
+Lens: inverse-Littlewood-Offord (Tao–Vu / Nguyen–Vu). M(n)=max_{b≠0}|η_b|, η_b=Σ_{x∈μ_n} e_p(bx), is
+controlled by anti-concentration of the signed character sum Σ ε_i ζ^i: FEW additive relations (high Sidon
+depth) ⇒ strong anti-concentration ⇒ small small-ball Q ⇒ small M. The surviving thin mechanism (my
+full-depth-BIND entry + the depth-SCALING entry e7b5e6125) shows thin μ_n has DEEPER first vanisher than
+random — which would, IF ILO were the bridge, predict thin M < random M. This is the missing test:
+does the thin sparse-depth advantage translate to a sup-norm / small-ball advantage (live ILO lever) or not?
+
+PROBE (scripts/probes/probe_407_ilo_vanisher_count.py, EXACT sup-norm via full b-sweep over proper μ_n <
+F_p^*, p==1 mod n m odd never n=q−1; random thin-density control = n distinct nonzero residues; small-ball
+Q(t)=Pr[|Σε_i r_i| ≤ t·p] over the sign cube; thick β~2.3-3.0 AND thin β~4-4.5 windows):
+
+| n  | β    | window | M_thin | M_rand(med) | M_thin/√n | Q(.02)_thin | Q(.02)_rand |
+|----|------|--------|--------|-------------|-----------|-------------|-------------|
+| 8  | 2.30 | thick  | 5.84   | 5.58        | 2.06      | 0.147       | 0.023       |
+| 8  | 4.00 | thin   | 7.46   | 6.90        | 2.64      | 0.125       | 0.053       |
+| 8  | 4.50 | thin   | 7.68   | 7.49        | 2.71      | 0.156       | 0.039       |
+| 16 | 2.30 | thick  | 8.44   | 9.39        | 2.11      | 0.044       | 0.038       |
+| 16 | 4.00 | thin   | 13.30  | 11.99       | 3.32      | 0.050       | 0.040       |
+| 16 | 4.50 | thin   | 12.98  | 10.38       | 3.25      | 0.043       | 0.040       |
+
+VERDICT (the OPPOSITE of what ILO needs — rule-3 wall): thin μ_n's sup-norm M_thin is consistently
+≥ M_rand (n=16 β=4: 13.30 vs 11.99; β=4.5: 12.98 vs 10.38), and the small-ball Q_thin ≥ Q_rand (thin
+CONCENTRATES MORE, not less). So inverse-Littlewood-Offord ANTI-CONCENTRATION is NOT the prize lever:
+μ_n is anti-concentrated WORSE than a random same-density set, hence any ILO bound is WEAKER for μ_n. The
+thin advantage at sparse DEPTH (no low-order vanishers) does NOT lift to a bulk anti-concentration / sup-
+norm advantage — the bridge runs backwards.
+
+RECONCILING INSIGHT (why this is consistent, not contradictory): μ_n carries the FULL multiplicative-group
+additive structure — it has MORE near-zero bulk sums (worse small-ball) than random PRECISELY BECAUSE it is
+a coherent geometric/cyclotomic object, even while its FIRST exact vanisher is pushed deep (high Sidon
+depth). "Deep first relation" (sparse, sibling e7b5e6125) and "large sup-norm / poor anti-concentration"
+(bulk, here) coexist: the cancellation difficulty of the thin BGK regime lives in the BULK correlation, not
+the sparse-relation floor. This is exactly WHY the moment-cert passage (thickness-invariant 18% slack) and
+the ILO passage both fail to convert the sparse thin depth-advantage into the sup-norm bound. CONSEQUENCE
+(mapping, not closure): the surviving thin sparse-depth signal must reach M(n) WITHOUT going through (a) the
+moment→sup passage M≤(qA_r)^{1/2r} [regime-uniform loss] or (b) the ILO anti-concentration→sup passage [thin
+is worse]. Both "obvious" bridges from depth to sup are now walled. CORE not closed; ILO lever walled +
+the depth-vs-bulk reconciliation pinned. Python-only, no Lean changed ⇒ axiom-clean trivially.
+
 ## BIND-full-depth-threshold — the literal B_∞←B_{log n} Sidon bootstrap target (NO non-antipodal vanisher AT ALL) FAILS at fixed prize β as n grows; thin advantage is REAL but INSUFFICIENT (2026-06-15)
 
 Lens: brief lane #0 / §5.0 (BIND) literal full-depth form. The proven depth-2 brick
