@@ -63,3 +63,15 @@ decisive probe; refute conjectures with countermodels; never fabricate closure.
 - DyadicTowerRecursion.lean — tower split + parallelogram (dyadic substrate).
 - CyclotomicConcentration.lean — ξ-invariant ⟹ p_j=0 (degenerate-stratum characterization).
 - KambireNotExtremal.lean — complete-homog strictly dominates subset-sum (refutes Kambiré-exact).
+
+## Workflow brick-grind findings (wf_a375e071, 4/5 agents completed before stop)
+- **Av3 energy threshold (non-BGK, partial):** E_2(μ_n)=3n²−3n PROVEN for p>3^{n/2}+1 (SHARPER than the
+  in-tree p>2^n=4^{n/2}). Max-norm exponent=log₂10/4≈0.83; sharp-threshold T(n)~3^{n/2} (exp log₂3/2≈0.79).
+  Both EXPONENTIAL — prize p~n^4 still below. Brick: E_2 clean for p>3^{n/2}+1.
+- **Av9 cyclotomic exact (BGK):** EXACT E_2(μ_n)=n²+n·Σ_{a=0}^{m−1}A_m(a)², m=(p−1)/n, A_m(a)=diagonal
+  cyclotomic number of ORDER m (#{u≠0,1 : u,1−u both order-divides-by m residues...}). The precise
+  field-dependence; Anom_2 gated by norm divisibility ~2^n. (Verified n=4,8,16,32 all p≡1 mod n.)
+- **Av5 Stepanov on Anom_2 (refuted):** best uniform exponent = 2^n (p>2^n ⟹ Anom_2=0); target n^4/p
+  UNREACHABLE by Stepanov (countermodel) — confirms BGK. Brick: rootsOfUnity_additiveEnergy_eq_sidon.
+- **Av6 tower recursion (refuted closure):** exact char-free identity Lean-provable (✓ DyadicTowerRecursion);
+  per-level ratio/2^r ∈[1.03,7.1]>1 ∀r — cross-terms DOMINATE, no decorrelation closure (matches A1).
