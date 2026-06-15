@@ -2621,3 +2621,55 @@ stays bounded below 1 is r ~ n (a constant fraction of the full group) -- which 
 => CORE not closed; the irreducible W-bounded-below-1 content is localized OUTSIDE the prize-relevant
 depth r*~log n. Python-only exact + validated asymptotic => axiom-clean trivially.
 probe_407_W_joint_diagonal_resummation.py.
+
+## The E_r(mu_n) closed-form lane's p-INVARIANCE assumption FIRST FAILS at r=4 (structured-prime additive anomaly); thickness-generic, NOT thin-essential (2026-06-15, opus-4-8 subagent)
+
+LANE (uncontested): the dominant live lane (44234dc3d/5b0873ddb) pins E_2=3n(n-1), E_3=15n^3-45n^2+40n,
+E_4=105n^4-630n^3+1435n^2-1155n and "g(r)=1-r/n" -- treating E_r as a p-INVARIANT polynomial in n. Nobody
+had STRESS-TESTED that p-invariance across primes. probe_407_Er_pdependence_onset_r4.py. Exact integer
+r-fold additive convolution, PROPER mu_n, p>=n^4, NEVER n=q-1.
+
+CONTRIBUTION 1 (closed-form-INDEPENDENT algebraic reduction): the accumulated moment-step product
+TELESCOPES to a SINGLE object. With E_0:=1,
+    prod_{r=1}^{R-1} g(r) = prod_{r=1}^{R-1} (E_{r+1}/E_r)/((2r+1)n)
+                          = (E_R/E_1)/(n^{R-1} prod_{r=1}^{R-1}(2r+1))
+                          = E_R/(n^R (2R-1)!!)  =:  W_R   (the WICK RATIO of E_R).
+So the whole multi-step "step-tower" question (DISPROOF_LOG: does the accumulated O(1/n^2) rescue a
+positive margin?) reduces EXACTLY to ONE monotone quantity: does the Wick ratio W_{r*} (R=r*~log n) stay
+bounded BELOW 1 with margin, or -> 1? From the EXACT (p-invariant) E_2,E_3: log W_R = -R(R-1)/(2n) +
+B_R/n^2 + O(1/n^3), A_R=R(R-1)/2 EXACT, B_2=-1/2, B_3=-11/6 (TIGHTENING at the accessible rungs). At
+R=r*~log n BOTH -R^2/(2n) and B_R/n^2 -> 0 (r*=o(sqrt n)) => W_{r*} -> 1 REGARDLESS of the B_R sign. The
+accumulated tower CANNOT keep the Wick ratio bounded below 1 at the prize joint limit -- the BGK knife-edge
+in closed form, reduced to a single object.
+
+CONTRIBUTION 2 (rule-6 stress test, the new structural brick): E_r p-INVARIANCE is NOT universal.
+  - E_2, E_3: p-INVARIANT (truly polynomial) -- identical across ALL probed prize primes. CONFIRMED.
+  - E_4: the published 105n^4-630n^3+1435n^2-1155n is CORRECT for GENERIC primes (excess=0 for the vast
+    majority of near-primes). But a SPARSE STRUCTURED subset shows a FIXED POSITIVE excess:
+        n=16: ONLY the Fermat prime p=65537=2^16+1 -> E_4=4654160 = generic + 4480 (+0.096%); 4 other
+              near-primes (65617,65633,65713,65729) -> excess EXACTLY 0.
+        n=32: p=1048609 AND p=1049281 -> generic + 645120 (+0.710%); 3 other near-primes -> 0.
+    p-invariance VERIFIED bit-identical at a 2nd prize prime for E_2,E_3 at every n; E_4 differs across
+    primes at the SAME n (n=128: p=268437889 -> 27126574720 vs p=1150808833 -> 26931748480). => the
+    additive-anomaly (p-dependence) of E_r ONSETS exactly at r=4, invisible to the r<=3 closed forms the
+    whole lane is built on.
+
+RULE-3 (the thinness verdict -- thickness-GENERIC, joins the board meta-pattern): swept beta THICK
+(2.3-3.2, prize-FALSE) -> THIN (4-5), prize prime = closest to n^beta, n=16,32. The E_4 p-excess is
+LARGEST in the THICK regime and SHRINKS to ZERO as beta->thin:
+    n=16: beta2.3 +90.9% -> beta3.0 +3.95% -> beta4.0 +0.096% (Fermat only) -> beta>=4.5 EXACTLY 0.
+    n=32: beta2.3 +357% -> beta3.0 +18.7% -> beta4.0 +0.71% -> beta>=4.5 EXACTLY 0.
+=> the E_4 additive anomaly is a SMALL-q (thick) / 2-adic-special-prime effect that VANISHES in the deep
+thin prize regime. At the genuine prize regime (beta>=4.5) the generic polynomial is RECOVERED exactly =>
+the closed-form lane's p-invariance assumption is SAFE deep in the thin regime, and the anomaly is NOT a
+thin-essential carrier (it's anti-thin: maximal in the prize-FALSE thick window).
+
+VERDICT (rule-4 sharpening, rule-6 honest, NOT a closure): (1) the accumulated step-tower reduces EXACTLY
+to the single Wick ratio W_{r*}, whose log -> 0 at the prize joint limit regardless of the 2nd-order sign
+-- the knife-edge in closed form, one clean object. (2) The E_r-closed-form lane's p-invariance holds for
+r<=3 universally and r=4 generically, but FAILS at sparse structured (Fermat-type) prize primes starting
+at r=4, where E_4 EXCEEDS the generic polynomial (less Wick headroom) -- but this excess is THICKNESS-
+GENERIC (maximal in the prize-FALSE thick regime, ->0 in the thin limit), so it cannot be the thin prize
+carrier and the generic closed form is recovered deep in the thin regime. CORE not closed, not refuted.
+Pure-Python exact integer counts, no Lean => axiom-clean trivially.
+probe_407_Er_pdependence_onset_r4.py.
