@@ -47,27 +47,35 @@ EXACT FACTS (verified):
 1. Engine source (`scripts/rust-pg/src/main.rs`): `incidence(a,b;s)=local.len()` = **# distinct γ** with x^a+γx^b
    agreeing with a deg<k codeword on a size-s subset; `s*=min{s : max_dir incidence(s) ≤ budget=n}` (a γ-COUNT /
    list-size threshold). This is the prize δ* (p-independent, GPU-confirmed).
-2. The max-SINGLE-witness root count is ≈ n/2, governed by the binomial cyclotomic factor x^{n/2}+1. The witness
-   **P=(x−1)(x^{n/2}+1)=x^{n/2+1}−x^{n/2}+x−1** (line x^{n/2+1}+(−1)x^{n/2}; codeword 1−x deg1<k=2) has EXACTLY
-   **n/2+1 roots** in the thin 2-power subgroup μ_n ⊊ F_p^* — verified exactly over the PRIZE domain (proper
-   subgroup, order n verified, h^{n/2}≠1, prize-band p~n^4, never n=q−1):
-   n=8/p=7937→5, n=16/p=65537→9, n=32/p=1048609→17, n=64/p=16777729→33  (= n/2+1, δ*_maxroot=½−1/n).
-   This is **k-INDEPENDENT** (the k=2 witness already gives n/2+1). At n=8 a full γ-sweep confirms n/2+1 is the
-   GLOBAL max single-witness agreement (not exceeded). At n=16,k=4 a 4-sparse witness x^10−x^8+x^2−1 (=(x−1)(x+1)(x^8+1))
-   gives 10 roots — directly contradicting the KB table's stated "n=16,k=4 s*=7".
+2. The max-SINGLE-witness (NON-DEGENERATE) root count is **k+1**, NOT n/2 (CORRECTED, see retraction note).
+   My first-pass witness P=(x−1)(x^{n/2}+1) (n=16: line x^9−x^8) has **b=n/2 active** = the KB-excluded antipodal
+   monomial, with gcd(a−b,n) EVEN = the degenerate I=q−1 coset pencil (the engine never scans b=n/2 at the binding
+   radius; rule-2 trap). Enforcing correct non-degeneracy (active line monomials, gcd(a−b,n) ODD, no exp=n/2): the
+   factors Φ_{2^j}=x^{2^{j−1}}+1 carry only EVEN exponents, so an odd-(a−b) witness uses ≤1 big even-exp factor +
+   Φ_1 ⟹ cyclotomic-forced roots collapse to **k+1** (PARITY-BLOCKED, per the 0xSolace parity-block comment).
+   (A first non-deg recheck still showing n/2 had a bug: its rank-deficiency test admitted combos like x^9+x=
+   x(x^8+1) that DROP the required active line monomial x^a, silently re-admitting the degenerate 2-term antipodal
+   pencil. With line-monomials-active enforced, all n/2 witnesses vanish.)
 
-WALL / constraint lemma: "max μ_n-root-count of a (k+2)-sparse far-line polynomial" = n/2+O(1) (k-independent at
-k=2, growing with k via deeper sparse cyclotomic factors), δ*_maxroot→½ — BELOW Johnson at small n, DIVERGING from
-Johnson as n grows. The in-tree list-budget s* sits at Johnson. **They differ by Θ(n).** Therefore the lacunary-root
-/ DFT-uncertainty reduction does NOT compute the prize δ*; it computes a trivially-small quantity dominated by the
-maximally-composite divisor structure of n=2^μ. The Mann/Conway–Jones/Bombieri–Zannier handoff is real ONLY for
-the single-witness object (solved there: n/2). For the prize, the right classical object is **list-size/multiplicity
-of (k+2)-sparse polynomials at Johnson radius**, not max-root-count. Consistency check: for n PRIME, x^n−1=(x−1)Φ_n
-with Φ_n DENSE ⟹ no sparse high-deg factor ⟹ single-witness roots cap at k+O(1) (matches KB "prime⟹capacity"),
-so the prime-vs-smooth dichotomy is real for the single-witness object — the error is equating it with the prize δ*.
+WALL / constraint lemma: the non-degenerate "max μ_n-root-count of a (k+2)-sparse far-line polynomial" = **k+1**
+(cyclotomic-forced), while the in-tree list-budget s* = 2k−1 ≈ Johnson. Still a DIFFERENT object — gap **k−2** — and
+the ~(k−2) agreement lifting s* from k+1 (cyclotomic) to 2k−1 (Johnson) lives ENTIRELY in the band / general
+deg-<k codeword DOF, NOT the roots-of-unity / cyclotomic-divisibility structure. Therefore the lacunary-root /
+DFT-uncertainty reduction does NOT compute the prize δ*; the lacunary/cyclotomic-factor mechanism alone cannot
+reach Johnson non-degenerately (caps at k+1). The Mann/Conway–Jones/Bombieri–Zannier handoff is real ONLY for
+the single-witness object. For the prize, the right classical object is **list-size/multiplicity of (k+2)-sparse
+polynomials at Johnson radius**, not max-root-count. Consistency check: for n PRIME, x^n−1=(x−1)Φ_n with Φ_n DENSE
+⟹ no sparse high-deg factor ⟹ single-witness roots cap at k+O(1) (matches KB "prime⟹capacity"), so the prime-vs-
+smooth dichotomy is real for the single-witness object — the error is equating it with the prize δ*.
 
-Probe: `scripts/probes/probe_407_lacunary_cyclotomic_mechanism.py` (exact char-0) + inline exact-F_p (4 prize-band
-primes). Pushed 71722be4f. NOT a closure — removes a false analytic lead + re-localizes the open core.
+RETRACTION NOTE (rule 6): my first receipt claimed n/2+1 single-witness roots; that used a DEGENERATE antipodal
+witness (b=n/2, even gcd(a−b,n)) — the excluded I=q−1 pencil (rule-2 trap). Corrected non-degenerate ceiling = k+1
+(parity-block). The reduction-mismatch CONCLUSION survives (max-single-witness object ≠ list-budget δ*); only the
+NUMBER was inflated. Posted correction: #407 comment 4704593680.
+
+Probe: `scripts/probes/probe_407_lacunary_cyclotomic_mechanism.py` (exact char-0). Pushed 71722be4f (probe) +
+this corrected entry. NOT a closure — removes a false analytic lead + re-localizes the open core (consistent with
+the 0xSolace parity-block + lalalune p-independence findings).
 
 ## ILO / anti-concentration is NOT the lever — thin μ_n is anti-concentrated WORSE than random (larger sup-norm, larger small-ball); reconciles the thin depth-advantage with the large thin sup-norm (2026-06-15)
 
