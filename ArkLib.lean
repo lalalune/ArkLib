@@ -864,6 +864,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Errors
 import ArkLib.Data.CodingTheory.ProximityGap.EsymmFiber
 import ArkLib.Data.CodingTheory.ProximityGap.EsymmFiberCodewordList
 import ArkLib.Data.CodingTheory.ProximityGap.EtaComplementFlip
+import ArkLib.Data.CodingTheory.ProximityGap.EtaCosetSplit
 import ArkLib.Data.CodingTheory.ProximityGap.EtaQuarticUncond
 import ArkLib.Data.CodingTheory.ProximityGap.EvenOddAntipodalCharFree
 import ArkLib.Data.CodingTheory.ProximityGap.EvenTowerSupplyGrowth
