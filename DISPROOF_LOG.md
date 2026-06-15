@@ -2901,3 +2901,17 @@ only beats neg-closed-random -- the 0.93-0.96 gap is the control's antipodal pen
 not a 2-power-subgroup bonus). M_thin tracks ~0.92*sqrt(n log p), never a power below.
 Builds on probe_407_supnorm_thinness_gate (n-axis flatness at beta=4). n=16 two-prime
 per beta; n=32 beta=5 sup-sweep (p~3.3e7) untested (heavy). Does NOT close/refute CORE.
+
+  SHARPENING (rule-3 gate, same session): the anomaly onset depth r0(n) is THICKNESS-MONOTONE.
+  Thick composite 4|n controls vs thin 2-power at matched scale (probe_407_anomaly_onset_rule3.py,
+  n=80 corrected to r0=3 via 20-prime net -- the 8-prime r0=4 was a net artifact):
+      n     | 32  48  64  80  96  112  128
+      type  |thin thk thin thk thk thk thin
+      r0    | 4   3   3   3   3   3   3
+  r0=3 for ALL n>=48 regardless of thickness (only n=32 thin=4, smaller scale). Thin n's do NOT onset
+  SHALLOWER than thick at matched scale -- r0 tracks SCALE, not 2-power structure. By rule-3 (CORE is
+  FALSE in the thick window), a thickness-monotone quantity cannot carry the prize => the anomaly ONSET
+  DEPTH is NOT a thin-essential mechanism. Combined with the plateau (r0 stays 3, not ->2): the bad-prime
+  anomaly enters at a thickness-generic, scale-tracking depth one rung above the prize rung, and stays
+  there -- it is neither thin-essential at its onset nor descending to the prize-defining rung. CORE not
+  closed/refuted; the onset structure mapped as thickness-generic + plateaued. probe_407_anomaly_onset_rule3.py.
