@@ -1622,3 +1622,31 @@ VERDICT (rule-4 mapped: refutes a candidate + installs the correct law; rule-6 h
    Prop), NOT in this per-pencil char-0 crossing.
 CORE not closed, not faked. Python-only exact, q-invariant 2-prime => axiom-clean trivially.
 Probe scripts/probes/probe_char0_deltastar_n64_BIG.py (--n {16,32,64} --k 2 --allfar / select).
+
+---
+## wf-D2 (#444): closed form delta* = 1/2 + 1/n (= Johnson + 1/n), NOT the floor — proven-exact n=16..28
+
+Lane D2: closed form of the binding far-line monomial incidence I(n) and delta* vs the prize
+floor 1-rho-Theta(1/log n). EXACT (vectorized numpy, p-independent; cross-checked vs in-tree
+probe_farline_incidence_exact + GPU H100 oracle on #444).
+
+far-line incidence I at over-det level c=s-k (worst far monomial b=k, budget=n), EXACT:
+  n=8  (k=2): c=4 ->1 ; c=3 ->8 ; c=2 ->9 ; c=1 ->40
+  n=16 (k=4): c=4 ->9 ; c=3 ->9 ; c=2 ->89 (= the established I(16)=89, hist {56:1,32:8,2:64,1:16}) ; c=1 ->3696
+  n=24 (k=6): c=2 -> 1153 (hist {1026:1,516:8,...})
+
+THE BINDING LAW (regime A, n=16,20,24,28 -- 4/4 EXACT):
+  s* = 2k-1 = n/2 - 1  (binding over-det level c* = k-1 = n/4-1)
+  delta* = (n - s*)/n = (n/2+1)/n = **1/2 + 1/n**  = JOHNSON(rho=1/4)=1-sqrt(rho)=1/2  +  one rung 1/n.
+
+ASYMPTOTIC VERDICT: delta*(regime A) -> 1/2 = Johnson radius as n->inf. The prize floor is
+3/4 - Theta(1/log n) (rho=1/4). The far-line incidence threshold CONVERGES TO JOHNSON, a CONSTANT
+gap 1/4 BELOW the floor -- it does NOT certify the window interior (1/2, 3/4). The "delta* is a
+computable combinatorial quantity" hope is CONFIRMED (p-independent closed form 1/2+1/n) but the
+quantity it computes is the JOHNSON endpoint, not the floor. So this route does NOT close the prize.
+
+REGIME B (n>=32, GPU): delta* jumps up (0.594, 0.618, 0.658) but s* PINS at exactly 13 across
+n=32,34,38 while regime A had s* strictly increasing 7,9,11,13. GPU flagged n>=36 deep-binding
+TIMED OUT. A pinned s* with climbing delta* is the signature of a SEARCH CEILING, not a law. n=32
+deviation (s*=13 not 15) may be real (n=32 was within H100 reach) and is the genuine open sub-question.
+Python-only exact + p-invariant => axiom-clean trivially. Probes probe_wf3D2_*.py.
