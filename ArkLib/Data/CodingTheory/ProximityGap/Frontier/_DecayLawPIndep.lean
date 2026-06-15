@@ -198,6 +198,22 @@ theorem witnessScalar_transfer {J : Type*} (A B : J → K) (φ : K →+* L) {j�
   rw [hval]
   exact witnessScalar_of_parallel (φ ∘ A) (φ ∘ B) hφB hparL
 
+/-- **The transferred witness scalar is the unique reduced witness.**  Under the same good-prime
+pivot-survival hypothesis as `witnessScalar_transfer`, an `L`-scalar solves the reduced
+divided-difference system iff it is exactly the image of the char-`0` pivot formula. This is the
+precise per-subset p-independence statement: good reduction does not merely preserve a witness, it
+leaves no room for a new reduced witness scalar. -/
+theorem witnessScalar_transfer_unique {J : Type*} (A B : J → K) (φ : K →+* L) {j₀ : J}
+    (hB : B j₀ ≠ 0) (hφB : φ (B j₀) ≠ 0)
+    (hpar : ∀ j, A j * B j₀ - A j₀ * B j = 0) {γL : L} :
+    IsWitnessScalar (φ ∘ A) (φ ∘ B) γL ↔ γL = φ (-(A j₀) / (B j₀)) := by
+  have hparL : ∀ j, (φ ∘ A) j * (φ ∘ B) j₀ - (φ ∘ A) j₀ * (φ ∘ B) j = 0 :=
+    map_parallel A B φ hpar
+  have hval : φ (-(A j₀) / (B j₀)) = -((φ ∘ A) j₀) / ((φ ∘ B) j₀) := by
+    rw [map_div₀, map_neg]; rfl
+  rw [hval]
+  exact unique_witnessScalar_eq (φ ∘ A) (φ ∘ B) hφB hparL
+
 -- Axiom audit (must show only `[propext, Classical.choice, Quot.sound]`).
 #print axioms dd_affine_in_gamma
 #print axioms witnessScalar_unique
@@ -208,5 +224,6 @@ theorem witnessScalar_transfer {J : Type*} (A B : J → K) (φ : K →+* L) {j�
 #print axioms unique_witnessScalar_eq
 #print axioms map_parallel
 #print axioms witnessScalar_transfer
+#print axioms witnessScalar_transfer_unique
 
 end ProximityGap.DecayLawPIndep
