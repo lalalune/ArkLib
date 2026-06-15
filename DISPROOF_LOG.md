@@ -2927,3 +2927,36 @@ per beta; n=32 beta=5 sup-sweep (p~3.3e7) untested (heavy). Does NOT close/refut
   the density tracks the divisor/2-adic structure of n, NOT a clean thin-vs-thick signal. Net: neither the
   onset depth NOR the magnitude quantization of the bad-prime anomaly is thin-essential; the density is a
   separate n-arithmetic phenomenon, not a prize lever. probe_407_anom3_quantization_rule3.py.
+
+================================================================================
+2026-06-15 The SINGLE-FREQUENCY-DOMINATES step (M^{2r} <= p*A_r) carries NO thin
+advantage: the domination slack D_r is thickness-generic and thin is slightly
+WORSE (adverse, rule-3 fail) -- all prize tension is in A_{r*}<=Wick, not the
+moment-to-sup passage (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE (uncontested, follow-up to the wickbound-capability pin): that pin reduces the prize to A_{r*}<=Wick
+at r*~log m VIA the single-frequency-dominates step M^{2r} <= sum_b|eta_b|^{2r} = p*A_r (tight when
+r >~ log #freqs). UNTESTED: is the domination SLACK itself thin-essential? If thin mu_n's max frequency
+dominates more cleanly (fewer competing big freqs), a thin advantage could hide in the domination step,
+NOT the Wick value. Measured the slack ratio D_r := (sum_b|eta_b|^{2r})^{1/2r} / M (->1 as r grows).
+Exact real periods (mu_n neg-closed => real), proper mu_n (beta~3, scale-stable ratio), NEVER n=q-1.
+probe_407_singlefreq_domination_slack.py.
+
+RESULT -- D_r is THICKNESS-GENERIC and thin is slightly WORSE (adverse direction):
+    n=16 thin D3=1.358 D4=1.194 | n=24 thick D3=1.263 D4=1.106
+    n=32 thin D3=1.617 D4=1.351 | n=40 thick D3=1.572 D4=1.302 | n=48 thick D3=1.584 D4=1.302
+    n=64 thin D3=1.855 D4=1.476
+  At matched scale thin D_r is LARGER (converges to 1 SLOWER) than thick -- the domination step is thin-
+  ADVERSE, not thin-favorable. D_r tracks scale m=#cosets, and thin mu_n has MORE near-maximal frequencies
+  competing (consistent with the prior ILO entry: thin concentrates more / worse bulk anti-concentration).
+
+VERDICT (rule-3 mapped, rule-6 honest -- NOT a closure/refutation):
+  - The single-frequency-dominates passage carries NO thin advantage; if anything it is thin-adverse. So
+    a valid thin-essential prize proof CANNOT gain from the moment-to-sup domination step -- all the thin
+    advantage (if any) must live ENTIRELY in the A_{r*} <= Wick inequality at the deep rung r*~log m.
+  - This complements the wickbound-capability pin (the Wick VALUE is not a barrier) + the anomaly-onset
+    thread (onset depth + magnitude both thickness-generic): every accessible structural handle around
+    the deep-r A_{r*}<=Wick inequality is now mapped as thickness-generic. The irreducible thin-essential
+    content is the deep-rung connected/cumulant Wick bound itself, nothing in its surrounding passages.
+  - Does NOT close/refute CORE. Maps the domination step as a non-lever. Pure-Python exact (FFT-free real
+    period sums), no Lean => axiom-clean trivially. probe_407_singlefreq_domination_slack.py.
