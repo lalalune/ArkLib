@@ -2,6 +2,41 @@
 
 Machine-checked refutations and precise pins. Each entry: lens, test, exact result, wall.
 
+## eta-COSET-LOCALIZATION is THINNESS-ESSENTIAL (rule-3 PASS) -- the FIRST structural reduction in the map that passes the thin gate; corroborates in-tree EtaCosetSplit / coset reduction (2026-06-15)
+
+Lens: the bulk-correlation localization opened by the ILO entry (852e0fa27: thin mu_n sup-norm is LARGE,
+bulk-correlated). WHERE does the large thin |eta_b| live? eta_b = sum_{x in mu_n} e_p(bx). Since mu_n is a
+GROUP, for c in mu_n the map x->cx permutes mu_n, so eta_{cb} = sum_x e_p(b(cx)) = eta_b EXACTLY -- eta is
+constant on multiplicative cosets b*mu_n. This is ALREADY formalized in-tree (EtaCosetSplit.eta_coset_split,
+GaussPeriodCosetReduction.cosetReduced_eta_pow_le -- the "divide by n" coset reduction). The MISSING test
+(supplied here): is this structural reduction THINNESS-ESSENTIAL (rule-3), unlike the moment-cert (thickness-
+invariant 18%) and ILO (thin worse) passages?
+
+PROBE (scripts/probes/probe_407_bulk_freq_structure.py, EXACT eta over proper mu_n vs random thin-density
+control, full b-sweep, prize + thick primes, never n=q-1):
+| n  | beta | p     | M=max|eta| | M/sqrt n | |eta| const on mu_n-cosets? | random same-partition const |
+|----|------|-------|------------|----------|-----------------------------|------------------------------|
+| 8  | 3.0  | 521   | 6.56       | 2.32     | YES (40/40, exact)          | 0/40 (spread <= 5.17)        |
+| 8  | 4.0  | 4153  | 7.46       | 2.64     | YES (40/40)                 | 0/40 (spread <= 5.12)        |
+| 16 | 3.0  | 4177  | 10.94      | 2.74     | YES (40/40)                 | 0/40 (spread <= 11.9)        |
+| 16 | 4.0  | 65617 | 13.30      | 3.32     | YES (40/40)                 | 0/40 (spread <= 9.49)        |
+
+VERDICT (rule-3 PASS -- a POSITIVE structural localization, not a wall): the |eta| spectrum is EXACTLY
+mu_n-coset-localized => the sup-norm M(n) = max over only (p-1)/n COSET REPRESENTATIVES, not p-1
+frequencies (a genuine structural reduction, already in-tree). CRUCIALLY this coset-localization is
+ABSENT for a random same-density set (0/40 cosets constant, spreads 5-12) => it is THINNESS-ESSENTIAL:
+it is a multiplicative-GROUP property of mu_n, FALSE for an unstructured thin set. This is the FIRST
+reduction in the whole #407 obstruction map that PASSES the rule-3 gate at the SUP-NORM level (the moment
+certificate and ILO anti-concentration both FAILED rule-3 -- thickness-invariant / thin-worse). So a valid
+thinness-essential CORE proof, which by rule 3 must use a quantity FALSE in the thick window, is consistent
+with ROUTING THROUGH the coset reduction (eta constant on b*mu_n, reducing to (p-1)/n reps) -- the
+in-tree EtaCosetSplit / cosetReduced_eta_pow_le machinery -- whereas it CANNOT route through the moment or
+ILO passages. CONSEQUENCE (mapping): the live thinness-essential surviving structure at the SUP-NORM level
+is the coset reduction itself; the open content is the per-coset-rep bound on |eta_c| after the reduction
+(the GaussPeriodCosetReduction object), NOT a global anti-concentration or moment bound. CORE not closed;
+the coset reduction CONFIRMED as the rule-3-passing structural locus. Python-only, no Lean changed =>
+axiom-clean trivially. Exact full b-sweep, proper subgroups, thick+thin windows.
+
 ## ★ REDUCTION-MISMATCH — the lacunary-root reduction (63aa3b4ab) + DFT-uncertainty insight (6507e61aa) compute the WRONG δ*: max-single-witness root count (trivial n/2 binomial factor) ≠ the in-tree list-budget δ* (2026-06-15)
 
 Lens: the two freshest analytic handoffs reframe the prize s* as "max # of μ_n-roots of a (k+2)-term lacunary
