@@ -1433,3 +1433,32 @@ wrong way. CORE not closed, not faked. Consistent with the orchestrator redirect
 Johnson is TRUE empirically i.e. mu_n ~ random) — and SHARPENS it: mu_n is not BETTER than random at
 the far-line LD radius, it is at-or-slightly-worse, so the floor cannot come from a thinness ADVANTAGE
 in this object. Python-only exact => axiom-clean trivially.
+
+================================================================================
+2026-06-15 LD-radius s* is STRUCTURED-PRIME-BLIND (#444): a purely-cyclotomic invariant
+that cannot encode the meta-theorem's essential structured-prime mechanism (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: companion to the LD-radius plateau thinness gate (prev entry). The brief rule-2 + the §3/§4
+meta-theorem: additive-moment/energy methods fail SPECIFICALLY at STRUCTURED (Fermat-type) primes,
+where mu_n interacts non-generically with field arithmetic. UNTESTED: is the far-line LD radius
+s*(mu_n,k) (the LD-reframing's core object) invariant under structured primes, or does Fermat shift it?
+
+METHOD: exact engine incidence (cross-validated vs in-tree n=16 k=4 => I=89). n=8, k=2, proper mu_8,
+budget=n, NEVER n=q-1. Primes: generic prize beta4 (4129), beta5 (32801), STRUCTURED Fermat 257=2^8+1
+(F3-ish, index 32) and 65537=2^16+1 (F4, deep index 8192). All p==1 mod 8.
+
+RESULT: s* = 5 (delta*=0.375) and the ENTIRE profile {3:HEAVY,4:HEAVY,5:8} is BYTE-IDENTICAL across
+ALL FOUR primes — generic AND both Fermat structured primes incl. the deeply-structured F_4=65537.
+
+VERDICT (rule-4 mapped, with the rule-6 caveat being the key insight): the far-line LD radius s* is a
+CHAR-0 / CYCLOTOMIC invariant of the 2-power subgroup, completely BLIND to the structured-prime
+arithmetic. The meta-theorem establishes the structured-prime mechanism is ESSENTIAL to CORE (moment
+methods fail there for a reason). But s* does not see it at all. => the LD radius s* and the BGK moment
+object measure DIFFERENT things. CONSEQUENCE: a CORE proof routed purely through s* ("mu_n list-decodes
+past Johnson", the orchestrator redirect) is NECESSARY-NOT-SUFFICIENT — s* cannot encode the essential
+structured-prime content. This is a real obstruction for the LD-reframing lane: the cleaner cyclotomic
+object s* is too clean (structure-blind) to carry the prize's structured-prime mechanism. Pairs with the
+prev entry (s* is thinness-essential in its plateau but anti-helpful + thinness-neutral in value): s* is
+thinness-sensitive in QUANTIZATION but structure-blind in VALUE => it is a cyclotomic combinatorial
+invariant, not the moment/BGK object the prize ultimately needs. CORE not closed, not faked.
+Python-only exact => axiom-clean trivially. probe_407_ld_radius_structured_primes.py.
