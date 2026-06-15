@@ -42,3 +42,13 @@ C4 = the most promising combinatorial handle: IF the Anom_r bad primes stay poly
 contributing ≤|G|^{2r}/q for all r≤log q, the anomaly is combinatorially bounded ⟹ A_r≤Wick provable
 char-free. OPEN: extend the r=2 bad-prime sparsity+boundedness to r~log q (the genuine target).
 Probe /tmp/probe_c4_badprimes.py. (Caveat: r=2 only; high-r bad primes may spread — av7 didn't complete.)
+
+## C4 REFINED (higher-r probe) — C4-strong REFUTED, C4-weak = BGK
+Computed Anom_r bad primes for n=8, r=2..5 (FFT energy vs char-0 ref P>(2r)^{n/2}):
+- r=2: 2 bad primes; r=3: 7; r=4: 17; r=5: 34 — count GROWS ~quadratically in r.
+- The norm-bound (2r)^{n/2} crosses prize n^4 at r=4 (since (2r)^{n/2}=n^4 ⟺ r=n^{8/n}/2). For r≥ this,
+  bad primes CAN/DO enter the prize regime [n^4,…]. The prize r~log q is ABOVE this crossover.
+**C4-strong (Anom_r=0 at prize) is REFUTED**: at prize-relevant r~log q, Anom_r≠0 at prize primes.
+**C4-weak (A_r≤Wick despite Anom_r>0)** survives (measured) = BGK restated — no clean combinatorial
+bypass. The per-bad-prime anomaly contribution must be bounded (cyclotomic norm divisibility, av9) to
+prove A_r≤Wick; that bound IS the BGK content. /tmp/probe_c4_higher_r.py.
