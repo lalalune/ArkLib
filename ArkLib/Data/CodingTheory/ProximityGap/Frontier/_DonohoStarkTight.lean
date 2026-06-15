@@ -8,10 +8,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ZModDonohoStark
 /-!
 # Tightness of the Donoho–Stark uncertainty principle on `ZMod N` (#407)
 
-`_ZModDonohoStark` proves `|supp Φ|·|supp 𝓕Φ| ≥ N`. This file shows the bound is **tight** — there is
-a nonzero `Φ` with `|supp Φ|·|supp 𝓕Φ| = N`. That tightness is the crux of the #407 c.349 reframing:
-the uncertainty principle has *no slack*, so on saturating configurations there is nothing to exploit
-— which is precisely why the smooth-domain (`μ_{2^μ}`) prize floor is hard.
+`_ZModDonohoStark` proves `|supp Φ|·|supp 𝓕Φ| ≥ N`. This file shows the bound is **tight** —
+there is a nonzero `Φ` with `|supp Φ|·|supp 𝓕Φ| = N`. That tightness is the crux of the #407
+c.349 reframing: the uncertainty principle has *no slack*, so on saturating configurations there
+is nothing to exploit — which is precisely why the smooth-domain (`μ_{2^μ}`) prize floor is hard.
 
 The witness here is the delta `δ₀` (`𝓕δ₀ = 1`, the constant): `|supp δ₀| = 1`, `|supp 𝓕δ₀| = N`,
 product `N`. (The prize-relevant saturators are the *subgroup* indicators `1_H`, with

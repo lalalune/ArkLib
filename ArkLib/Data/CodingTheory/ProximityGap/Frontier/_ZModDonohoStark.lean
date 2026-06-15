@@ -10,8 +10,8 @@ import Mathlib.Algebra.Order.Chebyshev
 # The Donoho–Stark discrete uncertainty principle on `ZMod N` (#407)
 
 The #407 reframing (c.349/363, mechanism Chebotarev): the smooth-domain prize hardness *is* the
-weakness of the discrete uncertainty principle on `Z_{2^μ}`. This file lands the support form of that
-principle on `ZMod N`:
+weakness of the discrete uncertainty principle on `Z_{2^μ}`. This file lands the support form of
+that principle on `ZMod N`:
 
 > `Φ ≠ 0  ⟹  |supp Φ| · |supp 𝓕Φ| ≥ N`.
 
@@ -47,7 +47,7 @@ noncomputable def supp (Φ : ZMod N → ℂ) : Finset (ZMod N) := univ.filter (f
 theorem sum_sq_eq_supp (Φ : ZMod N → ℂ) :
     ∑ j : ZMod N, ‖Φ j‖ ^ 2 = ∑ j ∈ supp Φ, ‖Φ j‖ ^ 2 := by
   refine (Finset.sum_subset (Finset.filter_subset _ _) (fun j _ hj => ?_)).symm
-  simp only [supp, mem_filter, mem_univ, true_and, not_not] at hj
+  simp only [mem_filter, mem_univ, true_and, not_not] at hj
   rw [hj, norm_zero]; ring
 
 /-- **Inversion bound (inverse-free):** `N·‖Φ k‖ ≤ ‖𝓕Φ‖₁`. -/
@@ -103,7 +103,7 @@ theorem donoho_stark (Φ : ZMod N → ℂ) (hΦ : Φ ≠ 0) :
     have hL1supp : L1 = ∑ k ∈ supp (𝓕 Φ), ‖(𝓕 Φ) k‖ := by
       rw [hL1]
       refine (Finset.sum_subset (Finset.filter_subset _ _) (fun k _ hk => ?_)).symm
-      simp only [supp, mem_filter, mem_univ, true_and, not_not] at hk
+      simp only [mem_filter, mem_univ, true_and, not_not] at hk
       rw [hk, norm_zero]
     have hsq2 : (∑ k ∈ supp (𝓕 Φ), ‖(𝓕 Φ) k‖ ^ 2) = (N : ℝ) * S2 := by
       rw [← sum_sq_eq_supp]; exact hpars
