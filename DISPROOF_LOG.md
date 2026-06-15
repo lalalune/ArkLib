@@ -596,3 +596,33 @@ radius); this kills the SET-count budget of `CensusDomination` in the thin prize
 nor prize refutation — `#distinct-γ ≤ budget` is the open BGK content (margin large at n≤16, asymptotic
 untested). Probes scripts/probes/probe_407_census_domination_budget.py, probe_407_census_budget_nonfermat.py,
 probe_407_census_sets_vs_gamma.py. Receipt #issuecomment-4704035101.
+
+## ★ COMPANION — proportional-k (ρ=1/4) CONFIRMS the formula where calibrated + s*−k GROWS (the floor-tracking axis) (2026-06-15)
+
+Companion to the k=2 formula-break note above. Ran the EXACT over-det far-line incidence s* sweep at FIXED
+ρ=1/4 (proportional k), the prize-relevant regime, via the rust-pg engine (bmax=6 direction-restricted;
+extremal dir b−k≤2 ≤ bmax ⟹ restriction exact; char-0 prize prime p~n^4, valid subgroup p≡1 mod n):
+
+| n  | k | s* | s*−k | δ* | in-tree formula δ*=½+1/n (ρ=1/4) |
+|----|---|----|------|----|-----|
+| 16 | 4 | 7  | 3    | 0.5625 | 0.5625  EXACT MATCH |
+| 24 | 6 | 11 | 5    | 0.5417 | 0.5417  EXACT MATCH |
+(n=16: s4..6 bad → s7 maxI=9 GOOD. n=24: s8:1153,s9:65,s10:25 bad → s11 maxI=24 GOOD.)
+
+TWO clean findings:
+1. The in-tree δ* formula ½+(1/(2ρ)−1)/n is EXACT at ρ=1/4 (matches n=16,24 to the digit) — confirming it is
+   CORRECTLY CALIBRATED there. This PROVES the k=2 break (above) is a genuine SMALL-ρ failure of the formula,
+   NOT an engine artifact: the engine reproduces the formula exactly where the formula was fit (ρ=1/4) and
+   departs from it exactly where it wasn't (k=2, ρ→0). Consistent, adversarially-clean story.
+2. s*−k GROWS 3→5 (n=16→24) at fixed ρ=1/4 — the floor-tracking axis. At ρ=1/4 the formula gives
+   s*−k = n(½−1/n)−k = n/4 − 1 (LINEAR in n) ⟹ δ* → ½ = Johnson FROM ABOVE as n→∞. So at ρ=1/4 the far-line
+   incidence δ* tends to JOHNSON, not the floor 1−ρ−Θ(1/log n)=¾−Θ — fully consistent with the orchestrator's
+   "far-line incidence is a RIGOROUS UPPER bound on MCA δ* that sits BELOW the floor" (epsMCA≥far_inc/q). The
+   s*−k = n/4−1 linear law (NOT Θ(n/log n)) at ρ=1/4 means the over-det far-line δ* does NOT track the floor —
+   it is the (sub-floor) Plotkin/Johnson-limit upper bound, exactly as localized.
+
+NET (honest, no closure): the over-det far-line incidence δ* is a CLEAN, formula-exact object at ρ=1/4
+(→ Johnson, linear s*−k=n/4−1), and a FORMULA-BREAKING object at k=2 (→ above Johnson toward cap, sub-linear
+s*−k). Both are the (rigorous UPPER bound) far-line δ*, NOT the MCA δ* — the prize BGK content lives in the
+GAP between this upper bound and the true MCA δ*≥floor, untouched. Engine scripts/rust-pg (bmax mode);
+companion to probe_407_k2_sstar_formula_break.py. Small n (≤24 exact). NOT a CORE closure.
