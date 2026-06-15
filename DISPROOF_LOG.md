@@ -2816,3 +2816,29 @@ wall; its sup is the same large-field saturated value the full far-line incidenc
 difference being pure small-field suppression. CLOSES the route-36 explicit open step as a thin-blind,
 field-saturated object. Python-only exact => axiom-clean trivially.
 probe_407_deephole_restricted_sup_growth.py.
+
+================================================================================
+2026-06-15 The r=2 PRIZE RUNG is ANOMALY-FREE at every in-window prize prime
+(n=16..256) => A_2 char-0-fixed; its L4 ceiling (pA2)^{1/4}~n^{1.5} >> prize
+sqrt(n log) => moment-method walled from BOTH ends (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: settled the r0(n)->2 dichotomy from 231caf44f (does the anomaly reach the prize rung r=2?).
+ENGINE: exact Ep (mod-p) + E0_ring (char-0). probe_407_r2_rung_anomaly_free.py.
+
+RESULT 1 -- r=2 PRIZE RUNG ANOMALY-FREE, ROBUSTLY: Anom_2 = E_2^(p)-E_2^(0) = 0 for ALL 40 in-window
+beta~4 prize primes at EACH n in {16,32,64,128,256}. => A_2 = 3n(n-1) - n^4/p is char-0-FIXED at every
+prize prime; the bad-prime anomaly NEVER reaches r=2 in the window; r0(n)>2 robustly (resolves the
+231caf44f open dichotomy: r0 does NOT reach 2 at n<=256). The r=2 rung A_2<=Wick can NOT crack.
+
+RESULT 2 -- WHY the clean r=2 rung does NOT prove the prize: the in-tree L4 bound M^4<=sum|eta_b|^4=p*A_2
+gives M<=(p*A_2)^{1/4} ~ (n^4*3n^2)^{1/4} = 3^{1/4} n^{1.5}. Actual M(n)~sqrt(n log(p/n))~few*sqrt(n).
+MEASURED ((pA2)^.25 vs actual-M-sampled vs prize): n=16: 82.9/13.8/11.5; n=32: 236/23.0/18.2; n=64:
+671/28.4/28.3. The L4 ceiling OVERSHOOTS the prize target by a factor ~n (n^1.5 vs sqrt(n)); the actual
+M TRACKS the prize target (prize is TRUE). Confirms the board "2nd-order capped above Johnson by theorem."
+
+SYNTHESIS (the moment-method wall from BOTH ends, rule-4/rule-6): the SHALLOW rung r=2 is anomaly-free
+(char-0-clean) but TOO WEAK (L4 ceiling n^{1.5} >> prize sqrt(n log)); the DEEP rungs r>=r0(n) (r0
+DECREASING 4,4,3) CARRY the bad-prime anomaly but there the char-0 Wick ratio saturates to 1 (f5ec4a9cf/
+41980aa29) and the anomaly is BGK-tight (kappa explodes, sibling 1c48ff7cd). => BOTH accessible-clean
+ends are walled; the prize sits in neither. CORE not closed; the moment/L4 method is mapped as
+walled-from-both-ends. Pure-Python exact => axiom-clean trivially. probe_407_r2_rung_anomaly_free.py.
