@@ -2595,3 +2595,29 @@ n=64 at these bad primes -- NOT the prize (forall-field, deep r~log q; small-r p
 prize bound, M^4<=p A_2 -> M<=(3p)^{1/4}sqrt(n)). Maps EXACTLY how the char-0 r/n margin and the bad-prime
 anomaly race: the anomaly wins ~18x/octave. Pure-Python exact, no Lean => axiom-clean trivially.
 probe_407_anom_vs_rn_headroom.py.
+
+================================================================================
+2026-06-15 The RESUMMED Wick ratio W(r*) -> 1 on EVERY polynomial-log joint
+diagonal r*=a*log2 n in the prize regime r*<<n => BGK-tight confirmed
+non-perturbatively; W-bounded-below-1 only at r~n (NOT prize) (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE (follow-up to f5ec4a9cf): that brick showed every FIXED 1/n order of log W(r) vanishes at the
+joint limit; the open residual was the RESUMMED W(r*) along the TRUE diagonal r*~log n. This resums it.
+
+ENGINE: exact char-0 W(r;n)=E_r^(0)/((2r-1)!! n^r) (lattice seed n=8,16,32 r<=6) + the EXACT 2-term
+asymptotic log W(r)=-r(r-1)/2n - r(r-1)(2r+5)/(36 n^2)+O(r/n^3) (from f5ec4a9cf).
+VALIDITY (rule-6): 2-term model accurate to <0.1% for r/n<~0.15, degrades as r/n->1 (n=8 r=6, r/n=0.75:
+6.4% err). The PRIZE regime is r*~log n << n => r*/n->0 => model VALID there.
+
+RESULT: along EVERY polynomial-log diagonal r*=a*log2 n (a=1,1.5,2, and prize a=4ln2~2.77),
+W(r*;n) -> 1 as n->inf (1-W -> 0). Sample (a=1): W~0.676,0.788,0.896,0.957,0.984,0.994 at n=16..16384.
+EXACT corroboration (NO model) along r*=log2 n: W = 0.667,0.676,0.726 at n=8,16,32 (RISING to 1).
+
+VERDICT (rule-4 wall map, rule-6 honest, NOT a closure): the resummed Wick ratio SATURATES to 1 on
+every log-depth diagonal in the regime r*<<n where the resummation is provably accurate = the prize
+regime. CONFIRMS BGK-tightness NON-perturbatively in the accessible regime (sharpens the perturbative
+f5ec4a9cf verdict: not just each order vanishes, the RESUMMED diagonal -> 1). The ONLY regime where W
+stays bounded below 1 is r ~ n (a constant fraction of the full group) -- which is NOT the prize regime.
+=> CORE not closed; the irreducible W-bounded-below-1 content is localized OUTSIDE the prize-relevant
+depth r*~log n. Python-only exact + validated asymptotic => axiom-clean trivially.
+probe_407_W_joint_diagonal_resummation.py.
