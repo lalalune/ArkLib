@@ -62,4 +62,24 @@ if __name__ == '__main__':
             mark = "  <== EXACT MATCH" if abs(ds-v)<1e-9 else ""
             print(f"    {name:24s} = {v:.4f}   (Delta = {ds-v:+.4f}){mark}")
     print("\n" + "="*72)
-    print("VERDICT: see probe_p1_char0.py findings docstring / DISPROOF_LOG entry.")
+    print("CROSSING-OFFSET TEST: n*(cap-delta*) = (n-k) - r*_lastgood = (w*-k)")
+    print("="*72)
+    print("  candidate (parallel agent, probe_char0_deltastar_pin_constrate): w*-k = log2(n).")
+    for (n,k) in [(16,2),(16,4)]:
+        rho=k/n; cap=1-rho
+        ds,_=DELTASTAR[(n,k)]
+        offset = round(n*(cap-ds))
+        print(f"  n={n} rho={rho}: w*-k = n*(cap-delta*) = {offset}   log2(n) = {math.log2(n):.0f}   "
+              f"{'== log2(n)' if offset==round(math.log2(n)) else '!= log2(n)  <== CANDIDATE FAILS'}")
+    print("  => offset is 4 at rho=1/8 but 3 at rho=1/4 (both n=16): RATE-DEPENDENT, not a clean")
+    print("     rho-uniform closed form. The 'log2(n)' match at rho=1/8 is a coincidence.")
+    print("\n" + "="*72)
+    print("VERDICT: I_0(delta) has NO clean rho-uniform closed form in the window interior.")
+    print("  - Below Johnson: I_0 ~ O(1) (trivial). Past the crossing: SUPER-POLYNOMIAL growth")
+    print("    (k=4: 9->89->3696, ratios ~10x,~42x), -> C(n,r) only at the extreme boundary.")
+    print("  - delta* numerically coincides with DIFFERENT closed forms per rate (discretization")
+    print("    artifact: delta* is a rung r/n). The crossing-offset w*-k is rate-dependent (4 vs 3).")
+    print("  - Cross-validates the committed Mann/Lam-Leung refutation (DISPROOF_LOG 2026-06-14 P4):")
+    print("    free-coefficient interpolation incidence, NOT antipodal/Mann-closeable in the window.")
+    print("  => the char-0 worst-case incidence is the SAME open BGK/counting object; it does NOT")
+    print("     reduce to a proven Mann/Lam-Leung closed form. See DISPROOF_LOG for the full entry.")
