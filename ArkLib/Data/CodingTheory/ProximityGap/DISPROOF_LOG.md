@@ -10123,3 +10123,47 @@ iterated-tower envelope + named obligation, NOT a closure). Exact gap: worst per
 ≤√2 at β≥4 but no PROOF the L²-tracking √2 holds along EVERY tower path = the BGK cocycle large-deviation
 bound, now β-conditioned. `result_type = β-gated-not-2adic-gated + prize-safe-below-floor + value-recurses-
 carrier-does-not + reduces-open-core-to-one-β-gated-scalar`.
+
+---
+
+## [wf-NA 2026-06-14] Finite-field RESTRICTION / EXTENSION (Mockenhaupt–Tao / Iosevich–Koh) — PINNED to the deep-moment wall (precise, exact)
+
+**Lens.** `M(n) = max_{b≠0}|Σ_{x∈μ_n} e_p(bx)|` is the `L^∞` norm of the EXTENSION operator
+`(E f)(b)=Σ_{x∈μ_n} f(x) e_p(bx)` at `f=1` — the finite-field restriction problem for the
+multiplicative-subgroup "variety" `μ_n ⊂ F_q`. Tested whether the Stein–Tomas/Bourgain–Guth
+restriction machine packages a HIGHER-`L^r` (`r>4`) or DUAL extension bound that the section-6
+`L4`/energy no-go (which caps at `r=4`) misses.
+
+**OBSTRUCTION 1 — even-`r` extension norm IS the deep moment, EXACTLY (no new value).**
+`‖E1‖_{L^{2s}(F_q,counting)}^{2s} = Σ_b |η_b|^{2s} = q·E_s` term by term. Measured exactly
+(`probe_wf2NA_restriction_extension.py`, n=8,16,32, β=2..4, multi-prime, full enumeration):
+`best restriction L^r M-bound − best even-moment M-bound = 0.0` to machine precision at EVERY
+prize prime. The `L^∞`-from-`L^r` step is pure monotonicity (`max ≤ L^r`); Hölder interpolation
+of the `L^r` family is log-convex ⇒ no family beats the per-`r` minimum. Restriction adds nothing
+on the even-`r` (primal) side. (Brick `Frontier/_wf2NA_restriction_moment_collapse.lean`,
+axiom-clean `[propext, Classical.choice, Quot.sound]`, no `sorryAx`: `extNorm_pow_eq_moment`,
+`maxFreq_le_extNorm`.)
+
+**OBSTRUCTION 2 — the DUAL Stein–Tomas/Mockenhaupt side is CIRCULAR (the real machine begs the
+question).** The non-trivial restriction estimate needs the surface measure `dσ` of `μ_n` to have
+Fourier decay `|η_b| ≤ A·n^{1-a'}` with `a'→1/2` (square-root cancellation = Salem). But a
+PROVABLE `a'>0` IS exactly the square-root-cancellation prize `M(n)≤A√n` — the very quantity to be
+bounded. The ONLY input borrowable without begging the question is the additive energy
+`E₂ = 3n²−3n` (exact char-0, re-confirmed), which feeds the Stein–Tomas estimate at its lowest
+exponent `r=4` and gives EXACTLY the `L4` no-go `M(n)≤(q E₂)^{1/4}` — section-6 forbidden, one
+tensor order below the loss. Measured (`probe_wf2NA_steintomas_dual.py`): the ST-`L4` bound is
+WORSE than the moment ceiling (n=16,p=65537: 82.9 vs 18.8).
+
+**OBSTRUCTION 3 — `μ_n` is NOT a Salem set in `F_q` (decay is arithmetic, not geometric).** The
+empirical Fourier-decay exponent `a_emp = 1 − log M(n)/log n` is FAR from 0.5 (measured 0.03–0.21)
+AND p-DEPENDENT (spread 0.03–0.12 across primes at fixed n; e.g. n=16: 0.17→0.13→0.05 as β=2.5→4).
+A `p`-dependent decay is an arithmetic (cyclotomic-norm-defect / BGK) property, NOT the geometric
+Fourier decay restriction theory consumes. The restriction framework has no provable geometric
+input for `μ_n`.
+
+**VERDICT: dead-precise-why.** Even-`r` extension = `q·E_s` verbatim (collapse, exact 0 gap);
+the dual restriction theorem's only non-trivial input is `M(n)` itself (circular), and its sole
+question-begging-free input (additive energy) reduces to the L4 no-go. `μ_n` lacks Salem/Fourier
+decay (`a_emp` p-dependent, ≈0.6–0.97 in `kappa`). `result_type = even-r-collapses-to-deep-moment +
+dual-is-circular(input=conclusion) + only-borrowable-input=L4-nogo + variety-not-Salem(decay-arithmetic-not-geometric)`.
+Finite-field restriction for `μ_n` ⟹ the deep-moment wall. No sub-trivial `M(n)` for any prime class.
