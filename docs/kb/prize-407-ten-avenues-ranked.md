@@ -36,3 +36,14 @@ decisive probe; refute conjectures with countermodels; never fabricate closure.
   spurious E_r^{(p)}/E_r^{(0)}<1. CLEAN part: anomaly=0 exactly for r≤5 (n=8), r≤3 (n=16) at prize
   primes (extends Anom_2=0). Robust bound stays A_r≤Wick (Wick = proven char-0 upper bound, no reference
   issue). /tmp/probe_anom_vs_char0.py.
+
+- **SELF-REFUTED** "in-tree GaussianEnergyBound (E_r≤Wick) is mis-stated (false at r~log q because DC term
+  n^{2r}/q dominates)": measured E_r/Wick ≤ 0 at the optimal r~log q (n^{2r}/q ≪ Wick there; the DC term
+  only dominates at r≫(log q)², never used). E_r≤Wick and A_r≤Wick nearly coincide at r=log q. The in-tree
+  energy bound is CORRECT at the relevant r; the DC bricks (DCSubtractedMoment/DCMomentSupBound/
+  DCSupNormBound) are valid SHARPENINGS (b≠0 explicit, −|G|^{2r}), not a bug-fix. /tmp/probe_dc_vs_nondc.py.
+
+## Bricks landed (goal-grind, cont.)
+- DCSubtractedMoment.lean — sum_nonzero_moment (isolates A_r).
+- DCMomentSupBound.lean — eta_pow_le_dc (sharp per-freq, b≠0).
+- DCSupNormBound.lean — eta_sq_le_dc (per-r DC sup-norm).
