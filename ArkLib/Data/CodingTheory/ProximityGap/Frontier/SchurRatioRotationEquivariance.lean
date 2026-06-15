@@ -150,6 +150,43 @@ theorem schurRatio_smul (c : F) (hc : c ≠ 0) (a b : ℕ) :
         = c ^ ((b : ℤ) - N) * (c ^ ((a : ℤ) - b) * -dividedDifferencePow s v a) from by ring,
     mul_div_mul_left _ _ hcb, mul_div_assoc, neg_div]
 
+/-- **The Schur-vanishing locus is rotation-invariant.** The bad-α / unified-open-core carrier is
+the Schur-vanishing set `{ R' : [R'] x^b = 0 }` (`= h_{b−k}(R') = 0`, the elementary/complete-
+symmetric vanishing the core `K` counts — see `SchurLagrangeBridge`). Scaling the node set by a
+unit `c ≠ 0` **preserves vanishing**: `[s] (c·v)^b = 0 ⟺ [s] v^b = 0`. Immediate from the
+multiply-through homogeneity (`c^{#s-1} · [s](c·v)^b = c^b · [s]v^b` with both `c^{#s-1}, c^b` units).
+
+On `μ_n` (with `c = ζ` a root of unity) this makes the bad-α set a union of `⟨ζ⟩`-orbits — the
+orbit structure on the core-`K` carrier itself, supporting `K = (orbit size)·#K-orbits`. Probe:
+`scripts/probes/probe_schur_vanishing_rotation_invariant.py` (12000 cases on `μ_n`, n∈{8,16,32},
+1797 actual vanishings, invariance never broken; NEVER `n=q−1`). -/
+theorem dividedDifferencePow_eq_zero_iff_smul (c : F) (hc : c ≠ 0) (b : ℕ) :
+    dividedDifferencePow s (fun i => c * v i) b = 0 ↔ dividedDifferencePow s v b = 0 := by
+  have hkey := dividedDifferencePow_smul (s := s) (v := v) c hc b
+  have hcs : (c ^ (#s - 1) : F) ≠ 0 := pow_ne_zero _ hc
+  have hcb : (c ^ b : F) ≠ 0 := pow_ne_zero _ hc
+  constructor
+  · intro h
+    rw [h, mul_zero] at hkey
+    exact (mul_eq_zero.mp hkey.symm).resolve_left hcb
+  · intro h
+    rw [h, mul_zero] at hkey
+    exact (mul_eq_zero.mp hkey).resolve_left hcs
+
+/-- **The `schurH` (complete-homogeneous surrogate) vanishing locus is rotation-invariant.**
+The same statement on the surrogate: `schurH s (c·v) b = 0 ⟺ schurH s v b = 0` for `c ≠ 0`,
+`v` injective on `s`, `s` nonempty. Via `dividedDifferencePow_eq_schurH` on both node sets. -/
+theorem schurH_eq_zero_iff_smul (hvs : Set.InjOn v s) (hs : s.Nonempty)
+    (c : F) (hc : c ≠ 0) (b : ℕ) :
+    schurH s (fun i => c * v i) b = 0 ↔ schurH s v b = 0 := by
+  have hvsc : Set.InjOn (fun i => c * v i) s := by
+    intro x hx y hy hxy
+    exact hvs hx hy (by
+      have := mul_left_cancel₀ hc hxy
+      simpa using this)
+  rw [← dividedDifferencePow_eq_schurH hvsc hs b, ← dividedDifferencePow_eq_schurH hvs hs b]
+  exact dividedDifferencePow_eq_zero_iff_smul c hc b
+
 end ProximityGap.SchurLagrange
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -158,3 +195,5 @@ end ProximityGap.SchurLagrange
 #print axioms ProximityGap.SchurLagrange.dividedDifferencePow_smul_zpow
 #print axioms ProximityGap.SchurLagrange.schurH_smul
 #print axioms ProximityGap.SchurLagrange.schurRatio_smul
+#print axioms ProximityGap.SchurLagrange.dividedDifferencePow_eq_zero_iff_smul
+#print axioms ProximityGap.SchurLagrange.schurH_eq_zero_iff_smul
