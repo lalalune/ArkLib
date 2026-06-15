@@ -10419,3 +10419,64 @@ hypothesis. Consistent with the file's α=0-fixed-point caveat; the in-tree theo
 does NOT prove the asymptotic. p-independence of the count is consistent with the campaign's PROVEN
 p-independence. No Lean change (empirical thickness-invariance; proving const-slack would be BGK). No CORE
 closure. Probe-first, exact, honest.
+
+## BoundedHalfBasisIndep (the named char-p prize core): FALSE at the prize prime + thinness signal CLOSES at large n — 2026-06-15
+
+**Object:** the freshest unification's named open core (`BoundedCyclotomicIndep.lean`, `BridgeBounded.lean`,
+`AntipodalBalanceBounded.lean`, capstone `CountAntipodalBounded.lean`):
+> `BoundedHalfBasisIndep ω N C` := no nonzero `g ∈ [−C,C]^N` (N = 2^{m-1} = n/2) with `Σ_j g_j ω^j = 0` mod p.
+> Chain: `BoundedHalfBasisIndep ⟹ count-antipodal ⟹ char-p Wick ladder ∀r ⟹ CORE`. "Prize = that one named
+> hypothesis at prize support — open = BGK." `BridgeBounded` claims the chain needs only **C = 4**, "independent
+> of tuple size". `BoundedCyclotomicIndep` says prize support is `C ~ 2 ln q ≈ 22`.
+
+This is the rule-3 (thinness-essentiality) + at-the-prize-prime audit of that object. Define
+`C*(n,p) = min max|g_j|` over nonzero half-basis relations (BHBI(ω,N,C) is TRUE iff `C < C*`).
+
+**Probes (exact, PROPER subgroups μ_n ⊊ F_p*, prize β≈4, never n=q−1):**
+`scripts/probes/probe_407_bounded_cyclotomic_indep.py` (MITM exact small-box),
+`probe_407_bhbi_verify_n16.py` (independent full-brute, dual-engine), `probe_407_bhbi_verify_n32.py`
+(LLL shortest + exact integer verification), `probe_407_bhbi_rule3_thinness.py` (thin-vs-thick control).
+
+**RESULT 1 — C* erodes BELOW the chain's required C=4 at the prize prime, at fixed β=4:**
+| n  | prize prime p≈n⁴ | β    | C*(thin) | chain needs C=4 |
+|----|------------------|------|----------|-----------------|
+| 8  | 3457–7681        | ~4.0 | **7–8**  | HOLDS (margin)  |
+| 16 | 65537            | 4.00 | **4**    | **BREAKS (C*=4)** |
+| 32 | 1048609,1179649  | ~4.0 | **1**    | **BREAKS (C*=1)** |
+
+**DUAL-ENGINE VERIFIED (n=16, p=65537, ω=64, primitive 16th root, ω^8=−1):** independent full-brute
+confirms `BHBI(ω,8,3)` TRUE (no relation, all |g|≤3) and `BHBI(ω,8,4)` FALSE with explicit witness
+**g=(−4,−4,−4,−1,−1,−1,0,0)**, exact `Σ g_j ω^j = −196611 = −3·65537 ≡ 0`. So **C*(n=16,prize prime)=4
+exactly** ⟹ the chain's `BoundedHalfBasisIndep ω 8 4` is **precisely, machine-checkably FALSE**, refuting
+the `BridgeBounded` "C=4 suffices, independent of tuple size" required-support claim AT the prize prime.
+**n=32 (p=1048609,1179649):** verified height-1 sign-relations `Σ ±ω^j = ±p` (support 11/16, ω genuine
+primitive 32nd root) ⟹ even `BHBI(ω,16,1)` is FALSE.
+
+**RESULT 2 (the rule-3 wall — the real map) — the THINNESS signal of C* CLOSES at large n:**
+Control: thin 2-power ω half-basis vs generic THICK config of same size N, same prime, median/5 seeds.
+| n  | p (β≈4)  | thin C* | thick C* (med) | verdict |
+|----|----------|---------|----------------|---------|
+| 16 | 65537    | 4       | 2              | **THIN>thick (thinness-essential)** |
+| 32 | 1048609  | 1       | 1              | **TIE (NOT essential)** |
+| 32 | 33554593 (β=5) | 2 | 2          | **TIE (NOT essential)** |
+
+C* is a thinness discriminator at n=16 (thin 4 vs thick 2) but the gap **closes by n=32** (thin==thick,
+at both β=4 and β=5). At N=16 the prize-regime prime (p~n⁴~10⁶) is small enough that ~3^16 sign-vectors
+into ~10⁶ residues FORCE a short relation for ANY config (Minkowski/pigeonhole) — the 2-power structure
+buys no detectable independence advantage.
+
+**CONSTRAINT LEMMA / VERDICT:** the `BoundedHalfBasisIndep` lever, while it CORRECTLY NAMES the open core
+(`BoundedHalfBasisIndep ⟹ Wick ladder ⟹ CORE` is a sound reduction), is (a) FALSE at the prize prime
+already at small C (C*=4 @ n=16, C*=1 @ n=32 — far below both C=4 and 2 ln q), and (b) its C* becomes
+THICKNESS-(near-)INVARIANT at large n (thin==thick by n=32). So **a thinness-monotone bound on C* CANNOT
+prove CORE** — the C*-of-the-half-basis object inherits the SAME rule-3 obstruction as the moment / energy
+/ orbit-count family. The named hypothesis correctly localizes the wall but cannot be discharged by a C*
+(bounded-relation-height) thinness argument: the discriminating content lives ABOVE the bounded-relation
+floor, not in it. Mapped wall (rule-4 WIN), not a closure.
+
+**HONEST SCOPE:** C* upper bounds via LLL at n≥32 (exact verify of each witness; exact MITM at n≤16).
+Small n (8,16 exact; 32,64 LLL-UB). The thin==thick TIE at n=32 is robust across two primes; the n²⁴/n⁶
+LLL row was an LLL-resolution artifact (no relation found in thick configs at the largest prime) and is
+EXCLUDED. Does NOT refute the prize (the reduction is sound; the hypothesis being false-where-needed IS the
+BGK wall). No Lean change (empirical refutation + thickness-invariance map; axiom-clean trivially). No CORE
+closure. Probe-first, dual-engine on the headline, honest on the rule-3 closure.
