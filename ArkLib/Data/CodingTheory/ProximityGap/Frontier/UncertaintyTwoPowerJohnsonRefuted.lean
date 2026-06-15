@@ -62,9 +62,9 @@ uncertainty / sparse-polynomial Fourier bound (those are all `≥ n/(k+2)`, far 
   FLAGGED: the proof uses Chebotarev nonvanishing of all DFT minors and is FALSE for composite `n`;
   it gives NOTHING for `n = 2^μ`.  The contrast is the whole point: composite (2-power) `n` admits
   the `n/2`-root binomial that prime `n` forbids.
-* Bi–Cheng–Rojas (2014), arXiv:1411.6346, "Sparse univariate polynomials with many roots over finite
-  fields": a `t`-nomial over `F_q` can vanish on `~q^{(t−2)/(t−1)}` cosets — near-capacity for fixed
-  `t`.  Confirms `√(kn)` is NOT a sparse-polynomial root bound; it is a LIST bound (the real open
+* Cheng–Gao–Rojas–Wan (2014), arXiv:1411.6346, "Sparse Univariate Polynomials with Many Roots Over
+  Finite Fields": a `t`-nomial over `F_q` can vanish on `~q^{(t−2)/(t−1)}` cosets — near-capacity for
+  fixed `t`.  Confirms `√(kn)` is NOT a sparse-polynomial root bound; it is a LIST bound (the real open
   object), unreachable from the single-line / minSupport view.
 
 All results `sorry`-free; intended audit `[propext, Classical.choice, Quot.sound]`.
