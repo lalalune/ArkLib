@@ -146,3 +146,33 @@ window where the prize is FALSE ⇒ it is NOT thinness-essential. Any descent bu
 is thickness-monotone, which rule-3/§3 forbids. The alignment carries NO worst-frequency information
 beyond "the half-coset sum is real," which is true unconditionally. Lane PINNED — not a non-average
 handle.
+
+## moment "count/Markov/EVT-tail" packaging is NOT sharper — one object in four costumes (2026-06-14)
+
+Adversarial audit of the freshly-landed `MomentCountSupBound.forall_le_of_sum_pow_lt` (commit
+64c0bc081), whose docstring claims the integer-tail-count argument is "SHARPER than the per-term
+‖η_b‖^{2r} ≤ ∑ bound (it uses that a fractional count rounds down to zero)."
+
+VERDICT: not asymptotically sharper. The count route certifies `a_b ≤ T` only under the STRICT
+hypothesis `∑_b a_b^r < T^r`, i.e. for `T > Tᵣ := (∑ a^r)^{1/r}` strictly. The per-term route gives
+the CLOSED bound `a_b ≤ Tᵣ` directly. Both families have the SAME infimal usable threshold `Tᵣ`; the
+integer-rounding only discards the measure-zero boundary `∑ a^r = T^r`, never an asymptotic factor.
+
+PROBE (scripts/probes/probe_407_count_vs_perterm.py, exact FFT, thin μ_n ⊊ F_p*, p~n^3.5-4): at EVERY
+fixed r the per-term bound (∑ a^r)^{1/r} and the count-route infimal threshold coincide to machine
+precision:
+  n=8 β=4 p=4129:   r=2 830.41 / r=3 275.36 / r=5 125.96 / r=8 86.67  (per-term == count, all r)
+  n=16 β=4 p=65537: r=2 6864.48 / r=3 1488.32 / r=5 504.80 / r=8 307.79 (equal, all r)
+  n=16 β=3.5 p=16417: r=2 3428.51 / r=3 933.42 / r=5 376.79 / r=8 254.79 (equal, all r)
+
+CONSEQUENCE: the direct ℓ^{2r}-root route (MomentSupNormBridge.sup_le_moment_root), the per-term root
+(eta_le_optimized), the Markov tail bound (PeriodTailMarkov.card_filter_mul_le_sum_pow), and the
+integer-count bound (MomentCountSupBound) ALL optimize the SINGLE object `min_r (∑_b ‖η_b‖^{2r})^{1/2r}`,
+landing at the identical sqrt(n·log q)-gapped bound. Re-packaging the moment bound as a Markov tail /
+integer count / EVT histogram does NOT escape the BGK √-cancellation wall. The EVT/tail-rate reframing
+is the same analytic object in different costume; its open content stays `A_r ≤ Wick` (= BGK).
+
+RIGOROUS Lean (MomentCountSupNotSharper.lean, axiom-clean {propext, Classical.choice, Quot.sound}):
+- `forall_le_rpow_root`: the per-term CLOSED bound `∀ b, a_b ≤ (∑ a^r)^{1/r}` (count route not needed).
+- `count_threshold_not_below_perterm`: for any `T < Tᵣ`, the count hypothesis `∑ a^r < T^r` is FALSE
+  (`T^r ≤ ∑ a^r`), so the count route CANNOT certify a threshold below `Tᵣ`. Same infimum, no escape.
