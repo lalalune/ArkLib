@@ -24,6 +24,53 @@ Loops 27 through 38 are present as self-contained arithmetic bricks in the curre
 (`CandidateStructureLoop37.lean` and `CandidateStructureLoop38.lean` added 2026-06-08, sorry-free,
 axiom-clean, indexed in `ArkLib.lean`).
 
+## 2026-06-14 (#444 C44): Lovett-primitive-case attack — TRUE algebra, but reduces-to-Johnson for explicit μ_n
+
+**Conjecture C44 (gmmds-homds):** "LovettPrimitiveStep holds via the repeated-degree
+generalized-Vandermonde minor nonvanishing; this discharges Lovett Thm 1.7 and hence the GM-MDS δ*
+pin past Johnson."
+
+**Two-part finding (source-read only; full compile infeasible — no mathlib/GMMDS oleans in this
+checkout, cold build would take the lock).**
+
+1. **The mechanism C44 names is WRONG, but LovettPrimitiveStep IS in fact discharged in-tree by a
+   DIFFERENT route.** The C44-named object `LovettUnionDegreesInjective` (the "repeated-degree
+   generalized-Vandermonde minor nonvanishing") is NEVER proven anywhere, and is in fact false in
+   general — the file's own docstring (`LovettPrimitiveDistinctDegree.lean:156-159`) states "the
+   union degrees are NOT all distinct — repeated degrees are where the genuine
+   Vandermonde/leading-coefficient-matrix nonsingularity is needed." The distinct-degree subcase is
+   closed by a trivial leading-coeff argument (`linearIndependent_of_injOn_natDegree`); the
+   repeated-degree case is NOT closed via Vandermonde. Instead, `lovettMergeIndep`
+   (`LovettMergeIndepProof.lean:286`) closes `LovettPrimitiveStep` → `lovettThm17_unconditional`
+   via the substitution-divisibility minimal-degree descent (Lovett §2 Lemma 2.5 merge branch),
+   bypassing the Vandermonde object entirely (`grep` confirms 0 uses of
+   `LovettUnionDegreesInjective` in the merge chain). The merge chain
+   (`LovettMergeIndepProof, LovettMergeReduction, LovettNLtK, LovettMergeVStar, LovettMergeReindex,
+   LovettMergeSubstitution, LovettSeparateStep, LovettReducibleDischarge, LovettUnion,
+   LovettThm17Reduction, LovettSubstitutionDvd`) is sorry/admit/axiom-free.
+
+2. **The terminal clause "hence the GM-MDS δ* pin past Johnson" is the broken horn —
+   reduces-to-Johnson for explicit μ_n.** Lovett Thm 1.7 is characteristic-free GENERIC-POSITION
+   algebra: GM-MDS matrices EXIST for generic eval points over a large field (Schwartz–Zippel
+   specialization, itself an un-discharged named residual `LovettToGZPDualBridge` /
+   `SymbolicMinorFromLovett ∧ DualRowsFromNonsingularEval ∧ FieldLargeForMinor`). The δ* prize is
+   worst-case list-decoding for the FIXED explicit smooth domain μ_n, not generic points. The
+   GM-MDS / higher-order-MDS object that Thm 1.7 feeds **provably FAILS at order 3 for μ_n**:
+   `reedSolomonFrame_not_isHigherMDS_three_of_sumZeroPairs` + `antipodal_example_not_isHigherMDS_three`
+   (`HigherOrderMDSOrderThreeFail.lean`) — any negation-closed domain (μ_n, even n) contains
+   antipodal pairs {ζᵃ,−ζᵃ} with a+b=0, the Sidon-permitted relation, forcing order-3 failure even
+   in the small-subgroup regime. The campaign's own ledger (`SymbolicFullRankLovettFree.lean:50-54`)
+   states both surviving GM-MDS imports are "self-contained, published, **non-character-sum**
+   statements" — so they CANNOT encode the p-dependent BGK moment that pinning δ* past Johnson
+   provably requires. GM-MDS/HOMDS is the route-elimination meta-theorem's antipodal/HOMDS horn:
+   capped at Johnson for explicit μ_n.
+
+**Verdict: reduces-to-johnson.** The Lovett algebra is genuinely (and impressively) proven, but it
+is the characteristic-free generic-MDS-existence statement; it says nothing about the fixed explicit
+μ_n worst case and the object it feeds caps at Johnson there. C44 conflates "GM-MDS matrices exist
+(generic)" with "δ* past Johnson for μ_n (worst-case, fixed domain)" — these are different theorems
+separated by exactly the open BGK character-sum wall.
+
 ## 2026-06-14 (#407): over-det δ* DECOUPLING is REAL but reaches only PLOTKIN ½, NOT the floor
 
 **The lead (most promising "route around BGK" for days):** δ* binds in the OVER-determined (s−k≥2)
