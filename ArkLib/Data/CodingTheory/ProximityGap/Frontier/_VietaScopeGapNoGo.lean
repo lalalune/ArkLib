@@ -34,7 +34,7 @@ open scoped Pointwise
 
 namespace ProximityGap.Frontier.VietaScopeGapNoGo
 
-variable {F : Type*} [Field F] [DecidableEq F]
+variable {F : Type*} [Field F]
 
 /-- **The Vieta pin.** The bad scalar of a far monomial line whose agreement set is `S` is the
 next-to-leading coefficient of `∏_{x∈S}(X−x)`, i.e. `−e₁(S) = −∑_{x∈S} x`. So the bad scalar is a
