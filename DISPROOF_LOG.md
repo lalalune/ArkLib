@@ -176,3 +176,32 @@ RIGOROUS Lean (MomentCountSupNotSharper.lean, axiom-clean {propext, Classical.ch
 - `forall_le_rpow_root`: the per-term CLOSED bound `∀ b, a_b ≤ (∑ a^r)^{1/r}` (count route not needed).
 - `count_threshold_not_below_perterm`: for any `T < Tᵣ`, the count hypothesis `∑ a^r < T^r` is FALSE
   (`T^r ≤ ∑ a^r`), so the count route CANNOT certify a threshold below `Tᵣ`. Same infimum, no escape.
+
+## DC-subtracted A_r<=Wick: CONFIRMED at prize DEPTH (r~ln q) for n=32..256 — ratio collapses, no catch-up failure (2026-06-14)
+
+Follow-up confirmation of the 2026-06-14 ★★ correction (raw E_r<=Wick FALSE for n>=64; only the
+DC-subtracted A_r = E_r - n^{2r}/q <= Wick is the correct prize input). The correction established A_r<=Wick
+is "measured true" but did NOT publish the r-PROFILE at the prize depth r~ln q for n past the n=64 DC
+crossover. Decisive question: does A_r CATCH UP to Wick at large r (the failure mode that killed raw E_r),
+or stay below? Probe scripts/probes/probe_407_Ar_wick_depth_profile.py (exact FFT, thin mu_n subset F_p*,
+p~n^3-4.5, A_r = (1/q) sum_{b!=0} |eta_b|^{2r}, Wick=(2r-1)!!*n^r):
+
+| n   | p (q)     | r*=round(ln q) | A_r/Wick @ r=2 | @ r=4 | @ r=8 | @ r=r* |
+|-----|-----------|----------------|----------------|-------|-------|--------|
+| 32  | ~1.5e7    | 16             | 0.969          | 0.824 | 0.404 | 0.0156 |
+| 64  | 16777601  | 17             | 0.984          | 0.908 | 0.710 | 0.119  |
+| 128 | 14605697  | 16             | 0.992          | 0.946 | 0.647 | 0.0294 |
+| 256 | 16777729  | 17             | 0.995          | 0.945 | 0.547 | 0.0051 |
+
+VERDICT (confirmation, not closure): A_r<=Wick holds at EVERY depth through r~ln q, and the ratio A_r/Wick
+DECREASES monotonically in r (0.99 at r=2 down to ~0.005-0.12 at the prize depth). So A_r is increasingly
+BELOW Wick at the optimal order — the "A_r catches up to Wick at large r" failure mode (which killed raw
+E_r via the DC term) does NOT occur for the DC-subtracted energy. The DC-subtracted reduction is robustly
+non-vacuous with room to spare at prize depth across the prize-band n.
+
+HONEST CAVEAT (why this is NOT the prize): these p are sub-prize (p~2^24, not 2^128), so this confirms the
+r-profile shape and rules out the catch-up failure mode, but does NOT certify A_r<=Wick UNIFORMLY across
+ALL fields at the actual prize budget — that uniform-in-field bound at depth r~log q IS the BGK wall (the
+prize is forall-field-universal, c.154). The open content remains exactly A_r<=Wick as a thinness-essential
+forall-field theorem. Value: pins the correct object's empirical r-profile (collapsing ratio), strengthening
+confidence that the DC reduction is the right target and quantifying the numerical slack at prize depth.
