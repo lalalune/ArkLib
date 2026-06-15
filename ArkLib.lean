@@ -1565,6 +1565,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.OrbitCountConsumerBridge
 import ArkLib.Data.CodingTheory.ProximityGap.OrbitCountCrossingLaw
 import ArkLib.Data.CodingTheory.ProximityGap.OrbitSpectrumBound
 import ArkLib.Data.CodingTheory.ProximityGap.OrderStatResort
+import ArkLib.Data.CodingTheory.ProximityGap.OverdetIncidenceMaxClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Overreach
 import ArkLib.Data.CodingTheory.ProximityGap.OwnershipBound
 import ArkLib.Data.CodingTheory.ProximityGap.OwnershipCensusSharpened
