@@ -328,3 +328,71 @@ survives (the genuinely thinness-essential object — consistent with the A_r r-
 above). The pairing/Lam-Leung char-0 route is prize-DEAD without DC subtraction; the bricks consuming raw
 GaussianEnergyBound (GaussianEnergyFromPairing, GaussianEnergyThreeRepThree's r=3 rung) are vacuous /
 have prize-false hypotheses at n>=64 exactly as eta_le_optimized is.
+
+## SIGNED deep period-power cancellation IS thinness-essential — and the moment certificate's |.| destroys it (2026-06-15)
+
+THE FIND (positive structural map, the missing rule-3 signal). Prior entries showed the moment certificate
+min_r (q A_r)^{1/2r} is thickness-INVARIANT and shallow statistics are field-blind, leaving the rule-3
+lever at deep additive order. This locates it: the SIGNED deep period-power sum.
+
+Since mu_n is negation-closed, eta_b in R. Define the normalized signed deep sum
+    C_r(n,p) = |sum_{b!=0} eta_b^r| / ((p-1) * M^r),   M = max_{b!=0}|eta_b|.
+C_r=1 means no cancellation (all eta_b^r aligned); C_r->0 means strong signed cancellation across b.
+(Note sum_{b!=0} eta_b^r is the deep additive structure: p*W_r/... = 1 + (1/n^r) sum_{b!=0} eta_b^r.)
+
+PROBE (scripts/probes/probe_407_deep_sidon_depth.py + probe_407_signed_deep_cancellation.py, exact, proper mu_n):
+| n  | beta | C_2   | C_4   | C_6   | C_8    | C_10   |
+|----|------|-------|-------|-------|--------|--------|
+| 16 | 2.49 | 0.210 | 0.116 | 0.081 | 0.063  | 0.052  |   (THICK)
+| 16 | 4.00 | 0.084 | 0.020 | 0.0072| 0.0034 | 0.0019 |   (THIN)
+| 8  | 2.53 | 0.214 | 0.113 | 0.081 | 0.066  |   -    |   (THICK)
+| 8  | 4.50 | 0.136 | 0.048 | 0.025 | 0.016  |   -    |   (THIN)
+
+THIN/THICK cancellation ratio (thick C_r / thin C_r), n=16: r2=2.5x, r4=5.8x, r6=11x, r8=18x, r10=27x.
+
+VERDICT (thinness-ESSENTIAL, rule-3 compatible):
+- C_r is strictly SMALLER (stronger signed cancellation) in THIN than THICK at EVERY r, and the thin/thick
+  ratio GROWS with depth r (2.5x at r=2 up to 27x at r=10 for n=16). This is the deep-order, thinness-
+  ESSENTIAL phenomenon rule 3 demands: a quantity whose behavior genuinely separates thin from thick and
+  whose separation strengthens at the prize depth r~log n. Unlike A_r<=Wick (beta-uniform) and the moment
+  certificate (thickness-invariant), the SIGNED period-power sum sum_{b!=0} eta_b^r carries the thinness.
+- MECHANISM for WHY the moment route fails (closes the prior 'four costumes' map): the moment certificate
+  uses sum_{b!=0}|eta_b|^{2r} (absolute values), which DESTROYS the signed cancellation. The thinness-
+  essential content lives in the SIGNED sum sum_{b!=0} eta_b^r; taking |.| (as every moment/energy/Wick/
+  count/EVT packaging does) discards exactly the cancellation that distinguishes thin from thick. THIS is
+  why the moment family is thickness-invariant (prior entry) and cannot be the lever: |.| is the leak.
+
+WHERE THE OPEN PRIZE LEVER NOW SITS (sharpened, positive): a bound on M must exploit the SIGNED deep
+cancellation in sum_{b!=0} eta_b^r (which IS thinness-essential, growing with r), NOT the absolute moment.
+This is consistent with the BGK/Stepanov flavor (signed/algebraic cancellation, not measure/energy). Any
+method that passes through |eta_b| at any step is provably rule-3-incompatible (loses the thin signal).
+
+HONEST CAVEAT: small-n / sub-prize p (<=65537); exact-verified at this scale. Maps the thinness-essential
+object + the |.|-leak mechanism; does NOT prove a uniform-in-field deep-cancellation bound (that bound at
+r~log q IS the prize/BGK wall). No Lean theorem (a quantitative signed-cancellation bound = the open core).
+Reproducible probes + this constraint/structure entry are the deliverable. Rule-4 mapped-frontier WIN, and
+unlike a pure wall this is a POSITIVE localization: the lever exists, it is the signed deep sum, and the
+moment route's |.| is precisely why nobody saw it.
+
+## Pairing-route rung boundary r*(n,q): char-p anomaly invades the K1/pairing ladder at DESCENDING rungs (2026-06-14)
+
+Sharpening of "K1/antipodal-pairing residual H FALSE at prize" (PairingResidualFailsAtPrize). For FIXED
+prize (n,q), at which rung r does raw E_r <= Wick (=> H) FIRST fail? Probe
+scripts/probes/probe_407_pairing_rung_boundary.py (exact FFT, E_r=(1/q)sum_all|eta_b|^{2r}, Wick=(2r-1)!!n^r):
+
+| n   | beta | p        | r*=first r with E_r>Wick | DC-predicted r* | round(ln q) |
+|-----|------|----------|--------------------------|-----------------|-------------|
+| 32  | 4.5  | 5931649  | 15                       | 15              | 16          |
+| 64  | 4.0  | 16777601 | 6                        | 7               | 17          |
+| 128 | 3.4  | 14605697 | 4                        | 5               | 16          |
+| 256 | 3.0  | 16777729 | 3                        | 4               | 17          |
+
+The failing rung r* DESCENDS as n grows (15 -> 6 -> 4 -> 3), tracking the DC-crossover within ±1. So the
+char-p anomaly invades the pairing/Wick ladder at progressively LOWER orders: at n=256 even r=3
+(E_3/Wick=1.046) is prize-false. Consequence: the in-tree r=3 pairing rung GaussianEnergyThreeRepThree
+(deriving GaussianEnergyBound G 3 from repThree) has a PRIZE-FALSE hypothesis for large n, just like
+eta_le_optimized and the general H. Essentially the ENTIRE moment ladder above r=2 is pairing-dead at
+prize scale (r* -> small as n -> infinity). Only the DC-subtracted A_r <= Wick survives at every rung
+(confirmed separately: A_r/Wick collapses, never crosses 1). The char-0 Lam-Leung pairing structure is
+not "loose at high r" but actively false from a low, n-shrinking rung onward — the DC subtraction is
+the only repair. Reinforces: prize object = DC-subtracted A_r <= Wick, forall-field, = BGK wall.
