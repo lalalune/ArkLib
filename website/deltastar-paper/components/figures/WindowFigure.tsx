@@ -113,7 +113,7 @@ export function WindowFigure() {
           fontStyle="italic"
           fill={accent}
         >
-          {"\u03B4* lives here \u2014 exact location unknown"}
+          {"\u03B4* lives here, exact location unknown"}
         </text>
         <line
           x1={(johnson + capacity) / 2}
@@ -132,7 +132,9 @@ export function WindowFigure() {
         Figure 1. The state of knowledge for smooth Reed&ndash;Solomon codes (drawn
         at rate ρ = 1/4). Below the Johnson radius, mutual correlated agreement
         is proven. Above capacity, it provably fails. The hatched window is the
-        prize question.
+        open region; the decoupling (Section&nbsp;5) reduces the floor question
+        within it to a single combinatorial crossing, with the residual analytic
+        difficulty a single character-sum inequality (the CORE problem).
       </figcaption>
     </figure>
   );

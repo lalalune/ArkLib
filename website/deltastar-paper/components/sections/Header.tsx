@@ -2,42 +2,50 @@ import { M } from "../Math";
 
 export function Header() {
   return (
-    <header className="prose-col pt-10 pb-2 md:pt-12">
+    <header className="prose-col pt-20 pb-4 md:pt-28">
       <p
-        className="sc-label text-[0.8rem] mb-3"
+        className="sc-label text-[0.8rem] mb-8"
         style={{ color: "var(--ink-faint)" }}
       >
-        machine-checked mathematics &middot; lean 4 &middot; june 2026
+        Machine-checked mathematics &middot; Lean 4 &middot; June 2026
       </p>
       <h1
-        className="text-[2.1rem] md:text-[2.7rem] font-semibold leading-[1.07]"
-        style={{ letterSpacing: "-0.02em" }}
+        className="text-[2.1rem] md:text-[2.7rem] font-semibold leading-[1.12]"
+        style={{ letterSpacing: "-0.018em" }}
       >
-        The Million-Dollar Window
+        Pinning <M>{String.raw`\delta^*`}</M>: Machine-Checked Thresholds for
+        Mutual Correlated Agreement of Smooth Reed&ndash;Solomon Codes
       </h1>
       <p
-        className="mt-3 text-[1.05rem] leading-[1.45]"
+        className="mt-6 text-[1.05rem] leading-[1.5]"
         style={{ color: "var(--ink-secondary)" }}
       >
-        What happened when a swarm of AI agents attacked one of
-        Ethereum&rsquo;s hardest open math problems, with a proof checker as
-        referee.
+        A formal-verification study of the mutual correlated agreement threshold{" "}
+        <M>{String.raw`\delta^*`}</M> for smooth-domain Reed&ndash;Solomon
+        codes, conducted in Lean&nbsp;4 over the ArkLib library. We isolate the
+        field-dependent part of the threshold from the purely combinatorial
+        part, and state precisely what is proven, what is computed, and what
+        remains open.
       </p>
-      <p className="mt-3 text-[0.88rem]" style={{ color: "var(--ink-faint)" }}>
-        A campaign report on the mutual correlated agreement threshold{" "}
-        <M>{String.raw`\delta^*`}</M> for smooth Reed&ndash;Solomon codes
-        &middot; the ArkLib <M>{String.raw`\delta^*`}</M> campaign &middot; an
-        LLM agent fleet writing Lean&nbsp;4, verified by the Lean kernel
-      </p>
-      <p className="mt-1.5 text-[0.88rem]" style={{ color: "var(--ink-faint)" }}>
+      <p className="mt-6 text-[0.9rem]" style={{ color: "var(--ink-faint)" }}>
+        The ArkLib <M>{String.raw`\delta^*`}</M> formalization effort, led by{" "}
+        <a href="https://github.com/lalalune">Shaw</a> &middot;{" "}
         <a href="https://github.com/lalalune/ArkLib">lalalune/ArkLib</a>
-        {" "}&middot;{" "}
-        <a href="https://github.com/lalalune/ArkLib/issues/407">
-          campaign log: issues #232 &rarr; #334 &rarr; #357 &rarr; #371 &rarr; #389 &rarr; #407
-        </a>
       </p>
+      <div className="mt-8 flex flex-wrap items-center gap-3">
+        <a
+          href="/deltastar.pdf"
+          className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-[0.92rem] font-semibold no-underline"
+          style={{ background: "var(--accent)", color: "var(--bg)" }}
+        >
+          <span aria-hidden>&darr;</span> Download PDF
+        </a>
+        <span className="text-[0.82rem]" style={{ color: "var(--ink-faint)" }}>
+          the full machine-checked write-up
+        </span>
+      </div>
       <div
-        className="mt-5 mb-2 h-px w-full"
+        className="mt-10 mb-2 h-px w-full"
         style={{ background: "var(--rule)" }}
       />
     </header>

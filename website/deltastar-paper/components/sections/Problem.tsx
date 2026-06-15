@@ -1,135 +1,93 @@
-import { Section, SubSection } from "../Section";
-import { Lede } from "../Lede";
-import { Eli5 } from "../degen/Eli5";
-import { WindowFigure } from "../figures/WindowFigure";
-import { Theorem } from "../Theorem";
+import { Section } from "../Section";
+import { Intuition } from "../Intuition";
 import { M, MD } from "../Math";
 import { Cite } from "../Cite";
-import { Scribble } from "../Scribble";
+import { WindowFigure } from "../figures/WindowFigure";
 
 export function Problem() {
   return (
-    <Section id="problem" num="1" title="The problem">
-      <Lede>
-        For twenty-five years, some of the best coding theorists alive have
-        pushed against the same wall. Below a certain radius, everything is
-        proven; above it, everything is refuted; in between lies a window
-        where nobody has ever computed a single exact value. The prize sits
-        inside the window.
-      </Lede>
+    <Section id="problem" num="1" title="The threshold and the window">
+      <Intuition>A proximity test lets a verifier check that a committed word is close to a Reed-Solomon codeword by inspecting only a few positions. It stays sound only out to an agreement radius: below the threshold an adversary cannot forge agreement, above it they can. Call that exact threshold delta-star. For the structured (smooth) domains real FFT-based proof systems use, and in the regime past the classical Johnson radius, no one knows delta-star exactly. Pinning it is the problem.</Intuition>
       <p>
-        Fix a Reed&ndash;Solomon code{" "}
-        <M>{String.raw`C = \mathrm{RS}[\mathbb{F}_q, L, k]`}</M> whose evaluation
-        domain <M>L</M> is a <em>smooth</em> multiplicative subgroup of size{" "}
-        <M>{String.raw`n = 2^{\mu}`}</M>, at rate{" "}
-        <M>{String.raw`\rho = k/n \in \{1/2, 1/4, 1/8, 1/16\}`}</M>, with{" "}
-        <M>{String.raw`|\mathbb{F}| < 2^{256}`}</M> and security budget{" "}
-        <M>{String.raw`\varepsilon^* = 2^{-128}`}</M>. These are the codes that
-        FRI and WHIR actually deploy.
+        Modern interactive oracle proofs of proximity (FRI
+        <Cite id="BCIKS20" /> and its successors STIR and WHIR
+        <Cite id="BCHKS25" />) reduce the soundness of a low-degree test
+        to a proximity gap for Reed&ndash;Solomon codes. The sharp quantitative
+        form of this phenomenon is the mutual correlated agreement (MCA)
+        property of Arnon, Boneh, and Fenzi<Cite id="ABF26" />. For a linear
+        code <M>{String.raw`C`}</M> and target error{" "}
+        <M>{String.raw`\varepsilon^*`}</M> one defines the MCA threshold
       </p>
+      <MD>{String.raw`\delta^*(C,\varepsilon^*)=\sup\{\delta:\ \varepsilon_{\mathrm{mca}}(C,\delta)\le\varepsilon^*\}.`}</MD>
       <p>
-        The <em>mutual correlated agreement</em> error{" "}
-        <M>{String.raw`\varepsilon_{\mathrm{mca}}(C,\delta)`}</M>
-        <Cite id="ABF26" /> is a supremum over stacks of words{" "}
-        <M>{String.raw`(u_0,u_1)`}</M> of the fraction of <em>bad</em> points on
-        the line <M>{String.raw`u_0+\gamma u_1`}</M>: a scalar{" "}
-        <M>{String.raw`\gamma`}</M> is bad when the combined word agrees with a
-        codeword on a large witness set that admits no joint explanation of both
-        rows. It sits at the top of the error hierarchy{" "}
-        <M>{String.raw`\varepsilon_{\mathrm{pg}} \le \varepsilon_{\mathrm{ca}} \le \varepsilon_{\mathrm{mca}}`}</M>,
-        and it is the quantity that WHIR/FRI-style soundness proofs actually
-        consume. The threshold is
-      </p>
-      <MD>{String.raw`\delta^*(C,\varepsilon^*) \;=\; \sup\{\delta : \varepsilon_{\mathrm{mca}}(C,\delta) \le \varepsilon^*\}.`}</MD>
-      <p>
-        <em>Pinning</em> <M>{String.raw`\delta^*`}</M> means producing matching
-        brackets: a machine-checked proof that{" "}
-        <M>{String.raw`\varepsilon_{\mathrm{mca}}(C,\delta^*) \le \varepsilon^*`}</M>{" "}
-        and a machine-checked proof that every larger radius fails. In ArkLib the
-        definition lives in{" "}
-        <code className="inline">Errors.lean</code> and the bracket engine in{" "}
-        <code className="inline">MCAThresholdLedger.lean</code>; the good-radius
-        set is proven downward closed, so the supremum is genuine.
+        It controls the soundness error of the proximity test and hence the
+        query complexity, proof size, and verification cost of every system
+        built on it. The case relevant to deployed proof systems uses{" "}
+        <em>smooth</em> evaluation domains: a multiplicative subgroup{" "}
+        <M>{String.raw`\mu_n\subseteq\mathbb{F}_p^\times`}</M> of{" "}
+        <M>{String.raw`2`}</M>-power order <M>{String.raw`n=2^\mu`}</M>, on
+        which the FFT operates. Determining{" "}
+        <M>{String.raw`\delta^*`}</M> for explicit smooth-domain codes above the
+        Johnson bound is open; as<Cite id="ABF26" /> record, it is equivalent to
+        a quantitative form of beyond-Johnson list decoding of explicit
+        Reed&ndash;Solomon codes.
       </p>
 
+      <h3 className="text-[1.13rem] font-semibold mt-10 mb-4">
+        The far-line incidence identity
+      </h3>
+      <p>
+        We use the exact identity, formalized in ArkLib, that the MCA error is
+        governed by the far-line incidence: for the worst direction,
+      </p>
+      <MD>{String.raw`q\cdot\varepsilon_{\mathrm{mca}}(C,\delta)=\max_{u_0,u_1}\,\#\{\gamma\in\mathbb{F}:\ \Delta(u_0+\gamma u_1,C)\le\delta\}.`}</MD>
+      <p>
+        Hence{" "}
+        <M>{String.raw`\delta^*=\sup\{\delta:\ \max I(\delta)\le q\varepsilon^*\}`}</M>:
+        the threshold is where the worst far-line incidence count crosses the
+        security budget <M>{String.raw`q\varepsilon^*`}</M>. The entire study
+        below is an analysis of this crossing.
+      </p>
+
+      <h3 className="text-[1.13rem] font-semibold mt-10 mb-4">
+        The window
+      </h3>
+      <p>
+        Three radii organize the picture. The unique-decoding radius{" "}
+        <M>{String.raw`(1-\rho)/2`}</M> and the Johnson radius{" "}
+        <M>{String.raw`1-\sqrt\rho`}</M> are classical; below the latter the
+        list size is bounded and <M>{String.raw`\delta^*`}</M> is accessible
+        (Section&nbsp;4). The <em>window</em> is the interval
+      </p>
       <WindowFigure />
+      <p>
+        between Johnson and the capacity radius{" "}
+        <M>{String.raw`1-\rho`}</M>. The capacity radius is provably unattainable
+        with polynomial soundness<Cite id="CS25" />, so{" "}
+        <M>{String.raw`\delta^*`}</M> is strictly interior. The prize regime
+        fixes <M>{String.raw`\varepsilon^*=2^{-128}`}</M> and a thin field{" "}
+        <M>{String.raw`q=n^\beta`}</M>, <M>{String.raw`\beta\approx4\text{--}5`}</M>,
+        so the budget <M>{String.raw`q\varepsilon^*=2^{-128}n^\beta`}</M> is
+        super-linear in <M>{String.raw`n`}</M>.
+      </p>
 
-      <SubSection
-        num="1.1"
-        title={
-          <>
-            The window, and why it is{" "}
-            <Scribble type="circle" padding={4}>twenty-five years</Scribble>{" "}
-            hard
-          </>
-        }
-      >
-        <Eli5 k="problem-window" />
-        <p>
-          Both edges of our knowledge are held by formalized literature. From
-          below, full mutual correlated agreement holds up to the Johnson radius{" "}
-          <M>{String.raw`1-\sqrt{\rho}`}</M>
-          <Cite id="BCIKS20" />
-          <Cite id="Hab25" />
-          <Cite id="BCHKS25" />. From above, the KKH26 family of explicit bad
-          lines forces{" "}
-          <M>{String.raw`\delta^* \le 1-\rho-\Theta_{\rho}(1/\log n)`}</M>
-          <Cite id="KKH26" />, and the once-hoped &ldquo;up to capacity&rdquo;
-          conjectures are simply false: three independent groups refuted them in
-          late 2025
-          <Cite id="CS25" />
-          <Cite id="DG25" />, and the refutations are formalized in-tree. So
-        </p>
-        <MD>{String.raw`\delta^* \;\in\; \bigl(\,1-\sqrt{\rho}\,,\; 1-\rho-\Theta_{\rho}(1/\log n)\,\bigr),`}</MD>
-        <p>
-          and the entire problem is to pin it inside that open interval. The
-          difficulty has an honest measure: the barrier results of BCHKS25 and
-          CS25 couple any upper-bound progress past Johnson to{" "}
-          <em>beyond-Johnson list decoding of explicit RS codes</em>, a problem
-          that has stood open since Guruswami&ndash;Sudan
-          <Cite id="GS99" />. Capacity-achieving list decoding is known for
-          random punctured RS
-          <Cite id="GZ23" /> and for explicit <em>folded</em> RS
-          <Cite id="CZ25" />, but every such proof consumes domain randomness,
-          folding side-information, or subspace-design structure that the plain
-          smooth domain, a single fixed orbit with zero entropy, does not have.
-        </p>
-        <p>
-          One structural observation makes the problem finite in an exact sense:{" "}
-          <M>{String.raw`\varepsilon_{\mathrm{mca}}`}</M> sees the radius only
-          through the agreement floor{" "}
-          <M>{String.raw`\lceil (1-\delta)n\rceil`}</M>, so it is a step function
-          of <M>{String.raw`\delta`}</M> and{" "}
-          <M>{String.raw`\delta^*(\varepsilon^*)`}</M> is its generalized
-          inverse. The window question is literally: <em>where are the jumps of
-          the staircase between Johnson and capacity, and what are the step
-          heights?</em>
-        </p>
-      </SubSection>
-
-      <SubSection num="1.2" title="What was known before the campaign">
-        <p>
-          No exact value of{" "}
-          <M>{String.raw`\delta^*`}</M>, or of{" "}
-          <M>{String.raw`\varepsilon_{\mathrm{mca}}`}</M> at any radius, had ever
-          been computed for any code. The literature provided the two window
-          edges, the at-capacity refutations, and the coupling barrier, all
-          asymptotic statements. The campaign began by formalizing all of it:
-          seventeen papers wired into the tree as named theorems and named
-          hypotheses, so that every later claim would compose against the genuine
-          published frontier rather than a paraphrase of it.
-        </p>
-        <Theorem
-          kind="Theorem"
-          name="capacity edge, unconditional"
-          file="KKH26DeltaStarReduction.lean"
-          decl="kkh26_mcaDeltaStar_le"
-        >
-          For the explicit smooth evaluation codes,{" "}
-          <M>{String.raw`\delta^* \le 1 - r/2^{\mu}`}</M>: the near-capacity
-          strip is excluded by an explicit family of bad lines.
-        </Theorem>
-      </SubSection>
+      <h3 className="text-[1.13rem] font-semibold mt-10 mb-4">
+        The Gauss-sum object
+      </h3>
+      <p>
+        The far-line incidence in the smooth case is controlled by an incomplete
+        character sum. For <M>{String.raw`b\in\mathbb{F}_p`}</M> set{" "}
+        <M>{String.raw`S_b=\sum_{x\in\mu_n}e_p(bx)`}</M> and{" "}
+        <M>{String.raw`M(n)=\max_{b\not\equiv0}|S_b|`}</M>. Because{" "}
+        <M>{String.raw`-1\in\mu_n`}</M> each <M>{String.raw`S_b`}</M> is real.
+        The Bourgain&ndash;Glibichuk&ndash;Konyagin (BGK) bound asserts
+        square-root cancellation{" "}
+        <M>{String.raw`M(n)\le n^{1/2+o(1)}`}</M> for thin subgroups; the best
+        explicit exponent in range is <M>{String.raw`n^{0.989}`}</M>, while the
+        floor needs <M>{String.raw`n^{1/2+o(1)}`}</M>. We call this the{" "}
+        <strong>BGK wall</strong>; it is the analytic obstruction that the
+        window threshold remains tied to.
+      </p>
     </Section>
   );
 }

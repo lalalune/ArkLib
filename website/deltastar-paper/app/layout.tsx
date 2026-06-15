@@ -19,21 +19,24 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "The Million-Dollar Window",
+  title:
+    "Pinning δ*: Machine-Checked Thresholds for Mutual Correlated Agreement of Smooth Reed–Solomon Codes",
   description:
-    "What happened when a swarm of AI agents attacked one of Ethereum's hardest open math problems, with a proof checker as referee. A campaign report on the mutual correlated agreement threshold δ* for smooth Reed-Solomon codes: the first exact thresholds ever computed for any code, 28 machine-checked refutations, and an honest map of the $1M Proximity Prize window, which remains open.",
+    "A formal-verification study of the mutual correlated agreement threshold δ* for smooth-domain Reed–Solomon codes, conducted in Lean 4 over the ArkLib library. We prove a structural decoupling that isolates the field-dependent part of the threshold from the purely combinatorial part, give exact sub-Johnson pins and unconditional ceilings, and state the beyond-Johnson floor question as a single open combinatorial crossing. Each statement is labelled proven, computational, or open.",
   openGraph: {
-    title: "The Million-Dollar Window",
+    title:
+      "Pinning δ*: Machine-Checked Thresholds for MCA of Smooth Reed–Solomon Codes",
     description:
-      "A swarm of AI agents attacked a 25-year-old math problem under a $1M Ethereum Foundation prize, with the Lean 4 kernel as referee. First exact thresholds ever computed for any code. 28 attack hypotheses refuted, each refutation a theorem. The window is still open. This page is the map.",
+      "A formal-verification study of the MCA threshold δ* for smooth Reed–Solomon codes in Lean 4 over ArkLib. A machine-checked decoupling reduces the beyond-Johnson floor to one open combinatorial crossing, with exact pins and impossibility results. Proven, computational, and open statements are labelled distinctly.",
     type: "article",
-    siteName: "The δ* campaign",
+    siteName: "ArkLib δ* formalization",
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Million-Dollar Window",
+    title:
+      "Pinning δ*: Machine-Checked Thresholds for MCA of Smooth Reed–Solomon Codes",
     description:
-      "A swarm of AI agents attacked a 25-year-old math problem under a $1M Ethereum Foundation prize, with a proof checker as referee. The window is still open. This page is the map.",
+      "A Lean 4 formal-verification study of the MCA threshold δ* for smooth Reed–Solomon codes. The decoupling reduces the beyond-Johnson floor to one open combinatorial crossing. Proven, computational, and open are labelled distinctly.",
   },
 };
 

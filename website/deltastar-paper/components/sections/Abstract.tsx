@@ -1,5 +1,4 @@
 import { M } from "../Math";
-import { Scribble } from "../Scribble";
 
 export function Abstract() {
   return (
@@ -7,64 +6,59 @@ export function Abstract() {
       <h2 className="sc-label text-[0.95rem] font-semibold mb-4">Abstract</h2>
       <div className="text-[0.99rem]" style={{ color: "var(--ink-secondary)" }}>
         <p>
-          Most of mathematics does not need a genius. It needs search, and
-          search is{" "}
-          <Scribble type="underline">a function of compute</Scribble>. This campaign is an existence proof:
-          a fleet of LLM agents, grinding in the open ArkLib repository with the
-          Lean&nbsp;4 kernel as the sole arbiter of truth, formalized the entire
-          known frontier of a problem that has resisted humans for twenty-five
-          years, produced the first exact MCA thresholds ever computed for{" "}
-          <em>any</em> code, and refuted twenty-eight attack hypotheses, each
-          refutation itself a machine-checked theorem. No reviewer trust, no
-          grant cycles, no decades. Hypothesis, probe, proof, kernel. At scale.
+          The mutual correlated agreement (MCA) threshold{" "}
+          <M>{String.raw`\delta^*`}</M> of a Reed&ndash;Solomon code governs the
+          soundness of the proximity tests at the heart of FRI-based interactive
+          oracle proofs. Determining <M>{String.raw`\delta^*`}</M> for explicit
+          smooth-domain codes, the <M>{String.raw`2`}</M>-power
+          multiplicative subgroups required by the FFT, in the
+          beyond-Johnson window is a recognized open problem, equivalent to a
+          quantitative form of explicit Reed&ndash;Solomon list decoding to
+          capacity. We report a formal-verification study of{" "}
+          <M>{String.raw`\delta^*`}</M> conducted in Lean&nbsp;4 over the ArkLib
+          library. Every result we label <em>proven</em> is a kernel-checked
+          theorem with an explicit axiom census; every numerical statement is
+          labelled <em>computational</em> and is reproducible by exact
+          enumeration; every unresolved statement is labelled an{" "}
+          <em>open problem</em> or <em>conjecture</em>.
         </p>
         <p>
-          The target is chosen deliberately. There is no better problem in
-          applied mathematics today than fully proving the zkEVM. The threshold{" "}
-          <M>{String.raw`\delta^*(C,\varepsilon^*)`}</M> studied here, subject
-          of the Ethereum Foundation&rsquo;s{" "}
-          <Scribble type="circle" delay={300}>$1M</Scribble> Proximity Prize,
-          governs the
-          soundness of the FRI- and WHIR-style proximity tests at the heart of
-          every modern SNARK. Today these systems run on conservative
-          provable bounds; pinning <M>{String.raw`\delta^*`}</M> at the
-          conjectured edge would cut verifier queries by an estimated{" "}
-          <M>{String.raw`8\times`}</M>, compounding through every proof
-          Ethereum verifies. Cheaper proofs, faster finality, a lighter chain.
-          The result general enough to be coding theory, useful enough to be
-          infrastructure.
+          Our principal contribution is a structural reduction we call the{" "}
+          <strong>
+            <M>{String.raw`\delta^*`}</M> decoupling
+          </strong>
+          . We prove, machine-checked and uniformly in the field
+          characteristic, that the over-determined far-line incidence count is a
+          union of per-witness singletons and is therefore bounded by the
+          witness count, hence is <M>{String.raw`p`}</M>-independent in the thin
+          (prize) regime. We compute its exact closed form{" "}
+          <M>{String.raw`I_{\max}(n)=n^3/32-n^2/8+1`}</M> and the exact
+          windowed-budget threshold{" "}
+          <M>{String.raw`\delta^*=\tfrac12+(\tfrac1{2\rho}-1)/n`}</M>. The
+          consequence we wish to state precisely is a clean reduction,{" "}
+          <em>not</em> a solution: whether the MCA floor attains its conjectured
+          beyond-Johnson value reduces to a single combinatorial question
+          (whether the security budget{" "}
+          <M>{String.raw`\varepsilon^* q`}</M> crosses the incidence decay curve{" "}
+          <M>{String.raw`I(s)`}</M> at witness size{" "}
+          <M>{String.raw`s^*-k=\Theta(n/\log n)`}</M>), with no
+          character-sum input.
         </p>
         <p>
-          We report the campaign&rsquo;s results: the first exact thresholds{" "}
-          (<M>{String.raw`\delta^*(\mathrm{RS}[\mathbb{F}_5,\mathbb{F}_5^\times,2],\,2/5)=1/4`}</M>{" "}
-          and a maximal pin at deployed rate); a universal staircase law proven
-          at the literal prize budget{" "}
-          <M>{String.raw`\varepsilon^*=2^{-128}`}</M>; unconditional
-          beyond-Johnson pins on a dimension ladder; and the Welch&ndash;Berlekamp
-          pencil programme reducing the below-unique-decoding regime to a single
-          named hypothesis. Every theorem is{" "}
-          <Scribble type="underline" tone="verified">axiom-clean</Scribble>,
-          zero <code className="inline">sorry</code>. The prize window at
-          production rate{" "}
-          <Scribble type="highlight" tone="soft" delay={300}>
-            remains open
-          </Scribble>
-          , and we state its four faces precisely, because the method only
-          works if the ledger is honest.
-        </p>
-        <p>
-          The implication scales beyond this problem. Verification was the
-          bottleneck; the kernel removed it. A swarm of a thousand agents under
-          one motivated researcher is a research institution that never sleeps.
-          Given enough compute, Vitalik and a swarm could plausibly finish
-          Ethereum&rsquo;s remaining roadmap in months, not decades. The unknown
-          sciences are not waiting for permission. They are waiting for FLOPs.
+          We show, also computationally, that the <em>window</em> threshold does{" "}
+          <em>not</em> decouple: at the binding moment depth the over-determined
+          count coincides with the characteristic-<M>{String.raw`p`}</M> moment,
+          so the window threshold remains tied to the
+          Bourgain&ndash;Glibichuk&ndash;Konyagin (BGK) square-root-cancellation
+          wall. We accompany the decoupling with a family of exact sub-Johnson{" "}
+          <M>{String.raw`\delta^*`}</M> pins, unconditional beyond-Johnson
+          dimension-ladder ceilings, and several machine-checked impossibility
+          results delimiting which methods can and cannot reach the floor. The
+          floor-equals-conjectured-value question is stated as the central open
+          problem; we do not claim to resolve it.
         </p>
       </div>
-      <div
-        className="mt-10 h-px w-full"
-        style={{ background: "var(--rule)" }}
-      />
+      <div className="mt-10 h-px w-full" style={{ background: "var(--rule)" }} />
     </section>
   );
 }

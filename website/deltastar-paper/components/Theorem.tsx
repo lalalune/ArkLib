@@ -31,7 +31,10 @@ export function Theorem({
       </div>
       <div className="thm-body">{children}</div>
       <div className="thm-meta">
-        <span className="badge-checked" title="Axiom census of the Lean proof">
+        <span
+          className={`badge-checked${conditional ? " badge-conditional" : ""}`}
+          title="Axiom census of the Lean proof"
+        >
           {refuted
             ? "machine-checked refutation"
             : conditional

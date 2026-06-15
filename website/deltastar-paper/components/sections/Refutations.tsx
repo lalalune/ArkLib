@@ -1,8 +1,7 @@
 import { Section, SubSection } from "../Section";
-import { Lede } from "../Lede";
+import { Intuition } from "../Intuition";
 import { Theorem } from "../Theorem";
 import { M } from "../Math";
-import { Scribble } from "../Scribble";
 
 const REPO =
   "https://github.com/lalalune/ArkLib/blob/main/ArkLib/Data/CodingTheory/ProximityGap";
@@ -18,35 +17,26 @@ function FileLink({ f }: { f: string }) {
 export function Refutations() {
   return (
     <Section id="refutations" num="4" title="Refutations as results">
-      <Lede>
-        This is the battlefield after the battle. Twenty-eight ideas walked
-        into the kernel and did not walk out, and every corpse is labeled with
-        a theorem explaining exactly how it died. In most fields failed ideas
-        vanish into folklore; here they are load-bearing.
-      </Lede>
+      <Intuition>Knowing which methods cannot work is itself progress: it stops the search from circling. We record machine-checked impossibility statements, for instance that no bound built from averages (moments of any order) can reach the target, so that the remaining viable routes are sharply narrowed.</Intuition>
       <p>
-        Twenty-eight attack hypotheses were disposed of during the campaign.
-        Under the honesty contract each disposal is a theorem: the dead idea is
-        reduced to a sorry-free constraint lemma and recorded in the standing
-        disproof log (
+        We treat refutations as first-class deliverables. Twenty-eight candidate
+        approaches were disposed of during the campaign, and under the
+        verification discipline each disposal is itself a theorem: the failed
+        idea is reduced to a <code>sorry</code>-free constraint lemma and
+        recorded in the standing disproof log (
         <a href={`${REPO}/DISPROOF_LOG.md`}>
           <code>DISPROOF_LOG.md</code>
         </a>
-        ), so the fleet cannot re-propose it and the boundary of the possible is
-        itself machine-checked. We present a selection not as failures but as
-        the negative half of the map: each one closes a road that a reasonable
-        mathematician, or a reasonable language model, would otherwise walk
-        down.
+        ), so that it cannot be re-proposed and the boundary of the possible is
+        itself machine-checked. We present a selection below, not as failures
+        but as the negative half of the map: each closes a route that a careful
+        mathematician, or a language model, might otherwise pursue.
       </p>
 
       <SubSection num="4.1" title="Structural kills">
         <Theorem
           kind="Refutation"
-          name={
-            <Scribble type="strike-through" tone="refuted" strokeWidth={1.5}>
-              halving renormalization
-            </Scribble>
-          }
+          name="halving renormalization (refuted)"
           file="HalvingWindowExit.lean"
           decl="halving_exits_window"
           refuted

@@ -1,6 +1,5 @@
 import { Header } from "@/components/sections/Header";
 import { Abstract } from "@/components/sections/Abstract";
-import { PrizeBox } from "@/components/sections/PrizeBox";
 import { Contributors } from "@/components/sections/Contributors";
 import { Problem } from "@/components/sections/Problem";
 import { Method } from "@/components/sections/Method";
@@ -8,31 +7,24 @@ import { Results } from "@/components/sections/Results";
 import { Refutations } from "@/components/sections/Refutations";
 import { OpenCore } from "@/components/sections/OpenCore";
 import { Discussion } from "@/components/sections/Discussion";
-import { Contribute } from "@/components/sections/Contribute";
 import { Timeline } from "@/components/sections/Timeline";
 import { References } from "@/components/sections/References";
-import { DegenProvider } from "@/components/degen/DegenProvider";
-import { EliPopup } from "@/components/degen/EliPopup";
-import { Eli5 } from "@/components/degen/Eli5";
 
 const toc = [
-  { href: "#contribute", label: "Mine it yourself" },
   { href: "#abstract", label: "Abstract" },
-  { href: "#prize", label: "The prize" },
-  { href: "#problem", label: "1 \u2002The problem" },
-  { href: "#method", label: "2 \u2002Method" },
-  { href: "#results", label: "3 \u2002Results" },
-  { href: "#refutations", label: "4 \u2002Refutations" },
-  { href: "#open-core", label: "5 \u2002The open core" },
+  { href: "#problem", label: "1 \u2002The threshold and the window" },
+  { href: "#method", label: "2 \u2002Methodology" },
+  { href: "#results", label: "3 \u2002The decoupling" },
+  { href: "#refutations", label: "4 \u2002Refutations as results" },
+  { href: "#open-core", label: "5 \u2002The floor reduces to a crossing" },
   { href: "#discussion", label: "6 \u2002Discussion" },
-  { href: "#timeline", label: "Timeline" },
+  { href: "#timeline", label: "Campaign timeline" },
   { href: "#contributors", label: "Contributors" },
   { href: "#references", label: "References" },
 ];
 
 export default function Page() {
   return (
-    <DegenProvider>
     <main className="px-5 md:px-8 pb-28">
       <nav className="toc-nav hidden 2xl:block" aria-label="Contents">
         <p
@@ -49,21 +41,12 @@ export default function Page() {
       </nav>
 
       <Header />
-      <Contribute />
-      <Eli5 k="abstract" />
       <Abstract />
-      <PrizeBox />
-      <Eli5 k="problem" />
       <Problem />
-      <Eli5 k="method" />
       <Method />
-      <Eli5 k="results" />
       <Results />
-      <Eli5 k="refutations" />
       <Refutations />
-      <Eli5 k="opencore" />
       <OpenCore />
-      <Eli5 k="discussion" />
       <Discussion />
       <Timeline />
       <Contributors />
@@ -71,15 +54,13 @@ export default function Page() {
 
       <footer className="prose-col mt-24 pt-8" style={{ borderTop: "1px solid var(--rule)" }}>
         <p className="text-[0.85rem]" style={{ color: "var(--ink-faint)" }}>
-          The δ* campaign &middot;{" "}
+          The ArkLib δ* formalization effort &middot;{" "}
           <a href="https://github.com/lalalune/ArkLib">lalalune/ArkLib</a>{" "}
-          &middot; every theorem on this page is verifiable by{" "}
-          <code className="inline">#print axioms</code>. The prize problem
-          remains open; this page is the map.
+          &middot; every result labelled proven on this page is verifiable by{" "}
+          <code className="inline">#print axioms</code>. The beyond-Johnson
+          floor remains an open problem.
         </p>
       </footer>
     </main>
-    <EliPopup />
-    </DegenProvider>
   );
 }

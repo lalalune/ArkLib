@@ -36,7 +36,7 @@ const refs: { id: string; text: string; href?: string }[] = [
   },
   {
     id: "GS99",
-    text: "V. Guruswami, M. Sudan. Improved decoding of Reed\u2013Solomon and algebraic-geometry codes. IEEE Trans. Inform. Theory 45 (1999). List decoding to the Johnson radius \u2014 the engine behind every in-tree polynomial list bound, and the 25-year boundary.",
+    text: "V. Guruswami, M. Sudan. Improved decoding of Reed\u2013Solomon and algebraic-geometry codes. IEEE Trans. Inform. Theory 45 (1999). List decoding to the Johnson radius, the engine behind every in-tree polynomial list bound, and the 25-year boundary.",
   },
   {
     id: "GZ23",
