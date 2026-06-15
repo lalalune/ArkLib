@@ -82,7 +82,7 @@ theorem deployed_orbitSize_signPaired (he : 3 ≤ e) :
   unfold orbitSize
   -- 3k - k = 2k = 2 * 2^{e-2} = 2^{e-1}, and n = 2^e
   have hk : 3 * 2 ^ (e - 2) - 2 ^ (e - 2) = 2 ^ (e - 1) := by
-    have h1 : 3 * 2 ^ (e - 2) - 2 ^ (e - 2) = 2 * 2 ^ (e - 2) := by ring_nf
+    have h1 : 3 * 2 ^ (e - 2) - 2 ^ (e - 2) = 2 * 2 ^ (e - 2) := by omega
     rw [h1, ← pow_succ']
     congr 1; omega
   rw [hk]
@@ -90,9 +90,8 @@ theorem deployed_orbitSize_signPaired (he : 3 ≤ e) :
   have hdvd : (2 : ℕ) ^ (e - 1) ∣ 2 ^ e := pow_dvd_pow 2 (by omega)
   rw [Nat.gcd_eq_left hdvd]
   -- 2^e / 2^{e-1} = 2
-  rw [← pow_sub_mul_pow 2 (show e - 1 ≤ e by omega)]
-  rw [Nat.mul_div_cancel_left _ (Nat.pos_of_ne_zero (pow_ne_zero _ (by norm_num)))]
-  rw [show e - (e - 1) = 1 by omega, pow_one]
+  rw [Nat.pow_div (show e - 1 ≤ e by omega) (by norm_num : 0 < 2), show e - (e - 1) = 1 by omega,
+    pow_one]
 
 /-- **`(k, 2k)` family (Thm 4.7), exponents `(k, 2k)`, `k = 2^{e-2}`.**  The action–orbit size is
 exactly `4`, independent of `e`.  Here `b − a = 2k − k = k = n/4`, `gcd(n/4, n) = n/4`, so
@@ -101,14 +100,11 @@ theorem deployed_orbitSize_kTwoK (he : 3 ≤ e) :
     orbitSize (2 ^ e) (2 ^ (e - 2)) (2 * 2 ^ (e - 2)) = 4 := by
   unfold orbitSize
   -- 2k - k = k = 2^{e-2}
-  have hk : 2 * 2 ^ (e - 2) - 2 ^ (e - 2) = 2 ^ (e - 2) := by ring_nf; omega
+  have hk : 2 * 2 ^ (e - 2) - 2 ^ (e - 2) = 2 ^ (e - 2) := by omega
   rw [hk]
   have hdvd : (2 : ℕ) ^ (e - 2) ∣ 2 ^ e := pow_dvd_pow 2 (by omega)
   rw [Nat.gcd_eq_left hdvd]
-  rw [← pow_sub_mul_pow 2 (show e - 2 ≤ e by omega)]
-  rw [Nat.mul_div_cancel_left _ (Nat.pos_of_ne_zero (pow_ne_zero _ (by norm_num)))]
-  rw [show e - (e - 2) = 2 by omega]
-  norm_num
+  rw [Nat.pow_div (show e - 2 ≤ e by omega) (by norm_num : 0 < 2), show e - (e - 2) = 2 by omega]
 
 /-- **`(3k/2, 2k)` family (Thm 4.10), exponents `(3·2^{e-3}, 4·2^{e-3})`, `d = 2^{e-3}`.**  The
 action–orbit size is exactly `8`, independent of `e`.  Here `b − a = 2k − 3k/2 = k/2 = n/8`,
@@ -117,14 +113,11 @@ theorem deployed_orbitSize_threeKTwoK (he : 4 ≤ e) :
     orbitSize (2 ^ e) (3 * 2 ^ (e - 3)) (4 * 2 ^ (e - 3)) = 8 := by
   unfold orbitSize
   -- 4d - 3d = d = 2^{e-3}
-  have hk : 4 * 2 ^ (e - 3) - 3 * 2 ^ (e - 3) = 2 ^ (e - 3) := by ring_nf; omega
+  have hk : 4 * 2 ^ (e - 3) - 3 * 2 ^ (e - 3) = 2 ^ (e - 3) := by omega
   rw [hk]
   have hdvd : (2 : ℕ) ^ (e - 3) ∣ 2 ^ e := pow_dvd_pow 2 (by omega)
   rw [Nat.gcd_eq_left hdvd]
-  rw [← pow_sub_mul_pow 2 (show e - 3 ≤ e by omega)]
-  rw [Nat.mul_div_cancel_left _ (Nat.pos_of_ne_zero (pow_ne_zero _ (by norm_num)))]
-  rw [show e - (e - 3) = 3 by omega]
-  norm_num
+  rw [Nat.pow_div (show e - 3 ≤ e by omega) (by norm_num : 0 < 2), show e - (e - 3) = 3 by omega]
 
 end Deployed
 
@@ -164,9 +157,7 @@ This exhibits the bad-`α` set as the negated `(a−b)`-power image of `μ_n` �
 order-`orbitSize` cyclic subgroup, the field-side reason the trivial bad set has size `orbitSize`. -/
 theorem ratio_eq_neg_pow_sub {z : F} (hz : z ≠ 0) {a b : ℕ} (hba : b ≤ a) :
     - z ^ a * (z ^ b)⁻¹ = - z ^ (a - b) := by
-  have hzb : z ^ b ≠ 0 := pow_ne_zero _ hz
-  rw [neg_mul, neg_inj]
-  rw [eq_comm, ← div_eq_iff hzb, ← pow_sub₀ z hz hba]
+  rw [neg_mul, neg_inj, pow_sub₀ z hz hba]
 
 end ProximityGap.Frontier.B2DoorAOrbitCount
 
