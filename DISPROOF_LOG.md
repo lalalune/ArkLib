@@ -60,3 +60,13 @@ Probe: `scripts/probes/probe_407_census_core_tightness.py` (exact, no enumeratio
   cap (B5 already showed the count-lane is exponential-class, not second-order; THIS shows that even
   so, its δ* CERTIFICATE is Johnson-capped by the alignable-set overshoot). The beyond-Johnson rung
   is carried only by the γ-incidence (CORE/F2) count, which the census cannot see.
+
+### census fiber structure (sharpening, 2026-06-14): fibers NON-UNIFORM (1..56), p-independent — census UN-repairable
+Per-γ fiber size (# aligned a-sets a single bad γ owns), n=16 k=4, p-independent (p=200017/500113):
+- r=9 (a=7): {8:×8, 16:×1} — total 80 over 9 γ.
+- r=10 (a=6): {1:×16, 2:×64, 32:×8, 56:×1} — total 456 over 89 γ; max fiber 56.
+The census overshoot is NOT a uniform constant — fibers range 1..56, a few heavy γ own huge fibers.
+So census CANNOT be repaired into a CORE-tight bound by dividing by any fixed fiber size; the deflation
+factor is itself a per-γ combinatorial quantity. Even the single worst γ is census-over-counted up to 56×.
+The fiber-size multiset is a p-independent invariant of the binding configuration. Reinforces: the
+count/census lane is Johnson-capped, cannot reach the prize window. (probe_407_census_core_tightness.py + /tmp/fiber.py)

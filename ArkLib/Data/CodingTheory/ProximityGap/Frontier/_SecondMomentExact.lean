@@ -62,7 +62,8 @@ with `E_1(G) = |G|` (`rEnergy_one`):
 > `∑_{b≠0} ‖η_b‖² = q·|G| − |G|²`.
 
 Exact and unconditional (no energy conjecture). Hence `A_1 = (1/q)∑_{b≠0}‖η_b‖² = |G| − |G|²/q < |G|`,
-so the prize bound `A_r ≤ (2r−1)‼·|G|^r` holds **exactly at the base case** `r = 1`. The open content is `r ≥ 2`. -/
+so the prize bound `A_r ≤ (2r−1)‼·|G|^r` holds **exactly at the base case** `r = 1`.
+The open content is `r ≥ 2`. -/
 theorem sum_nonzero_sq {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F) :
     ∑ b ∈ univ.erase (0 : F), ‖eta ψ G b‖ ^ 2
       = (Fintype.card F : ℝ) * (G.card : ℝ) - (G.card : ℝ) ^ 2 := by
@@ -70,7 +71,21 @@ theorem sum_nonzero_sq {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F
   rw [rEnergy_one] at h
   simpa using h
 
+/-- **The `r = 1` base case strictly beats the trivial value.** For nonempty `G`,
+`∑_{b≠0}‖η_b‖² = q·|G| − |G|² < q·|G|`, i.e. `A_1 = |G| − |G|²/q < |G|`: the DC-subtracted
+second moment is **strictly** below `q·|G|`, so the moment method's base case clears the
+Wick value `Wick(1) = |G|` with room (the `−|G|²/q` deficit). -/
+theorem base_case_strict {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hG : G.Nonempty) :
+    ∑ b ∈ univ.erase (0 : F), ‖eta ψ G b‖ ^ 2 < (Fintype.card F : ℝ) * (G.card : ℝ) := by
+  rw [sum_nonzero_sq hψ G]
+  have hpos : (0 : ℝ) < (G.card : ℝ) ^ 2 := by
+    have : 0 < G.card := Finset.card_pos.mpr hG
+    positivity
+  linarith
+
 end ProximityGap.Frontier.SecondMomentExact
 
 #print axioms ProximityGap.Frontier.SecondMomentExact.rEnergy_one
 #print axioms ProximityGap.Frontier.SecondMomentExact.sum_nonzero_sq
+#print axioms ProximityGap.Frontier.SecondMomentExact.base_case_strict

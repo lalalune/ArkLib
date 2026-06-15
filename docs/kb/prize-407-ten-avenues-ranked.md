@@ -47,3 +47,19 @@ decisive probe; refute conjectures with countermodels; never fabricate closure.
 - DCSubtractedMoment.lean — sum_nonzero_moment (isolates A_r).
 - DCMomentSupBound.lean — eta_pow_le_dc (sharp per-freq, b≠0).
 - DCSupNormBound.lean — eta_sq_le_dc (per-r DC sup-norm).
+
+- **CONFIRMED** "M(n) concentrates over prize primes": worst/median M = 1.009/1.043/1.056 (n=8/16/32),
+  std/median ≤ 0.03. The worst-case-over-primes floor ≈ TYPICAL M ~ √(n log p); NO adversarial bad
+  prime blows M up. Reframes hardness: the open content is the TYPICAL √(n log p) scaling, not a
+  worst-prime pathology (Kambiré-bad primes don't make M materially larger). /tmp/probe_M_concentration.py.
+
+## Brick suite landed (goal-grind) — formal infrastructure around the prize sup-norm
+- GaussPeriodOptimizedBound.lean — energy ⟹ M ≤ √(2e·n·ln q) (the r≈ln q optimization).
+- DCSubtractedMoment.lean — Σ_{b≠0}||η_b||^{2r} = q·E_r − |G|^{2r} (isolates A_r).
+- DCMomentSupBound.lean — ||η_b||^{2r} ≤ q·E_r − |G|^{2r} (sharp per-freq, b≠0).
+- DCSupNormBound.lean — ||η_b||² ≤ (q·E_r − |G|^{2r})^{1/r} (per-r DC sup-norm).
+- SecondMomentExact.lean — Σ_{b≠0}||η_b||² = q·|G| − |G|² (exact r=1 anchor, unconditional).
+- MomentLogConvex.lean — (Σa^r)² ≤ (Σa^{r-1})(Σa^{r+1}) (ladder log-convex, rigid).
+- DyadicTowerRecursion.lean — tower split + parallelogram (dyadic substrate).
+- CyclotomicConcentration.lean — ξ-invariant ⟹ p_j=0 (degenerate-stratum characterization).
+- KambireNotExtremal.lean — complete-homog strictly dominates subset-sum (refutes Kambiré-exact).
