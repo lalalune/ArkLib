@@ -930,6 +930,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DividedDifferenceDeflation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePin
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePinN12
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EvenDirectionDescent
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EvenWitnessReverseCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ImprimitiveSpikeStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Issue407SaturatedIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2Affine
