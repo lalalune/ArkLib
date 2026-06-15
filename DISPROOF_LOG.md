@@ -1877,3 +1877,30 @@ worst pairing is deep-hole-exp + coprime/composite-step neighbor. Whether the de
 beats Johnson is the live question. CORE not closed; this OPENS a finite-candidate handle on the L7 sup.
 Python-only exact => axiom-clean trivially.
 probe_407_deephole_classification.py + probe_407_deephole_concentration.py.
+
+================================================================================
+2026-06-15 CORRECTION to the route-36 deep-hole classification: "j == k (mod 4)" was a
+k=3 COINCIDENCE; the true law is R=n-k with deep-hole count n/4 (odd k) / n/2 (even k)
+(opus-4-8 subagent, self-correcting push 1b3f947fa)
+--------------------------------------------------------------------------------
+RULE-6 SELF-CORRECTION of my prior route-36 entry (push 1b3f947fa), which claimed mu_n deep-hole
+monomials are "EXACTLY x^j with j == k (mod 4)". That was tested only at k=3. Re-tested k=2,3,4,5:
+
+EXACT (n=8,16, prize prime, monomial deep-hole scan):
+  k=2 (n=16): deep = {2,3,6,7,10,11,14,15}  = j mod 4 in {2,3}   (count n/2)
+  k=3 (n=16): deep = {3,7,11,15}             = j mod 4 in {3}     (count n/4)  <- the coincidence
+  k=4 (n=16): deep = {4,5,6,7,12,13,14,15}   = j mod 8 in {4,5,6,7}(count n/2)
+  k=5 (n=16): deep = {5,7,13,15}             = j mod 8 in {5,7}   (count n/4)
+
+TRUE LAW (corrected): covering radius R = n - k ALWAYS (deep holes = monomials with MINIMAL agreement
+= k with deg<k). Deep-hole COUNT = n/4 for ODD k, n/2 for EVEN k. The clean single-residue "j==k mod4"
+holds ONLY at k=3. So the deep-hole candidate family is finite + structured but LARGER than my n/4 claim
+for even k (it is n/2).
+
+IMPACT ON THE ROUTE-36 LEAD (rule-6 honest): the route-36 PREMISE still stands -- (a) deep holes have a
+clean closed classification (R=n-k, the minimal-agreement monomials, n/4 or n/2 of them), and (b) the
+worst-concentration u0 uses a deep-hole exponent (n=8 confirmed). The lead is NOT killed; only the size
+of the candidate family is corrected (n/2 for even k, not uniformly n/4). The L7 sup-over-u0 still
+reduces to this deep-hole family. The open work (bound #bad over the deep-hole family vs Johnson) is
+unchanged. CORE not closed. Python-only exact => axiom-clean.
+probe_407_deephole_kvary.py.
