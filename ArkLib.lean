@@ -1766,6 +1766,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ScalingZeroSumReduction
 import ArkLib.Data.CodingTheory.ProximityGap.SchurLagrangeBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SecondLayerConverseCore
 import ArkLib.Data.CodingTheory.ProximityGap.SecondLayerSeedFamily
+import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentReductionLimit
 import ArkLib.Data.CodingTheory.ProximityGap.SecondMomentThetaOptimization
 import ArkLib.Data.CodingTheory.ProximityGap.SeedCensusBound
