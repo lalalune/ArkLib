@@ -516,6 +516,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.AffineLineJointAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.CollinearProximates
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.Interpolation
 import ArkLib.Data.CodingTheory.ProximityGap.BGKBridge
+import ArkLib.Data.CodingTheory.ProximityGap.BGKNearRamanujan
 import ArkLib.Data.CodingTheory.ProximityGap.BGKSolSetSymmetry
 import ArkLib.Data.CodingTheory.ProximityGap.BadFamilyCensus
 import ArkLib.Data.CodingTheory.ProximityGap.BadGammaAffineCount
@@ -898,6 +899,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DeltaStarEqEdge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePin
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePinN12
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ImprimitiveSpikeStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Issue407SaturatedIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2Affine
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2Multiplicity
