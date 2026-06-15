@@ -1301,3 +1301,42 @@ the very rigidity/Sidon-depth that the bootstrap touts is what KEEPS the moments
 NOT a moment/cancellation argument at all (both parities adverse) -- it must be a per-frequency / structural
 estimate that does not pass through the period MOMENTS. CORE not closed, not faked. Small n (16 censored, 32
 shows the separation), multi-prime incl. non-Fermat. Python-only, no Lean => axiom-clean trivially.
+
+### The STATED CrossCellAbsoluteBound (BCHKS-1.12 as written) is FALSE at every prize-relevant depth -- NOT "the open wall" (2026-06-15)
+
+Completes the crossCell-lever mapping (companions: tower no-go ad90dc8d5, super-random/p-indep 5a8d7fd42).
+CrossCellShkredovBound.lean DEFINES and labels "the correct OPEN form ... NOT refuted; remains the wall":
+  CrossCellAbsoluteBound :  forall r>=2,  crossCell(H,zeta,r)*q <= 2^r*|H|^r,  |H|=n/2  (= BCHKS Conj 1.12).
+The per-level consumer N0_gap_of_absoluteBound uses exactly this. We show the STATED Prop is FALSE at every
+feasible/prize-relevant depth.
+
+KEY EXACT FACT: crossCell(n,4) = 3n^2/2, EXACTLY, char-0, p-independent. Derivation from in-tree bricks:
+crossCell(n,4) = N0(G,4) - 2*N0(H,4) = E(mu_n) - 2*E(mu_{n/2}) = (3n^2-3n) - 2*(3(n/2)^2-3(n/2)) = 3n^2/2,
+using AdditiveEnergyNegClosedLower E(mu_n)=3n^2-3n. Verified exactly: n=8->96, n=16->384, n=32->1536 (=3n^2/2).
+
+(A) STATED bound at r=4:  (3n^2/2)*q <= 2^4*(n/2)^4 = n^4  <=>  q <= (2/3)*n^2.  Prize q~n*2^128 >> n^2 =>
+    VIOLATED by ~2^128.  Exact at prize-shaped primes: n=8 b=4 p=4129: LHS=396384 > RHS=4096 (97x);
+    n=16 b=4 p=65537: 25166208 > 65536 (384x); n=32 b=4: 1.6e9 > 1.05e6 (1536x).  False at thick b=2.3 too.
+(B) depth threshold r0(n): the bound n^r >= crossCell(r)*q holds only once r*log2 n >= log2 crossCell(r) +
+    log2 q (log2 q ~ log2 n + 128).  crossCell(r) is the FIXED char-0 structural count (p-indep), so r0 is
+    LARGE: measured/extrapolated r0(8)~465, r0(16)~206 -- both >> the prize BINDING depth r ~ ln q ~ 89.
+    So the stated inequality is FALSE at r=4..89 (every prize-relevant order) and only becomes true at an
+    astronomically large, useless r0.
+
+RECONCILIATION with the file's own probe ("crossCell tracks the random BCHKS-1.12 expectation (2^r-2)|H|^r/p
+to O(1)"): that was measured at SMALL accessible primes (p ~ relation height) where crossCell ~ random. At
+PRIZE primes (p ~ 2^128) the two DIVERGE by ~2^128 -- crossCell frozen at the char-0 structural value, the
+random expectation -> 0.  The "to O(1)" agreement does NOT survive to the prize regime, which is exactly why
+the stated absolute bound fails there.
+
+VERDICT (rule-4 constraint map; precise correction, NOT a CORE result, NOT a refutation of the TRUE BCHKS
+Conj 1.12 which is an asymptotic statement): the Lean Prop CrossCellAbsoluteBound, as written (forall r>=2,
+crossCell*q <= 2^r|H|^r), is FALSE at every prize-relevant depth and is NOT the open wall the file labels it.
+The genuine open object is a DEPTH-CORRECT, p-independent STRUCTURAL count bound at the binding depth r~ln q
+(= the char-0 vanishing-sums-of-roots-of-unity / Lam-Leung object, in-tree ConverseLamLeung2Power), NOT the
+literal 2^r|H|^r/q random count.  CONSISTENT with + completes the two companion crossCell results: (1) even
+granting the (false-as-written) bound the tower iteration leaks to trivial M<=n; (2) the proposed sub-random
+proof route is empty (crossCell super-random); (3) HERE: the bound as stated is itself false at feasible
+depth.  All three pin the crossCell lever as mis-stated/non-closing in its current form; the live content is
+the char-0 structural count (sibling-active thin-Sidon object), not a new arithmetic mechanism. CORE not
+closed. probe_407_crosscell_absbound_false_at_prize.py. Exact DP, multi-prime, no Lean => axiom-clean trivially.
