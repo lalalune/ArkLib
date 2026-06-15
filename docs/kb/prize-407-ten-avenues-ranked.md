@@ -29,3 +29,10 @@ decisive probe; refute conjectures with countermodels; never fabricate closure.
 ## Bricks landed (goal-grind)
 - KambireNotExtremal.lean (a52a82467) — choose_le/lt_multichoose: Kambiré subset-sum not extremal.
 - DyadicTowerRecursion.lean (da6837408) — sum_tower_split + period_parallelogram: tower substrate.
+
+## Probe lessons (goal-grind)
+- Anomaly-vs-exact-char-0: the char-0 REFERENCE prime must exceed (2r)^{n/2}, NOT just 2^n, to be
+  anomaly-free at depth r. A too-small reference (2^{n+2}) is itself contaminated at high r, giving
+  spurious E_r^{(p)}/E_r^{(0)}<1. CLEAN part: anomaly=0 exactly for r≤5 (n=8), r≤3 (n=16) at prize
+  primes (extends Anom_2=0). Robust bound stays A_r≤Wick (Wick = proven char-0 upper bound, no reference
+  issue). /tmp/probe_anom_vs_char0.py.
