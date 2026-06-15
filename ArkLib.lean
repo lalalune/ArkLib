@@ -658,6 +658,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CensusTowerDescent
 import ArkLib.Data.CodingTheory.ProximityGap.CensusTowerFinite
 import ArkLib.Data.CodingTheory.ProximityGap.CertifiedRungPrime
 import ArkLib.Data.CodingTheory.ProximityGap.CharFactorPi
+import ArkLib.Data.CodingTheory.ProximityGap.CharPDeepMomentTail
 import ArkLib.Data.CodingTheory.ProximityGap.CharPMomentRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.CharSumDeltaStarBridge
 import ArkLib.Data.CodingTheory.ProximityGap.ChordConverseCore
@@ -970,6 +971,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SecondDescentParity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SecondMomentGapQuantified
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SparseRootCheck
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SqrtFreeRSBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerSpikeBetaGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._VietaScopeGapNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLB_Q1RouteICharPGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLD_crossparity_evensvp
@@ -1530,6 +1532,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.NodalSupplyWitness
 import ArkLib.Data.CodingTheory.ProximityGap.NormalRankSharpThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.O11StructureLoop48
 import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
+import ArkLib.Data.CodingTheory.ProximityGap.OpenCoreConditionalPin
+import ArkLib.Data.CodingTheory.ProximityGap.OrbitCountConsumerBridge
 import ArkLib.Data.CodingTheory.ProximityGap.OrbitCountCrossingLaw
 import ArkLib.Data.CodingTheory.ProximityGap.OrbitSpectrumBound
 import ArkLib.Data.CodingTheory.ProximityGap.OrderStatResort
@@ -1587,6 +1591,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapLoop49
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGapP
 import ArkLib.Data.CodingTheory.ProximityGap.ProximityGenerators
 import ArkLib.Data.CodingTheory.ProximityGap.Q1ClaimADyadic
+import ArkLib.Data.CodingTheory.ProximityGap.Q1ClaimBDegH
 import ArkLib.Data.CodingTheory.ProximityGap.QRAdditiveEnergyClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.QRAdditiveEnergyGaussSum
 import ArkLib.Data.CodingTheory.ProximityGap.QRAdditiveEnergyIngredients
@@ -1684,6 +1689,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.RigidityBaseCasePairs
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityFullWindow
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityGeneralT1
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityIterated2kLift
+import ArkLib.Data.CodingTheory.ProximityGap.RigidityReductionPrizeScale
 import ArkLib.Data.CodingTheory.ProximityGap.RigiditySunflowerCore
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityTriplesSunflower
 import ArkLib.Data.CodingTheory.ProximityGap.RigidityWindowHalving
