@@ -70,19 +70,18 @@ def EVTConcentration (ψ : AddChar F ℂ) (G : Finset F) (C : ℝ) : Prop :=
 (`‖η_b‖² ≤ C²·n·log(q/n)`), the input the in-tree δ\* consumer chain wants. Trivial unfolding —
 records that closing `EVTConcentration` over the de-Finetti substrate closes the floor. -/
 theorem prizeFloor_of_EVTConcentration {ψ : AddChar F ℂ} {G : Finset F} {C : ℝ} (hC : 0 ≤ C)
+    (hL : 0 ≤ (G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / G.card))
     (h : EVTConcentration ψ G C) (b : F) (hb : b ≠ 0) :
     ‖eta ψ G b‖ ^ 2
       ≤ C ^ 2 * ((G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / G.card)) := by
-  have hb' := h b hb
-  have hbase : 0 ≤ C * Real.sqrt ((G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / G.card)) :=
-    mul_nonneg hC (Real.sqrt_nonneg _)
+  set L : ℝ := (G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / G.card) with hLdef
+  have hb' : ‖eta ψ G b‖ ≤ C * Real.sqrt L := h b hb
+  have hbase : 0 ≤ C * Real.sqrt L := mul_nonneg hC (Real.sqrt_nonneg _)
   have hsq := mul_le_mul hb' hb' (norm_nonneg _) hbase
-  calc ‖eta ψ G b‖ ^ 2 = ‖eta ψ G b‖ * ‖eta ψ G b‖ := sq (‖eta ψ G b‖) ▸ rfl
-    _ ≤ (C * Real.sqrt ((G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / G.card)))
-          * (C * Real.sqrt ((G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / G.card))) := hsq
-    _ = C ^ 2 * ((G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / G.card)) := by
-        rw [Real.mul_self_sqrt ?_]; · ring
-        positivity
+  calc ‖eta ψ G b‖ ^ 2 = ‖eta ψ G b‖ * ‖eta ψ G b‖ := pow_two _
+    _ ≤ (C * Real.sqrt L) * (C * Real.sqrt L) := hsq
+    _ = C ^ 2 * (Real.sqrt L * Real.sqrt L) := by ring
+    _ = C ^ 2 * L := by rw [Real.mul_self_sqrt hL]
 
 end ProximityGap.Frontier.EVTFloorRoute
 

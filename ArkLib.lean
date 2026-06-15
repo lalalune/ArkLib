@@ -952,6 +952,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicPhaseChainingSubmax
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E2DilationDirectCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E2NegationStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E2VanishWidthFourLaw
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EVTFloorRoute
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FoldRankNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GaussPeriodFirstMoment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GaussPeriodRealValued
