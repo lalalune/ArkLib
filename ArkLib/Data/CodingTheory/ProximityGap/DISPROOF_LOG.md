@@ -10332,3 +10332,40 @@ CONSISTENT WITH THE PRIZE BEING OPEN: no candidate clean formula withstands adeq
 **Honest scope:** small computable n only (full enumeration is O(C(n,n-r)) per pencil; n=32 rho=1/4
 infeasible, C(32,9)=28M). Establishes NO delta* bound at prize scale (n=2^mu, mu>=10). Refutation, not
 proof. Probe committed: `scripts/probes/probe_407_deltastar_refute_campaign.py` (self-checks via --compute).
+
+## 2026-06-14 (#407 P1): char-0 I_0(delta) has NO clean rho-uniform CLOSED FORM in the window — confirms BGK-open
+**Question tested:** does the CHAR-0 (q-free; p>>n^3) worst-case far-line incidence
+`I_0(delta) = max over far pencils (a,b>=k, b!=n/2) of #{gamma in F_p : (x^a+gamma x^b)|_{mu_n}
+within Hamming dist floor(delta n) of RS[mu_n,k]}` have a CLOSED FORM (=> reduces delta* to
+proven Mann/Lam-Leung), or grow uncontrollably (=> open)?
+
+**Method (probes `probe_p1_char0.py`, `probe_p1_analysis.py`; prime-size-independent):**
+exact (k+1)-subset gamma-solve + multiplicity prefilter `mult>=C(n-r,k+1)` + exact agreement test.
+VALIDATED four independent ways: (k+1)-method == brute agreement-set enumerator (n=8 exhaustive,
+b!=n/2); numpy histogram == pure-Python histogram (n=16, all dirs); numpy AgreeEngine ==
+pure-Python agreement (n=16, 200 survivors); full pipeline reproduces probe_farline_incidence_exact
+(n=16 k=4: r=10->I=89 first-bad, binder (a=10,b=4=x^k), delta*=9/16). All counts p-INDEPENDENT
+(identical across 2-3 primes per point), confirming the char-0-faithful regime.
+
+**Exact, p-independent data (budget = n):**
+  n=16 k=2 (rho=1/8): I_0(r) r=8..13 = 2, 5, 5, 17, 97, 464.  delta* = 10/16 = 0.625 (first bad r=11).
+  n=16 k=4 (rho=1/4): I_0(r) r=8..11 = 9, 9, 89, 3696.        delta* =  9/16 = 0.5625 (first bad r=10).
+  (matches independent P4 Mann probe I0 up to the +1 gamma=0 edge: their w=6->88 vs r=10->89, etc.)
+
+**Verdict — NO clean closed form (REFUTES the Mann/Lam-Leung reduction):**
+1. SUPER-POLYNOMIAL growth past the crossing: k=4 gives 9 -> 89 -> 3696 (ratios ~10x, ~42x);
+   I_0/C(n,r) -> 1 only at the EXTREME high-radius boundary (r=13: 0.83), NOT in the window interior.
+   No binomial/antipodal closed form (C(t,k), C(r,k), antipodal counts) matches the window values.
+2. The clean candidate `delta* = (1-rho) - log2(n)/n` (committed
+   `probe_char0_deltastar_pin_constrate.py`, holds for rho=1/8 at n=16,32) is RATE-SPECIFIC: the
+   crossing offset n*(cap-delta*) = w*-k = 4 at rho=1/8 but 3 at rho=1/4 (both n=16, EXACT). The
+   "log2(n)" is a rho=1/8 coincidence; the additive constant is rate-dependent.
+3. At n=16 delta* numerically coincides with DIFFERENT closed forms per rate (k=2: 1-rho-1/log2 n;
+   k=4: Johnson+1/n) -- a discretization artifact (delta* is a rung r/n; many forms land within
+   +-1/32 of the granular value). NOT a genuine closed form.
+
+**Consistency:** matches the committed P4 refutation (Mann/Lam-Leung does not pin the agreement-set
+count: free `g`-coefficients + free `gamma` make the witness sets free-interpolation-realizable
+arcs, not antipodal unions). The char-0 window-interior incidence is the SAME open BGK/counting
+object as the field-universal sup-norm wall -- it does NOT reduce to a proven closed form.
+Probes committed: `scripts/probes/probe_p1_char0.py`, `scripts/probes/probe_p1_analysis.py`.
