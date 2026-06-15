@@ -70,3 +70,31 @@ So census CANNOT be repaired into a CORE-tight bound by dividing by any fixed fi
 factor is itself a per-γ combinatorial quantity. Even the single worst γ is census-over-counted up to 56×.
 The fiber-size multiset is a p-independent invariant of the binding configuration. Reinforces: the
 count/census lane is Johnson-capped, cannot reach the prize window. (probe_407_census_core_tightness.py + /tmp/fiber.py)
+
+## phase-alignment "tower self-similarity" — REFUTED, the alignment is just REALITY (2026-06-15)
+
+Lens: the fleet observed at the worst frequency b* the two half-coset sums
+S0(b*)=∑_{x∈μ_{n/2}} e_p(b*x), S1(b*)=∑_{x∈μ_{n/2}} e_p(b*·rep·x) are maximally phase-aligned
+(cos=1.0000, machine-exact n=8,16,32,64). Floated as a candidate NON-AVERAGE structural handle
+(tower-recursive self-similarity for a descent/Stepanov argument, since moment methods are blind
+to worst-frequency alignment). Brief flagged this lane explicitly (phase-alignment tower probes).
+
+Adversarial recheck (scripts/probes/probe_407_phase_dichotomy.py, probe_407_phase_why.py,
+probe_407_phase_reality.py — all FFT-exact, ~1e-14):
+- cos(S0(b),S1(b)) = ±1 for EVERY frequency b (256/256, 599/599 sampled), not just b*. The two
+  half-coset sums are ALWAYS real-collinear.
+- Holds IDENTICALLY in the THIN (β≈9.8, deep prize) AND THICK (β≈1.07, very thick) regimes. The
+  cosine is ±1 everywhere; the sporadic −1 are sign flips of two REAL numbers, not a regime signal.
+- ROOT CAUSE: μ_{n/2} is a 2-power cyclic subgroup of EVEN order n/2 ⇒ contains the unique order-2
+  element −1 ⇒ closed under negation ⇒ S0(b)=∑ e_p(bx) is REAL (pair x↔−x). Verified
+  max|Im S0(b)| ~ 1e-15. Two reals are trivially collinear ⇒ cos=±1 automatic.
+
+CONSTRAINT LEMMA (axiom-clean Lean, Frontier/_PhaseAlignmentReality.lean):
+`eta_real_of_neg_closed` — if G is closed under negation then eta ψ G b = ∑_{y∈G} ψ(b·y) is REAL
+(conj-invariant) for every b. #print axioms ⊆ {propext, Classical.choice, Quot.sound}.
+
+WALL: the "phase alignment" is forced by reality, holds for ALL b, and is identical in the thick
+window where the prize is FALSE ⇒ it is NOT thinness-essential. Any descent built on cos(S0,S1)=±1
+is thickness-monotone, which rule-3/§3 forbids. The alignment carries NO worst-frequency information
+beyond "the half-coset sum is real," which is true unconditionally. Lane PINNED — not a non-average
+handle.
