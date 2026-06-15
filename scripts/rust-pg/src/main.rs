@@ -112,10 +112,12 @@ fn main() {
     let n: usize = args[1].parse().unwrap();
     let k: usize = args[2].parse().unwrap();
     let curve: bool = args.get(3).map(|a| a == "curve").unwrap_or(false);
-    // optional `bmax <m>`: restrict far directions to b in [k, k+m). The extremal-incidence direction sits at
-    // small b (validated: b-k<=2 across n=16..32, k=2 and rho=1/4); restricting is EXACT there and makes large-n
-    // sweeps feasible (cuts the direction count ~n/m x). Validated to reproduce the full-sweep s* at n=16,32.
-    let bmax: usize = args.iter().position(|a| a == "bmax").and_then(|i| args.get(i+1)).and_then(|s| s.parse().ok()).unwrap_or(usize::MAX);
+    // single-direction mode: "n k a b" prints I(a,b;s) for all s (per-direction decay curve)
+    let single: Option<(u64,u64)> = match (args.get(3).and_then(|s| s.parse::<u64>().ok()),
+                                           args.get(4).and_then(|s| s.parse::<u64>().ok())) {
+        (Some(a), Some(b)) => Some((a, b)),
+        _ => None,
+    };
     let p = big_prime(n as u64);
     let g = proot(p);
     let h = powmod(g, (p - 1) / n as u64, p);
@@ -126,14 +128,25 @@ fn main() {
     let budget = n as u64;
     let rho = k as f64 / n as f64;
     let john = 1.0 - rho.sqrt(); let cap = 1.0 - rho;
+    if let Some((a, b)) = single {
+        let mua: Vec<u64> = (0..n).map(|i| powmod(mu[i], a, p)).collect();
+        let mub: Vec<u64> = (0..n).map(|i| powmod(mu[i], b, p)).collect();
+        println!("SINGLE dir (a={},b={}) n={} k={}: I(s) per-direction decay", a, b, n, k);
+        for s in (k+2)..(n-1) {
+            if nck(n as u64, s as u64) > 300_000_000 { break; }
+            let inc = incidence(a, b, n, &mu, &mua, &mub, k, p, s, &invd);
+            let isz = if inc == u64::MAX { "HEAVY".to_string() } else { inc.to_string() };
+            println!("  s={} (s-k={}): I={}", s, s-k, isz);
+        }
+        return;
+    }
     println!("n={} k={} rho={:.4} p={}(~n^4) Johnson={:.4} cap={:.4} budget={}", n, k, rho, p, john, cap, budget);
     let mut sstar = 0usize;
     for s in (k+2)..n {
         let csz = nck(n as u64, s as u64);
         if csz > 200_000_000 { println!("  s={} C={} too big, stop", s, csz); break; }
         // max over far directions b in [k, s), a in [k, n), a!=b. Parallelize over directions.
-        let bhi = ((k.saturating_add(bmax)).min(s)) as u64;
-        let dirs: Vec<(u64,u64)> = ((k as u64)..bhi).flat_map(|b| ((k as u64)..(n as u64)).filter(move |&a| a != b).map(move |a| (a,b))).collect();
+        let dirs: Vec<(u64,u64)> = ((k as u64)..(s as u64)).flat_map(|b| ((k as u64)..(n as u64)).filter(move |&a| a != b).map(move |a| (a,b))).collect();
         let (mx, arg) = dirs.par_iter().map(|&(a,b)| {
             let mua: Vec<u64> = (0..n).map(|i| powmod(mu[i], a, p)).collect();
             let mub: Vec<u64> = (0..n).map(|i| powmod(mu[i], b, p)).collect();
