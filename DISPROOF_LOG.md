@@ -2,6 +2,53 @@
 
 Machine-checked refutations and precise pins. Each entry: lens, test, exact result, wall.
 
+## BIND-full-depth-threshold — the literal B_∞←B_{log n} Sidon bootstrap target (NO non-antipodal vanisher AT ALL) FAILS at fixed prize β as n grows; thin advantage is REAL but INSUFFICIENT (2026-06-15)
+
+Lens: brief lane #0 / §5.0 (BIND) literal full-depth form. The proven depth-2 brick
+`SidonLiftDevacuated.sidonModNeg_rootsOfUnity` gives "no 4-term ±-relation" (Sidon-mod-neg, depth r≤2)
+WHEN `p > 4^{φ(n)} = 2^n`, i.e. `β > n/log₂ n`. The bootstrap target is to extend no-non-antipodal-
+vanishing `Σ_{i∈S} ζ^i ≡ 0 (p)` from depth ~log n to FULL depth |S| ≤ n/2. I measured directly whether
+the literal FULL-depth property holds at the PRIZE scaling (p = n^β, β∈[4,5]) and whether the obstruction
+is thinness-essential (the rule-3 gate that killed the BHBI lever).
+
+Method: exact-integer meet-in-the-middle over μ_n = n-th roots of unity in F_p (proper 2-power subgroup,
+p≡1 mod n, m=(p−1)/n preferentially odd, NEVER n=q−1), smallest non-antipodal unsigned zero-sum r_min.
+Full MITM exact at n=16,32; randomized MITM (SOUND on FAILURES — a found r_min<n/2 PROVES BIND fails) at
+n=64. Probes `scripts/probes/probe_407_bind_depth_fraction.py` + `probe_407_bind_beta_threshold.py`.
+
+RESULT 1 — empirical β*(n) (smallest β with FULL-depth BIND, r_min = NONE) GROWS with n:
+| n  | empirical β* (full-depth BIND) | proven-suff (n/log₂n) | n=64 SOUND-FAILS at β = |
+|----|--------------------------------|-----------------------|--------------------------|
+| 16 | 4.0   (matches proven 4.00)    | 4.00                  | —                        |
+| 32 | 4.5   (well below proven 6.40) | 6.40                  | —                        |
+| 64 | ∈ (6.0, 7.0]                   | 10.67                 | 4.0,4.5,5.0,5.5,6.0 all  |
+Decisive: at the UPPER prize edge β=5.0, full-depth BIND HOLDS at n=32 (r_min=NONE) but SOUND-FAILS at
+n=64 (r_min ≤ 10 < 32, exact zero-sum witness). β*(n) is NOT bounded by the prize ceiling β=5 — it grows.
+
+RESULT 2 — THINNESS-ESSENTIAL (rule-3 PASS, unlike BHBI): at n=32, β=4.0, thin μ_32 r_min = 11 vs RANDOM
+thin-density 32-subset median = 6 (samples [5,6,6,7,7]); at β=5.0 thin = NONE (full depth) vs random median
+= 8. μ_n is strictly MORE relation-free (deeper Sidon) than a random same-density set. So this is a GENUINE
+thin obstruction-suppression — NOT the thickness-invariant basis-length pigeonhole that killed BoundedHalf-
+BasisIndep. The 2-power structure really does push the first vanisher deeper.
+
+CONSTRAINT LEMMA (BIND-FULL-DEPTH-THRESHOLD). Let β*(n) = inf{β : μ_n over F_{p}, p=⌈n^β⌉ prime ≡1(n),
+has NO non-antipodal S⊆Z/n with Σ_{i∈S} ζ^i ≡ 0 (p)}. Measured β*(16)=4.0, β*(32)=4.5, β*(64)∈(6,7];
+β*(n) is increasing and (over 16→64) tracks ABOVE the prize ceiling 5 by n=64. ⟹ for every FIXED prize
+β∈[4,5], the LITERAL full-depth BIND statement is FALSE for all large n (a non-antipodal mod-p vanisher of
+size < n/2 exists). The literal "B_∞ ← B_{log n}" bootstrap target is therefore unattainable as stated.
+
+HONEST SCOPE (rule 6, no overclaim): (a) n=64 is randomized (SOUND only on the FAILURE direction; the
+β=7,8 "none-found" rows are inconclusive, NOT proofs BIND holds). (b) β*(n) grows SLOWLY (4.0→4.5→~6.5),
+FAR below the proven-sufficient n/log₂n — the truth is much better than the depth-2 resultant lift can
+prove, just not good enough for fixed β. (c) This refutes the LITERAL full-depth form, NOT CORE: CORE is
+the sup-norm bound, which does not need zero spurious vanishers — it needs the COLLECTIVE cancellation to
+stay √-small. A super-constant (even log^c n or n^{1−ε}) thin Sidon depth, which the thin-advantage in
+Result 2 DOES provide, could still route CORE via a moment/√-cancellation argument that tolerates a few
+deep vanishers. So: the literal BIND target is walled; the thinness-essential thin advantage that suppresses
+low-depth vanishers is real and is the live object — but it must be used COLLECTIVELY (depth-profile /
+moment), not as a per-S "no vanisher at all" statement. CORE not closed; one literal target precisely walled
++ the surviving thin mechanism isolated. Python-only, no Lean changed ⟹ axiom-clean trivially.
+
 ## BIND-gate-scope — the §5.0 (BIND)/house gate route does NOT generalize: non-antipodal mod-p vanishers EXIST at thin prize-β primes once (#S)^φ > p (2026-06-15)
 
 Lens: §5.0 reduces CORE to (BIND) — "no spurious non-antipodal vanishing `Σ_{i∈S} ω^i ≡ 0 (p)` with S
