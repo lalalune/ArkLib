@@ -304,3 +304,28 @@ r=2 `sidonModNeg_rootsOfUnity_improved` (which transferred the 4-term antipodal 
 resultant bounds at 12^φ(n)<p²). The r=3 transfer needs a 6-term rigidity (tripleSum analog of
 PairSumRigidityModP) — substantial but structurally identical to the landed r=2 machinery. THIS is the
 concrete next brick for the r=3 rung; the prize needs it uniformly to r~ln q (the BGK wall).
+
+## ★★ DEFINITIVE characterization: prize = BOUNDED-coefficient cyclotomic independence mod p (2026-06-14)
+Tracing the whole ladder to its root via in-tree `RigidityIterated2kLift`:
+
+- **Char-0 is DONE in-tree.** `halfBasisIndepZ_of_primitiveRoot [CharZero F]` proves `HalfBasisIndepZ ζ
+  (2^{m-1})` (no nonzero INTEGER relation among `{ζ^j : j<2^{m-1}}`) via `minpoly ℚ ζ = Φ_{2^m}`, deg
+  `φ(2^m)=2^{m-1}`. Then `antipodallyClosed_of_disjoint_equal_sum` / `disjoint_equal_sum_antipodal_int`
+  (GENERAL, any number of terms) give the antipodal structure ⟹ RepK for ALL k ⟹ all Wick bounds. So in
+  char-0 the ENTIRE moment ladder (all r) is already proven — the prize is purely a char-p phenomenon.
+
+- **`HalfBasisIndepZ` (unbounded ℤ coeffs) is ALWAYS FALSE in char-p**: take `g=(p,0,…)` ⟹ `p·ζ^0=0`,
+  `g≠0`. But the rigidity chain only ever instantiates it with **BOUNDED** coefficients: a `k`-tuple of
+  roots yields a relation of support `≤k=2r` and `|g_j|≤2r`. So the char-p object is **bounded-coefficient
+  half-basis independence** `HBIᵦ(ω,N,C)` := no nonzero `g∈[−C,C]^N` with `Σ g_j ω^j = 0` in `ZMod p`.
+
+- **THE PRIZE = `HBIᵦ(ω, 2^{m-1}, C)` mod the prize prime, for support/coeff `C ~ 2·ln q`.** Threshold:
+  `HBIᵦ` holds for `p >` (max norm `N_{ℚ(ζ)/ℚ}(Σ g_j ζ^j)` over nonzero bounded `g`). r=2 (C=2, 4-term) is
+  the LANDED `sidonModNeg_rootsOfUnity_improved` at `p>12^{φ(n)}`. r=3 (6-term) = `RepThree`. As `C` grows
+  the threshold grows; at the prize `C~2 ln q≈166` the threshold ≫ prize prime `p~n^4` ⟹ HBIᵦ can FAIL ⟹
+  bad relations exist ⟹ BGK. The prize is EXACTLY: do enough bounded ±1-relations of `2^m`-th roots vanish
+  mod `p~n^4` to keep `E_r≤Wick` up to `r~ln q`? = the integer-relation/equidistribution core, = BGK.
+
+**This is the single tightest statement of the open core: bounded-coefficient cyclotomic independence of
+dyadic roots mod the prize prime, support up to ~2 ln q.** Char-0 done (in-tree); each support level needs
+its own char-p threshold transfer (r=2 done); the prize support sits provably above the reachable threshold.
