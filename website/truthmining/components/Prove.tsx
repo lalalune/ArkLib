@@ -16,13 +16,13 @@ const PRODUCTS: Product[] = [
     k: "zk circuit soundness",
     t: "ZK circuit soundness proofs",
     spec: "extracted circuit refines the spec · no under-constrained signals",
-    d: "Range checks, hash gadgets, constraint systems. The proof that the circuit means what the spec says, kernel-checked. ZK audits surface critical bugs at roughly twice the rate of normal audits, and the experts are scarce.",
+    d: "Proof that the circuit means what the spec says, kernel-checked. ZK bugs are critical and the experts are scarce.",
   },
   {
     k: "contract invariants",
     t: "Smart-contract invariant proofs",
     spec: "no-bad-debt · conservation-of-supply · monotone accounting",
-    d: "The properties a protocol with real value at stake needs to hold for every state, not just the fuzzed ones. Once the invariant is written, the proof obligation is crisp and the kernel settles it.",
+    d: "The properties that must hold for every state, not just the fuzzed ones. Write the invariant, the kernel settles it.",
   },
 ];
 
@@ -101,8 +101,7 @@ export function Prove() {
             ))}
           </ul>
           <p className="mono text-[0.66rem] mt-4" style={{ color: "var(--ink-faint)", lineHeight: 1.5 }}>
-            public FV-market ranges, shown as the budget line buyers already
-            hold. not our prices.
+            public FV-market ranges. not our prices.
           </p>
         </div>
       </div>

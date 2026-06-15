@@ -12,20 +12,20 @@ const STEPS = [
     n: "01",
     k: "you commit",
     t: "A formal target",
-    d: "A proposition stated in Lean 4: a theorem or a property that must hold. Provable, refutable, or reducible to a named lemma.",
+    d: "A proposition in Lean 4 that must hold. Provable, refutable, or reducible to a named lemma.",
   },
   {
     n: "02",
     k: "you commit",
     t: "An acceptance criterion, frozen",
-    d: "The exact Lean signature that must typecheck and the axiom budget allowed. Fixed before the fleet starts, so the deliverable cannot be moved to meet the output.",
+    d: "The exact Lean signature that must typecheck, plus the axiom budget. Locked before the fleet starts.",
     locks: true,
   },
   {
     n: "03",
     k: "you commit",
     t: "A fee or bounty",
-    d: "A fixed campaign fee, a success bounty, or both. The economics of a single mined truth, agreed up front.",
+    d: "A campaign fee, a success bounty, or both. Agreed up front.",
   },
 ];
 
@@ -109,8 +109,8 @@ export function Campaign() {
         <div className="grid sm:grid-cols-3 gap-4 mt-6">
           {[
             ["a Lean repo", "the target signature typechecks against a pinned toolchain"],
-            ["one-command re-verify", "lake exe verify returns green or red, from clean, on your machine"],
-            ["an axiom census", "#print axioms, so the trust base is exactly Mathlib and nothing more"],
+            ["one-command re-verify", "green or red, from clean, on your machine"],
+            ["an axiom census", "#print axioms, so the trust base is Mathlib and nothing else"],
           ].map(([h, d]) => (
             <div key={h}>
               <p className="mono text-[0.78rem] mb-1" style={{ color: "var(--ok)" }}>

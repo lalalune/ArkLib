@@ -14,27 +14,27 @@ const TIERS: Tier[] = [
     domain: "Formal mathematics",
     verifier: "Lean / Coq / Isabelle kernel",
     grade: "perfect",
-    note: "Checks in milliseconds. Zero trust in the producer. The beachhead and the lead magnet, and it is not close.",
+    note: "Checks in milliseconds. Zero trust in the producer. The beachhead, and it is not close.",
     tag: "beachhead",
   },
   {
     domain: "Cryptography & security",
     verifier: "contract proofs · test vectors · differential fuzzing",
     grade: "good",
-    note: "Cheap and largely trustless. Real buyers, real budgets, criteria they already think in. This is where the revenue is.",
+    note: "Cheap and largely trustless. Real buyers, real budgets. This is where the revenue is.",
     tag: "the commercial step",
   },
   {
     domain: "Computational biology",
     verifier: "energy validation · docking · in-silico assays",
     grade: "approx",
-    note: "Cheap but approximate. Ranks and filters. You get certified candidates, not proofs.",
+    note: "Cheap but approximate. Certified candidates, not proofs.",
   },
   {
     domain: "Most empirical science",
     verifier: "the universe, billed by the week",
     grade: "none",
-    note: "No cheap trustless verifier. Ground truth needs an experiment. Not minable today.",
+    note: "No cheap verifier. Ground truth needs an experiment. Not minable today.",
   },
 ];
 

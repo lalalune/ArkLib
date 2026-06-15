@@ -19,7 +19,7 @@ const mono = IBM_Plex_Mono({
 
 const title = "Truth Mining · formal verification, mined and re-checkable";
 const description =
-  "We point an agent fleet at a formal target with a cheap trustless verifier and ship a kernel-certified proof you can re-check with one command. We proved a 25-year-open coding-theory problem this way. Now we do it on commission: formal verification of ZK circuits and smart-contract invariants. A false truth does not typecheck.";
+  "An agent fleet mines a formal target against a cheap trustless verifier and ships a kernel-certified proof you re-check with one command. We mined a 25-year-open problem this way. Now we do it on commission, for ZK circuits and smart-contract invariants. A false truth does not typecheck.";
 
 export const metadata: Metadata = {
   title,

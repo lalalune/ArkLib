@@ -17,10 +17,9 @@ export function Moat() {
           </h3>
           <p className="text-[0.96rem]" style={{ color: "var(--ink-2)", lineHeight: 1.55 }}>
             A meta-checker that hunts false positives: bricks that typecheck but
-            prove something weaker than claimed, vacuous statements whose
-            hypotheses are secretly false, signatures that drifted from the
-            acceptance criterion. It caught real bugs in the{" "}
-            <span style={{ color: "var(--ink)" }}>δ*</span> campaign. It is the
+            prove something weaker, vacuous statements, signatures that drifted
+            from the criterion. It caught real bugs in the{" "}
+            <span style={{ color: "var(--ink)" }}>δ*</span> campaign. The
             difference between a kernel-green lie and a mined truth.
           </p>
         </div>
@@ -35,11 +34,10 @@ export function Moat() {
           </h3>
           <p className="text-[0.96rem]" style={{ color: "var(--ink-2)", lineHeight: 1.55 }}>
             Turning a domain&#8217;s correctness question into a cheap trustless
-            check is the rare skill and the category-owning asset. The
-            orchestration that decomposes a target and deconflicts the fleet,
-            the honesty contract that bans <span className="code">native_decide</span>,{" "}
+            check is the rare skill. The orchestration, the honesty contract
+            that bans <span className="code">native_decide</span>,{" "}
             <span className="code">sorry</span> and unaudited axioms, and the
-            growing catalog of solved targets, all compound.
+            catalog of solved targets all compound.
           </p>
         </div>
       </div>
@@ -50,10 +48,10 @@ export function Moat() {
           <span className="dot" /> said plainly
         </span>
         <p className="text-[0.96rem]" style={{ color: "var(--ink-2)", lineHeight: 1.55 }}>
-          The miners are rented LLMs, and they commoditize. Anyone can point a
-          frontier model at Lean. The moat is not the fleet. It is the
-          audit-guard, the frontier playbook, and a public, re-checkable track
-          record, the assets that survive smarter miners.
+          The miners are rented LLMs and they commoditize. Anyone can point a
+          frontier model at Lean. The moat is the audit-guard, the frontier
+          playbook, and a public re-checkable track record. The assets that
+          survive smarter miners.
         </p>
       </div>
     </div>
