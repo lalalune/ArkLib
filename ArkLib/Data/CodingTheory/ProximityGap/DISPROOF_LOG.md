@@ -11119,3 +11119,50 @@ caps at Johnson; past Johnson needs the open p-dependent BGK moment) and with
 `probe_407_lacunary_pencil_Npencil.py` (deep-interior I jumps far above budget n).
 
 **Probe committed:** `scripts/probes/probe_c21_genpos_affine_rank.py` (commit `545a978274`).
+
+---
+
+## C20 (#444): Khovanskii fewnomial real-analogue + char-faithful complexification — REFUTED (false premise) — 2026-06-15
+
+**Claim.** The ragged (non-coset) μ_n-roots of a `(k+2)`-nomial `f=X^a+γX^b−h` (`deg h<k`)
+are bounded by Khovanskii's `n,p`-INDEPENDENT fewnomial count `2^{C(k+2,2)}(k+2)`, so
+`s* ≤ core(n/2)+const(n)`, giving `δ*=1/2` past Johnson for `ρ<1/4`. Coset stripping and char
+transfer cited as in-tree proven (`FactorizationRigidity`, `RigidityReductionPrizeScale`).
+
+**The fatal premise is false.** Khovanskii's fewnomial theorem bounds **POSITIVE REAL**
+solutions (a degree-free count, valid because real sign-variation is limited). There is **no
+real-analogue over fields with roots of unity**: the number of roots of a `t`-nomial in
+`μ_n ⊂ F_p` (or even `μ_n ⊂ ℂ`) is governed by the **DEGREE**, not the monomial count.
+
+**Machine/numeric witness (extends in-tree `_RThinSqrtNKRefuted.lean` to prize-band primes).**
+The `k=2` family `f=(X^m+1)(X−1)=X^{m+1}−X^m+X−1` is a `(k+2)=4`-nomial (support `{0,1,m,m+1}`).
+Its `μ_{2m}`-root set `S={x:x^m=−1}∪{1}` is **genuinely ragged** (coeff at `X^1` is `≠0` ⟹ not a
+`μ_{d'}`-coset-union for any `d'>1`, by factorization rigidity) of size `m+1 = n/2+1`. Over prize
+primes (`p` prime, `p≡1 mod n`, `p>n^3`, `n<p^{1/4}`, dyadic `n=2^μ`, NEVER `n=p−1`):
+
+| n | m | p | ragged μ_n-root count | Khovanskii cap `2^C(4,2)·4` | violation |
+|---|---|---|---|---|---|
+| 512 | 256 | 68719484929 | **257** | 256 | yes |
+| 1024 | 512 | 1099511630849 | **513** | 256 | yes |
+| 2048 | 1024 | 17592186062849 | **1025** | 256 | yes |
+| 4096 | 2048 | 281474976768001 | **2049** | 256 | yes |
+
+The count is exactly `m+1`, Θ(n); the alleged "constant" cap `256` is a fixed number — the gap
+is unbounded. Violation begins at `n=512`.
+
+**Why even the "salvageable" reading fails to reach past Johnson.** Per C20's own coset-stripping,
+suppose one only bounds the ragged EXCESS over the largest coset core. The probe shows
+`S = (μ_m-coset of size n/2) ∪ {one straggler}`: the excess is `1=O(k)` (correct, and exactly the
+in-tree `ragged_excess_le_degree`), but the **coset core itself is n/2** = the antipodal `μ_{n/2}`
+coset, i.e. the **Johnson-radius-sized** object. So `s* ≈ core = n/2` ⟹ `δ* = 1−ρ`?? No: the
+core IS the closed/antipodal/cyclotomic object the route-elimination meta-theorem proves caps at
+**Johnson** (`1−√ρ`). Khovanskii contributes nothing to the core, and the core is where all the
+mass is. C20 gives no past-Johnson lever.
+
+**Which horn:** refuted-false (false load-bearing premise — Khovanskii has no roots-of-unity
+analogue), degenerating to reduces-to-johnson on the salvageable reading. Consistent with the
+prior DISPROOF_LOG entry **wf-NK (#444)** (fewnomial adds nothing tighter than the `C(n,size)`
+union bound; Tao-uncertainty needs `n` prime, vacuous for `n=2^μ`).
+
+**Probes committed:** `scripts/probes/probe_c20_khovanskii_ragged_root_count.py`,
+`scripts/probes/probe_c20_khovanskii_ragged_certificate.py` (commit `fb3785b58`).
