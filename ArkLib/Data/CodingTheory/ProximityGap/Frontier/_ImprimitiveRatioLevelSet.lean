@@ -48,10 +48,15 @@ Stated for an abstract finite cyclic group `G` (the smooth subgroup `μ_n` is th
 the generic `RatioLevelSet.grs_line_incidence_le` over-estimates (`max deg = d` vs the true
 `gcd(n,d)`), and it is the precise place where the ratio-census *re-encodes* the Gauss period:
 `d = n/2` gives `gcd(n,d) = n/2`, the maximal collapse (`x^{n/2} = ±1` on `μ_n`).  It bounds the
-**concentrated** part of the far-line incidence (the `μ_{n/gcd}`-coset of high-multiplicity scalars,
-verified numerically as a `μ_{n/gcd}` coset of size `n/gcd`).  It is **NOT a closure**: the binding
-far-line-to-*code* incidence is dominated by the *low*-multiplicity generic ratios (the Weil part),
-which this law does not touch.  See the #407 D3 thread.
+**concentrated** part of the far-line incidence: numerically (exact list-decode, `n=16,k=4,r=10`,
+worst monomial direction `(x^9, x^{15})`, `j=b−a=6`, `gcd(j,n)=2`), the high-multiplicity bad
+scalars are **exactly a `μ_{n/gcd}=μ_8` coset of size `n/gcd=8`** (every concentrated `γ` verified
+to satisfy `(γ/γ₀)^8 = 1`), matching `imprimitive_image_card`.  It is **NOT a closure**: the
+binding far-line-to-*code* incidence at that direction is `88`, dominated by the **80
+low-multiplicity generic ratios** (mult `≤ 2`, the Weil part = the `t=2` coincidence moment) — open
+BGK/Paley face — which this law does not touch.  The brick caps the concentrated `μ_{n/gcd}`-coset
+contribution at `n` (sharp), reducing the open residual to the generic-ratio coincidence moment.
+See the #407 D3 thread (comment 199).
 
 Char-free, no field-size hypothesis; pure finite cyclic-group theory built on Mathlib's
 `IsCyclic.card_powMonoidHom_ker` / `card_powMonoidHom_range`.

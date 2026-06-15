@@ -120,9 +120,9 @@ constraints* the realizability imposes is exactly `|S| − k`: the value-vector 
 codimension-`(|S| − k)` subspace of `F^{|S|}`.  We pin the codim arithmetic (`|S| = k + codim`)
 as the structural backbone — the deployed binder at `|S| = k+2` is therefore the **codim-2** system
 (`NvIReconcile`), with the height-gate's point-sum being only the codim-1 face. -/
-theorem realizable_codim_eq {S : Finset F} {k : ℕ} (hkS : k ≤ S.card) :
-    S.card = k + (S.card - k) :=
-  (Nat.add_sub_cancel' hkS).symm
+theorem realizable_codim_eq {m k : ℕ} (hkm : k ≤ m) :
+    m = k + (m - k) :=
+  (Nat.add_sub_cancel' hkm).symm
 
 /-- **The deployed binder is the codim-2 system; the height-gate closes only codim-1.**  At the
 deployed agreement size `|S| = k + 2`, the realizability codim is `2`: the line-membership requires
@@ -130,8 +130,8 @@ the top **two** interpolant coefficients (divided differences `h₁` and `h₂`)
 Schur-minor system.  The height-gate / No-Excess lane bounds only the single point-sum `h₁` (the
 codim-1 face), so it does not control the deployed incidence.  This lemma records the codim count
 `= 2` for the deployed binder size, the exact gap quantity. -/
-theorem deployed_binder_codim_two {S : Finset F} {k : ℕ} (hS : S.card = k + 2) :
-    S.card - k = 2 := by omega
+theorem deployed_binder_codim_two {m k : ℕ} (hS : m = k + 2) :
+    m - k = 2 := by omega
 
 /-- **Realizability bounds the agreement-set EXCESS, not the bad-`γ` COUNT (the honest scope).**
 A realizable agreement set has `|S| = k + codim` with `codim` the realizability codimension, so
@@ -144,10 +144,11 @@ such a realizable set.  The set bound does **not** bound that count: numerics (p
 realizability lever closes the SET face (`= k+1` isolated, `_RThinResidueDegree`) but the COUNT face
 (`WorstCaseFarIncidenceBounded`) is the genuine open object — a `p`-independent algebraic count of a
 codim-2 Schur-minor RATIO system, NOT a single-frequency character sum (hence off-BGK).  We record
-this scope split as a structural identity: realizability gives the per-set codim, not the γ-count. -/
-theorem realizability_bounds_set_not_count {S : Finset F} {k : ℕ}
-    (hkS : k ≤ S.card) (hcodim : S.card - k = 2) :
-    S.card = k + 2 := by omega
+this scope split as a structural identity: realizability gives the per-set codim, not the
+γ-count. -/
+theorem realizability_bounds_set_not_count {k m : ℕ}
+    (hkm : k ≤ m) (hcodim : m - k = 2) :
+    m = k + 2 := by omega
 
 end ProximityGap.Frontier.RThinRealizabilityCodim
 
