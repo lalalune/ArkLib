@@ -971,7 +971,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentLadderExceedsPrize
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentMethodNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialLineSpectrumNoEscape
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PerCosetDichotomy
-import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PeriodTailMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PhaseAlignmentReality
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RThinRealizabilityCodim
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RThinResidueDegree
@@ -1507,6 +1506,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionSpectral
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionSubgroupData
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionTower
 import ArkLib.Data.CodingTheory.ProximityGap.MomentCollisionWeilConditional
+import ArkLib.Data.CodingTheory.ProximityGap.MomentCountSupBound
 import ArkLib.Data.CodingTheory.ProximityGap.MomentLogConvex
 import ArkLib.Data.CodingTheory.ProximityGap.MomentSupNormBridge
 import ArkLib.Data.CodingTheory.ProximityGap.MomentSupplyIdentity
