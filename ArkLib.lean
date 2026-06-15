@@ -1578,9 +1578,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.PackingSubdivision
 import ArkLib.Data.CodingTheory.ProximityGap.PackingTreeSufficiency
 import ArkLib.Data.CodingTheory.ProximityGap.PadePartialFractionsKill
 import ArkLib.Data.CodingTheory.ProximityGap.PairCoherenceCount
-import ArkLib.Data.CodingTheory.ProximityGap.PairingResidualFailsAtPrize
 import ArkLib.Data.CodingTheory.ProximityGap.PairSumRigidityModP
 import ArkLib.Data.CodingTheory.ProximityGap.PairSumsWiring
+import ArkLib.Data.CodingTheory.ProximityGap.PairingResidualFailsAtPrize
 import ArkLib.Data.CodingTheory.ProximityGap.PartialDFTClosure
 import ArkLib.Data.CodingTheory.ProximityGap.PencilAgreementUnique
 import ArkLib.Data.CodingTheory.ProximityGap.PencilDegreeBound
@@ -1605,6 +1605,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PrimitiveFactorCovering
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeEntropyDeltaStar
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeSpectralLevelSetSharp
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeStructuralConstant
+import ArkLib.Data.CodingTheory.ProximityGap.PrizeSupNormHeadline
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionBoundaryFailure
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionJohnsonBudget
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionRegimeBracket
