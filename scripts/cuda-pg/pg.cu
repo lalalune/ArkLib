@@ -15,7 +15,11 @@
 // (bmu = floor(2^64 / p)).
 //
 // Build:  nvcc -O3 -arch=native -o pg pg.cu      (RTX 5080: -arch=sm_120 ; H200: -arch=sm_90a)
-// Run:    ./pg <n> <k> [cap]
+// Run:    ./pg <n> <k> [cap] [prime]
+//   prime (optional): force a specific prime p (must satisfy p % n == 1 and p prime);
+//   0/omitted uses big_prime(n).  Use this to validate the n=32 p-DEPENDENCE target
+//   (#407): e.g. `./pg 32 2 0 32801` vs `./pg 32 2 0 32993` — the max over-determined
+//   incidence at s=4 is p-dependent (897 vs 705), the cross-witness-gamma correctness test.
 //
 // Copyright (c) 2026 ArkLib Contributors. Apache-2.0.
 
@@ -179,9 +183,17 @@ int main(int argc, char** argv) {
   if (argc < 3) { fprintf(stderr, "usage: %s <n> <k> [cap]\n", argv[0]); return 1; }
   int n = atoi(argv[1]), k = atoi(argv[2]);
   uint64_t cap = (argc > 3) ? strtoull(argv[3], nullptr, 10) : 4000000000ull;
+  uint32_t prime_override = (argc > 4) ? (uint32_t)strtoul(argv[4], nullptr, 10) : 0;
   if (n > MAXN) { fprintf(stderr, "n=%d exceeds MAXN=%d (raise MAXN, recompile)\n", n, MAXN); return 1; }
 
-  uint32_t p = h_big_prime((uint64_t)n);
+  uint32_t p;
+  if (prime_override) {
+    if (prime_override % (uint32_t)n != 1 || !h_is_prime(prime_override)) {
+      fprintf(stderr, "prime %u invalid: need (p %% n == 1) and prime\n", prime_override); return 1; }
+    p = prime_override;
+  } else {
+    p = h_big_prime((uint64_t)n);
+  }
   uint32_t g = h_proot(p);
   uint32_t h = h_powmod(g, (p - 1) / (uint32_t)n, p);
   std::vector<uint32_t> mu(n);
