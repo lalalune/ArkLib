@@ -316,7 +316,7 @@ theorem foldOracleReduction_perfectCompleteness (hInit : NeverFail init) (i : Fi
       erw [_root_.simulateQ_pure]
     set V_check := step.verifierCheck stmtIn
       (FullTranscript.mk2
-        (msg0 := _)
+        (msg0 := inputState.1)
         (msg1 := (FullTranscript.mk2 (foldProverComputeMsg 𝔽q β i witIn) r_i').challenges ⟨1, rfl⟩))
       with h_V_check_def
     obtain ⟨h_V_check, h_rel, h_agree⟩ := strongly_complete (stmtIn := stmtIn)
@@ -410,11 +410,14 @@ theorem foldOracleReduction_perfectCompleteness (hInit : NeverFail init) (i : Fi
     dsimp only [] at h_prvOut_eq
     rw [Prod.mk.injEq, Prod.mk.injEq] at h_prvOut_eq
     obtain ⟨⟨prvStmtOut_eq, prvOStmtOut_eq⟩, prvWitOut_eq⟩ := h_prvOut_eq
-    -- verifier-output equations: reduce the OptionT functor map, then `support (liftM (pure (some
-    -- y)))` to the singleton `{y}` and split (FriCompletePerRound pattern).
-    erw [_root_.map_pure] at h_verOut_mem
-    simp only [OptionT.mem_support_iff, OptionT.support_liftM, support_pure,
-      Set.mem_singleton_iff, Option.some.injEq, Prod.mk.injEq] at h_verOut_mem
+    -- verifier-output equations: reduce the OptionT functor map and the lift of a `pure`
+    -- (`g <$> pure X` then `liftM (pure (g X))`) to `OptionT.pure (g X)`.  The success-level support
+    -- over `OptionT (OracleComp []ₒ)` has an instance path the generic `support_pure` cannot
+    -- syntactically match, so bridge it by defeq with `erw` on the OptionT-specific `support_pure`
+    -- combinator, then split the resulting product equality.
+    erw [_root_.map_pure, liftM_pure] at h_verOut_mem
+    erw [OptionT.support_OptionT_pure, Set.mem_singleton_iff] at h_verOut_mem
+    rw [Prod.mk.injEq] at h_verOut_mem
     obtain ⟨verStmtOut_eq, verOStmtOut_eq⟩ := h_verOut_mem
     constructor
     · rw [prvWitOut_eq, verStmtOut_eq, verOStmtOut_eq];
