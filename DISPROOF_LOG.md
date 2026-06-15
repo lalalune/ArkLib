@@ -2135,3 +2135,45 @@ VERDICT (positive direction-setting, rule-6 honest -- NOT a CORE closure):
    red herring. The real open object is well-posed and budget-feasible; the prize is the PROOF, at the
    collective BGK depth, that this finite-n feasibility persists asymptotically.
 Python-only, no Lean => axiom-clean trivially. probe_407_truecore_B_vs_budget.py.
+
+================================================================================
+2026-06-15 FLOOR-CONSISTENT on the CORRECT object: the canonical #bad / eps*-budget
+ratio at the shallowest binding band is BOUNDED BELOW 1 (converging ~0.26), NOT
+Johnson-tracking -- the first floor-consistent growth on #bad direct (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE (capstone follow-up to the true-core feasibility brick ed1db3379): that brick showed B=max_stack
+#bad <= eps*-budget 2^r*C(2^{mu-1},r) at finite n. The PRIZE content is the ASYMPTOTIC decider: does
+ratio(n)=#bad/budget stay BOUNDED BELOW 1 (genuine FLOOR, prize-positive) or CREEP UP TO 1 (Johnson, the
+fate of every SURROGATE: incidence I(n), e2=0 census K, even/odd moments). This is the FIRST growth
+measurement on the CANONICAL OpenCoreConditionalPin object #bad itself (all prior floor-vs-Johnson probes
+were on surrogates).
+
+OBJECT (exact mod-p, PROPER mu_n, p~n^4, shallowest binding band r=2 -> k=1, a=3 where C(n,3) is brute-
+feasible to n=64): #bad = #distinct pinned gamma, max over char-line adversary. Probe
+probe_407_truecore_B_growth.py (dedicated fast pair-ratio routine reaching n=64).
+
+RESULT (worst line consistently (4,2)):
+  n= 8: #bad=5    budget=24    ratio=0.2083
+  n=16: #bad=25   budget=112   ratio=0.2232
+  n=32: #bad=113  budget=480   ratio=0.2354
+  n=64: #bad=481  budget=1984  ratio=0.2424
+Increments 0.0149, 0.0122, 0.0070 -- DECAYING (last ratio ~0.57) => geometric extrapolation to ~0.26,
+BOUNDED WELL BELOW 1. The canonical #bad-to-budget ratio is CONVERGING below 1 = FLOOR-CONSISTENT.
+
+VERDICT (rule-4; the FIRST floor-consistent (not Johnson) signal on the right object; rule-6 honest):
+1. On the SURROGATE faces, every floor-vs-Johnson probe converged to Johnson (ratio -> 1 / super-budget).
+   On the CANONICAL #bad object at the shallowest binding band, the ratio-to-budget converges to ~0.26
+   -- bounded below 1, FLOOR-consistent. This is the qualitative difference between #bad (the real
+   obligation) and the surrogates (#alignable, incidence, census, moments) that all over-shoot.
+2. CONSEQUENCE: the deployed eps* budget 2^r*C(2^{mu-1},r) is not merely met finite-n (ed1db3379) -- its
+   margin appears to PERSIST (ratio bounded ~0.26) at the shallowest band as n grows. If this floor
+   persists across all r and to the prize regime, the canonical pin's budget is asymptotically sufficient
+   for #bad -- exactly the prize-positive direction the surrogates falsely killed.
+HONEST SCOPE (rule 6 -- NOT a closure): single SHALLOWEST band r=2 (computational reach; deepest band
+r=2^{mu-1} is brute-infeasible past n=16); worst is a fixed LOW line (4,2); p-fixed (one prime per n);
+n<=64. The full prize is forall-r and the asymptotic decider needs n>=256 (c.348: numerics cannot
+separate floor from Johnson below 256). So this is a measured finite-n floor-CONSISTENT trend on the
+correct object at one band -- it does NOT prove a floor (the deeper bands / larger n could differ), but
+it is the first face whose #bad-to-budget ratio does NOT march to Johnson. The deep-band growth law +
+the multi-band + larger-n confirmation are the open residual. CORE not closed, not faked. Python-only,
+no Lean => axiom-clean trivially. probe_407_truecore_B_growth.py.
