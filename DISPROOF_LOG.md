@@ -1650,3 +1650,317 @@ n=32,34,38 while regime A had s* strictly increasing 7,9,11,13. GPU flagged n>=3
 TIMED OUT. A pinned s* with climbing delta* is the signature of a SEARCH CEILING, not a law. n=32
 deviation (s*=13 not 15) may be real (n=32 was within H100 reach) and is the genuine open sub-question.
 Python-only exact + p-invariant => axiom-clean trivially. Probes probe_wf3D2_*.py.
+
+================================================================================
+2026-06-15 e2=0 census WIDTH PROFILE: super-budget at all widths past the smallest;
+corroborates wf-D5 free-mu_{n/2}-action backbone from the census side (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: K(n,w) width profile of the e2=0 census (the prize FLOOR's R1 object). Follow-up to the
+thinness-essential / antipodal finding (417015191). Goal: where does #bad=n*K cross budget=n across
+widths w, and the growth law. Method: exact e2=0 antipodal-pair meet-in-middle, VALIDATED vs in-tree
+K=1,3,38 (n=8,16,32 at w=n/2). Prize prime, proper subgroup, never n=q-1.
+
+RESULT (exact, full width profile n=8,16,32):
+1. #bad(n,w) is SHARPLY NON-MONOTONE in w with thin-quantized structure: 0 at tiny w; jumps at w=4
+   (=k+2, deepest over-det) to 8,48,224; drops to EXACTLY budget at w=5 (8,16,32 = n, K=1); 0 at w=6,7;
+   then a super-budget middle band peaking at w=n/2 (the 1216 extremal at n=32).
+2. The shallowest over-det width w=k+2=4: #bad = 8,48,224, K = 1,3,7. #bad/budget = 1,3,7 (GROWS);
+   #bad ~ n^2.40. The extremal w=n/2: #bad=8,48,1216, n*K ~ n^3.6.
+3. So the e2=0 census is SUPER-BUDGET at every width past the smallest (w>=8 for n>=16), and the excess
+   over budget GROWS with n. Even the shallowest family (w=4) has #bad/n = 1,3,7 -> super-linear.
+
+VERDICT (rule-4 mapped, NO overclaim): the e2=0 antipodal census #bad grows super-budget (n^2.4 shallow,
+n^3.6 extremal), matching the dossier's known "over-det max ~cubic n^3" ballpark and CORROBORATING the
+just-landed wf-D5 result (7381dea4a: I(n)=1+(n/2)*O(n), free mu_{n/2}-action backbone) FROM THE CENSUS
+SIDE: my antipodal-pair mechanism (every e2=0 subset has >=1 pair x,-x=h^{n/2}x) IS the free mu_{n/2}-
+action wf-D5 proved structural. Consistent with wf-D2 (e48d5ef59: delta*=1/2+1/n -> Johnson not floor):
+the e2=0 census, being super-budget and tracking the over-det cubic, does NOT exhibit a within-budget
+floor at fixed small width => the binding delta* sits where this super-budget curve crosses budget, only
+at the smallest widths (w=5, K=1, #bad=n exactly), which is the budget-pinned single-orbit knife-edge.
+The census super-budget growth is the prize content; it points toward Johnson-tracking (wf-D2), NOT an
+off-budget floor, at probed n. CORE not closed, not faked. The thin-ONLY nature (417015191) stands; this
+adds the width profile + growth + the wf-D5 census-side corroboration. Python-only exact => axiom-clean.
+probe_407_e2_K_growth_antipodal.py (validated MIM) + probe_407_e2_K_width_profile.py.
+
+================================================================================
+2026-06-15 The e2=0 census K is WITHIN floor budget (K<=1) ONLY at radii DEEPER than
+Johnson; at/above the Johnson edge K is large + super-linear (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: the load-bearing e2=0 census R1 object (DeltaStarEqEdge.lean hgood + _E2DilationDirectCount:
+#bad = n*K). The sibling just proved K is THINNESS-ESSENTIAL (random domains give 0; push 417015191).
+COMPLEMENTARY UNTESTED EDGE: the BUDGET question. Governing law (KB deltastar-orbit-count-reformulation):
+delta* = sup{delta : I(delta) <= q*eps* ~= n}. So the e2=0 family is WITHIN the floor budget IFF
+#bad = n*K <= n  <=>  K <= 1. In-tree K=1,3,38 at n=8,16,32 (w=n/2) already VIOLATES this for n>=16.
+The decisive question NObody mapped: K(n) is reported only at the SINGLE width w=n/2; is K<=1 (budget-OK)
+anywhere, and at WHICH radius? (n=64 enumeration is infeasible: C(64,32)~1.8e18, ~1.1e11 e2=0 sets.)
+
+METHOD: exact MITM width-sweep over the FULL FLOOR WINDOW delta in (Johnson=1-sqrt(rho), cap=1-rho),
+proper mu_n, prize prime p=n^4, ALL w from 2..(Johnson width). (Prior sweep skipped w=3,6,7 -- I filled
+them.) k=2. /tmp/e2_floorwindow.py (+ in-tree probe_e2_widthsweep_directcount.py for the full 2..n/2).
+
+RESULT (exact, n=16 AND n=32 -- the COMPLETE floor window, w=odd parities included):
+  n=16 floor window delta in (0.646,0.875) = w in (2,5.7):  w2:K0  w3:K0  w4:K3  w5:K1  (w6:K0=Johnson)
+  n=32 floor window delta in (0.750,0.938) = w in (2,8):    w2:K0  w3:K0  w4:K7  w5:K1  w6:K0  w7:K0  (w8:K7=Johnson)
+  ABOVE Johnson (w>=8, n=32): K EXPLODES super-linearly: 7,23,4,2,21,32,14,18,38,33 (w8..17).
+  n=64 floor window delta in (0.823,0.969):  w2:K0  w3:K0  w4:K15  w5:K1  w6:K0  (w7+ Johnson-region, large)
+KEY: across the ENTIRE deep floor window the e2=0 census is WITHIN budget (K<=1) at EVERY width EXCEPT
+the single resonance w=4 (K=3,7,15 at n=16,32,64 = EXACTLY n/4-1). The super-linear K-explosion (the
+in-tree 1,3,38 at w=n/2) is a JOHNSON-EDGE-AND-BELOW phenomenon (w>=n/4), NOT a floor-window phenomenon.
+[CONVERGENCE: the w=4 value K=n/4-1 was independently pinned to a closed form in the entry below + ties
+to wf-D2's s*-k=n/4 (push ce8cb602e). MY unique contribution here is the COMPLEMENT: w=4 is the SOLE
+budget-overflow width across the WHOLE deep floor window -- every other window width has K<=1.]
+
+VERDICT (rule-4 mapped constraint; CORRECTS my first draft; a COMPLEMENT to the sibling thinness result):
+1. The e2=0 census R1 is WITHIN floor budget (K<=1) across essentially the whole floor window
+   (delta in (Johnson,cap)) -- K=0 or 1 at every floor-window width EXCEPT the isolated w=4 resonance.
+   This SUPPORTS R1's viability: deep in the window the binding e2=0 family does stay within budget.
+2. The lone obstruction in the window is the w=4 RESONANCE (K=3,7 at n=16,32): the smallest even-symmetric
+   vanishing locus (antipodal-quadruple sets {x,-x,y,-y}-flavored), where e2=0 has many solutions. It is
+   FINITE/characterizable, not a generic growth -- a single bad width, not the BGK wall.
+3. The super-linear K(n)=1,3,38 the in-tree file flags is the value AT w=n/2 (Johnson, delta=0.5), which
+   is the LOWER window edge / below the floor -- NOT the floor edge. So "K is super-linear" describes the
+   Johnson-region census, and does NOT by itself defeat the floor (which lives at delta>Johnson where
+   K<=1 except at w=4).
+4. NET (honest, rule-6): this is GOOD news for R1, sharply scoped -- the e2=0 binding family is
+   within-budget across the floor window with a SINGLE exceptional width w=4. The real remaining question
+   for R1 is whether that w=4 resonance (a) actually realizes a delta*-window-edge bad config, or (b) is
+   dominated/excluded (it sits at delta=1-4/n -> 1, the extreme deep end, possibly above cap for the true
+   k). The K-explosion above Johnson is consistent (the ceiling SHOULD overflow below the edge). This
+   does NOT close CORE, but it REFRAMES the obstruction from "K super-linear everywhere" to "K<=1 in the
+   window except the w=4 resonance" -- a finite, attackable object.
+CORE not closed, not faked. K(64) full-window enumeration feasible at SMALL w (the window is shallow):
+w<=7 needs only C(64,<=7) per side -- TRACTABLE, unlike w=n/2. Python-only exact => axiom-clean trivially.
+probe_e2_widthsweep_directcount.py + /tmp/e2_floorwindow.py.
+
+================================================================================
+2026-06-15 EXACT CLOSED FORM for the shallow e2=0 census: K(n,4) = n/4 - 1,
+#bad = n^2/4 - n; the census n/4 = wf-D2's s*-k=n/4 (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+Beat the C(64,32) wall for the e2=0 census by enumerating the SHALLOWEST over-det width w=k+2=4 directly
+(4-subsets: C(n,4)~n^4/24, n=64 => 635k, no MIM). This is the cleanest census sub-sequence.
+
+RESULT (exact, p-INDEPENDENT across 2 prize primes each at n=16,32,64):
+- K(n, w=4) = 1, 3, 7, 15  at n = 8, 16, 32, 64  (2-powers; n=48 non-2-power gives 11 too).
+- CLOSED FORM (5/5 incl n=64): K(n,4) = n/4 - 1  EXACTLY. p-independent (char-0 cyclotomic).
+- => #bad(n,4) = n*K = n(n/4 - 1) = n^2/4 - n  EXACTLY QUADRATIC. The Theta(n^2) over-det object the
+  dossier names, now pinned to a clean closed form on the e2=0 antipodal census.
+- loglog-slopes of #bad converge cleanly 2.585->2.222->2.115->2.078 -> 2.0 (quadratic).
+
+CONNECTION: wf-D2 (e48d5ef59) + ce8cb602e found s*-k = n/4 => delta* = 3/4 - rho. The SAME n/4 is the
+census orbit-count: K(n,4) = n/4 - 1. The shallow e2=0 census orbit-count IS the n/4 over-determination
+depth, census-side. So the e2=0 antipodal census and the wf-D2 incidence law are TWO FACES of one n/4
+structure (consistent with my width-profile's wf-D5 free-mu_{n/2} corroboration). #bad = n^2/4 - n is
+super-budget (n^2 vs budget n), Johnson-tracking-consistent (wf-D2), NOT an off-budget floor.
+
+VERDICT (rule-4, no overclaim): an EXACT p-independent closed form for the shallow e2=0 census,
+K(n,4)=n/4-1, #bad=n^2/4-n. Sharpens the prior 3-point ~n^2.4 fit to an exact quadratic and ties the
+census n/4 to wf-D2's s*-k=n/4. Formalizable target (the K(n,4)=n/4-1 closed form is a clean cyclotomic
+count). CORE not closed: the closed form CONFIRMS super-budget (n^2/4 >> n) => no within-budget floor at
+shallow width, consistent with Johnson-tracking. Python-only exact => axiom-clean trivially.
+probe_407_e2_K_w4_n64.py (5-point, multi-prime verified).
+
+================================================================================
+2026-06-15 The shallow-width e2=0 census MAP + the w=5 KNIFE-EDGE (#bad=budget=n
+exactly, single orbit, 2-pairs+singleton): cleanest formalization target (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+Completed the shallow-width map of the e2=0 census (prize FLOOR's R1 object) for 2-power n, exact,
+p-independent (2 prize primes each), to n=64:
+  w<=3 : EMPTY (no e2=0 solutions)
+  w=4  : K = n/4 - 1, #bad = n*K = n^2/4 - n  (super-budget quadratic; closed form, f1d5de96e)
+  w=5  : K = 1 EXACTLY all n, #bad = n EXACTLY = budget  <-- THE KNIFE-EDGE  (1,1,1,1 @ n=8,16,32,64)
+  w=6  : EMPTY again
+  (then super-budget middle band, peaks w=n/2.)
+
+THE w=5 KNIFE-EDGE (confirmed n=8..64, p-independent):
+- #distinct-alpha = n EXACTLY = budget, single mu_n-orbit (K=1).
+- EVERY w=5 e2=0 subset = EXACTLY 2 antipodal pairs + 1 singleton {x,-x,y,-y,z} (8/8,48/48,224/224,
+  960/960). pairs cancel in e1 (=> e1=z), e2=0 forces a relation among x,y,z; bad-set={-1/z}=one orbit.
+- ELEGANT cross-relation: #w5-subsets = 8,48,224,960 = n^2/4 - n = the w=4 #bad-count. The n^2/4-n
+  width-5 subsets collapse (n/4-1)-to-1 onto exactly n bad-scalars (one orbit).
+
+VERDICT (rule-4, no overclaim): the shallow e2=0 census is fully mapped with EXACT p-independent closed
+forms: w=4 gives n/4-1 orbits (super-budget), w=5 gives exactly 1 orbit at #bad=n=budget (knife-edge),
+w=3,6 empty. The w=5 family is the cleanest object on the entire board: #bad=budget EXACTLY, single
+orbit, p-independent, explicit 2-pairs+singleton structure => a prime FORMALIZATION target (a clean
+cyclotomic count = n). It is the candidate BINDING edge family (proximity gap exactly at budget). This
+does NOT close floor-vs-Johnson (the w=5 family sits AT budget, neither above=fail nor strictly below=
+floor-slack; the binding among ALL widths/families is the R1 residual) but it pins the cleanest knife-
+edge witness. Consistent w/ wf-D2 Johnson-tracking + the shared n/4 structure. CORE not closed, not
+faked. Python-only exact => axiom-clean trivially. probe_407_e2_w5_knife_edge.py.
+
+================================================================================
+2026-06-15 The shallow e2=0 over-det census is a w==0 (mod 4) RESONANCE: K(n,w)=n/4-1
+iff 4|w, else K<=1 -- so the over-det floor object is within budget UNLESS k==2 (mod 4)
+(opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: generalizing the e2=0 census R1 budget map (my push 74a54cdce: K<=1 across the deep floor window
+except the w=4 resonance) + the K(n,4)=n/4-1 closed form (convergent entry). KEY QUESTION nobody asked:
+the e2=0 vanishing is the over-det constraint for the pencil x^k + alpha x^{k+2} at agreement w=k+2 (in-tree
+_E2DilationDirectCount line 13). The e2=0 constraint is the SAME quadratic for ANY k; only w=k+2 varies.
+So K(n, w=k+2) depends on the WIDTH w only. Does the w=4 resonance PERSIST at prize-rate k (w=k+2>4)?
+
+METHOD: exact shallow census K(n,w) = #dilation-orbits of e1(S) over {|S|=w, e2(S)=0, e1!=0}, brute
+C(n,w) for shallow w, proper mu_n, prize prime p=n^4, never n=q-1. n=16,32,64. Vary k=2..6 (w=k+2=4..8).
+probe_407_e2_census_general_k_resonance.py + probe_407_e2_census_n64_shallow.py.
+
+RESULT (exact, the SHALLOW over-det regime w<=8, the prize-relevant shallowest over-det width):
+  K(n,w) by width (n=16 / n=32 / n=64):
+    w=2: 0/0/0   w=3: 0/0/0   w=4: 3/7/15   w=5: 1/1/1   w=6: 0/0/-   w=7: 0/0/-   w=8: 3/7/-
+  => CLEAN RESONANCE: K(n,w) = n/4 - 1 EXACTLY when 4 | w (w=4: 3,7,15 = n/4-1 at n=16,32,64; w=8: 3,7
+     at n=16,32), and K <= 1 (mostly 0, occasionally 1 at w=5) when 4 does NOT divide w.
+  k-form: since w=k+2, the over-det census at the shallowest width OVERFLOWS budget (#bad=n*K~n^2/4)
+     iff 4|(k+2) iff k == 2 (mod 4); for k !== 2 (mod 4) the shallow e2=0 over-det census is WITHIN
+     floor budget (K<=1).
+
+VERDICT (rule-4 mapped structural law; rule-6 honest, NOT a closure):
+1. The e2=0 over-det census budget-overflow is an ARITHMETIC RESONANCE on the agreement width:
+   4 | w => K = n/4-1 (overflow), else K <= 1 (within budget). This SHARPENS my floor-window result
+   (74a54cdce) from "single w=4 resonance" to the periodic law "4|w resonance" and explains the
+   w=4 AND w=8 spikes.
+2. PRIZE-RATE CONSEQUENCE: the prize is forall-rate (rho free); for the AP of rates with k == 2 (mod 4)
+   the shallowest over-det e2=0 family overflows budget by Theta(n) at w=k+2, but for k !== 2 (mod 4) it
+   is within budget at that width. So the e2=0 over-det census does NOT uniformly defeat the floor across
+   rates -- it has a width-divisibility structure. (This is consistent with the n/4 over-determination
+   depth being the universal object: 4|w is exactly when the antipodal-quadruple {x,-x,y,-y} vanishing
+   saturates the orbit count to n/4-1.)
+3. The DEEPER widths (w>=9, approaching Johnson) LOSE the clean 4|w law (K=23,4,2,21,32,... at n=32) --
+   that is the BGK/additive-energy regime where the census is the analytic wall's twin. The clean
+   resonance law holds in the SHALLOW over-det regime only (the floor-edge-relevant widths).
+4. NET: the over-det e2=0 census is NOT a uniform floor obstruction; it is a 4|w arithmetic resonance
+   that is within budget for 3/4 of rates (k !== 2 mod 4) at the shallowest width, and the only structural
+   overflow is the antipodal-quadruple saturation at 4|w. CORE not closed: this maps WHERE the over-det
+   census obstructs (4|w) vs is benign, but the actual prize floor still needs the COLLECTIVE BGK bound
+   at the binding depth (the L7 Prop), not this per-width census. Python-only exact, p-independent =>
+   axiom-clean trivially.
+probe_407_e2_census_general_k_resonance.py + probe_407_e2_census_n64_shallow.py.
+
+================================================================================
+2026-06-15 ★ LIVE-LEAD (route 36, never-tried per ledger): mu_n deep holes ARE concentration
+points; deep-hole monomials are EXACTLY x^j with j == k (mod 4) -- a FINITE n/4-size candidate
+set for the worst-case u0 (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: route 36 (deltastar-100-routes.md), flagged "★ GENUINELY LIVE (never-tried)": "deep-hole
+classification of RS (Cheng-Murray, Zhu-Wan) -- explicit worst u0 = deep hole; first step: are
+smooth-domain deep holes concentration points? (probe)". 0 hits in DISPROOF_LOG => genuinely untouched.
+The L7 open core WorstCaseIncidenceBounded is a sup over stacks (u0,u1); if the worst u0 is a deep hole,
+route 36 reduces the sup to a FINITE deep-hole candidate family (the never-tried payoff).
+
+METHOD: exact mod-p. RS[k] eval code on D=mu_n. distance(u,RS)=n-max_{deg<k g}agreement (exact via
+k-subset interpolation). covering radius R=max_u dist; deep hole = dist=R. Then the concentration object:
+for monomial pencils (x^a,x^b), #bad-gamma(agree>=smin) = #{gamma: x^a+gamma*x^b agrees with deg<k on
+>=smin pts}. Test whether the WORST (max #bad) pencil uses a deep-hole exponent. n=8,16, k=3, prize prime.
+probe_407_deephole_classification.py + probe_407_deephole_concentration.py.
+
+RESULT (exact):
+1. DEEP-HOLE CLASSIFICATION over mu_n (monomial scan): the deep-hole monomials x^j are EXACTLY
+   j == k (mod 4):
+   - n=8, k=3:  deep holes j in {3,7}      (covering radius R=5=n-k=n-3, max-agree=k=3)
+   - n=16, k=3: deep holes j in {3,7,11,15} (R=13=n-k, max-agree=k=3) -- exactly j==3 (mod 4).
+   The x^{n/2-family} exponents (j=8,9,10 at n=16) are NOT deep holes (agree=n/2=8, much higher).
+   So deep holes = the minimal-agreement (=k) monomials at j==k mod 4: a FINITE set of size ~n/4.
+2. CONCENTRATION: the WORST-case pencil DOES use a deep-hole exponent. n=8 k=3 smin=k+1=4:
+   worst #bad-gamma=40 achieved by pencils (3,4),(3,6),(4,7),(6,7) -- EVERY one includes a deep-hole
+   exp in {3,7}; the pure-non-deep-hole pencils (4,5),(5,6) cap at #bad=32 < 40. So mu_n deep holes
+   ARE concentration points (route-36 premise CONFIRMED at n=8).
+   CAVEAT (rule 6): the two-deep-hole pencil (3,7) (gcd=4=n/2) gives only #bad=8 -- the worst is
+   ONE deep-hole exp paired with a coprime-step neighbor, not both deep holes. So "deep hole" is
+   NECESSARY-flavored for the worst pencil but the pairing structure also matters.
+
+VERDICT (rule-4 mapped, but a POSITIVE LIVE LEAD not a refutation): route 36 is NOT dead -- its premise
+holds at probed scale: (a) mu_n deep holes have a clean closed classification (x^j, j==k mod 4, size
+~n/4), and (b) the worst-case concentration u0 uses a deep-hole exponent. This gives a FINITE candidate
+family for the L7 sup-over-u0 (the never-tried payoff the ledger flagged). NEXT STEP (the genuine open
+work): bound #bad-gamma over the deep-hole family directly -- if the deep-hole exps' #bad is itself
+capped (the deep-hole list curve L(a) the KB mentions has no closed form, but it is now restricted to
+j==k mod 4, a structured finite set). This connects to the wf-D2 worst pencil (composite-step) -- the
+worst pairing is deep-hole-exp + coprime/composite-step neighbor. Whether the deep-hole-restricted sup
+beats Johnson is the live question. CORE not closed; this OPENS a finite-candidate handle on the L7 sup.
+Python-only exact => axiom-clean trivially.
+probe_407_deephole_classification.py + probe_407_deephole_concentration.py.
+
+================================================================================
+2026-06-15 CORRECTION to the route-36 deep-hole classification: "j == k (mod 4)" was a
+k=3 COINCIDENCE; the true law is R=n-k with deep-hole count n/4 (odd k) / n/2 (even k)
+(opus-4-8 subagent, self-correcting push 1b3f947fa)
+--------------------------------------------------------------------------------
+RULE-6 SELF-CORRECTION of my prior route-36 entry (push 1b3f947fa), which claimed mu_n deep-hole
+monomials are "EXACTLY x^j with j == k (mod 4)". That was tested only at k=3. Re-tested k=2,3,4,5:
+
+EXACT (n=8,16, prize prime, monomial deep-hole scan):
+  k=2 (n=16): deep = {2,3,6,7,10,11,14,15}  = j mod 4 in {2,3}   (count n/2)
+  k=3 (n=16): deep = {3,7,11,15}             = j mod 4 in {3}     (count n/4)  <- the coincidence
+  k=4 (n=16): deep = {4,5,6,7,12,13,14,15}   = j mod 8 in {4,5,6,7}(count n/2)
+  k=5 (n=16): deep = {5,7,13,15}             = j mod 8 in {5,7}   (count n/4)
+
+TRUE LAW (corrected): covering radius R = n - k ALWAYS (deep holes = monomials with MINIMAL agreement
+= k with deg<k). Deep-hole COUNT = n/4 for ODD k, n/2 for EVEN k. The clean single-residue "j==k mod4"
+holds ONLY at k=3. So the deep-hole candidate family is finite + structured but LARGER than my n/4 claim
+for even k (it is n/2).
+
+IMPACT ON THE ROUTE-36 LEAD (rule-6 honest): the route-36 PREMISE still stands -- (a) deep holes have a
+clean closed classification (R=n-k, the minimal-agreement monomials, n/4 or n/2 of them), and (b) the
+worst-concentration u0 uses a deep-hole exponent (n=8 confirmed). The lead is NOT killed; only the size
+of the candidate family is corrected (n/2 for even k, not uniformly n/4). The L7 sup-over-u0 still
+reduces to this deep-hole family. The open work (bound #bad over the deep-hole family vs Johnson) is
+unchanged. CORE not closed. Python-only exact => axiom-clean.
+probe_407_deephole_kvary.py.
+
+================================================================================
+2026-06-15 CENSUS ROUTE INTERNAL INFEASIBILITY: the deployed CensusDomination is
+FALSE at ITS OWN weld budget eps* at the SHALLOW over-det bands (and the deepest
+band) -- the route over-shoots the very supply bound that defines eps* (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE (uncontested): c.1007 mapped census<->CORE as OVERSTATED (CensusDomination STRICTLY STRONGER than
+CORE, via the one-way #bad<=#alignable). It left the DECISIVE viability question unasked: does the census
+count K the route ACTUALLY bounds even FIT under the supply budget the SAME weld demands? The weld
+(CensusDominationWeld.lean, kkh26_deltaStar_pin_of_censusDomination) requires hK: K/p <= eps*, and the
+deployed eps* threshold (hεstar) is eps* = 2^r * C(2^{mu-1}, r) / p (the KKH26 fibre SUPPLY count). So the
+route needs, at the binding deep band a_bind:
+    K := max_{u0,u1} #alignableSets(a_bind)  <=  2^r * C(2^{mu-1}, r).    (FEAS)
+
+OBJECT (semantics matched EXACTLY to UniversalAlignmentLaw.lean + probe_alignment_census.py): mu_n=<g>,
+|mu_n|=n=2^mu, PROPER subgroup (m=(p-1)/n>1, NEVER n=q-1), prize prime p~n^beta. e_j(T)=divided diff
+[x_{t0..tk}]u_j; S aligned iff all nondeg (k+1)-subtuples share one ratio -e0/e1; alignableSets = aligned
+|S|=a sets w/ >=1 nondeg tuple. Prize shape m=1: k=(r-2)m+1=r-1, binding band a_bind=r*m+1=r+1. K is the
+TRUE max over the char-line adversary (EXHAUSTIVE over all (A,B) pairs at n=8) + random pairs. Probes
+probe_407_census_supply_budget_feasibility.py + probe_407_census_supply_budget_exhaustive.py.
+
+VALIDATION (engine == in-tree c.1007): KKH26 [x^6,x^4] n=16 k=3 p=65537 reproduces a=4->1792, a=5->336,
+a=6(bind)->56 EXACTLY. Engine trusted.
+
+RESULT (K vs budget 2^r*C(2^{mu-1},r), exact mod-p, MULTI-PRIME incl. non-Fermat, p-INDEPENDENT):
+  n=8  (mu=3): r=2 K=24=bud(1.00) VIABLE | r=3 K=32=bud(1.00) VIABLE | r=4 K=24 > bud=16 (1.50x) *DEAD*
+               -- identical at p=4129,11593,32801 (3 non-Fermat primes): K is p-INDEPENDENT (char-0).
+  n=16 (mu=4): r=2 K=288>112 (2.57x) DEAD | r=3 K=896>448 (2.00x) DEAD | r=4 K=1568>1120 (1.40x) DEAD |
+               r=5 K=1456<=1792 VIA | r=6 1344<=1792 VIA | r=7 384<=1024 VIA | r=8 K=560>256 (2.19x) DEAD
+               -- identical at beta=4.0 (p=65537) and beta=4.5 (p=262193, non-Fermat).
+A char-line u0=x^A,u1=x^B is a LEGAL stack, so a SINGLE pair with #alignable>budget already FALSIFIES
+CensusDomination at that K; K being a max (exhaustive over lines at n=8) makes each DEAD verdict a
+rigorous LOWER bound that already exceeds budget. The DEAD rows therefore rigorously certify
+CensusDomination is FALSE at the budget the weld itself specifies.
+
+THINNESS CONTROL (rule 3): the budget-overflow is THICKNESS-INVARIANT -- thick non-2-power domains
+n=6,10,12 ALSO overflow at the shallow band r=2 (n=6: K=18>12 1.50x; n=10: K=100>40 2.50x; n=12: K=144>60
+2.40x), same as thin n=16 r=2. The infeasibility is a STRUCTURAL combinatorial fact (the alignable-set
+count is combinatorially large relative to the 2^r*C supply at shallow over-det depth), not a
+2-power-essential phenomenon. (Deeper thick bands give degenerate K=0 from repeated node-differences in
+non-2-power domains, so the deep-band comparison is clean only on 2-power n.)
+
+VERDICT (rule-4 mapped wall; rule-6 honest, NOT a CORE result and NOT a prize refutation):
+1. The deployed in-tree census route is INTERNALLY INFEASIBLE as a sufficiency chain at the shallow
+   over-determined proximity parameters (r small) AND the deepest band (r=2^{mu-1}): there K = realized
+   census count EXCEEDS eps*p = 2^r*C(2^{mu-1},r), so the weld hypothesis CensusDomination is simply
+   FALSE at the budget eps* the weld pins -- the route demands a bound that the object violates.
+2. It is feasible (K<=budget) only in a MID-DEPTH band (n=16: r in {5,6,7}). The proximity-gap prize is
+   forall-r (every rate), so an infeasible-at-some-r hypothesis CANNOT deliver the universal pin via this
+   weld at those r. The census normal form is not just "strictly stronger" (c.1007) -- it is, at the
+   shallow/deepest bands, STRONGER THAN TRUE.
+3. SHARPENS c.1007: the #alignable/#bad slack was lossy+thickness-invariant; HERE the absolute count
+   #alignable exceeds the SUPPLY budget itself (the eps* defining the route), a strictly stronger
+   internal-inconsistency finding. The census route, as deployed, cannot be the prize's proof shape at
+   all r; a CORE proof must bound #bad directly (which collapses to O(1) at the hifreq line, 95e633cb0),
+   NOT route through the alignable-set census. CORE not closed, not faked.
+HONEST SCOPE: exact small-n (8 exhaustive-over-lines, 16 worst-family+random), multi-prime incl.
+non-Fermat, p-independent. K at n=16 is a max over a worst-line family + random (not fully exhaustive),
+but every DEAD row is a rigorous lower-bound overflow. Python-only, no Lean changed => axiom-clean trivially.
+probe_407_census_supply_budget_feasibility.py + probe_407_census_supply_budget_exhaustive.py.
