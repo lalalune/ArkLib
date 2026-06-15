@@ -1077,3 +1077,54 @@ LOWER proxy for the full collective depth profile (smallest vanisher); a growing
 sufficient, for the collective CORE route. The n=32/beta=4 r_min=11 is exact-verified (witness
 [9,14,16,17,19,21,22,23,26,28,31], sum=0 mod 1048609, non-antipodal). CORE not closed; the surviving thin
 mechanism's scaling is positively confirmed for the first time. Python-only, no Lean => axiom-clean trivially.
+
+### crossCell DYADIC-TOWER ITERATION does NOT certify CORE even GRANTING BCHKS-1.12: it leaks to the TRIVIAL M(n)<=n (2026-06-15)
+
+Maps an asserted-but-unproven CLOSURE step in CrossCellShkredovBound.lean. That file names the one open
+lever of the dyadic cumulant descent N0(G,r)=2*N0(H,r)+crossCell(H,zeta,r) (G=mu_n=H u zeta*H, H=mu_{n/2}),
+states the OPEN absolute bound CrossCellAbsoluteBound = BCHKS25 Conj 1.12 (crossCell*q <= 2^r*|H|^r), and
+proves the per-level consumer N0_gap_of_absoluteBound: N0(G,r) <= 2*N0(H,r) + 2^r*|H|^r/q. Its docstring
+then ASSERTS that iterating this down the 2-power tower with q~n*2^128 "keeps the cross mass below the
+diagonal and converges to the clean closed form N0(G,r)~2*N0(H,r) -- the closure mechanism, conditional on
+the open bound," and references a consumer `prize_of_ShkredovSubTrivialBound` which is NOT present as a
+theorem (only the per-level N0_gap_of_absoluteBound exists).
+
+TESTED the asserted closure IMPLICATION exactly (char-0 exact bigint on the bound itself, independent of
+whether the open bound is true). Tower recursion (absolute bound at EACH level, q FIXED, T_j:=q*N0(2^j,r)):
+  T_{j+1}(r) = 2*T_j(r) + 2^r*(2^j)^r,   T_1(r) = q*C(r,r/2) [r even else 0].
+Fed into the in-tree raw-moment certificate M(n) <= min_r (sum_{b!=0}|eta_b|^{2r})^{1/2r},
+  sum_{b!=0}|eta_b|^{2r} = q*N0(G,2r) - n^{2r}.  Probe probe_407_crosscell_tower_iteration_nogo.py.
+
+RESULT (sound, floor-checked against the proven floor M >= sqrt(n(q-n)/(q-1))):
+  | mu | n     | floor=.5log2(n..) | CORE=.5log2(n log m) | abs(BCHKS) log2 M | verdict |
+  |  5 | 32    | 2.50              | 5.74                 | 4.003             | = log2 n (TRIVIAL) |
+  |  8 | 256   | 4.00              | 7.24                 | 7.003             | = log2 n (TRIVIAL) |
+  | 12 | 4096  | 6.00              | 9.24                 | 11.003            | = log2 n (TRIVIAL) |
+  | 17 | 131072| 8.50              | 11.74                | 16.003            | = log2 n (TRIVIAL) |
+Granting CrossCellAbsoluteBound, the iterated certificate is SOUND (always >= floor) and floors EXACTLY at
+log2 M(n) ~ log2 n => M(n) <= n (the TRIVIAL L^1 bound), never sqrt(n log m) (CORE) and not even sqrt(n)
+(Johnson). MECHANISM (decomposition audit): the top-level cross injection is 2^r*|H|^r = 2^r*(n/2)^r =
+n^r-scale, so q*N0(G,2r) accumulates an n^{2r}-scale cross mass; q*N0(G,2r) - n^{2r} floors at n^{2r}, and
+(n^{2r})^{1/2r} = n. The cross term injected by the (granted) bound is exactly the size that pins the
+certificate at the trivial n.
+
+SOUNDNESS GUARDS (rule 6): (a) the IDEAL crossCell=0 case (= the docstring's "clean closed form", perfect
+halving N0(2^{j+1})=2*N0(2^j)) goes VACUOUS (moment <= 0) past low r => yields no usable bound either, so
+the "clean closed form" does NOT certify CORE on its own. (b) the measured "random-count" injection form
+(2^r-2)|H|^r/q gives certificates that VIOLATE the proven floor (log2 M < .5 log2 n) => UNSOUND, discarded
+(it measures a vanishing gap, not a valid M upper bound). Only the absolute-bound certificate is sound, and
+it is trivial.
+
+VERDICT (rule-4 constraint map; NOT a CORE result, NOT a refutation of BCHKS-1.12 itself): the dyadic-tower
+ITERATION of the crossCell gap is NOT a CORE-closure mechanism. Even granting the open BCHKS-1.12 absolute
+bound, iterating the per-level gap leaks to the trivial M(n)<=n. The CrossCellShkredovBound.lean docstring's
+claim that the iteration "converges to the clean closed form ... the closure mechanism, conditional on the
+open bound" OVERSTATES what the iteration yields; the referenced `prize_of_ShkredovSubTrivialBound` consumer
+cannot deliver CORE in this shape. This is CONSISTENT with the meta-theorem (Sec.4: every second-order/moment
+method caps at the trivial n via (q E_r)^{1/2r} >= n) but is NOT a re-derivation: the meta-theorem covers
+SINGLE-DEPTH moment methods; this maps the specific ITERATED-TOWER consumer conditional on the named open
+crossCell bound, closing a gap between "the open bound" and "a CORE proof" that the file's docstring left
+implicit. The genuine open input (per the file's own conclusion) must come from the ARITHMETIC of the
+q-reduction (spurious mod-p collisions making crossCell sub-random), NOT from the granted absolute bound fed
+through the tower. Thinness-blind (a NO-GO need not be thin-essential, rule 3 OK for refutations). CORE not
+closed. Python-only, exact bigint, no Lean changed => axiom-clean trivially.
