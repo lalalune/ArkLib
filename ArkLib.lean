@@ -749,6 +749,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CyclotomicSidonLift
 import ArkLib.Data.CodingTheory.ProximityGap.DCEnergyBaseCase
 import ArkLib.Data.CodingTheory.ProximityGap.DCEnergyCorrection
 import ArkLib.Data.CodingTheory.ProximityGap.DCEnergyEssential
+import ArkLib.Data.CodingTheory.ProximityGap.DCEnergyRungThree
 import ArkLib.Data.CodingTheory.ProximityGap.DCEnergyRungTwo
 import ArkLib.Data.CodingTheory.ProximityGap.DCMomentSupBound
 import ArkLib.Data.CodingTheory.ProximityGap.DCOptimized
