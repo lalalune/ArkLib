@@ -3131,3 +3131,35 @@ is resolved (pinning is a real plateau-before-jump, not a ceiling), via TWO inde
 (my numpy + the in-tree Rust pg) that agree to the last incidence value. Rust n>=28~24min, n=32~9.6h (README)
 => the exact n=32 s*=13 value stays GPU/long-Rust-only, but its pinning NATURE is now exact-established at
 small n. No Lean changed by me => axiom-clean trivially. probe_407_regimeB_sstar_np.py + scripts/rust-pg/pg.
+
+--------------------------------------------------------------------------------
+2026-06-15 SELF-CORRECTION (rule-6 adversarial re-audit of the two entries above):
+n=20 (s*=9) added => the wf-D2 formula s*=n/2-1 HOLDS EXACTLY for ALL n>=16; the only
+exceptions are n=8,12 (BELOW the wf-D2 stated range). The "s*-pinning resolves the GPU
+regime-B sub-question" framing was OVER-READ and is RETRACTED. (two-engine exact)
+--------------------------------------------------------------------------------
+Filled the n=16->24 gap with the Rust engine: n=20,k=5 -> s*=9 (= n/2-1, formula HOLDS). Full exact
+two-engine table on the rho=1/4 axis:
+  n   |  8 | 12 | 16 | 20 | 24
+  s*  |  5 |  7 |  7 |  9 | 11
+  n/2-1| 3 |  5 |  7 |  9 | 11
+  match| NO | NO |YES |YES |YES
+HONEST RE-READING (correcting my own two prior entries):
+1. The wf-D2 closed form s* = n/2-1 (delta* = 1/2+1/n) is CORRECT EXACTLY for all n>=16 (n=16,20,24
+   confirmed exact two-engine; n=28 in progress). Its stated range was n=16..28 -- so within its claimed
+   range it is RIGHT. My "correction" applies ONLY to n=8,12 (s* = n/2+1, exactly +2), which are BELOW
+   the wf-D2 range. So this is a boundary-extension footnote, NOT a refutation of the in-range law.
+2. The "s*-PINNING at 7 across n=12,16" I flagged is NOT a genuine plateau-before-jump: it is the n=12
+   below-range exception (s*=n/2+1=7) COINCIDING by arithmetic with the n=16 in-range formula value
+   (s*=n/2-1=7). With n=20 added the sequence 5,7,7,9,11 is strictly the formula +2 (n<=12) then exact
+   (n>=16) -- a clean +2 boundary offset, NOT an extended pin. => my claim that this "corroborates the
+   GPU regime-B s*=13 pinning as a genuine plateau and resolves the open sub-question" was OVER-READ.
+   RETRACTED. The GPU regime-B (n=32,34,38; note n=34,38 are NOT divisible by 4, so those are a DIFFERENT
+   axis -- fixed k, not fixed rho=1/4 -- and NOT directly comparable to my rho=1/4 table). The genuine
+   regime-B sub-question (is the n=32 fixed-rho s* = n/2-1 = 15, or really 13?) is NOT resolved by my
+   small-n data; it remains compute-bound (Rust n=32 ~9.6h).
+NET (honest final): the only solid NEW results are (a) a two-engine EXACT extension of the wf-D2 table
+to n=8,12,20 (n=8,12 are +2 boundary exceptions; n>=16 confirms the in-range formula), and (b) an
+independent NON-GPU + Rust reconfirmation that the wf-D2 in-range law is exact. The far-line delta* stays
+Johnson-region (-> 1/2), off the floor. NOT a CORE result; NO pinning-resolution claim. The regime-B
+n=32 exact value remains open + compute-bound. Python+numpy + in-tree Rust, no Lean changed => axiom-clean.
