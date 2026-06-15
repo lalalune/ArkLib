@@ -24,6 +24,53 @@ Loops 27 through 38 are present as self-contained arithmetic bricks in the curre
 (`CandidateStructureLoop37.lean` and `CandidateStructureLoop38.lean` added 2026-06-08, sorry-free,
 axiom-clean, indexed in `ArkLib.lean`).
 
+## 2026-06-14 (#444 C10): Gupta-Zagier crossing pin δ*=(1−ρ)−log₂n/n — REFUTED (false counting identity) + secretly-open
+
+**Conjecture C10** (gauss-period-exact, feasibility 5): claim the worst-case far-line list size at
+radius δ = #distinct r-fold dyadic-subgroup sumset = `binom(n/2, r)` in char 0 (Gupta-Zagier/Myerson
+half-basis closed form); `binom(n/2,r) ≤ qε*` gives the crossing `n(cap−δ*)=w−k=log₂n`, pinning
+`δ*=(1−ρ)−log₂(n)/n` past Johnson, char-independent for `p∤D` (D a power of 2).
+
+**Verdict: refuted-false** (the central counting identity is plainly false), and the salvageable
+core is **secretly-open** (= the BGK/Paley under-determined wall). Probe
+`scripts/probes/probe_c10_gupta_zagier_crossing.py`, commit `0c778a7ae`.
+
+**The fatal counterexample (char-0, exact, n=8 and n=16):** the distinct r-fold sumset count of the
+n-th roots of unity is NOT `binom(n/2,r)`:
+
+| n | r | distinct r-fold sumset | binom(n/2,r) | ratio |
+|---|---|---|---|---|
+| 8 | 2 | 33 | 6 | 5.5× |
+| 8 | 3 | 96 | 4 | 24× |
+| 8 | 4 | 225 | 1 | 225× |
+| 16| 4 | 2945 | 70 | 42× |
+| 16| 5 | 10128 | 56 | 181× |
+
+`binom(n/2,r)` is EXACTLY (probe-verified identically) the count of **distinct-index subsets of a
+single half-basis** `{ζ⁰,…,ζ^{n/2−1}}` — the Gupta-Zagier/Myerson Z-independent half-basis sums,
+*without repeats and using only one antipode of each pair*. The actual list / r-fold sumset uses
+(a) repeated roots (combinations WITH replacement) and (b) the full n roots (both halves), so
+`binom(n/2,r)` undercounts the true object by factors 5×–456× that GROW with r. The "half-basis
+closed form gives `binom(n/2,r)`" step is a category error: half-basis-independence bounds the
+number of *vanishing* relations (= antipodal pairs, Lam-Leung), it does NOT enumerate the sumset.
+
+**Even granting the (false) count, the crossing is the Plotkin proxy, not a past-Johnson pin
+(secretly-open):** this IS the in-tree "over-det δ* DECOUPLING" route (DISPROOF_LOG 2026-06-14 #407,
+`OverdetIncidenceMaxClosedForm.lean`, `_DecayLawPIndep.lean`). The p-independent / char-0 / Lam-Leung
+combinatorial count is REAL but it is a Plotkin **upper-bound proxy** for δ*. At the literal prize
+budget `B=ε*q=n`, the over-det δ* → ½ (Plotkin / half-agreement) — BELOW the floor `1−ρ−Θ(1/log n)`
+and below Johnson `1−√ρ` for ρ<¼. The probe's S3 confirms the binding count over a PROPER μ₈
+(p=521 prime, p≫n³, p≠n+1) is the **antipodal-cubic** mechanism `~n³/32` at direction `(n/2,n/2±1)`
+(in-tree `2m³−2m²+1`), NOT `binom(n/2,r)`. The regime where a count WOULD pin δ* past Johnson is the
+UNDER-determined edge `s=k+1`, `I(k+1)~Θ(C(n,k+1))`, which IS p-DEPENDENT = the open BGK/Paley
+incomplete-Gauss-sum wall. So the `p∤D` "transfer" is valid only in the over-det (Plotkin) regime
+that does not reach Johnson; in the regime that would reach past Johnson the transfer fails (bounded
+≤2ln q-term ±1-relations of 2^μ-th roots CAN vanish mod p~n⁴; cf. `prize-407-fresh-conjectures.md`
+2026-06-14: `HBIᵦ` fails at prize support). The decoupling **relocates, does not remove, the wall.**
+
+**DO NOT re-claim** "the dyadic sumset is a closed `binom(n/2,r)` count ⟹ δ* past Johnson." The
+count is false; the true count (antipodal cubic / under-det edge) is the BGK wall.
+
 ## 2026-06-14 (#444 C44): Lovett-primitive-case attack — TRUE algebra, but reduces-to-Johnson for explicit μ_n
 
 **Conjecture C44 (gmmds-homds):** "LovettPrimitiveStep holds via the repeated-degree
@@ -10892,3 +10939,49 @@ on the sub-Johnson / unique-decoding slice (`|L| ≤ 1`). The "span dim ≤ r" i
 a closed fact. Hidden open step = the affine-flat coordinate-fiber cap past Johnson.
 
 Probe: `scripts/probes/probe_c42_cz25_coordfibercap_open.py` (structural audit + q^dim-vs-dim+1).
+
+## C01 "Antipodal Sumset Saturation Pin" (Lam-Leung + Plünnecke-Ruzsa): REFUTED — offset is n/4, NOT log₂(n) — 2026-06-14
+
+**Conjecture C01:** the bad-scalar far-line crossing obeys `w ≤ k + log₂(n/gcd(b−a,n))`; maximizing
+over `gcd(b−a,n)=1` (`d=n/gcd=n`) pins `δ* = (1−ρ) − log₂(n)/n`, claimed to beat Johnson for all
+`ρ∈{1/2,1/4,1/8,1/16}` once `n≥16`. Claimed reduction: in-tree Lam-Leung coset/isolated split +
+Beukers-Smyth isolated count + Plünnecke-Ruzsa `|rA|≤K^r|A|`.
+
+**Verdict: refuted-false.** C01 IS the already-killed `δ*=(1−ρ)−log₂(n)/n` candidate (commit
+`ce8cb602e`, n=64) re-stated with an antipodal-sumset *mechanism*; the mechanism's own structural
+prediction (`offset = log₂(n/gcd)`) is contradicted by the exact char-0 far-line incidence.
+
+**Decisive datum — the crossing offset `s*−k` is `n/4` (LINEAR), not `log₂(n)`:** exact char-0
+`(k+1)`-subset divided-difference engine (= in-tree `probe_char0_deltastar_n64_BIG.py`), proper
+subgroup `μ_n<F_p*`, `p` prime, `p≫n³`, NEVER `n=p−1`, two primes per point:
+
+| n  | k | ρ    | measured `s*−k` | C01 `log₂(n)` | campaign `n/4` | δ* (=3/4−ρ) |
+|----|---|------|-----------------|---------------|----------------|-------------|
+| 16 | 2 | 1/8  | **4**           | 4             | 4              | 0.62500     |
+| 32 | 2 | 1/16 | **8**           | 5             | 8              | 0.68750     |
+| 64 | 2 | 1/32 | **16**          | 6             | 16             | 0.71875     |
+
+At `n=16` `log₂16 = 16/4 = 4` *coincide* — that accidental tie is the entire basis of C01-B. They
+diverge at `n=32` (5 vs 8; data=8) and blow apart at `n=64` (6 vs 16; data=16, off by 10). The
+worst `n=64` pencil is `(2,34)` (`b−a=32=n/2`, `gcd=32`, `d=2`), NOT a `gcd=1` direction — so even
+C01-A's "maximizer is `gcd=1`, `d=n`" premise fails at `n=64`; and where a `gcd=1` pencil ties for
+the offset (`n=32`, pencil `(8,17)`), its offset is `8=n/4`, NOT `log₂(d)=log₂32=5`. Either way the
+`log₂(n/gcd)` bound is loose by `Θ(n)`.
+
+**Which horn:** `δ*=3/4−ρ` is a CONSTANT 1/4 below capacity (`s*−k=n/4` is linear, so the gap
+`(cap−δ*)=1/4` is `ρ`-uniform and does NOT shrink). This is the rigorous char-0 far-line UPPER bound
+OFF the BGK wall — it does not track the `Θ(1/log n)` floor at all, and `δ*=(1−ρ)−log₂(n)/n` is
+simply a wrong (too-aggressive-toward-capacity) value. The Plünnecke-Ruzsa `K^r` multiplier the
+conjecture invokes is exactly the slack that makes `log₂(n/gcd)` an over-tight (false) bound rather
+than the true `n/4`: restricted subset-sums of antipodal cosets do NOT saturate at coset size in the
+window interior; the bad set is a free-interpolation arc (consistent with the P4 Mann/Lam-Leung
+refutation at `DISPROOF_LOG` "char-0 I_0(δ) has NO clean ρ-uniform CLOSED FORM").
+
+**p-independence (char-0 faithful):** worstI band identical across the two primes at n=16,32; the
+small `±32` deltas at n=32/64 in raw counts are the `+1`/`γ=0`-edge multiplicity wobble, irrelevant
+to the integer offset (always exactly 4,8,16).
+
+**Probes committed:** `scripts/probes/probe_c01_worst_direction.py` (flushed; gcd-class offset
+table n=16,32, dual-prime), `scripts/probes/probe_c01_antipodal_sumset_pin.py` (general engine);
+re-confirmed with the in-tree `probe_char0_deltastar_n64_BIG.py --n 64 --k 2`
+(`w_cross=18, s*−k=16=n/4, δ*=0.71875`). Consistent with commit `ce8cb602e`.
