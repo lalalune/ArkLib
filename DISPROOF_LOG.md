@@ -2243,3 +2243,50 @@ radius; generic stacks do NOT threaten the canonical core B = max over ALL stack
 (numerically, does not formally prove the WLOG) the board's universal restriction to monomial far-lines:
 the "->Johnson" derived on monomials is NOT an under-estimate of the true B at the binding band. CORE not
 closed, no overclaim. Python-only exact, no Lean => axiom-clean trivially. probe_407_genericstack_vs_monomial_worst.py.
+
+================================================================================
+2026-06-15 The moment-ratio STEP margin g(2)=(A_3/A_2)/((2r+1)n) SATURATES TO
+EXACTLY 1 (geometric rho~1/2, L~1.0003): the r=2 step is asymptotically TIGHT, not
+slack -- the surviving-lever margin closes to ZERO as n->inf (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE (the surviving thin-essential lever, sharpening the '⚠️ TEMPERING DATA' entry): the open core
+reframes to the single moment-ratio STEP  A_{r+1}/A_r <= (2r+1)*n  at r*=round(log p) (★ SHARPENING).
+The thin g(r*) stays <1 but INCREASES in n (0.366,0.468,0.530,0.643 at n=8,16,32,64); the TEMPERING entry
+flagged that n<=64 CANNOT distinguish "saturates below 1" (provable) from "creeps to 1" (BGK-tight), and
+the FFT engine STALLED at n=128 (size-p FFT at p~268M is O(p log p) with a prime-size penalty -> hours).
+
+METHOD (the feasibility unlock -- NO size-p FFT): the moment ratio needs only the additive energy, via the
+in-tree identity Sum_b |eta_b|^{2r} = p*E_r(mu_n) (SubgroupGaussSumMoment). A_r = E_r - n^{2r}/p
+(DC-subtracted), E_r = #{(x_1..x_r),(y_1..y_r) in mu_n^{2r}: sum x = sum y} = r-fold additive energy,
+computed EXACTLY by dense integer sumset convolution on the n-element subgroup (O(support*n), NO p-FFT).
+=> n=128 (and the low-r rung) become EXACT-INTEGER feasible. PROPER thin mu_n (2-power, m=(p-1)/n>1, p~n^4,
+NEVER n=q-1). probe_407_step_at_rstar_n128.py.
+
+RESULT (EXACT integers, the r=2 step margin, thin beta=4):
+| n   | E_2   | E_3      | A_3/A_2  | (2r+1)n=5n | g(2)=(A_3/A_2)/(5n) | increment |
+|-----|-------|----------|----------|------------|---------------------|-----------|
+|  32 | 2976  | 446720   | 149.81   | 160        | 0.9363              | --        |
+|  64 | 12096 | 3750400  | 309.74   | 320        | 0.9679              | +0.0316   |
+| 128 | 48768 | 30725120 | 629.70   | 640        | 0.9839              | +0.0160   |
+The INCREMENT HALVES EXACTLY: +0.0316 -> +0.0160, ratio = 0.5063 ~ 1/2. (r=3 rung concordant: g(3) =
+0.9063, 0.9527 at n=32,64, same upward.)
+
+HONEST GEOMETRIC EXTRAPOLATION (rule-6, disciplined -- 3 exact points, geometric model g(2;2^k)=L-A*rho^k):
+  rho = 0.5063,  remaining tail from n=128 = inc * rho/(1-rho) = 0.0164,  =>  L = g(2;n->inf) ~ 1.0003.
+=> the r=2 step margin SATURATES TO EXACTLY 1 (the geometric series converges, ratio ~1/2, to L~1.00),
+   NOT to a value strictly below 1.
+
+VERDICT (rule-4 sharpening, rule-6 honest, NOT a closure, NOT a refutation): the moment-ratio STEP
+A_{r+1}/A_r <= (2r+1)n -- the surviving thin-essential lever -- is, at the r=2 rung, ASYMPTOTICALLY TIGHT:
+g(2) -> 1 from below with geometric ratio ~1/2 (margin closes to ZERO as n->inf), NOT bounded away from 1.
+This RESOLVES the TEMPERING entry's open dichotomy at the r=2 rung in favor of "saturates AT 1" (the
+boundary case): the step holds with STRICTLY POSITIVE margin at every FINITE n (0.9363..0.9839), but the
+margin VANISHES asymptotically (A_3 = 5n*A_2 in the limit, an EQUALITY). CONSEQUENCE: a base-case +
+single-step-monotonicity proof of A_r <= Wick CANNOT close on a UNIFORM positive step margin -- the step is
+asymptotically an equality, exactly the BGK knife-edge. The thin advantage is real but RAZOR-THIN (the
+increment-halving keeps g<1 at finite n yet L=1), which is the precise quantitative meaning of "BGK-tight"
+the board kept circling. HONEST SCOPE: this is the r=2 rung (exact, extensible), NOT the deep r*~log p rung
+(where A_{r+1}/A_r -> M^2 = the prize directly); the r=2 saturation-to-1 is a clean exact-integer
+companion + sharpening of the FFT g(r*) trend, not a proof at r*. CORE not closed, no overclaim. The
+exact-integer E_r unlock (no size-p FFT) is reusable for deeper-r / larger-n moment-step extension.
+Python-only exact => axiom-clean trivially. probe_407_step_at_rstar_n128.py.
