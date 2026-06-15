@@ -1904,3 +1904,63 @@ of the candidate family is corrected (n/2 for even k, not uniformly n/4). The L7
 reduces to this deep-hole family. The open work (bound #bad over the deep-hole family vs Johnson) is
 unchanged. CORE not closed. Python-only exact => axiom-clean.
 probe_407_deephole_kvary.py.
+
+================================================================================
+2026-06-15 CENSUS ROUTE INTERNAL INFEASIBILITY: the deployed CensusDomination is
+FALSE at ITS OWN weld budget eps* at the SHALLOW over-det bands (and the deepest
+band) -- the route over-shoots the very supply bound that defines eps* (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE (uncontested): c.1007 mapped census<->CORE as OVERSTATED (CensusDomination STRICTLY STRONGER than
+CORE, via the one-way #bad<=#alignable). It left the DECISIVE viability question unasked: does the census
+count K the route ACTUALLY bounds even FIT under the supply budget the SAME weld demands? The weld
+(CensusDominationWeld.lean, kkh26_deltaStar_pin_of_censusDomination) requires hK: K/p <= eps*, and the
+deployed eps* threshold (hεstar) is eps* = 2^r * C(2^{mu-1}, r) / p (the KKH26 fibre SUPPLY count). So the
+route needs, at the binding deep band a_bind:
+    K := max_{u0,u1} #alignableSets(a_bind)  <=  2^r * C(2^{mu-1}, r).    (FEAS)
+
+OBJECT (semantics matched EXACTLY to UniversalAlignmentLaw.lean + probe_alignment_census.py): mu_n=<g>,
+|mu_n|=n=2^mu, PROPER subgroup (m=(p-1)/n>1, NEVER n=q-1), prize prime p~n^beta. e_j(T)=divided diff
+[x_{t0..tk}]u_j; S aligned iff all nondeg (k+1)-subtuples share one ratio -e0/e1; alignableSets = aligned
+|S|=a sets w/ >=1 nondeg tuple. Prize shape m=1: k=(r-2)m+1=r-1, binding band a_bind=r*m+1=r+1. K is the
+TRUE max over the char-line adversary (EXHAUSTIVE over all (A,B) pairs at n=8) + random pairs. Probes
+probe_407_census_supply_budget_feasibility.py + probe_407_census_supply_budget_exhaustive.py.
+
+VALIDATION (engine == in-tree c.1007): KKH26 [x^6,x^4] n=16 k=3 p=65537 reproduces a=4->1792, a=5->336,
+a=6(bind)->56 EXACTLY. Engine trusted.
+
+RESULT (K vs budget 2^r*C(2^{mu-1},r), exact mod-p, MULTI-PRIME incl. non-Fermat, p-INDEPENDENT):
+  n=8  (mu=3): r=2 K=24=bud(1.00) VIABLE | r=3 K=32=bud(1.00) VIABLE | r=4 K=24 > bud=16 (1.50x) *DEAD*
+               -- identical at p=4129,11593,32801 (3 non-Fermat primes): K is p-INDEPENDENT (char-0).
+  n=16 (mu=4): r=2 K=288>112 (2.57x) DEAD | r=3 K=896>448 (2.00x) DEAD | r=4 K=1568>1120 (1.40x) DEAD |
+               r=5 K=1456<=1792 VIA | r=6 1344<=1792 VIA | r=7 384<=1024 VIA | r=8 K=560>256 (2.19x) DEAD
+               -- identical at beta=4.0 (p=65537) and beta=4.5 (p=262193, non-Fermat).
+A char-line u0=x^A,u1=x^B is a LEGAL stack, so a SINGLE pair with #alignable>budget already FALSIFIES
+CensusDomination at that K; K being a max (exhaustive over lines at n=8) makes each DEAD verdict a
+rigorous LOWER bound that already exceeds budget. The DEAD rows therefore rigorously certify
+CensusDomination is FALSE at the budget the weld itself specifies.
+
+THINNESS CONTROL (rule 3): the budget-overflow is THICKNESS-INVARIANT -- thick non-2-power domains
+n=6,10,12 ALSO overflow at the shallow band r=2 (n=6: K=18>12 1.50x; n=10: K=100>40 2.50x; n=12: K=144>60
+2.40x), same as thin n=16 r=2. The infeasibility is a STRUCTURAL combinatorial fact (the alignable-set
+count is combinatorially large relative to the 2^r*C supply at shallow over-det depth), not a
+2-power-essential phenomenon. (Deeper thick bands give degenerate K=0 from repeated node-differences in
+non-2-power domains, so the deep-band comparison is clean only on 2-power n.)
+
+VERDICT (rule-4 mapped wall; rule-6 honest, NOT a CORE result and NOT a prize refutation):
+1. The deployed in-tree census route is INTERNALLY INFEASIBLE as a sufficiency chain at the shallow
+   over-determined proximity parameters (r small) AND the deepest band (r=2^{mu-1}): there K = realized
+   census count EXCEEDS eps*p = 2^r*C(2^{mu-1},r), so the weld hypothesis CensusDomination is simply
+   FALSE at the budget eps* the weld pins -- the route demands a bound that the object violates.
+2. It is feasible (K<=budget) only in a MID-DEPTH band (n=16: r in {5,6,7}). The proximity-gap prize is
+   forall-r (every rate), so an infeasible-at-some-r hypothesis CANNOT deliver the universal pin via this
+   weld at those r. The census normal form is not just "strictly stronger" (c.1007) -- it is, at the
+   shallow/deepest bands, STRONGER THAN TRUE.
+3. SHARPENS c.1007: the #alignable/#bad slack was lossy+thickness-invariant; HERE the absolute count
+   #alignable exceeds the SUPPLY budget itself (the eps* defining the route), a strictly stronger
+   internal-inconsistency finding. The census route, as deployed, cannot be the prize's proof shape at
+   all r; a CORE proof must bound #bad directly (which collapses to O(1) at the hifreq line, 95e633cb0),
+   NOT route through the alignable-set census. CORE not closed, not faked.
+HONEST SCOPE: exact small-n (8 exhaustive-over-lines, 16 worst-family+random), multi-prime incl.
+non-Fermat, p-independent. K at n=16 is a max over a worst-line family + random (not fully exhaustive),
+but every DEAD row is a rigorous lower-bound overflow. Python-only, no Lean changed => axiom-clean trivially.
+probe_407_census_supply_budget_feasibility.py + probe_407_census_supply_budget_exhaustive.py.
