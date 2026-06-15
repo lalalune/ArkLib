@@ -205,3 +205,53 @@ ALL fields at the actual prize budget — that uniform-in-field bound at depth r
 prize is forall-field-universal, c.154). The open content remains exactly A_r<=Wick as a thinness-essential
 forall-field theorem. Value: pins the correct object's empirical r-profile (collapsing ratio), strengthening
 confidence that the DC reduction is the right target and quantifying the numerical slack at prize depth.
+
+## moment-certificate SLACK is THICKNESS-INVARIANT — the moment route cannot be the rule-3 thinness-essential lever (2026-06-15)
+
+WALL / CONSTRAINT (rule-3 mapping). The DC-subtracted moment chain certifies the sup-norm via
+`M(n) = max_{b!=0}|eta_b| <= min_r (q*A_r)^{1/2r}` (the moment certificate; `q*A_r = sum_{b!=0}|eta_b|^{2r}`).
+Two facts were already known: (a) `A_r<=Wick` is measured-true at prize depth with collapsing ratio
+(prior entry), and (b) the count/Markov/EVT-tail packagings are one object min_r(q A_r)^{1/2r} "in four
+costumes" (not sharper). MISSING test: is this object **thinness-essential**? Rule 3 says any valid CORE
+proof's certifying inequality must be FALSE in the thick window (beta~2.3-3.2) and TRUE only in thin
+(beta~4-5). A thickness-INVARIANT certificate quality therefore CANNOT be the prize lever.
+
+PROBE (scripts/probes/probe_407_Ar_thinness_essential.py, exact FFT over PROPER mu_n < F_p^*, beta swept
+ACROSS the thick AND thin windows; cert = min_r (q A_r)^{1/2r}, true = M(n)):
+
+| n  | beta (p)       | A_r<=Wick? (A_r/Wick @ r~lnq) | M/sqrt(n) | target sqrt(log(p/n)) | cert/true |
+|----|----------------|-------------------------------|-----------|-----------------------|-----------|
+| 8  | 2.27 (113)     | YES (0.049)                   | 1.808     | 1.627                 | 1.197     |
+| 8  | 2.71 (281)     | YES (0.053)                   | 2.146     | 1.887                 | 1.181     |
+| 8  | 3.20 (769)     | YES (0.040)                   | 2.430     | 2.137                 | 1.159     |
+| 8  | 3.60 (1777)    | YES (0.051)                   | 2.547     | 2.324                 | 1.185     |
+| 8  | 4.00 (4073)    | YES (0.023)                   | 2.665     | 2.497                 | 1.169     |
+| 8  | 4.50 (11593)   | YES (0.009)                   | 2.714     | 2.698                 | 1.187     |
+| 16 | 2.30 (593)     | YES (0.033)                   | 2.110     | 1.901                 | 1.210     |
+| 16 | 2.70 (1777)    | YES (0.096)                   | 2.715     | 2.170                 | 1.173     |
+| 16 | 3.00 (4129)    | YES (0.045)                   | 2.785     | 2.357                 | 1.171     |
+| 16 | 3.30 (9377)    | YES (0.043)                   | 3.043     | 2.525                 | 1.153     |
+
+TWO VERDICTS:
+1. `A_r<=Wick` holds in BOTH the thick AND thin windows (ratio 0.03-0.10 thick, 0.009-0.023 thin) =>
+   `A_r<=Wick` is NOT thinness-essential. It is honest substrate, true with room to spare across all beta.
+   The thinness CANNOT live in the input inequality A_r<=Wick.
+2. **The moment certificate's SLACK `cert/true = (min_r (q A_r)^{1/2r}) / M(n)` is THICKNESS-INVARIANT,
+   locked at 1.15-1.21 across the ENTIRE beta window (thick 2.27 -> thin 4.5) and across n=8,16.** The
+   moment route overshoots the true sup-norm by a constant ~18% that does NOT depend on thinness. Since the
+   certificate quality is beta-uniform, the moment family (energy/Wick + count/Markov/EVT-tail, all four
+   costumes) CANNOT be the rule-3 thinness-essential mechanism: a thickness-monotone certificate cannot
+   prove a bound that is FALSE in the thick window. Any beta-aware refinement of A_r<=Wick is ruled out as
+   a prize lever -- the residual ~18% slack lives in the moment->sup passage M<=(q A_r)^{1/2r}, and that
+   passage's loss is regime-uniform.
+
+WHERE THIS LEAVES THE OPEN CONTENT (mapping, not closure): not in tightening A_r<=Wick (beta-uniformly
+far below Wick), not in the moment->sup step (beta-uniform constant slack). Corroborates "one object in
+four costumes": the WHOLE moment family is beta-uniform, hence rule-3-incompatible standalone. A genuine
+CORE proof must use a thinness-DISCRIMINATING object whose certifying inequality flips sign between the
+thick and thin windows -- the moment certificate provably is not such an object.
+
+HONEST CAVEAT: small-n / sub-prize p (p<=~12k, not 2^128); this maps the certificate's regime-behavior
+shape, it does NOT itself prove or refute the prize. No Lean theorem claimed (the thickness-invariance is
+an empirical measurement; proving the constant-slack would itself require BGK). Reproducible probe + this
+constraint entry are the deliverable, per rule 4 (a precisely-mapped wall is a WIN).

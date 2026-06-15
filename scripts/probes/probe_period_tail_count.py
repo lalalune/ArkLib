@@ -32,14 +32,15 @@ def test(p, n):
             lhs = cnt * (T ** r)
             ok = lhs <= S + 1e-6
             results.append((r, Tfac, cnt, lhs, S, ok))
-    return results, sq.max()
+    return results, nz.max()   # FAR max (b != 0); the b=0 principal term |eta_0|^2 = n^2 is
+                               # excluded (it is the DC term the cumulant identity subtracts).
 
 cases = [(193, 16), (449, 64), (769, 16), (3329, 64), (7937, 64), (12289, 64)]
 for (p, n) in cases:
     try:
         res, mx = test(p, n)
         beta = np.log(p) / np.log(n)
-        print(f"\n=== p={p} n={n} beta={beta:.2f}  max|eta|^2={mx:.1f} (n={n}) ===")
+        print(f"\n=== p={p} n={n} beta={beta:.2f}  FAR max_(b!=0)|eta|^2={mx:.1f}  (n={n}, n^2={n*n}) ===")
         allok = all(r[5] for r in res)
         for r, Tf, cnt, lhs, S, ok in res:
             if Tf in (1.0, 2.0):
