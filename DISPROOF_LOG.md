@@ -1259,3 +1259,45 @@ robust over both rho and all primes, but the thin-rho extrapolation is NOT prove
 infra). WALLS the reverse-dictionary route to the floor-push at the tested radii; does NOT refute CORE.
 Python-only, no Lean changed => axiom-clean trivially. First rule-3 gate on the reverse dictionary (grep:
 "reverse" had 0 prior DISPROOF entries outside the lacunary one).
+
+## ⚠️ REFUTATION (completes the even+odd picture) — the SIGNED odd moment beyond the Sidon depth: thin's deep-Sidon RIGIDITY makes signed cancellation WORSE, not better (2026-06-15, opus-4-8 subagent)
+
+LENS: companion to the even-census-profile refutation (6feb11b53, even E_{2r} thin INFLATED). The surviving
+thin advantage lives in the ODD/SIGNED object (r_min, d_odd deeper). Since mu_n is negation-closed, eta_b is
+REAL, so odd moments A_r = sum_{b!=0} eta_b^r are real + sign-sensitive -- the natural home for the signed
+cancellation the B_inf<-B_{log n} bootstrap needs. The odd_moment entry showed A_r=-n^r RIGID below d_odd
+(W_r=0, no info). UNPROBED until now: does the SIGNED cancellation BEYOND d_odd (W_r>0) compound FAVORABLY
+(thin cancels MORE => helps), measured against the RIGHT control?
+
+RULE-3 CONTROL FIX: a random n-subset is NOT negation-closed (odd moments not even real). The correct control
+that isolates the 2-POWER-SUBGROUP structure from mere negation-closure is a NEGATION-CLOSED random set: a
+random union of n/2 antipodal pairs {x,p-x}. Compared thin vs this control via the signed-cancellation
+EFFICIENCY eff_r := |A_r|/sqrt(E_{2r}) (Cauchy-Schwarz normalized; 1 = no cancellation, ->0 = full signed
+cancellation). Exact real periods eta_b = sum_{x in S} cos(2pi b x/p); proper mu_n (m>1, never n=q-1);
+prize primes p~n^{4-4.5} incl. non-Fermat. Probe scripts/probes/probe_407_signed_odd_profile.py.
+
+RESULT (the separation appears at n=32, where d_odd is crossed within reach):
+- n=16 (b=4.0, 4.5[nf]): thin AND neg-closed-random BOTH stay rigid A_r=-n^r through r=9 (d_odd>9 for both)
+  -- no separation yet at reach (honest: small-n censored).
+- n=32 (b=4.0, p=1048609): thin stays RIGID (A_r=-32^r EXACTLY) through r=7, non-rigid only at r=9. The
+  neg-closed RANDOM control breaks rigidity EARLIER: r=7 random A_7=-1.32e10 != -32^7=-3.44e10; r=9 random
+  -5.69e12 vs thin -1.54e13. CONSEQUENCE on the efficiency:
+    r=7: eff_thin=0.695 vs eff_rand=0.270  (thin 2.6x WORSE at signed cancellation)
+    r=9: eff_thin=0.796 vs eff_rand=0.301  (thin 2.7x WORSE)
+  |A_r|(thin)/|A_r|(rand) = 2.60 (r=7), 2.71 (r=9): thin's |A_r| is LARGER.
+
+MECHANISM (clean): thin's deep-Sidon RIGIDITY PINS A_r at the full -n^r (zero cancellation among the b's,
+since W_r=0 forces A_r=-n^r exactly), while the random control's EARLIER d_odd onset lets its signed moments
+CANCEL DOWN BELOW n^r. So "deeper Sidon" is ANTI-HELPFUL for signed cancellation: rigidity = no cancellation
+= |A_r| pinned HIGH at n^r, the opposite of the suppression the bootstrap needs.
+
+VERDICT (rule-4 mapped wall; completes the even+odd picture): the thin advantage in DEPTH (r_min, d_odd
+deeper) does NOT translate to better moment cancellation in EITHER parity --
+  EVEN (6feb11b53): thin energy E_{2r} collectively INFLATED, super-multiplicatively in r.
+  ODD/SIGNED (here): thin's deep-Sidon rigidity PINS |A_r|=n^r, so signed-cancellation efficiency is 2.6-2.7x
+  WORSE than the neg-closed random control beyond d_odd.
+Both faces of the "collective thin depth profile -> smaller M via moments" hope are now mapped as adverse:
+the very rigidity/Sidon-depth that the bootstrap touts is what KEEPS the moments large. The surviving hope is
+NOT a moment/cancellation argument at all (both parities adverse) -- it must be a per-frequency / structural
+estimate that does not pass through the period MOMENTS. CORE not closed, not faked. Small n (16 censored, 32
+shows the separation), multi-prime incl. non-Fermat. Python-only, no Lean => axiom-clean trivially.
