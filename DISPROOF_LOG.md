@@ -2337,3 +2337,84 @@ BGK knife-edge is now EXACT at r=2, not extrapolated. HONEST SCOPE: r=2 rung (th
 A_{r+1}/A_r -> M^2 = the prize, remains the open content -- the deep-r E_r closed forms are the natural next
 target, the E_r unlock makes them computable). The closed forms E_2=3n(n-1), E_3=15n^3-45n^2+40n are clean
 formalizable targets (exact rational arithmetic => axiom-clean trivially). probe_407_Er_closedform_thin.py.
+
+## A_r<=Wick SURVIVES at the n=32 WORST in-window bad prime, but margin is KNIFE-EDGE (~0.93-0.97) + proxy fails 16x/octave (2026-06-15, opus-4-8 subagent)
+
+LANE (uncontested): ec140aead pinned the worst-in-window-bad-prime r-trajectory at n=16 ONLY; 98db97afc did
+n=32..256 A_r/Wick but at a GENERIC prime (Anom understated). Combined: worst-in-window-bad-prime x full-r-
+trajectory x n=32. probe_407_anom_worst_rtraj_n32.py. Exact integer counts: E_r^(p) via r-fold mod-p
+convolution + sum-of-squares; E_r^(0) via cyclotomic lattice Z^{n/2} convolution (zeta^{n/2}=-1). PROPER mu_n,
+p>=n^4, NEVER n=q-1. SELF-CHECK n=16 reproduces ec140aead EXACTLY (p=76001, proxy 1.0914 @ r=6, A_r/Wick
+0.9364->0.3743). ENGINE TRUSTED.
+
+RESULT (n=32, worst bad prime p=1244993, beta=4.050, index m=38906, NOT n=q-1), r=2..6:
+  A_r/Wick = 0.9685, 0.9383, 0.9264, 0.9361, 0.9591  (TARGET A_r<=Wick HOLDS, max 0.9685 at SHALLOW r=2)
+  proxy Anom_r/(n^{2r}/p) = 0, 17.81, 13.57, 8.38, 5.12  (SUFFICIENT proxy FAILS HARD, peak 17.81 @ r=3)
+  E0/Wick = 0.9688, 0.9089, 0.8255, 0.7258, 0.6175  (char-0 floor falls => Wick-E0 headroom grows, absorbs
+    the failing proxy => A_r<=Wick survives via headroom-absorption, NOT via small Anom)
+ADVERSARIAL RE-AUDIT (rule 6) top-4 worst bad primes p=1244993/1383169/1382177/1366721 (all proper mu_32,
+m>>1): A_r<=Wick holds at ALL; max A_r/Wick=0.9685 each; 2 of 4 NON-MONOTONE (margin dips then RISES toward 1
+at deep r), 2 of 4 monotone-decreasing.
+
+VERDICT (mapped frontier, NOT a CORE result, no overclaim):
+(1) The DC-subtracted carrier A_r<=Wick SURVIVES at the ADVERSARIAL n=32 prime (not just the generic prime of
+    98db97afc) — POSITIVE for the anomaly route one octave deeper.
+(2) The SUFFICIENT proxy Anom_r<=n^{2r}/p degrades ~16x/octave (peak 1.09 @ n=16 -> 17.81 @ n=32): DEAD as an
+    asymptotic route; only direct A_r<=Wick survives, ENTIRELY via the growing Wick-E0 headroom.
+(3) The n=32 worst-prime A_r/Wick does NOT collapse the way 98db97afc's GENERIC prime did (0.005-0.12 @ r*);
+    at the WORST prime it is PINNED ~0.93-0.97 and turns BACK UP toward 1 on 2/4 primes. The "monotone
+    collapse, no catch-up" reassurance is a GENERIC-prime artifact; the adversarial prime is a knife-edge just
+    under 1 across accessible rungs — the BGK wall's shape.
+HONEST: sub-prize p (~10^6; budget p~2^128), r capped at 6 (E0-ring), r*=14 not reached. Does NOT close CORE,
+NOT refute the prize, NOT contradict 98db97afc. Pure-Python exact integer counts, no Lean => axiom-clean
+trivially. probe_407_anom_worst_rtraj_n32.py.
+
+================================================================================
+2026-06-15 The E_r STRUCTURE is WICK-leading with a clean -C(r,2) subleading:
+E_r(mu_n) = (2r-1)!![n^r - C(r,2)n^{r-1} + O(n^{r-2})] => the GENERAL moment-step
+margin is g(r) = 1 - r/n + O(1/n^2) EXACTLY (the BGK knife-edge in closed form)
+(opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: generalize the r=2 closed-form (5b0873ddb) to a GENERAL-r law by pinning the E_r structure. Exact
+integer additive energies, thin 2-power mu_n, fit + EXACT-verify across n. probe_407_Er_closedform_thin.py.
+
+EXACT CLOSED FORMS (each fit on a few n then VERIFIED EXACT on all probed n=8..128/64):
+    E_1 = n
+    E_2 = 3n^2 - 3n
+    E_3 = 15n^3 - 45n^2 + 40n
+    E_4 = 105n^4 - 630n^3 + 1435n^2 - 1155n
+STRUCTURE (the clean pattern):
+    LEADING coeff = (2r-1)!! = 1, 3, 15, 105  = the WICK / Gaussian moment.  (E_r/n^r -> (2r-1)!! as n->inf.)
+    SUBLEADING/LEADING ratio = -C(r,2) = -1, -3, -6  for r=2,3,4.
+    => E_r(mu_n) = (2r-1)!! [ n^r - C(r,2) n^{r-1} + O(n^{r-2}) ].
+
+GENERAL-r STEP-MARGIN LAW (EXACT from the closed forms, derived for r=1,2,3; conjectured general):
+    g(r) = (A_{r+1}/A_r)/((2r+1)n) = (E_{r+1}/E_r)/((2r+1)n)
+         = 1 - r/n + O(1/n^2).
+  EXACT instances:  r=1: g=(n-1)/n = 1-1/n.  r=2: (3n^2-9n+8)/(3n(n-1)) = 1-2/n+2/(3n^2).
+                    r=3: (3n^3-18n^2+41n-33)/(n(3n^2-9n+8)) = 1-3/n+2/n^2.
+  => the moment-step margin at depth r is EXACTLY r/n (to leading order): 1 - g(r) ~ r/n.
+
+CONSEQUENCE (the BGK knife-edge, now in closed form): at the prize depth r* ~ log n,
+    g(r*) ~ 1 - r*/n ~ 1 - (log n)/n -> 1   (margin VANISHES for any r = o(n)).
+This is EXACTLY the measured FFT g(r*) trend (0.366,0.468,0.530,0.643 at n=8..64): the step holds with a
+POSITIVE margin r/n at every finite n, but the margin -> 0 at the prize joint limit (r*~log n, n->inf).
+
+RULE-3 (honest, where the thin content sits): the WICK leading term (2r-1)!! and the -C(r,2) subleading are
+NEGATION-CLOSURE-GENERIC (E_2(thin)==E_2(neg-rand) EXACTLY; E_3(thin)/E_3(neg-rand) = 0.9953->0.9995 ->1,
+the thin advantage is a VANISHING O(1/n) correction BELOW the subleading). So the g(r)=1-r/n law is largely
+a neg-closure fact; the THIN-specific deviation is an even-higher-order vanishing correction. This is why
+the Wick ratio E_r/((2r-1)!!n^r) is <1 but -> 1 BOTH as n grows (0.94->0.97 at r=2, n=16->32) AND deeper r
+shrinks it faster (0.94,0.82,0.68,0.52 at r=2..5, n=16) -- the joint (r*,n) limit pushes it to 1.
+
+VERDICT (rule-4 sharpening, rule-6 no overclaim, NOT a closure): the moment-step margin is EXACTLY r/n
+(closed-form, all-n-exact for r<=3, structurally (2r-1)!!/-C(r,2)/Wick for r<=4). The surviving
+thin-essential lever (the step A_{r+1}/A_r <= (2r+1)n) holds at EVERY finite (r,n) with margin r/n>0 but the
+margin VANISHES at the prize depth r*~log n -- the BGK knife-edge, now characterized analytically rather than
+numerically. The E_r are WICK-leading (A_r<=Wick is a LEADING-ORDER EQUALITY for thin mu_n); the thin prize
+advantage lives ONLY in the rate the Wick ratio approaches 1 (a sub-subleading vanishing term). HONEST OPEN:
+whether 1-g(r*) = r*/n + (higher terms) stays bounded BELOW the threshold at the JOINT (r*~log n, n->inf)
+limit -- i.e. whether the accumulated O(1/n^2)+ corrections over r* steps rescue a positive margin -- is the
+irreducible prize content; the leading r/n law does NOT resolve it (it -> 0, consistent with both
+prize-true and BGK-tight). The closed forms E_r = (2r-1)!![n^r - C(r,2)n^{r-1}+...] are clean formalizable
+targets (exact rational arithmetic => axiom-clean trivially). probe_407_Er_closedform_thin.py.
