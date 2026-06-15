@@ -11170,3 +11170,22 @@ union bound; Tao-uncertainty needs `n` prime, vacuous for `n=2^μ`).
 
 ## O180 (#444 2026-06-15 live-frontier sweep) — see docs/kb/deltastar-444-livefrontier-sweep-2026-06-15.md
 Q1-d32 false-refutation OVERTURNED (V_32^prim empty, cross-prime 0/64=mod-p noise); over-det s*-k=n/4 AND =3-const both REFUTED (Johnson-region); moment-step 1-g~r/n knife-edge ALL rungs (thickness-invariant); C11-C20 9 dead (thickness-inv/group-taut/M-in-disguise); IPR diagnostic axiom-clean but q*E2-reducible. CORE OPEN.
+
+--------------------------------------------------------------------------------
+2026-06-15 (push e69afd587) — t=3 TRINOMIAL n/2 floor PROVEN (axiom-clean) + t=4/k>=2 single-line count SATURATES (boundary note)
+--------------------------------------------------------------------------------
+POSITIVE (UncertaintyTwoPowerTrinomialFloor.lean, axiom-clean [propext,Classical.choice,Quot.sound]):
+the GENUINE 3-term trinomial g(X)=(X^{n/4}-1)(X^{n/4}-i)=X^{n/2}-(1+i)X^{n/4}+i (i:=zeta^{n/4}, prim 4th
+root, support {0,n/4,n/2}, all 3 coeffs nonzero) has EXACTLY n/2 roots in mu_n: (zeta^j)^{n/4}=i^j in
+{1,i} iff j%4 in {0,1} (half of [0,n)). So s* >= n/2 already at t=3 -> the n/2 sparse-zero floor is
+STRUCTURAL, not an artifact of degenerate t=2 single-coset sparsity. Sharpens UncertaintyTwoPowerJohnson
+Refuted (binomial). 2-power-specific (needs order-4 zeta^{n/4}; Tao forbids it for prime n). p-indep
+n=8..64 (probe_407_trinomial_n2_floor.py). NOT CORE (s* != prize delta*; the prize is the LIST, O(1) here).
+
+BOUNDARY NEGATIVE (probe_t4_k2_floor.py, exact): the analogous k>=2 single-line sparse-zero count does
+NOT give a clean n/2+(k-1) extension -- it SATURATES at the FULL group n (k=2: 8@n=8, 16@n=16). When the
+codeword span {1,x,...,x^{k-1}} (k>=2) is allowed to vary jointly with 2 far monomials, the agreement
+system can fit ALL n points at degenerate (non-far) directions -- the known "I=p, every gamma, at the
+degenerate radius" saturation. => the meaningful single-line s* object is the FIXED-far-direction count,
+and the clean non-degenerate trinomial brick is the t=3/k=1 boundary; the k>=2 naive count is vacuous.
+Do NOT pursue a "t=4/k=2 sparse floor" lane -- it saturates trivially. CORE unaffected, OPEN.
