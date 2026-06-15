@@ -2207,3 +2207,39 @@ This SHARPENS ed1db3379: targeting #bad directly is right, but the feasibility i
 (thin-blind at finite n); the prize is the GROWTH law of B (consistent with c.348: numerics can't decide
 floor-vs-Johnson below n=256). RULE-6: does NOT close CORE, does NOT contradict ed1db3379 (B IS within
 budget) -- it maps that the WITHIN-budget margin is thin-independent. Python-only exact => axiom-clean.
+
+### The MONOMIAL far-line IS the worst-case stack at the BINDING band: generic + structured-low-degree stacks give #bad=0 there (2026-06-15, opus-4-8 subagent)
+
+LANE (uncontested gap, exposed by reading B1IncidenceBridge.lean): the in-tree canonical core
+WorstCaseFarIncidenceBounded quantifies #bad = #pinned-gamma over ALL far stacks (u0,u1); the bridge
+epsMCA <= B/q needs B = max over ALL (u0,u1). But the ENTIRE board (incidence I(n), census K, #bad
+collapse, wf-D1/D2/D5, n/4 law, "->Johnson") analyzes ONLY the MONOMIAL far-lines u0=x^A,u1=x^B and
+ASSERTS they are the worst case. NO probe had TESTED whether a GENERIC (non-monomial) far stack yields
+MORE bad-gamma. If generic #bad > monomial, the board's "->Johnson" UNDER-ESTIMATES the true B.
+
+METHOD (exact mod-p, PROPER mu_n, prize prime p~n^4, NEVER n=q-1): #bad(u0,u1;a) via exact bordered
+Vandermonde residuals (the in-tree `residual` det) + Aligned-subset semantics (mcaEvent_iff_aligned_subset):
+gamma bad iff some a-subset S has all (k+1)-subtuples sharing gamma=-res0(T)/res1(T) with a non-degenerate
+tuple. Compared MONOMIAL u0=x^A,u1=x^B vs RANDOM-GENERIC far stacks (u1 enforced FAR) AND STRUCTURED
+low-degree-poly stacks, full band sweep a=k+1..n/2. n=16,k=3,hifreq[9,7]. probe_407_genericstack_vs_monomial_worst.py.
+
+RESULT (exact, n=16 k=3 hifreq[9,7], p=65537):
+| band a | #bad(monomial) | #bad(generic) max / nonzero-of-draws | regime |
+|--------|----------------|--------------------------------------|--------|
+| 4 (k+1)|  737           | max=1800, 8/8 nonzero (generic > mono)| SHALLOW non-binding |
+| 5      |  1             | max=1,   2/8 nonzero                  | shallow |
+| 6      |  1             | max=0, 0/20 nonzero                   | BINDING |
+| 7      |  1             | max=0, 0/20 nonzero                   | BINDING |
+| 8      |  1             | max=0, 0/20 nonzero                   | BINDING |
+Structured low-degree-poly stacks (deg k..k+3, non-monomial) at a=6,7: ALSO #bad=0 (0/10 each).
+
+VERDICT (rule-4 mapped; SUPPORTS the board's monomial-worst restriction at the binding radius, NOT a
+CORE result): at the SHALLOW band a=k+1 every (k+1)-tuple is trivially singleton-aligned, so #bad merely
+counts distinct residual-ratios -- large for ANY stack (generic 1800 > mono 737); that band sits FAR above
+the prize floor and is NON-binding. At the DEEP BINDING bands (a>=6, where the floor lives) the monomial
+far-line pins #bad to its binding value (1) while EVERY generic random AND structured-low-degree far stack
+gives EXACTLY 0 (0/20 + 0/10 nonzero). => the MONOMIAL far-line IS the worst-case stack at the binding
+radius; generic stacks do NOT threaten the canonical core B = max over ALL stacks there. This JUSTIFIES
+(numerically, does not formally prove the WLOG) the board's universal restriction to monomial far-lines:
+the "->Johnson" derived on monomials is NOT an under-estimate of the true B at the binding band. CORE not
+closed, no overclaim. Python-only exact, no Lean => axiom-clean trivially. probe_407_genericstack_vs_monomial_worst.py.
