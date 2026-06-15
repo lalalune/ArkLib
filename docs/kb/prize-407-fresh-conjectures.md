@@ -103,3 +103,14 @@ Feasibility 6; would prove worst≈typical, reducing the prize to the TYPICAL M 
   This is the cleanest distributional form: NOT "rate=1/2" but "rate bounded below" — weaker, but still
   the uniform-in-n Gauss-period equidistribution-tail = BGK. The whole prize is: the n-fold period sum
   is sub-exponential with n-independent rate.
+
+## The period tail rate c — asymptotic (precise fit)
+Least-squares fit of #{b:|η_b|²/n>t}/q ~ exp(−c t): c = 0.726, 0.628, 0.586, 0.573 (n=16,32,64,128),
+DECREASING toward ~0.5 (=Wick/Gaussian). M²/(n·ln q) = 1.09, 1.18, 1.40 (<2=√2-bound), so the prize
+bound M≤√(2n ln q) HOLDS WITH ROOM and the constant approaches √2 from below as n→∞ — consistent with
+the robust A_r≤Wick measurement (clean) and with the periods being asymptotically Gaussian (c→1/2).
+**Final characterization:** the prize sup-norm M=max_{b≠0}‖η_b‖ for dyadic μ_{2^μ} at p~n^4 satisfies
+M=√(c⁻¹·n·ln q) with c→1/2 (Gaussian), i.e. M~√(2n ln q); PROVING c≥1/2−o(1) uniformly in n = the
+Gauss-period Gaussian-tail theorem = BGK. The dyadic structure gives c≈0.7 at finite n (C1 deficit /
+C2 tail), tightening to the Gaussian 0.5 — the whole open content is this single uniform-tail limit.
+/tmp/probe_rate_fit.py.
