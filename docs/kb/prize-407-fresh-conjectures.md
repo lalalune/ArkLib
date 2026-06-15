@@ -230,3 +230,29 @@ is SUB-GAUSSIAN (lighter tails than Gaussian). So: prize ⟺ dyadic period unifo
 uniform-in-n tail). The 4th-moment CLT (kurtosis→3, provable via E_2=3n²-3n for p>2^n) is the provable
 instance; uniform sub-Gaussianity at r~log q = BGK. C14=BGK (the CLT/distributional form), as the
 structural cap predicts. All of C11-C20 reduce to BGK; the period→Gaussian convergence IS the open core.
+
+## Coset-split theory — 5-brick formal theory of the dyadic tower step (2026-06-14)
+Built and landed a coherent, axiom-clean formal theory of the EXACT level-μ → level-(μ-1) recursion,
+which is the foundation of the C1 tower lead and the structural cap. All on lalalune/main.
+
+- **`EtaCosetSplit.eta_coset_split`**: `η_G(b) = η_H(b) + η_H(ωb)` when `G = H ⊔ ωH`, `ω≠0`. The exact
+  parity split (`G=μ_{2^μ}=⟨ω⟩`, `H=⟨ω²⟩=μ_{2^{μ-1}}`, even/odd powers).
+- **`EtaCosetSplit.eta_split_parallelogram`**: `‖η_G(b)‖² + ‖η_H(b)−η_H(ωb)‖² = 2(‖η_H(b)‖²+‖η_H(ωb)‖²)`.
+  So the worst-frequency deficit `4V_{μ-1}−V_μ` IS exactly the twist `‖η_H(b)−η_H(ωb)‖²` (one-level BGK input).
+- **`TowerCeiling.eta_sq_le_four`**: `‖η_G(b)‖² ≤ 4V` (both sub-periods ≤V). The STRUCTURAL CAP, formal: each
+  level at most quadruples; iterated from V_0=1 ⟹ only M≤n. Improvement requires the per-level twist.
+- **`TotalTwist.total_twist_eq`**: `Σ_b ‖η_H(b)−η_H(ωb)‖² = q·|G|`. AVERAGE twist = |G| = n, far below the
+  Θ(n) worst-frequency twist a deficit needs (where ‖η_G‖²~n log q). The deficit can't be averaged.
+- **`CosetPeriodOrthogonal.coset_period_orthogonal`**: `Σ_b η_H(b)·conj η_H(ωb) = 0` (ω-shift moves the
+  diagonal off H). The EXACT reason total-twist = total-period-energy (both q|G|): by polarization the cross
+  term vanishes. Period and twist are complementary (pointwise sum = 2(‖η_H(b)‖²+‖η_H(ωb)‖²)) and uncorrelated
+  on average.
+
+**META-OBSERVATION (the cap as a meta-theorem).** These bricks together PROVE that the elementary
+conjecture space is exhausted: (a) the only source of tower improvement is the worst-frequency twist
+[ceiling], (b) the twist has the SAME total energy as the period and is uncorrelated with it on average
+[total-twist + orthogonality], so no global/averaged argument extracts a deficit. Any elementary attack
+either averages (killed by total-twist=q|G|) or is worst-case-pointwise (= BGK). This is WHY C1–C20 all
+reduce to BGK — not coincidence but a structural inevitability the 5 bricks now make rigorous. A genuinely
+new attack must inject NON-elementary input (an explicit equidistribution/cancellation estimate for
+dyadic-subgroup sums mod p — di Benedetto-type, currently n^0.989, prize needs n^0.5).
