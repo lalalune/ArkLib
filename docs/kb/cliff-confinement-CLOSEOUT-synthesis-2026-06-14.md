@@ -86,3 +86,16 @@ small at the binding radius (char-uniform) and exponential in the interior.
 Probes (this session): /tmp/large_n_confirm.py, /tmp/unified_compare.py; legs' probes in
 scripts/probes/probe_ld_vs_mca_binding_radius.py and /tmp (some repo copies wiped by swarm branch
 resets). Workflow wf_c60f562a-b3f (6 legs + 3-lens adversarial verify, stopped after harvest).
+
+## CONVERGENCE with the concurrent "Plotkin-proxy" course-correction (cross-check)
+A concurrent effort (memory issue407-farline-incidence-is-plotkin-proxy; fast Rust engine
+scripts/rust-pg) independently concluded far-line incidence is a PROXY, not the true MCA δ*:
+δ*_MCA ≥ Johnson AND ≤ δ*_farline (since ε_MCA ≥ incidence/q). This AGREES with this closeout's
+bottom line (far-line counting is prize-inert / reproduces Johnson). Nuance reconciled honestly:
+- Their "exact δ*_farline = 1/2+(1/(2ρ)−1)/n → 1/2" matches THIS leg's MONOMIAL calibration at ρ=1/4
+  (n16→0.5625, n20→0.55) but not ρ=1/2 (their 0.5 vs my monomial 0.3125).
+- Resolution: δ*_farline is an UPPER bound on δ*_MCA, and the MONOMIAL line is a valid affine line, so
+  the monomial incidence gives a TIGHTER upper bound. At ρ=1/2 it pins δ*_MCA ∈ [Johnson=0.293, 0.3125]
+  — i.e. the monomial proxy is sharper and lands ON Johnson, strengthening (not contradicting) the
+  "reproduces Johnson" conclusion. Both efforts agree: the true MCA δ* (≥Johnson floor) is the harder
+  BGK object; the right target object is ABF26 §4.5 mcaConjecture, NOT far-line incidence.
