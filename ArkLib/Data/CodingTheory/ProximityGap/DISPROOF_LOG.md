@@ -11166,3 +11166,7 @@ union bound; Tao-uncertainty needs `n` prime, vacuous for `n=2^μ`).
 
 **Probes committed:** `scripts/probes/probe_c20_khovanskii_ragged_root_count.py`,
 `scripts/probes/probe_c20_khovanskii_ragged_certificate.py` (commit `fb3785b58`).
+
+
+## O180 (#444 2026-06-15 live-frontier sweep) — see docs/kb/deltastar-444-livefrontier-sweep-2026-06-15.md
+Q1-d32 false-refutation OVERTURNED (V_32^prim empty, cross-prime 0/64=mod-p noise); over-det s*-k=n/4 AND =3-const both REFUTED (Johnson-region); moment-step 1-g~r/n knife-edge ALL rungs (thickness-invariant); C11-C20 9 dead (thickness-inv/group-taut/M-in-disguise); IPR diagnostic axiom-clean but q*E2-reducible. CORE OPEN.
