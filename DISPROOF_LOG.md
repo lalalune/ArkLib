@@ -806,3 +806,37 @@ house bound fails. The prize is NOT refuted (small primes). What's mapped: the b
 independence lever and the (BIND)/house-gate lever are the SAME wall viewed through two formalizations;
 closing either at the prize budget needs the thinness-essential B_∞←B_{log n} Sidon bootstrap, not a
 sharper bound on either equivalent face. No CORE closure.
+
+### BHBI n=32 "wall" is a small-p PIGEONHOLE ARTIFACT; prize-regime failure is BASIS-LENGTH, thickness-invariant (2026-06-15)
+
+Resolves the explicit SCOPE caveat left open by the BHBI<->BIND bridge entry (push 07517f301): that the
+realizable-BHBI / (BIND) height-1 failure at n=32 was measured only at p~n^4~2^20, far below the
+pigeonhole floor. Constraint lemma BHBI-PIGEONHOLE:
+
+A realizable height-h relation Sum_{j<N} g_j omega^j = 0 (mod p), g in {-h..h}^N \ {0}, N=n/2, EXISTS
+whenever (2h+1)^N > p (collision among (2h+1)^N sign-vectors in Z/p) -- for ANY N residues, thin or not.
+
+PROBE 1 (probe_407_bhbi_house_threshold_sweep.py, exact MITM, thin mu_32 vs RANDOM 16-subset, p swept
+20..40 bits): the height-1 relation (sole basis of the "forall-field FALSE at n=32" claim) exists ONLY at
+p_bits=20 (the prize-band prime sits at the 3^16~2^25.4 edge), GONE by beta=4.4. The height-<=2 relation
+persists to p_bits~32 then vanishes at 34 -- and the thin subgroup loses it at the SAME point as / EARLIER
+than the random control (thin NONE at 34 while random still h=2). NO thin advantage.
+
+PROBE 2 (probe_407_bhbi_pigeonhole_scaling.py): at the prize regime p=n^beta, the forced-margin
+(n/2)log2(2h+1) - beta*log2(n) is positive and grows LINEARLY in n for fixed beta,h (n=128: margin_h1=73
+bits; n=65536: margin_h1=51872 bits). So bounded-height realizable relations are pigeonhole-FORCED at EVERY
+prize (n,beta) for large n -- a BANAL wall from the long half-basis (n/2 terms) vs the small modulus n^beta,
+present for ANY N-subset.
+
+PROBE 3 / CRUX (verify_n16_crux.py, exact brute n=16 p=65537): thin mu_16 has min realizable height = NONE
+(no relation at h<=2), while 40/40 RANDOM 8-subsets DO have one. The thin 2-power subgroup is strictly MORE
+relation-FREE than random -- the categorical OPPOSITE of a 2-power-structural vanishing obstruction.
+
+VERDICT: CONFIRMS the sibling's conclusion (BHBI / bounded-cyclotomic-independence lever is walled, cannot
+prove CORE) but CORRECTS the reason: the n=32 failure is a small-p pigeonhole artifact, and the genuine
+prize-regime failure is THICKNESS-INVARIANT (basis-length pigeonhole), NOT 2-power/thin-essential. By rule 3
+a thickness-invariant obstruction can neither prove nor refute CORE => the BoundedHalfBasisIndep formulation
+is the wrong lever (hypothesis unsatisfiable for trivial reasons unrelated to thin-cancellation). The
+discriminating thin content lives ABOVE the bounded-relation-height floor (the Sidon-bootstrap object).
+CORE not closed. Python-only, no Lean changed => axiom-clean trivially. n=16 exact brute; n=32 exact MITM;
+scaling analytic + exact small-n confirmation.
