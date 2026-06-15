@@ -1964,3 +1964,282 @@ HONEST SCOPE: exact small-n (8 exhaustive-over-lines, 16 worst-family+random), m
 non-Fermat, p-independent. K at n=16 is a max over a worst-line family + random (not fully exhaustive),
 but every DEAD row is a rigorous lower-bound overflow. Python-only, no Lean changed => axiom-clean trivially.
 probe_407_census_supply_budget_feasibility.py + probe_407_census_supply_budget_exhaustive.py.
+
+================================================================================
+2026-06-15 The LAST NON-MOMENT route (per-frequency worst-coset tower descent) is
+DEAD: the worst-coset transfer ratio rho* is THICKNESS-INVARIANT and the two half-
+coset periods are ALWAYS sign-aligned (no signed cancellation) (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE (the surviving residual, c.1263 verdict): "the surviving hope is NOT a moment/cancellation argument
+(both parities adverse) -- it must be a PER-FREQUENCY / STRUCTURAL estimate that does NOT pass through the
+period MOMENTS." Every prior per-freq probe was the sup constant R stratified by v2(INDEX) (supnorm_2adic)
+or the half-coset alignment over ALL b (c.287, thickness-monotone). UNPROBED: a per-frequency MULTIPLICATIVE
+DESCENT of the WORST-COSET period eta_{b*}(mu_n) onto level n/2 -- a non-moment tower recursion that, if
+contractive + thin-essential, gives M(n) <= rho* M(n/2) -> sqrt-growth by induction (a non-moment proof shape).
+
+OBJECT (exact, PROPER mu_n, m=(p-1)/n>1, NEVER n=q-1): real periods eta_b = sum_{x in mu_n} cos(2pi b x/p)
+(mu_n neg-closed => real). mu_n = mu_{n/2} u h*mu_{n/2} EXACT per-freq split: eta_b(mu_n) = A + B,
+A=eta_b(mu_{n/2}), B=eta_b(h*mu_{n/2}). Worst coset b* = argmax over coset reps (period depends only on
+b*mu_n). Measured rho*(n) = |eta_{b*}(mu_n)| / max_b|eta_b(mu_{n/2})| and the half-split sign align=sgn(A*B)
+at b*. Multi-prime incl. non-Fermat. Thick control: composite non-2-power n + its index-2 subgroup.
+Probe scripts/probes/probe_407_worstcoset_perfreq_descent.py.
+
+RESULT 1 -- align = +1.000 at the worst coset EVERYWHERE (thin n=16..128 AND thick n=12..40, all betas,
+incl. non-Fermat): at b* the two half-coset periods A,B ALWAYS have the SAME sign (reinforce, NO signed
+cancellation). Independently reproduces the c.287 alignment wall AT THE WORST COSET specifically -- the
+worst frequency is exactly where the halves phase-add, so there is NO per-frequency signed contraction to
+exploit. (The "tower self-similarity / phase alignment" candidate mechanism from the brief is dead at b*.)
+
+RESULT 2 -- rho* < 2 (sub-doubling) but THICKNESS-INVARIANT (the decisive rule-3 test): rho* decays slowly
+with n (sqrt-cancellation-consistent) but thin and thick lie on ONE rho*(n) curve, interleaved by n NOT by
+thickness (beta=4.0):
+  n=16 THIN 1.762 | n=24 thick 1.735 | n=32 THIN 1.584 | n=40 thick 1.432 | n=48 thick 1.411 |
+  n=64 THIN 1.559 | n=80 thick 1.304 | n=96 thick 1.432 | n=128 THIN 1.271
+The 2-power (thin) rows do NOT contract more than the non-2-power (thick) rows at comparable n; rho* is a
+function of n alone (generic sqrt-decay), NOT 2-power-essential.
+
+VERDICT (rule-4 mapped wall; rule-3 FAIL => the route is dead for the THIN-essential prize; rule-6 honest):
+1. The per-frequency worst-coset tower descent is THICKNESS-INVARIANT (rho* same thin/thick at matched n)
+   AND non-cancelling (align=+1 at b*). By rule-3 (CORE is FALSE in the thick window, so any thickness-
+   monotone mechanism is wrong) this descent CANNOT prove CORE: it would prove the (false) thick bound too.
+2. This closes the LAST named non-moment route. The board's residual after the even-moment (INFLATED) and
+   odd-moment (RIGID, anti-cancelling) walls was "a per-frequency structural estimate off the moments";
+   the natural such object -- a worst-coset multiplicative descent -- is now mapped as thickness-invariant
+   + non-cancelling. The worst frequency is precisely where the 2-adic coset halves REINFORCE; the thin
+   advantage (deeper Sidon depth) does NOT manifest as per-frequency worst-coset contraction.
+3. CONVERGENT with the whole board: per-line incidence -> Johnson, per-census -> Johnson/super-budget,
+   even moments inflated, odd moments rigid, per-frequency descent thickness-invariant. The open prize
+   content lives ONLY in the COLLECTIVE BGK aggregate cancellation among ALL frequencies simultaneously
+   (L7 WorstCaseIncidenceBounded), which no single per-object / per-frequency / per-parity face captures.
+HONEST SCOPE: rho* at large n (m>20000) uses a uniform coset-rep SAMPLE (so M is a lower bound on the true
+worst coset => rho* is a lower bound; a higher true rho* only STRENGTHENS the sub-doubling-but-invariant
+reading, never creates a thin advantage). Multi-prime incl. non-Fermat, p-stable. align is exact (full b*).
+CORE not closed, not faked. Python-only, no Lean => axiom-clean trivially. probe_407_worstcoset_perfreq_descent.py.
+
+### THIN SIDON DEPTH does NOT grow: n=64 EXACT computation REFUTES the "thin r_min advantage grows with n" lane (2026-06-15, opus-4-8 subagent)
+
+LANE (the SURVIVING positive thin signal, rule-3 PASS RIGHT-sign, w/ its own flagged open): the prior
+"THIN SIDON DEPTH SCALES" entry reported the thin Sidon depth r_min(mu_n) margin over random GROWING
+(+0,+0->+4 at beta=4; +0,+0->+8 at beta=5, n=8/16/32) but flagged: "the EXACT growth LAW (sqrt(n) vs
+log^c n) is NOT yet resolved -- need n=64,128 to fit the exponent." n=8/16/32 thin rows were CENSORED at
+rmax=n/2 (full-depth) EXCEPT the single n=32/beta=4 r_min=11 point => the exponent was DEGENERATE-UNFIT.
+No live worker on the n=64 extension. Ran it.
+
+OBJECT (identical to probe_407_thin_sidon_depth_scaling.py, validated): r_min(mu_n,p) = smallest
+NON-antipodal subset S of Z/n with Sum_{i in S} zeta^i == 0 (mod p), zeta primitive n-th root, mu_n
+PROPER 2-power subgroup of F_p*, p=ceil(n^beta) prime ==1(n), m=(p-1)/n>1, NEVER n=q-1. Antipodal pairs
+{i,i+n/2} excluded. r_min=NONE up to rmax => full-depth.
+
+METHOD: SOUND BRACKET (full n=64 MITM infeasible, C(32,16)~6e8/half). EXACT exhaustive lower bound (no
+non-antipodal vanisher of size <= r0 => r_min>=r0+1, RIGOROUS) + randomized SOUND upper witness (explicit
+witness => r_min <= s). SELF-CHECK n=32 beta=4 -> exact witness at 11 (reproduces published r_min=11).
+probe_407_thin_sidon_depth_n64_bracket.py.
+
+RESULT (exact, n=64 added; the thin depth DROPS, the margin SHRINKS):
+| n  | beta=4 thin r_min | beta=4 rand median | margin | r/sqrt(n) | beta=5 thin r_min |
+|----|-------------------|--------------------|--------|-----------|--------------------|
+| 16 | >8 (full)         | 9                  | +0     | --        | >8 (full)          |
+| 32 | 11 (exact)        | 7                  | +4     | 1.94      | >16 (full)         |
+| 64 | **8 (exact)**     | 6                  | **+2** | **1.00**  | **10 (exact)**     |
+
+EXPLICIT n=64/beta=4 WITNESS (p=16777601, zeta=6014800): S={15,17,22,29,32,33,38,63}, |S|=8, sum==0 mod p,
+NON-antipodal; exhaustive MITM confirms NO non-antipodal zero-sum of size<8 => r_min(mu_64,beta=4)=8 EXACTLY.
+Predictions: sqrt(n) law => r_min(64)~11*sqrt(2)=15.6; log law => 11*6/5=13.2. ACTUAL=8, BELOW BOTH.
+
+VERDICT (refutation-grade for the SCALING claim; rule-4 wall, rule-6 honest, NOT a CORE result):
+the "thin Sidon depth r_min advantage GROWS with n" reading does NOT survive the n=64 exact point at beta=4:
+the absolute thin depth DROPS 11->8 and the thin-minus-random margin SHRINKS +4->+2 (not monotone). The
+small-n growth was a CENSORING/CEILING artifact (n=16,32 thin rows full-depth-censored at rmax=n/2; n=32
+r_min=11 sits near the ceiling 16). So the smallest-vanisher depth r_min is NOT the carrier of a growing
+collective thin signal -- it is non-monotone and small-n biased. CONSEQUENCE: the surviving-thin effort
+should target the HIGHER-ORDER collective moment profile (the L7 BGK aggregate the whole board converges
+to), NOT r_min. This CLOSES the smallest-vanisher sub-lane. CORE not closed, no overclaim. Python-only
+exact, no Lean changed => axiom-clean trivially. probe_407_thin_sidon_depth_n64_bracket.py.
+
+================================================================================
+2026-06-15 The OddExcessSpikeLaw value (the 2-adic even-direction collapse-failure
+margin) is THICKNESS-INVARIANT -> the even-direction descent's odd-excess is NOT the
+thin-specific prize mechanism (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: the FRESH open core formalized by OddExcessLaw.lean (Shaw 80a89e78e): oddExcess = full_bad \
+half_bad, |oddExcess| = E = I_n(x^{2a'}) - I_{n/2}(x^{a'}), oddExcess=empty <=> EvenDirectionIncidence
+Collapse. The named-but-unproven OddExcessSpikeLaw: E=(n/2)^2 at the half binding rung. QUESTION nobody
+asked (rule-3): is the SPIKE VALUE thinness-essential, or does it persist in the thick prize-FALSE window?
+
+METHOD: exact per-witness-set affine-in-gamma incidence (probe_farline engine, NO floats, NO codeword
+enum), PROPER mu_16, NEVER n=q-1. Object I_n(x^4) over mu_16, code degree 4, binding rung r=10 (delta
+.625). Anchored I_n=89 EXACTLY (= in-tree probe_farline n=16 k=4 r=10). q-sweep index m=(p-1)/16 from
+thick to thin. probe_407_oddexcess_qsweep.py + probe_407_oddexcess_n16_validate.py.
+
+RESULT (exact):
+  m=6(p97):57  m=7(p113):89  m=12:89  m=16(beta2.0):89  m=21(p337):81  m=22:89  m=27(p433):81
+  m=36..75 (beta 2.29-2.56, the prize-FALSE thick window): 89,89,89,89,89,89,89,89  ALL 89
+  m=151,201,250 (beta 2.81-2.99): 89,89,89   m=501,2016,4096 (thin): 89,89,89
+  => I_n(x^4;r=10) = 89 IDENTICALLY across the thick beta=2.3-3.2 prize-FALSE window AND the thin regime.
+     The dips (81 at p=337/433, 57 at p=97) are SPORADIC small structured-prime artifacts, NOT a
+     thickness trend (89 returns at thicker p=113/193/257/353).
+
+VERDICT (rule-4 wall, rule-3 FAIL): the OddExcessSpikeLaw value (the even-direction collapse-failure
+margin) is a THICKNESS-INVARIANT cyclotomic constant. The 2-adic even-direction collapse fails by the
+SAME ~(n/2)^2 margin in the thick prize-false regime as in the thin prize regime => the collapse FAILURE
+is thin-blind. A thinness-essential proof of CORE cannot route through the even-direction descent's odd-
+excess value. Joins the board meta-pattern (every per-direction object is thickness-invariant + Johnson-
+tracking; only the aggregate BGK moment is open). RULE-6: does NOT close CORE, does NOT refute the in-
+tree oddExcess_card or the named Prop (the collapse genuinely fails; E IS the obstruction) -- it maps
+that the obstruction's VALUE is thin-independent. Python-only exact => axiom-clean trivially.
+
+================================================================================
+2026-06-15 POSITIVE FEASIBILITY: the CANONICAL open core B=max_stack #bad IS within
+the eps* budget at EVERY r (ratio 0.04-0.41) -- the census route's infeasibility is
+PURELY the #bad<=#alignable loss; target #bad DIRECTLY (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE (the decisive follow-up to the census-infeasibility brick 5ac9fe4bc): I showed the census
+surrogate K=#alignable EXCEEDS the weld budget 2^r*C(2^{mu-1},r) at the shallow/deepest bands (census
+route DEAD). But the CANONICAL open core (OpenCoreConditionalPin.lean) is WorstCaseIncidenceBounded C
+delta B = (forall stacks, #bad-gamma <= B), and the census bounds B only via the LOSSY #bad<=#alignable
+(c.1007: up to 112x slack). UNMEASURED until now: is the TRUE core object B = max_stack #DISTINCT-bad-gamma
+itself within budget, even where the surrogate K is not?
+
+OBJECT (exact mod-p, PROPER mu_n m>1 never n=q-1, prize primes incl. non-Fermat; #bad = #distinct pinned
+ratios -e0(T)/e1(T) over alignable a-sets, the genuine OpenCoreConditionalPin object NOT the alignable-set
+count). m=1 prize shape k=r-1, binding band a_bind=r+1. Adversary = exhaustive char-lines (n=8) / strong
+worst-line family (n=16). Probe probe_407_truecore_B_vs_budget.py (+ /tmp/truecore16.py focused n=16 run).
+
+RESULT (B vs budget 2^r*C(2^{mu-1},r), p-INDEPENDENT across Fermat p=65537 AND non-Fermat p=262193):
+  n=8  (exhaustive over ALL lines): r=2 B=5<=24, r=3 B=9<=32. FEASIBLE (ratio 0.21, 0.28).
+  n=16: r=2 B=24<=112 (0.21) | r=3 24<=448 (0.05) | r=4 40<=1120 (0.04) | r=5 73<=1792 (0.04) |
+        r=6 113<=1792 (0.06) | r=7 41<=1024 (0.04) | r=8 104<=256 (0.41). FEASIBLE at EVERY r.
+  IDENTICAL at beta=4.0 and beta=4.5 (non-Fermat) => B is p-independent (char-0 structural).
+CONTRAST with the census K (push 5ac9fe4bc): at the SAME r=2,3,4,8 where K>budget (1.4-2.6x DEAD),
+the TRUE core B is 0.04-0.41x budget -- comfortably FEASIBLE. The gap K/B at the binding band is the
+c.1007 lossiness (#alignable overcounts #bad by collapsing many a-subsets of ONE far-line locus onto one
+gamma): at the hifreq line up to 112 alignable sets pin ONE bad gamma.
+
+VERDICT (positive direction-setting, rule-6 honest -- NOT a CORE closure):
+1. The deployed eps* budget 2^r*C(2^{mu-1},r) is NUMERICALLY SUFFICIENT for the CANONICAL open core
+   WorstCaseIncidenceBounded at the binding window band, at EVERY proximity parameter r, with a WIDE
+   margin (ratio <=0.41, mostly <=0.06). The pin's budget is NOT the obstruction; the open work is a
+   PROOF that #bad <= 2^r*C(...), and the target is plausible (the realized worst-stack #bad sits far
+   below it).
+2. SHARPENS c.1007 quantitatively: the census route should be ABANDONED in favor of bounding #bad DIRECTLY
+   (the lossy #bad<=#alignable step is the SOLE reason the census surrogate overflows). This converts
+   c.1007's qualitative "target #bad directly" into a measured feasibility: #bad/budget <= 0.41 forall r.
+3. HONEST: this is a NECESSARY-condition check (B fits the budget), NOT a proof that B<=budget holds at
+   ALL n / the prize regime -- the SUP over stacks at n=16 uses a strong worst-line family + random (n=8
+   exhaustive). A larger true B at unscanned stacks would only RAISE B; but the >2x headroom (ratio <=0.41)
+   at the binding bands gives margin. The asymptotic #bad-vs-budget growth law (does ratio stay <1 as
+   n->inf, the floor-vs-Johnson question, c.348 undecidable below n=256) is UNCHANGED -- this is a
+   finite-n feasibility result, not the asymptotic bound. CORE not closed.
+4. CONVERGENT: explains why per-line #bad COLLAPSES to O(1) at hifreq (95e633cb0) yet the route can still
+   work -- the collapse is exactly what keeps B far below budget; the census surrogate's inflation was a
+   red herring. The real open object is well-posed and budget-feasible; the prize is the PROOF, at the
+   collective BGK depth, that this finite-n feasibility persists asymptotically.
+Python-only, no Lean => axiom-clean trivially. probe_407_truecore_B_vs_budget.py.
+
+================================================================================
+2026-06-15 FLOOR-CONSISTENT on the CORRECT object: the canonical #bad / eps*-budget
+ratio at the shallowest binding band is BOUNDED BELOW 1 (converging ~0.26), NOT
+Johnson-tracking -- the first floor-consistent growth on #bad direct (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE (capstone follow-up to the true-core feasibility brick ed1db3379): that brick showed B=max_stack
+#bad <= eps*-budget 2^r*C(2^{mu-1},r) at finite n. The PRIZE content is the ASYMPTOTIC decider: does
+ratio(n)=#bad/budget stay BOUNDED BELOW 1 (genuine FLOOR, prize-positive) or CREEP UP TO 1 (Johnson, the
+fate of every SURROGATE: incidence I(n), e2=0 census K, even/odd moments). This is the FIRST growth
+measurement on the CANONICAL OpenCoreConditionalPin object #bad itself (all prior floor-vs-Johnson probes
+were on surrogates).
+
+OBJECT (exact mod-p, PROPER mu_n, p~n^4, shallowest binding band r=2 -> k=1, a=3 where C(n,3) is brute-
+feasible to n=64): #bad = #distinct pinned gamma, max over char-line adversary. Probe
+probe_407_truecore_B_growth.py (dedicated fast pair-ratio routine reaching n=64).
+
+RESULT (worst line consistently (4,2)):
+  n= 8: #bad=5    budget=24    ratio=0.2083
+  n=16: #bad=25   budget=112   ratio=0.2232
+  n=32: #bad=113  budget=480   ratio=0.2354
+  n=64: #bad=481  budget=1984  ratio=0.2424
+Increments 0.0149, 0.0122, 0.0070 -- DECAYING (last ratio ~0.57) => geometric extrapolation to ~0.26,
+BOUNDED WELL BELOW 1. The canonical #bad-to-budget ratio is CONVERGING below 1 = FLOOR-CONSISTENT.
+
+VERDICT (rule-4; the FIRST floor-consistent (not Johnson) signal on the right object; rule-6 honest):
+1. On the SURROGATE faces, every floor-vs-Johnson probe converged to Johnson (ratio -> 1 / super-budget).
+   On the CANONICAL #bad object at the shallowest binding band, the ratio-to-budget converges to ~0.26
+   -- bounded below 1, FLOOR-consistent. This is the qualitative difference between #bad (the real
+   obligation) and the surrogates (#alignable, incidence, census, moments) that all over-shoot.
+2. CONSEQUENCE: the deployed eps* budget 2^r*C(2^{mu-1},r) is not merely met finite-n (ed1db3379) -- its
+   margin appears to PERSIST (ratio bounded ~0.26) at the shallowest band as n grows. If this floor
+   persists across all r and to the prize regime, the canonical pin's budget is asymptotically sufficient
+   for #bad -- exactly the prize-positive direction the surrogates falsely killed.
+HONEST SCOPE (rule 6 -- NOT a closure): single SHALLOWEST band r=2 (computational reach; deepest band
+r=2^{mu-1} is brute-infeasible past n=16); worst is a fixed LOW line (4,2); p-fixed (one prime per n);
+n<=64. The full prize is forall-r and the asymptotic decider needs n>=256 (c.348: numerics cannot
+separate floor from Johnson below 256). So this is a measured finite-n floor-CONSISTENT trend on the
+correct object at one band -- it does NOT prove a floor (the deeper bands / larger n could differ), but
+it is the first face whose #bad-to-budget ratio does NOT march to Johnson. The deep-band growth law +
+the multi-band + larger-n confirmation are the open residual. CORE not closed, not faked. Python-only,
+no Lean => axiom-clean trivially. probe_407_truecore_B_growth.py.
+
+================================================================================
+2026-06-15 The TRUE-CORE B (max_stack #distinct-bad-gamma) feasibility margin is
+THICKNESS-INVARIANT -- B/budget identical thin vs thick => finite-n feasibility is
+Johnson-margin, NOT thin-essential; thin content is purely in B's ASYMPTOTIC growth
+(opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: complement to 0xSolace ed1db3379 (POSITIVE: B=max_stack #distinct-bad-gamma is WITHIN the eps*
+budget at every finite r, ratio 0.04-0.41x, at beta=4.0/4.5 BOTH THIN). That probe did NOT test the
+THICK regime. QUESTION (rule-3): is the B/budget feasibility margin THINNESS-ESSENTIAL (grows toward 1
+as mu_n thickens => thin content) or thickness-invariant (Johnson-margin)?
+
+METHOD: reused the sibling's EXACT engine (nbad_at_band, charline) VERBATIM; swept beta from THICK
+(2.3, prize-FALSE) to THIN (5.0, prize-shape) at the SAME bands r=4 (census-overflow band) + r=8
+(Johnson band). Exact mod-p, PROPER mu_16, never n=q-1. probe_407_truecore_B_thinness.py.
+
+RESULT (exact):
+  r=4: B=40 at EVERY beta (2.3,2.6,3.0,3.5,4.0,5.0), ratio=0.0357 IDENTICAL (bit-for-bit)
+  r=8: B=104 at beta 2.3,3.0,3.5,4.0,5.0 (ratio 0.4062); 96 at beta=2.6 (sporadic structured-prime dip)
+  => B at fixed (n,r) is THICKNESS-INVARIANT. The B/budget feasibility margin is identical in the thick
+     prize-FALSE regime and the thin prize regime.
+
+VERDICT (rule-3 FAIL on the feasibility-margin face): the sibling's positive "B within budget" result
+is a THICKNESS-INVARIANT (Johnson-margin) feasibility, NOT a thin-specific signal. Finite-n B feasibility
+holds identically in BOTH regimes => finite-n feasibility CANNOT distinguish thin from thick. The thin
+content lives PURELY in the ASYMPTOTIC GROWTH RATE of B(n), NOT in finite B values or the budget ratio.
+This SHARPENS ed1db3379: targeting #bad directly is right, but the feasibility is necessary-not-sufficient
+(thin-blind at finite n); the prize is the GROWTH law of B (consistent with c.348: numerics can't decide
+floor-vs-Johnson below n=256). RULE-6: does NOT close CORE, does NOT contradict ed1db3379 (B IS within
+budget) -- it maps that the WITHIN-budget margin is thin-independent. Python-only exact => axiom-clean.
+
+### The MONOMIAL far-line IS the worst-case stack at the BINDING band: generic + structured-low-degree stacks give #bad=0 there (2026-06-15, opus-4-8 subagent)
+
+LANE (uncontested gap, exposed by reading B1IncidenceBridge.lean): the in-tree canonical core
+WorstCaseFarIncidenceBounded quantifies #bad = #pinned-gamma over ALL far stacks (u0,u1); the bridge
+epsMCA <= B/q needs B = max over ALL (u0,u1). But the ENTIRE board (incidence I(n), census K, #bad
+collapse, wf-D1/D2/D5, n/4 law, "->Johnson") analyzes ONLY the MONOMIAL far-lines u0=x^A,u1=x^B and
+ASSERTS they are the worst case. NO probe had TESTED whether a GENERIC (non-monomial) far stack yields
+MORE bad-gamma. If generic #bad > monomial, the board's "->Johnson" UNDER-ESTIMATES the true B.
+
+METHOD (exact mod-p, PROPER mu_n, prize prime p~n^4, NEVER n=q-1): #bad(u0,u1;a) via exact bordered
+Vandermonde residuals (the in-tree `residual` det) + Aligned-subset semantics (mcaEvent_iff_aligned_subset):
+gamma bad iff some a-subset S has all (k+1)-subtuples sharing gamma=-res0(T)/res1(T) with a non-degenerate
+tuple. Compared MONOMIAL u0=x^A,u1=x^B vs RANDOM-GENERIC far stacks (u1 enforced FAR) AND STRUCTURED
+low-degree-poly stacks, full band sweep a=k+1..n/2. n=16,k=3,hifreq[9,7]. probe_407_genericstack_vs_monomial_worst.py.
+
+RESULT (exact, n=16 k=3 hifreq[9,7], p=65537):
+| band a | #bad(monomial) | #bad(generic) max / nonzero-of-draws | regime |
+|--------|----------------|--------------------------------------|--------|
+| 4 (k+1)|  737           | max=1800, 8/8 nonzero (generic > mono)| SHALLOW non-binding |
+| 5      |  1             | max=1,   2/8 nonzero                  | shallow |
+| 6      |  1             | max=0, 0/20 nonzero                   | BINDING |
+| 7      |  1             | max=0, 0/20 nonzero                   | BINDING |
+| 8      |  1             | max=0, 0/20 nonzero                   | BINDING |
+Structured low-degree-poly stacks (deg k..k+3, non-monomial) at a=6,7: ALSO #bad=0 (0/10 each).
+
+VERDICT (rule-4 mapped; SUPPORTS the board's monomial-worst restriction at the binding radius, NOT a
+CORE result): at the SHALLOW band a=k+1 every (k+1)-tuple is trivially singleton-aligned, so #bad merely
+counts distinct residual-ratios -- large for ANY stack (generic 1800 > mono 737); that band sits FAR above
+the prize floor and is NON-binding. At the DEEP BINDING bands (a>=6, where the floor lives) the monomial
+far-line pins #bad to its binding value (1) while EVERY generic random AND structured-low-degree far stack
+gives EXACTLY 0 (0/20 + 0/10 nonzero). => the MONOMIAL far-line IS the worst-case stack at the binding
+radius; generic stacks do NOT threaten the canonical core B = max over ALL stacks there. This JUSTIFIES
+(numerically, does not formally prove the WLOG) the board's universal restriction to monomial far-lines:
+the "->Johnson" derived on monomials is NOT an under-estimate of the true B at the binding band. CORE not
+closed, no overclaim. Python-only exact, no Lean => axiom-clean trivially. probe_407_genericstack_vs_monomial_worst.py.
