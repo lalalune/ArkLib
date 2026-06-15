@@ -174,3 +174,12 @@ n=64 crossover — and was WRONG.
 b≠0) + `A_r ≤ Wick` ⟹ ‖η_b‖^{2r} ≤ q·Wick — NON-vacuous at the prize. So the DC bricks are the genuinely
 CORRECT prize reduction; the in-tree non-DC chain needs the DC subtraction to be non-vacuous. Building the
 DCEnergyBound correction Prop next.
+
+## DC correction INDEPENDENTLY CONFIRMED (DCEnergyEssential.lean by another fleet agent)
+Another agent's `DCEnergyEssential.lean` found the SAME correction in parallel: `energy_ge_dc` (E_r≥|G|^{2r}/q)
++ `not_gaussianEnergyBound_of_card_pow_gt` (q·(2r-1)‼<|G|^r ⟹ ¬GaussianEnergyBound) — MACHINE-CHECKED
+refutation of the in-tree bound at prize, same crossover n=64, same +1301 at n=2^30. My DC* bricks are the
+CONSTRUCTIVE COMPLEMENT: DCEnergyEssential proves the in-tree bound FALSE; my DCEnergyCorrection/DCOptimized/
+DCWorstCaseWiring/DCEnergyBaseCase provide and wire the CORRECT replacement (DCEnergyBound = A_r≤Wick, true
+at prize) ⟹ M≤√(2e n ln q) ⟹ WorstCaseIncompleteSumBound ⟹ interior δ*, non-vacuous, anchored free at r=1.
+Two-agent independent confirmation = the DC correction is robust and real.
