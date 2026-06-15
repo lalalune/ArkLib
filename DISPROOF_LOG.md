@@ -538,3 +538,35 @@ on the n-axis the margin erodes toward 1. n≤64 is sub-linear but CANNOT distin
 (prize provable via this step) from "creeps to 1" (BGK-tight) — that crossover IS the open content. Honest:
 NO extrapolation claim, NO closure; this tempers the reframing rather than advancing it. Probe
 scripts/probes/probe_407_step_at_rstar_ntrend.py.
+
+## ★ FORMULA-SCOPE REFUTATION — the in-tree δ* formula ½+(1/(2ρ)−1)/n BREAKS at small ρ (k=2); exact s* sweep (2026-06-15)
+
+CONTEXT: the orchestrator's SOTA consolidation (c.02:27:52Z, §3) flagged the SINGLE decisive open computation:
+"a cheap large-n k=2 sweep (small s*)" to settle whether δ*_far-line tracks the floor 1−ρ−Θ(1/log n), noting
+"at n=32,k=2 the small-n formula predicts s*=9 but the engine measures s*=6, δ*=0.8125 — the formula breaks
+upward." I ran the exact k=2 over-determined far-line incidence s* sweep (Rust pg engine, validated; + an
+independent Python extremal-neighborhood probe, both agree) and PINNED the break exactly.
+
+EXACT DATA (char-0 prize prime p~n^4, VALID subgroup p≡1 mod n verified, budget=n, full over-det incidence):
+  n=16,k=2: s=4 maxI=97(bad) → s=5 maxI=16(GOOD) ⟹ s*=5, s*−k=3, δ*=0.6875
+  n=32,k=2: s=4 maxI=897 → s=5 maxI=90 → s=6 maxI=25(GOOD) ⟹ s*=6, s*−k=4, δ*=0.8125
+Both reproduced by the bmax=4 direction-restricted engine (extremal dir has b∈{2,4} ⟹ restriction is exact).
+
+THE BREAK (exact): the in-tree formula δ*=½+(1/(2ρ)−1)/n (HEAD b66b7f769, calibrated ρ=1/4, n≤24) gives, for
+k=2 (ρ=2/n, 1/(2ρ)=n/4): s* = n/2 − 1/(2ρ) + 1 = n/4 + 1, i.e. s*−k = n/4 − 1.
+  n=16: formula s*−k = 3  vs EXACT 3  ✓ MATCH (δ*=0.6875 both)
+  n=32: formula s*−k = 7 (s*=9, δ*=0.7188)  vs EXACT s*−k = 4 (s*=6, δ*=0.8125)  ✗ BREAK
+The formula OVER-predicts s* / UNDER-predicts δ* at small ρ. Exact δ*=0.8125 sits ABOVE Johnson(0.75),
+between the formula (0.7188) and cap 1−ρ (0.9375). Measured s*−k grows 3→4 (n=16→32), NOT 3→7: the
+small-ρ over-det threshold grows FAR SLOWER than the formula's n/4 rate — consistent with s*−k ~ Θ(n/log n)
+or even slower (sub-n/4), NOT the linear-in-n the ρ=1/4-calibrated formula implies.
+
+CONSEQUENCE (honest, rule 4 = a mapped formula failure is a result):
+- The ½+(1/(2ρ)−1)/n formula is a ρ=1/4 ARTIFACT; it must NOT be used to extrapolate δ* at small ρ / large n.
+- The exact k=2 δ* climbs toward 1−ρ (NOT ½), confirming the orchestrator's "break upward". So the far-line
+  incidence δ* (a RIGOROUS UPPER bound on MCA δ*, epsMCA≥far_inc/q) does NOT collapse to Plotkin ½ at small ρ.
+- OPEN (the genuine combinatorial core): the exact growth law of s*−k(n) at fixed k. n=16,32 give 3,4; n=64
+  (s=4 maxI=7681 bad, s=5 in flight) extends it. Whether s*−k ~ Θ(n/log n) (⟹ δ*=floor) vs slower is the live
+  decider — and it is now OFF the BGK char-sum wall (pure cyclotomic over-det counting), exactly as the
+  orchestrator localized. NOT a closure: small n (≤32 exact), maps the trend.
+Probe scripts/probes/probe_407_k2_sstar_formula_break.py (+ rust-pg bmax mode for cross-validation).
