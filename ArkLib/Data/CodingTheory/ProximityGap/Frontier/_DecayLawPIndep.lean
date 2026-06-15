@@ -158,6 +158,46 @@ theorem unique_witnessScalar_eq {J : Type*} (A B : J → K) {j₀ : J} (hB : B j
   · intro hγ; exact witnessScalar_unique A B hB hγ
   · rintro rfl; exact witnessScalar_of_parallel A B hB hpar
 
+/-! ## The transfer mechanism (char-`0` ⟶ char-`p`)
+
+The lemmas below make the `p`-independence *direction* explicit. Take a ring homomorphism
+`φ : K →+* L` — concretely the reduction `ℤ[ζ_n] ↪ ℚ(ζ_n) ⟶ 𝔽_p` (well-defined after localizing
+away from `p`). The bad-witness condition and its solution `γ` are *polynomial/rational* in the data,
+so `φ` carries a witness scalar over `K` to a witness scalar over `L` **as long as `φ` does not kill
+the pivot** `B j₀` (i.e. `p` is not one of the finitely many "bad primes" dividing `Norm(B̃ j₀)`).
+This is exactly the statement "the count is preserved mod `p` outside the finite bad-prime set." -/
+
+variable {L : Type*} [Field L]
+
+/-- **Witness scalars push forward along ring homs (parallelism is preserved).** If `φ : K →+* L`,
+and the columns `A, B` are parallel over `K` with pivot `B j₀ ≠ 0`, then the image columns
+`φ ∘ A, φ ∘ B` are parallel over `L`. (Parallelism is the `2×2`-minor identity, a ring equation, so
+any `φ` preserves it — no nonvanishing hypothesis needed for this half.) -/
+theorem map_parallel {J : Type*} (A B : J → K) (φ : K →+* L) {j₀ : J}
+    (hpar : ∀ j, A j * B j₀ - A j₀ * B j = 0) (j : J) :
+    (φ ∘ A) j * (φ ∘ B) j₀ - (φ ∘ A) j₀ * (φ ∘ B) j = 0 := by
+  have := hpar j
+  simpa [Function.comp, map_sub, map_mul] using congrArg φ this
+
+/-- **The witness scalar transfers across `φ` exactly when the pivot survives.** If the columns are
+parallel over `K`, `B j₀ ≠ 0` in `K`, and the pivot *survives reduction* (`φ (B j₀) ≠ 0` in `L` —
+i.e. `p` is a *good* prime), then `φ` of the `K`-witness scalar `γ = -(A j₀)/(B j₀)` is itself the
+unique `L`-witness scalar for the reduced columns. This is the per-direction `p`-independence: the
+bad-`γ` solution mod `p` is the reduction of the char-`0` solution, hence the *same* solution set
+(and the same count) for every good `p`. -/
+theorem witnessScalar_transfer {J : Type*} (A B : J → K) (φ : K →+* L) {j₀ : J}
+    (hB : B j₀ ≠ 0) (hφB : φ (B j₀) ≠ 0)
+    (hpar : ∀ j, A j * B j₀ - A j₀ * B j = 0) :
+    IsWitnessScalar (φ ∘ A) (φ ∘ B) (φ (-(A j₀) / (B j₀))) := by
+  -- the reduced columns are parallel with surviving pivot, so apply the converse criterion;
+  -- and φ(-(A j₀)/(B j₀)) = -(φ A j₀)/(φ B j₀) since φ is a field/ring hom and the pivot survives.
+  have hparL : ∀ j, (φ ∘ A) j * (φ ∘ B) j₀ - (φ ∘ A) j₀ * (φ ∘ B) j = 0 :=
+    map_parallel A B φ hpar
+  have hval : φ (-(A j₀) / (B j₀)) = -((φ ∘ A) j₀) / ((φ ∘ B) j₀) := by
+    rw [map_div₀, map_neg]; rfl
+  rw [hval]
+  exact witnessScalar_of_parallel (φ ∘ A) (φ ∘ B) hφB hparL
+
 -- Axiom audit (must show only `[propext, Classical.choice, Quot.sound]`).
 #print axioms dd_affine_in_gamma
 #print axioms witnessScalar_unique
@@ -166,5 +206,7 @@ theorem unique_witnessScalar_eq {J : Type*} (A B : J → K) {j₀ : J} (hB : B j
 #print axioms witnessScalar_of_parallel
 #print axioms witnessScalar_iff_parallel
 #print axioms unique_witnessScalar_eq
+#print axioms map_parallel
+#print axioms witnessScalar_transfer
 
 end ProximityGap.DecayLawPIndep
