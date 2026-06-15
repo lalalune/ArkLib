@@ -114,3 +114,20 @@ M=√(c⁻¹·n·ln q) with c→1/2 (Gaussian), i.e. M~√(2n ln q); PROVING c�
 Gauss-period Gaussian-tail theorem = BGK. The dyadic structure gives c≈0.7 at finite n (C1 deficit /
 C2 tail), tightening to the Gaussian 0.5 — the whole open content is this single uniform-tail limit.
 /tmp/probe_rate_fit.py.
+
+## Conjectures C5–C10 (completing the 10), ranked by feasibility
+- **C7 two-level deficit** [feas 7]: V_μ ≤ A·V_{μ-2} with A < (4c)² (the deficit compounds favorably over
+  a 2-level skip ⟹ better effective rate). If A ≤ 4 (per 2 levels), telescopes to √n. TEST: measure
+  the 2-level ratio vs (1-level)². Concrete, probe-able.
+- **C10 Sidon-defect** [feas 7]: M² ≤ n + f(E_2−2n²) where E_2−2n²=n² (dyadic Sidon defect, exact). If
+  M² controlled LINEARLY by the Sidon defect (not the sup-norm), elementary. TEST: fit M² vs n, n², E_2.
+- **C6 period-polynomial house** [feas 6]: the m=(p-1)/n periods are roots of an integer poly P_p(deg m);
+  M=house(P_p). CONJ house ≤ √(2n log p) via discriminant/Mahler-measure bound. Literature: Myerson,
+  Gurak on period polynomials of 2-power order. Find a house bound.
+- **C9 coupled twist contraction** [feas 5]: track (V_μ, W_μ)=(max|η|²,max|η̃|²); η=sub1+sub2, η̃=sub1−sub2.
+  CONJ the coupled max-system contracts: V_μ+W_μ ≤ 2·(V_{μ-1}+W_{μ-1})·(1−δ). Carries the cancellation
+  the 1-variable C1 drops. TEST: measure (V_μ+W_μ)/(2(V+W)_{μ-1}).
+- **C8 dihedral orbit** [feas 4]: μ_n has Z/n⋊Z/2 (dilation+negation) symmetry; M constrained by
+  orbit-averaging. Likely circular (the symmetry is already used).
+- **C5 Gauss-sum cocycle** [feas 3]: Jacobi cocycle forces DFT sup-norm bound. SHOWN circular (the
+  cocycle-DFT = period). Discard.
