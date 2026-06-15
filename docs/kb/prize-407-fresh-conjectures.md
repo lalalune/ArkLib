@@ -160,3 +160,17 @@ C3 concentration (worst≈median proven-ish, not prize-closing) · C4 REFUTED ·
 C7 REFUTED · C8 circular · C9 REFUTED · C10 REFUTED-by-scale.
 NET: the prize = uniform Gauss-period Gaussian-tail (BGK); C1 = first elementary dyadic SOTA improvement;
 the global-cancellation cap = the structural reason no elementary route reaches √n.
+
+## ★★ CORRECTION (overturns earlier self-refutation) — in-tree GaussianEnergyBound is FALSE at the prize
+DECISIVE (probe /tmp/probe_dc_crossover.py): at optimal r=round(ln q), p=n^4, the DC term n^{2r}/q vs
+Wick=(2r-1)‼n^r: log(DC/Wick) = −6.2 (n=8), +10.8 (n=64), +135 (n=4096), ... **+1301 (n=2^30)**. CROSSOVER
+at n=64. Since rEnergy=E_r ≥ n^{2r}/q (the b=0 term of Σ_all|η|^{2r}=q·E_r), **E_r ≫ Wick at the prize
+scale** ⟹ the in-tree `GaussianEnergyBound G r := E_r ≤ (2r−1)‼n^r` is MASSIVELY FALSE for n≥64 at r~log q.
+⟹ `GaussPeriodMomentBound.eta_pow_le_of_energyBound` and `eta_le_optimized` are **VACUOUS at the actual
+prize** (false hypothesis). My EARLIER self-refutation ("E_r≤Wick fine at r~log q") used n=8,16 — BELOW the
+n=64 crossover — and was WRONG.
+**THE FIX:** the correct, true-at-prize hypothesis is the DC-SUBTRACTED `A_r = E_r − n^{2r}/q ≤ Wick`
+(measured true). My `DCMomentSupBound.eta_pow_le_dc` (UNCONDITIONAL: ‖η_b‖^{2r} ≤ q·E_r − |G|^{2r} = q·A_r,
+b≠0) + `A_r ≤ Wick` ⟹ ‖η_b‖^{2r} ≤ q·Wick — NON-vacuous at the prize. So the DC bricks are the genuinely
+CORRECT prize reduction; the in-tree non-DC chain needs the DC subtraction to be non-vacuous. Building the
+DCEnergyBound correction Prop next.
