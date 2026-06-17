@@ -15489,14 +15489,19 @@ p·Z_j − n^j. (Holds over ℂ for ALL n|p−1; −1∈μ_n only makes η real.
 
 CONSEQUENCE — an identity is field-UNIVERSAL iff its Z_j is field-independent:
 * Z_1 = 0 (0∉μ_n)            ⟹ Σw  = −1   UNIVERSAL (every n).
-* Z_2 = n (x+y=0 ⟺ y=−x∈μ_n) ⟹ Σw² = p−n  UNIVERSAL (every n) — (I2) is genuinely exact.
+* Z_2 = n REQUIRES −1∈μ_n (EVEN n, incl. all #444 n=2^μ) ⟹ Σw² = p−n there; (I2) is exact in the
+  dyadic #444 regime. CAVEAT (Step-8 audit): for ODD n, Z_2=0 and Σw²=−n, so "universal (every n)"
+  was an overstatement — the fully-universal (all n) form is the HERMITIAN moment Σ|w|²=p−n.
 * Z_4 = E2(μ_n) (additive energy, via −1∈μ_n bijection) is FIELD-DEPENDENT ⟹ (I4) holds iff
   E2(μ_n)=3n²−3n, which FAILS in the small-field regime. (I4)'s claimed RHS even goes NEGATIVE at
   large n (e.g. p=257,n=128: claimed −1999235 vs computed Σw⁴=8449) — a sum of 4th powers of reals
   cannot be negative, so (I4) is a low-order-only identity dressed as exact.
-The field-independent window is n-dependent (universal for j≤j_max(n), j_max≈64/n: n=2→≥8, n=8→6,
-n=16→4, n=32→3); n=2 (the r=2 Sidon escape) stays clean to ALL tested powers, matching the in-tree
-fact that r=2 is the only clean char-p depth.
+The RIGOROUSLY field-universal window is only j≤2 (and Σw² needs −1∈μ_n). The "j_max(n)≈64/n"
+heuristic (n=2→≥8, n=8→6, n=16→4, n=32→3) is the EMPIRICAL onset of PERSISTENT field-dependence
+(generic values stop being attained, modulo finitely many small-p artifacts) — NOT a strict
+all-primes statement (under a strict reading Z_4 already deviates at small p for n=8). n=2 (the r=2
+Sidon escape) stays clean to ALL tested powers, matching the in-tree fact that r=2 is the only clean
+char-p depth.
 
 ATTRIBUTION (HONEST — NOT NOVEL): the master identity is the classical "moments of Gaussian periods"
 computation. The EVEN case is ALREADY in-tree (`subgroup_gaussSum_moment`: Σ_b|η_b|^{2r}=q·rEnergy,
@@ -15514,8 +15519,9 @@ PROBES (exact arithmetic, self-cross-checked, all exit 0):
   n=32,p=26177 (S5) witness shows E2=3n²−3n has NO clean threshold (sparse-but-persistent exceptions).
 * `scripts/probes/probe_444_period_master_identity.py` — master identity, golden+2 edges+adversarial.
 
-VERDICT: (I2) Σw²=p−n is a TRUE universal exact identity; (I4) Σw⁴=p(3n−3)−n³ OVER-PROMISES — it is
-a prize-regime conditional (= E2 Sidon-generic), false for small fields. This is an AUDIT/clarification,
+VERDICT: (I2) Σw²=p−n is exact for even n (all #444 n=2^μ; the fully-universal all-n form is the
+Hermitian Σ|w|²=p−n); (I4) Σw⁴=p(3n−3)−n³ OVER-PROMISES — it is a prize-regime conditional
+(= E2 Sidon-generic), false for small fields. This is an AUDIT/clarification,
 not a closure: it explains WHY the bank's power-sum route gives no universal pin, and confirms (3rd
 independent witness) the bank's pattern of "exact identity" claims being either false-when-scaled (I4)
 or truncated-into-untestability (Eichler–Selberg, Fusion-Rank, Frame-number — no committed RHS). The

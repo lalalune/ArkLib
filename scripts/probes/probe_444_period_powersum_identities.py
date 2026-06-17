@@ -85,7 +85,9 @@ CASES = [
 
 def main():
     # Refined claim being witnessed (not the conjecture's blunt "exact over ℤ"):
-    #   (R1) Σw² = p − n            holds UNCONDITIONALLY (every case).
+    #   (R1) Σw² = p − n            holds for every case here — all are EVEN n=2^μ (the #444 regime,
+    #        where −1∈μ_n). Step-8 audit caveat: for ODD n, Z_2=0 and Σw²=−n; the fully-universal
+    #        (all-n) form is the Hermitian Σ|w|²=p−n. All cases below are even, so Σw²=p−n holds.
     #   (R2) N0 = E2(μ_n)           holds UNCONDITIONALLY (the −1∈μ_n bridge).
     #   (R3) Σw⁴ = (p·E2 − n⁴)/n    holds UNCONDITIONALLY (definitional).
     #   (R4) Σw⁴ = p(3n−3) − n³  ⇔  E2 = 3n²−3n  — TRUE only in the large-field
