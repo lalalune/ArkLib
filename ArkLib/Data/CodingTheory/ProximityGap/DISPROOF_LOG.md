@@ -15450,6 +15450,20 @@ a hard refutation of the energy-transfer route — but it removes the empirical 
 measurable trend is rising, not flat. Probes: scripts/probes/probe_444_keff_creep_n128.py,
 probe_444_keff_rprofile_crosscheck.py (exact char-sums; no Lean).
 
+**AMENDMENT (n=256 extension — the creep SATURATES; softens the above) (nubs, 2026-06-17).** Pushed the
+4th point to n=256 (4 good primes just under 2^32 so t·x<2^64 fits uint64; β=4.0000;
+`probe_444_keff_n256_plateau.py`). Peak K_eff per n (4-prime means):
+    n=32: 0.608   n=64: 0.625   n=128: 0.675   n=256: 0.672
+    Δ/doubling:        +0.017        +0.050        −0.003
+n=256 band [0.646,0.703] OVERLAPS n=128's [0.653,0.698] — the sharp n=64→128 rise does NOT continue;
+the peak PLATEAUS at ≈0.67 through n=256. So the honest shape is RISE-THEN-PLATEAU, not unbounded creep.
+This SOFTENS the entry above: the "flat in n unsupported / trend rising" read was drawn from the rising
+n≤128 segment only; with n=256 the rise saturates, which is MORE consistent with S1's bounded-K
+optimism, not less. NET (corrected): peak K_eff is rise-then-plateau ≈0.67 through n=256 — neither a
+clean refutation of bounded-K nor a proof of it: a log-log-slow creep is still indistinguishable from a
+plateau at these scales, the peak-r marches deeper (12→14→18→20, prize needs r≈89), and the n→2^30
+asymptote remains the open BGK input. Probe: scripts/probes/probe_444_keff_n256_plateau.py.
+
 ## ARISING-DESCENT VACUITY (#444, sol, 2026-06-17): the fold-transport/descent lever is VACUOUS on the primitive (odd-difference) half of directions — CONSTRAINT LEMMA for the descent route
 LANE: the smooth-domain agreement/orbit descent (Q1ArisingFamilyDescent: agreement_deploy_eq_d_mul_base,
 orbitSize_descent) reduces a deployment pencil z^a + alpha z^b on mu_n to a primitive base on mu_{n/d}
@@ -15473,3 +15487,73 @@ imprimitive (arising-family) directions ONLY; the per-direction BGK wall on the 
 EXTENDS Q1ArisingFamilyDescent.orbitSize_descent (the proven reduction) by pinning its inapplicability.
 NOT a CORE / Conj-7.1 closure. No capacity/beyond-Johnson/cliff-at-n/2 claim. ONE sweep ONE commit.
 CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
+
+## DEPLOYED CENSUS-WELD BUDGET INFEASIBLE AT THE DEEP CENTRAL BAND (#444, sol, 2026-06-17): the named CensusDomination Prop needs K >= centralBinom(m-1) = 2^Theta(m) there — CONSTRAINT LEMMA for the deployed count/census route
+LANE: the count/census equivalence-to-CORE face (brief's named uncontested lever). The census-domination
+weld (CensusDominationWeld.kkh26_deltaStar_pin_of_censusDomination) pins delta*=1-r/2^mu GRANTING (i) the
+named Prop CensusDomination dom k a0 K AND (ii) the deployed budget K/p <= eps* (its hK hyp). Two more
+landed bricks were never welded against (ii): the necessity floor CensusCapForcedBelow.censusDomination_
+cap_ge_choose (C(|A|-(k+1),a-(k+1)) <= K from ONE gamma-aligned A with a nondeg (k+1)-tuple) and the
+supply realizer KKH26AlignmentSupply.kkh26_fibreUnion_aligned_nondegenerate (a gamma-aligned A of size
+r*m at code dim k=(r-2)m+1 on the smooth n=s*m domain, for every r-subset T of the m-power subgroup).
+NATURAL HOPE: the deployed census normal form is a feasible poly-budget route to delta*. CONSTRAINED:
+welding the floor on the realizer at the CENTRAL band a=(r-1)m+1 gives |A|-(k+1)=2m-2, a-(k+1)=m-1, so
+the floor is EXACTLY the central binomial C(2m-2,m-1) = centralBinom(m-1) >= 4^{m-1}/(2(m-1)), EXPONENTIAL
+in the multiplicity m. PROBE (probe_census_cap_exceeds_budget.py, exact Nat, prize regime n=2^a thin,
+m=2^j|n, k=(r-2)m+1, p=q=n^beta beta=4,5, eps*q ~ n => K_max ~ n POLY, NEVER n=q-1): the threshold is
+SHARP -- feasible (floor<=K) at m=2 (floor=2) and m=4 at large n; INFEASIBLE (floor>K) in the high-
+multiplicity slice centralBinom(m-1)>K_max, biting at n=8/m=4 (20>8), n=16/m=8 (3432>16), n=32/m=16
+(1.5e8>32). Threshold m >= ~(1/2)log2 n -- the THIN/deep-multiplicity face. FORMALIZED axiom-clean in
+Frontier/CensusBudgetInfeasibleDeepBand.lean (2 thms, [propext, Classical.choice, Quot.sound], 0 sorryAx,
+in-graph build 8367 jobs EXIT 0): census_cap_ge_centralBinom (cap K at the central band => centralBinom(m-1)
+<= K) + not_censusDomination_of_budget_lt_centralBinom (K < centralBinom(m-1) => NOT CensusDomination at
+the central band, so the weld's two hypotheses are jointly UNSATISFIABLE there). MECHANISM: the necessity
+floor's binomial is maximized at the central band, where it equals the central binomial of the residual-
+window half-width m-1, which is exponential; the deployed budget is poly. CONSEQUENCE for the route: the
+DEPLOYED census normal form cannot be invoked at the deep central band in the thin slice -- it must live at
+the Johnson-scale agreement radius a ~ sqrt(kn) >> (r-1)m+1. This is the matching result for the DISTINCT
+alignableSets/CensusDomination object (the weld's actual object), carried to its deployed K-budget -- which
+the sibling ExplainableCoreSupply exponential floor (DeepBandSupplyExponential.not_explainableCoreSupply_
+exponential / Frontier/CountLaneNotSecondOrder, a DIFFERENT object) never does. EXTENDS the in-tree forward
+weld + necessity floor + supply realizer by composing them against the deployed budget. NOT a CORE / Conj-7.1
+closure, NOT a prize refutation (ASYMPTOTIC GUARD untouched: central binomial exp => WRONG radius, not prize
+impossible). ONE sweep ONE commit. CORE M(mu_n) <= C sqrt(n log(q/n)) OPEN.
+
+### STRUCTURAL: the S1 K_eff plateau IS the BGK constant — energy/moment route is TIGHT (~9% loss) (#444, nubs, 2026-06-17)
+
+Unifying the energy form (S1's K_eff slack) with the sup form (the BGK constant C the swarm measures).
+Moment method: M^{2r} ≤ Σ_{b≠0}η_b^{2r} = n·Σ_{t∈T}η_t^{2r} = n·p·E_r' (E_r'=(1/p)Σ_T η^{2r}), so
+M ≤ min_r (n·p·E_r')^{1/2r}; with E_r'≈K^r·(2r−1)‼·n^r and the optimum at r≈ln q this gives the closed
+prediction C ≈ √(2K·β/(β−1)).  VERIFIED (`probe_444_keff_to_bgk_constant.py`, β=4):
+
+    n    M       Kpeak  C_direct=M/√(n ln(q/n))  C_moment=min_r(npE_r')^{1/2r}/√…  C_pred=√(2Kβ/(β-1))  mom/dir
+    32   22.98   0.612  1.260                    1.371                              1.278                1.088
+    64   35.03   0.614  1.240                    1.357                              1.279                1.095
+    128  55.06   0.653  1.276                    1.401                              1.320                1.099
+
+* C_direct ≈ 1.24–1.28 — the BGK constant (consistent with the swarm's directly-measured ≈1.31–1.45).
+* C_pred = √(2K·β/(β−1)) matches C_direct to ~3% → the K_eff plateau and the BGK constant are the SAME
+  quantity, with the closed map C = √(2·K_eff·β/(β−1)).
+* C_moment is only ~9% above C_direct (mom/dir≈1.09) → the energy/moment method is TIGHT, NOT lossy.
+
+CONSEQUENCE: this SHARPENS §R.2's "energy⟹sup, constant √2" — the √2 was the K=1 (Gaussian) value; the
+true constant uses the sub-Gaussian K_eff≈0.65, giving C≈1.3, with only ~9% moment loss. So the
+energy-transfer route is a FAITHFUL proxy for the BGK sup constant: bounded-K ⟹ bounded-C ⟹ prize, with
+small loss. It does NOT close anything — proving K (=C) bounded as n→2^30 is still the open BGK input —
+but it confirms S1's energy route is not a lossy detour: it is the BGK constant in disguise.
+Probe: scripts/probes/probe_444_keff_to_bgk_constant.py (exact char-sums; no Lean). CORE OPEN.
+
+### STRUCTURAL: the K_eff peak is ~FLAT across the prize β-band 4–5 (β=4 work is prize-representative) (#444, nubs, 2026-06-17)
+
+Fills a gap: S1 + all prior K_eff work fixed β=4, but the ABF prize regime is β=log_n p ∈ [4,5].
+Measured peak K_eff vs β at fixed n (`probe_444_keff_beta_band.py`, good primes p<2^32):
+    n     β3.0   β3.5   β4.0   β4.5   β5.0
+    32    0.481  0.651  0.612  0.613  0.622
+    64    0.491  0.646  0.614  0.682  0.674
+Across the prize band β=4–5 the peak is ~flat (n=32: 0.612→0.622; n=64: 0.614→0.674, within/near the
+~0.05–0.07 prime-noise band) — no dramatic worsening toward β=5. (β=3.0 is anomalously low: small-p edge,
+few frequencies / shallow rmax.) So the prize β-band is NOT special; the β=4 n-trend (rise-then-plateau
+≈0.67) is representative across the full ABF β∈[4,5] regime. Caveat: single prime per point, so the mild
+n=64 uptick at β≥4.5 is not firmly a β-effect vs noise. NOT a closure — the n→2^30 asymptote stays the
+open BGK input — but it validates that the β=4 characterization applies prize-wide. Probe:
+scripts/probes/probe_444_keff_beta_band.py (exact char-sums; no Lean). CORE OPEN.

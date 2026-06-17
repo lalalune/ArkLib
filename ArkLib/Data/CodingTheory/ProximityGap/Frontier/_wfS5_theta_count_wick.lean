@@ -161,9 +161,72 @@ theorem energy_eq_wick_when_no_spur {d : ℕ} (p : ℕ) (g : Fin d → ℤ)
   rw [hno] at h
   simpa using h
 
+/-! ## The girth-threshold transfer-exactness law (the lane's positive, rigorous core)
+
+The probe (`probe_wfS5_keff_ntrend.rs`) shows the EXACT theta of `L_P` has a *girth*
+`γ = min { w ≥ 1 : N_w > 0 }` — the smallest weight of a spurious config — and that `γ` GROWS
+with `n` (`γ = 5` at `n=16` worst prime, `7` at `n=32`, larger generically). Below the girth
+depth, i.e. for `2r < γ`, there is NO spurious short vector, so the char-`p` energy is EXACTLY
+the char-0 Wick value: **the char-0→char-`p` transfer is provably exact in the band `r < γ/2`,
+unconditionally and at the prize regime** (no `p > 2^n` hypothesis). This is the rigorous form of
+"transfer-true below the girth threshold". -/
+
+/-- The **girth** of the theta series of `L_P` (over the enumeration cap `W`): the least
+`ℓ¹`-weight `w` carrying a nonzero spur shell, or `W + 1` (the sentinel "no spur in range") if
+every shell of weight `1 ≤ w ≤ W` is empty. Total `Nat`-valued scan, no nonemptiness obligation. -/
+noncomputable def girth {d : ℕ} (p : ℕ) (g : Fin d → ℤ)
+    (dom : Finset (Fin d → ℤ)) (W : ℕ) : ℕ :=
+  ((range (W + 1)).filter (fun w => 1 ≤ w ∧ 0 < thetaShell p g dom w)).min.elim (W + 1) id
+
+/-- **Below-girth vanishing.** If every shell of weight `1 ≤ w ≤ W` is empty (the explicit
+"no spur up to depth `W`" hypothesis, directly read off the probe's `shells` array), then the
+cumulative theta count up to `W` is zero. -/
+theorem cumTheta_eq_zero_of_below_girth {d : ℕ} (p : ℕ) (g : Fin d → ℤ)
+    (dom : Finset (Fin d → ℤ)) (W : ℕ)
+    (hbelow : ∀ w, 1 ≤ w → w ≤ W → thetaShell p g dom w = 0) :
+    cumTheta p g dom W = 0 := by
+  unfold cumTheta
+  apply Finset.sum_eq_zero
+  intro w hw
+  rw [Finset.mem_range, Nat.lt_succ_iff] at hw
+  rcases Nat.eq_zero_or_pos w with h0 | h1
+  · subst h0
+    -- the weight-0 shell is empty: `c ≠ 0 ∧ l1Norm c = 0` is contradictory
+    simp only [thetaShell, l1Norm]
+    rw [Finset.card_eq_zero, Finset.filter_eq_empty_iff]
+    intro c _
+    rintro ⟨-, hnorm, hne⟩
+    apply hne
+    funext k
+    have : (c k).natAbs = 0 := by
+      by_contra hk
+      have : 0 < ∑ j, (c j).natAbs :=
+        Finset.sum_pos' (fun _ _ => Nat.zero_le _) ⟨k, Finset.mem_univ k, Nat.pos_of_ne_zero hk⟩
+      omega
+    simpa [Int.natAbs_eq_zero] using this
+  · exact hbelow w h1 hw
+
+/-- **The girth-threshold transfer-exactness theorem (axiom-clean, prize regime).**
+If the spur girth exceeds the energy depth `2r` — i.e. there is no spurious short vector of
+weight `≤ 2r` — then the char-`p` additive `2r`-energy is bounded by EXACTLY the char-0 Wick
+value `(2r-1)‼·n^r`, with NO `K`-inflation. This is the rigorous core of the lane's measured
+dichotomy: **the energy/moment transfer is exact (`K = 1`) for all `r < γ/2`, where `γ` is the
+theta girth of `L_P`, and `γ` is measured to GROW with `n`.** The remaining open content is only
+the worst-case rate at the deepest `r ≈ ln q` (where `2r` overtakes the worst-case girth at rare
+structured primes); below that depth the prize energy bound holds unconditionally. -/
+theorem energy_exact_wick_below_girth {d : ℕ} (p : ℕ) (g : Fin d → ℤ)
+    (dom : Finset (Fin d → ℤ)) (n : ℕ) (Efp : ℕ → ℕ) (r : ℕ)
+    (henergy : EnergyThetaBounded p g dom n Efp)
+    (hbelow : ∀ w, 1 ≤ w → w ≤ 2 * r → thetaShell p g dom w = 0) :
+    Efp r ≤ (∏ j ∈ range r, (2 * j + 1)) * n ^ r :=
+  energy_eq_wick_when_no_spur p g dom n Efp r henergy
+    (cumTheta_eq_zero_of_below_girth p g dom (2 * r) hbelow)
+
 end ArkLib.ProximityGap.wfS5ThetaCountWick
 
 #print axioms ArkLib.ProximityGap.wfS5ThetaCountWick.cumTheta_le_of_geometric
 #print axioms ArkLib.ProximityGap.wfS5ThetaCountWick.cumTheta_at_depth_le
 #print axioms ArkLib.ProximityGap.wfS5ThetaCountWick.energy_le_const_wick_of_geometric
 #print axioms ArkLib.ProximityGap.wfS5ThetaCountWick.energy_eq_wick_when_no_spur
+#print axioms ArkLib.ProximityGap.wfS5ThetaCountWick.cumTheta_eq_zero_of_below_girth
+#print axioms ArkLib.ProximityGap.wfS5ThetaCountWick.energy_exact_wick_below_girth
