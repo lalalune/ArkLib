@@ -84,3 +84,29 @@ Brascamp–Lieb, quantum groups, matroid invariants, Vinogradov mean value, Dudl
 to B1∨B2∨B3, hence to the BGK/Paley wall.** Winning the prize requires a genuine analytic-number-theory breakthrough
 on effective thin-subgroup Gauss-phase equidistribution at β=4 that evades all three buckets; no such idea is in the
 literature or has been produced by the campaign.
+
+## Constructive confirmation: targeted bucket-evasion yields 0 evaders (22/22)
+
+A workflow tasked 5 expert generators to CONSTRUCT conjectures that provably evade all three buckets (output the
+sup E1, genuinely new object E2, hypothesis holds on 0-dim Sidon mu_n E3). It produced 22 candidates (referee+attack
+phases then hit the session usage limit; the referee was completed inline, anchored by an exact probe: period
+RMS=sqrt(n) exactly, sup/RMS=2.26-2.49 = the open sqrt-log gap, and negative-association FAILS — pairwise indicator
+covariance +0.013>0 at n=16). EVERY candidate falls in a bucket:
+
+B1 (2nd-moment blind): E54 operator-Bernstein (commuting dilations -> scalar, uses variance); E55 Shannon capacity
+(mutual info=average); E1-4 amplified large-sieve (=2nd moment); E1-6 Frobenius gap-statistic (T=(pn)I-nJ two-point
+spectrum, trivial); E4b Suen/Janson tail (uses mean+pair-correlation); E4c & E2-3 Beurling-Selberg majorants (LP,
+L1=Parseval); E2-2 hinge/first-moment (L1 average); E2-5 histogram entropy (average functional).
+B2 (BGK-rename): E51 discrepancy-majorant & E52 optimal-transport edge (Erdos-Turan: discrepancy/W_1 = the character
+sum eta_b); E1-1 finite-monodromy Deligne-Katz (distribution not effective sup); E2-1 large-spectrum count (= the
+large-values/moment object); E4d Plotkin/anticode sign-code (= far-line Plotkin proxy/2nd moment).
+B3 (Sidon-0dim hypothesis-fails): E53 skew-product mixing-edge (dilation=zero-entropy single n-cycle, no mixing);
+E56 Pila-Wilkie (period set is ALGEBRAIC not o-minimal/transcendental, self-flagged partial); E1-2 Slepian-via-rank-1
+-covariance & E2-4 exchangeable-Hoeffding & E4a NA-max-domination & E4e Stein-exchangeable-pair (periods are
+DETERMINISTIC not a Gaussian/random process, and negative-association FAILS by probe); E1-3 conductor-discriminant
+(disc CFT-fixed=house-blind); E1-5 l-adic cohomology-dimension (self-declared NO-GO, house-blind).
+
+So even generation EXPLICITLY AIMED at the escape conditions cannot produce a single bucket-evader: 22/22 fall in
+B1/B2/B3, two generators self-declared no-gos. This is the strongest constructive evidence that the trichotomy is
+tight -- E1 (output the sup) + E2 (new object) + E3 (hypothesis holds on flat 0-dim Sidon mu_n) is jointly
+unsatisfiable except by the BGK sup-norm bound itself.

@@ -42,6 +42,26 @@ no disproof found at these sizes
 `w(n)` is the thing to watch: it grew `0,1,2` at `n=8,16,32`. If it keeps growing `+1` the prize
 *holds*; if it ever *doubles*, that's the disproof signal.
 
+## What's been run so far
+CPU hunt is clean through **n ≤ 28** (every cascade binds under budget — no disproof). `n=32` is
+known (`w=2`, ~77 min on CPU). The genuinely-open ground (`n ≥ 64`, the real disproof zone) needs a
+**GPU** (`../cuda-pg` + `nebius-*.sh`). So: laptop = validate + small-n hunt; GPU = the real hunt.
+
+## If `mine` flags a disproof (responsible disclosure)
+A `‼ DISPROOF` is a soundness counterexample — it means the proximity-gap conjecture is *false* at
+that size, which would make any deployed FRI/STARK relying on the conjecture (above Johnson, without
+threshold-halving / ePrint 2026/858) potentially **unsound**. That is a real security finding. Do NOT
+post it publicly first. Instead:
+
+1. **Re-verify** at a *second* prime and with the independent kernel (`../rust-pg` vs `../cuda-pg`) —
+   a single-prime hit can be a finite-size / saturation artifact (see DISPROOF_LOG O164).
+2. **Pin the exact witness** (n, k, direction `(a,b)`, the word, the prime) so others can reproduce.
+3. **Responsible disclosure, not a flex:** report privately to the ArkLib maintainers (`#444`) and,
+   if it implicates deployed systems, to the affected teams' security contacts *before* any public
+   post — treat it like a bug bounty, not a prize announcement.
+4. **Claim only what the kernel checked.** "Super-budget at n=…, prime=…, reproduced" — not "the
+   conjecture is false" until it survives independent re-verification.
+
 ## Where this fits
 
 - **Want to contribute a verified Lean/probe brick instead of grinding numbers?** Use the canonical

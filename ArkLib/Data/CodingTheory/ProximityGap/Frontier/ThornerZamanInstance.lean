@@ -154,4 +154,59 @@ theorem tzPrimeSupply_16_three : TZPrimeSupply 16 (3 : ℝ) 10 := by
       = ({4129, 4177, 4241, 4273, 4289, 4337, 4481, 4513, 4561, 4657} : Finset ℕ).card := by decide
     _ ≤ (tzWindow 16 (3 : ℝ)).card := Finset.card_le_card hsub
 
+/-- **Concrete discharge for `n = 8, β = 4`** — deep in the faithful unconditional regime
+`β > 12/5` of [TZ24] (the highest exponent in the concrete ladder).  The window
+`[8⁴, 2·8⁴] = [4096, 8192]` contains the eight primes `4129, 4153, 4177, 4201, 4217, 4241, 4273,
+4289`, all `≡ 1 (mod 8)`. -/
+theorem tzPrimeSupply_8_four : TZPrimeSupply 8 (4 : ℝ) 8 := by
+  refine ⟨?_⟩
+  have hpow : ((8 : ℕ) : ℝ) ^ (4 : ℝ) = 4096 := by
+    rw [show (4 : ℝ) = ((4 : ℕ) : ℝ) by norm_num, Real.rpow_natCast]; norm_num
+  have hsub : ({4129, 4153, 4177, 4201, 4217, 4241, 4273, 4289} : Finset ℕ)
+      ⊆ tzWindow 8 (4 : ℝ) := by
+    intro p hp
+    rw [mem_tzWindow]
+    fin_cases hp <;>
+      exact ⟨by norm_num, by decide, by rw [hpow]; norm_num, by rw [hpow]; norm_num⟩
+  calc (8 : ℕ)
+      = ({4129, 4153, 4177, 4201, 4217, 4241, 4273, 4289} : Finset ℕ).card := by decide
+    _ ≤ (tzWindow 8 (4 : ℝ)).card := Finset.card_le_card hsub
+
+/-- **Concrete discharge for `n = 16, β = 4`** — the highest `(n, β)` in the concrete ladder.
+The window `[16⁴, 2·16⁴] = [65536, 131072]` contains the ten primes `65537, 65617, 65633, 65713,
+65729, 65761, 65777, 65809, 65921, 66161`, all `≡ 1 (mod 16)`.  (Demonstrates the concrete
+`TZPrimeSupply` route scales to `β = 4`, well above [TZ24]'s `β > 12/5` faithfulness threshold;
+the asymptotic supply for general `n` remains the open [TZ24] analytic input.) -/
+theorem tzPrimeSupply_16_four : TZPrimeSupply 16 (4 : ℝ) 10 := by
+  refine ⟨?_⟩
+  have hpow : ((16 : ℕ) : ℝ) ^ (4 : ℝ) = 65536 := by
+    rw [show (4 : ℝ) = ((4 : ℕ) : ℝ) by norm_num, Real.rpow_natCast]; norm_num
+  have hsub : ({65537, 65617, 65633, 65713, 65729, 65761, 65777, 65809, 65921, 66161} : Finset ℕ)
+      ⊆ tzWindow 16 (4 : ℝ) := by
+    intro p hp
+    rw [mem_tzWindow]
+    fin_cases hp <;>
+      exact ⟨by norm_num, by decide, by rw [hpow]; norm_num, by rw [hpow]; norm_num⟩
+  calc (10 : ℕ)
+      = ({65537, 65617, 65633, 65713, 65729, 65761, 65777, 65809, 65921, 66161} : Finset ℕ).card :=
+        by decide
+    _ ≤ (tzWindow 16 (4 : ℝ)).card := Finset.card_le_card hsub
+
+/-- **Concrete discharge for `n = 8, β = 5`** — completes the `β = 2, 3, 4, 5` tower for the modulus
+`n = 8`.  The window `[8⁵, 2·8⁵] = [32768, 65536]` contains the eight primes `32801, 32833, 32969,
+32993, 33049, 33073, 33113, 33161`, all `≡ 1 (mod 8)`. -/
+theorem tzPrimeSupply_8_five : TZPrimeSupply 8 (5 : ℝ) 8 := by
+  refine ⟨?_⟩
+  have hpow : ((8 : ℕ) : ℝ) ^ (5 : ℝ) = 32768 := by
+    rw [show (5 : ℝ) = ((5 : ℕ) : ℝ) by norm_num, Real.rpow_natCast]; norm_num
+  have hsub : ({32801, 32833, 32969, 32993, 33049, 33073, 33113, 33161} : Finset ℕ)
+      ⊆ tzWindow 8 (5 : ℝ) := by
+    intro p hp
+    rw [mem_tzWindow]
+    fin_cases hp <;>
+      exact ⟨by norm_num, by decide, by rw [hpow]; norm_num, by rw [hpow]; norm_num⟩
+  calc (8 : ℕ)
+      = ({32801, 32833, 32969, 32993, 33049, 33073, 33113, 33161} : Finset ℕ).card := by decide
+    _ ≤ (tzWindow 8 (5 : ℝ)).card := Finset.card_le_card hsub
+
 end ArkLib.ProximityGap.KKH26
