@@ -734,6 +734,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.CosetPeriodOrthogonal
 import ArkLib.Data.CodingTheory.ProximityGap.CosetPigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.CosetPowerSumConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.CosetReducedEnergyBound
+import ArkLib.Data.CodingTheory.ProximityGap.CosetRepFourthMomentCensus
+import ArkLib.Data.CodingTheory.ProximityGap.CosetRepSecondMomentCensus
 import ArkLib.Data.CodingTheory.ProximityGap.CosetRigidity
 import ArkLib.Data.CodingTheory.ProximityGap.CosetSplittingFloor
 import ArkLib.Data.CodingTheory.ProximityGap.CosetStrip
@@ -1159,6 +1161,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AR_HypercontractiveWickEq
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AR_MomentOptimizedSupNorm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AR_MomentRatioPeak
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AgreementPolyUncertainty
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AlmostAllPrimesWick
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AmplificationGainOne
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalAgreementScope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalDyadicSymmetric
@@ -1553,10 +1556,12 @@ import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodCosetReduction
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodMomentBoundSlack
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodOptimizedBound
+import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodOrbitPartition
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodParsevalFloor
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodSpectralConstantFloor
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodSpectralFrame
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodTower
+import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodTransversalSum
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPhaseResonance
 import ArkLib.Data.CodingTheory.ProximityGap.GaussianEnergyFromPairing
 import ArkLib.Data.CodingTheory.ProximityGap.GaussianEnergyThreeRepThree
@@ -2068,6 +2073,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityAttainment
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityFiber
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityProducts
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
+import ArkLib.Data.CodingTheory.ProximityGap.MultisetEsymmSidon
 import ArkLib.Data.CodingTheory.ProximityGap.NCoreEmptyCParametrization
 import ArkLib.Data.CodingTheory.ProximityGap.NegationClosedPairingCount
 import ArkLib.Data.CodingTheory.ProximityGap.NegationClosedPairingLifting
@@ -2503,6 +2509,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetFactorWitness
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetLoop49
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetThreePowUpper
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupSumsetWiden
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupZeroSumCountDvd
 import ArkLib.Data.CodingTheory.ProximityGap.SubplaneSupplyFloor
 import ArkLib.Data.CodingTheory.ProximityGap.SubqDegreeLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.SubsetSumCharacterSum
@@ -2579,11 +2586,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.UDREdgeClosure
 import ArkLib.Data.CodingTheory.ProximityGap.UniqueDecodingListBound
 import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleAddQuadruple
 import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidon
-import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidonTriple
 import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidonQuad
 import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidonQuadWrapper
 import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidonQuint
-import ArkLib.Data.CodingTheory.ProximityGap.MultisetEsymmSidon
+import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidonTriple
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalAlignmentLaw
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalAlignmentThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalBelowUDR
