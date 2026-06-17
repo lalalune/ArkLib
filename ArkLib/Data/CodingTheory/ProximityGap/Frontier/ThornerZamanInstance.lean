@@ -192,4 +192,21 @@ theorem tzPrimeSupply_16_four : TZPrimeSupply 16 (4 : ℝ) 10 := by
         by decide
     _ ≤ (tzWindow 16 (4 : ℝ)).card := Finset.card_le_card hsub
 
+/-- **Concrete discharge for `n = 8, β = 5`** — completes the `β = 2, 3, 4, 5` tower for the modulus
+`n = 8`.  The window `[8⁵, 2·8⁵] = [32768, 65536]` contains the eight primes `32801, 32833, 32969,
+32993, 33049, 33073, 33113, 33161`, all `≡ 1 (mod 8)`. -/
+theorem tzPrimeSupply_8_five : TZPrimeSupply 8 (5 : ℝ) 8 := by
+  refine ⟨?_⟩
+  have hpow : ((8 : ℕ) : ℝ) ^ (5 : ℝ) = 32768 := by
+    rw [show (5 : ℝ) = ((5 : ℕ) : ℝ) by norm_num, Real.rpow_natCast]; norm_num
+  have hsub : ({32801, 32833, 32969, 32993, 33049, 33073, 33113, 33161} : Finset ℕ)
+      ⊆ tzWindow 8 (5 : ℝ) := by
+    intro p hp
+    rw [mem_tzWindow]
+    fin_cases hp <;>
+      exact ⟨by norm_num, by decide, by rw [hpow]; norm_num, by rw [hpow]; norm_num⟩
+  calc (8 : ℕ)
+      = ({32801, 32833, 32969, 32993, 33049, 33073, 33113, 33161} : Finset ℕ).card := by decide
+    _ ≤ (tzWindow 8 (5 : ℝ)).card := Finset.card_le_card hsub
+
 end ArkLib.ProximityGap.KKH26
