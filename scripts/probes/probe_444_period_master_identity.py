@@ -15,9 +15,10 @@ m=(p−1)/n, μ_n the order-n subgroup of F_p^* (n=2^μ | p−1):
 
   ATTRIBUTION (HONEST — this identity is CLASSICAL, not novel): this is the standard
   "moments of Gaussian periods" computation via additive-character orthogonality
-  (Σ_{b∈F_p}ζ^{bs}=p·[s≡0]). See Myerson, "Period polynomials and Gauss sums for finite
-  fields", Acta Arith. 39 (1981); Garcia et al., "Moments of Gaussian periods", arXiv:2112.13886
-  / Ramanujan J. 2025; Duke–Garcia–Lutz, arXiv:1501.07507. The field-dependence of the j≥3
+  (Σ_{b∈F_p}ζ^{bs}=p·[s≡0]). See Gerald Myerson, "Period polynomials and Gauss sums for finite
+  fields", Acta Arith. 39 (1981), 251–264; Garcia–Lorenz–Todd, "Moments of Gaussian Periods and
+  Modified Fermat Curves", arXiv:2112.13886 (Thm 6: 4th moment splits on p mod 8 — non-universal);
+  Garcia–Hyde–Lutz, "Gauss's hidden menagerie", Notices AMS 62 (2015). The field-dependence of the j≥3
   moments — Z_4 = additive energy of μ_n, governed by Jacobi sums / Fermat-curve point counts —
   is the CENTRAL known phenomenon (Alon–Bourgain; Shkredov). The EVEN case is ALREADY in-tree:
   `subgroup_gaussSum_moment` (Σ_b|η_b|^{2r}=q·rEnergy) + `rEnergy_eq_zeroSumCount`. This probe
@@ -41,7 +42,6 @@ is maximally non-generic, plus exact-vs-float cross-check at a large prime). Exi
 master identity holds on EVERY case (it is unconditional, so it must).
 """
 import sys, cmath, math
-from itertools import product
 from collections import Counter
 
 def primitive_root(p):
@@ -158,18 +158,12 @@ def main():
         tag = f" [Z{j} generic would be {generic}]" if generic is not None else ""
         print(f"     j={j}: Z={Z} Σw^j={lhs} (= (p·Z−n^j)/n){tag}  {'ok' if good else 'FAIL'}")
 
-    print("\n=== ADVERSARIAL B: exact-int vs complex-float agreement at large prime (p=2presso) ===")
-    p = 3329 if is_prime(3329) and (3329 - 1) % 16 == 0 else None
-    if p:
-        okB, rowsB = check_case(p, 16, jmax=6, do_float=True)
-        overall = overall and okB
-        print(f"  p={p} n=16: float==exact for all j=1..6: {'PASS' if okB else 'FAIL — rounding diverged'}")
-    else:
-        # fall back to a guaranteed prime ≡1 mod 16
-        p = 1153  # 1152=16·72
-        okB, rowsB = check_case(p, 16, jmax=6, do_float=True)
-        overall = overall and okB
-        print(f"  p={p} n=16: float==exact for all j=1..6: {'PASS' if okB else 'FAIL — rounding diverged'}")
+    print("\n=== ADVERSARIAL B: exact-int vs complex-float agreement at large prime (p=3329) ===")
+    p = 3329  # prime, 3328 = 16·208
+    assert is_prime(p) and (p - 1) % 16 == 0
+    okB, rowsB = check_case(p, 16, jmax=6, do_float=True)
+    overall = overall and okB
+    print(f"  p={p} n=16: float==exact for all j=1..6: {'PASS' if okB else 'FAIL — rounding diverged'}")
 
     print()
     if overall:
