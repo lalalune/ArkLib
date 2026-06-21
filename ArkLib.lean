@@ -722,6 +722,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueDegeneracySupport
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueGradedFinrank
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueInfFinrank
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueKernelStructure
+import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueRankDeficient
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueRelationModule
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueRelationReconstruct
 import ArkLib.Data.CodingTheory.ProximityGap.ConstantIndexGaussSumBound
