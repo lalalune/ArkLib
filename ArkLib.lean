@@ -2199,6 +2199,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FullFieldNoisyCharacterTr
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FullLengthCharacterSumScaleGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FullRankLatticeTransferenceNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FunctionFieldModelSubfieldDegeneracy
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G100FIntegerLiftSmallDiffCounting
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G100PerDepthCenteringCancellation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G101ExactSignedDepthWeld
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G101OrbitClassVarianceNormalForm
@@ -2207,6 +2208,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G103SyzygyReplicationNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G104AffineTripleSyzygyNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G105DepthLedgerLosslessNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G110DepthThreeSignIndefinite
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G114DepthThreePopulationNormalForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G121DescentMatchingIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G123TriangularMomentLadder
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G124MomentLPDepthConstraints
