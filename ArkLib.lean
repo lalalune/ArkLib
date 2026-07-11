@@ -2301,6 +2301,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G200CoefficientAbsorption
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G201CommonEnvelopeStepanov
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G202EnvelopeExponentOverhead
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G203TwoCosetTwistedGenerators
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G204TwoCosetVanisher
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G58AllDepthLedgerReversal
