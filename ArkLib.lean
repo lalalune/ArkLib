@@ -2286,6 +2286,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G185CanonicalWeightedComp
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G186WeightedConvolutionYoung
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G187WeightedConvolutionBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G188ExplicitDefectDCBarrier
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G189DisjointFirstCollisionPartition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G58AllDepthLedgerReversal
