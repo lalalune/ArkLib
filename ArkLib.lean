@@ -2275,6 +2275,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G174DCDeletionConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G175CenteredDeletionMonotonicityNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G176RepetitionDefectCovariance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G177FactorialSubsetFiberAmplification
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G178FactorialContractionSubgroupRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G58AllDepthLedgerReversal
