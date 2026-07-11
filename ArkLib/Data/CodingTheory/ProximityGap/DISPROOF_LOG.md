@@ -25494,3 +25494,19 @@ coefficient-3 production anchor; it records that the remaining question is exact
 cyclotomic-accident/prime-individual upper bound at constant `3`, not a constant-improvement
 route.  The declaration is axiom-clean under the standard Lean axioms and adds no hypotheses
 or named residuals.
+
+## [466-G197-depth-three-mobius-sign-refuted] Pair/triple centered covariance is not universally nonnegative (2026-07-11)
+
+Lane: G197 (`Frontier/_G197F5MobiusSignRefuted.lean`).  G195 exposed the exact depth-three
+Möbius energy identity `V(D₃) = 9V(B) + 4V(C) - 12⟨B,C⟩_c`; G196 showed a large favorable
+correction on the order-three subgroup of `F₇ˣ`.  The tempting universal gate
+`⟨B,C⟩_c ≥ 0` is FALSE for a genuine subgroup: for the full multiplicative subgroup
+`F₅ˣ = {1,2,3,4}`, Lean computes `B = (4,3,3,3,3)`, `C = (0,1,1,1,1)`, hence
+`⟨B,C⟩_c = -4`.  Equivalently, the solution count `N = #{(x,z,a) ∈ G³ : 2x+z=3a}` is
+`12`, and `5N-|G|³ = -4`.
+
+The sign reversal is quantitatively sharp in the checked example: `V(B)=V(C)=4`, the unsigned
+diagonal is `52`, and the signed term is a positive penalty `48`, giving exact defect energy
+`V(D₃)=100`.  Thus inclusion--exclusion overlap can either cancel or amplify centered energy;
+no all-subgroup deletion transfer may discard this cross term by sign alone.  All declarations
+are axiom-clean under `propext`, `Classical.choice`, and `Quot.sound`.
