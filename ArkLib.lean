@@ -2281,6 +2281,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G180DiagonalDefectDispers
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G181DepthTwoDefectIdentification
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G182AllDepthDefectCarrier
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G183PairCollisionEnergyReduction
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G184PairCollisionSymmetry
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G58AllDepthLedgerReversal
