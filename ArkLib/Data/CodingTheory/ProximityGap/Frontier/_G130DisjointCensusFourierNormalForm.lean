@@ -54,9 +54,9 @@ omit [Fintype F] in theorem complementPeriod_eq_period_sub_support
   unfold complementPeriod complementOfBag
   exact eq_sub_of_add_eq (Finset.sum_sdiff hsupport)
 
-/-- The puncture perturbation has norm at most the word length. -/
-theorem norm_support_character_sum_le
-    (ψ : AddChar F ℂ) {r : ℕ} (a : Fin r → F) :
+-- The puncture perturbation has norm at most the word length.
+omit [Fintype F] in theorem norm_support_character_sum_le
+    [Finite F] (ψ : AddChar F ℂ) {r : ℕ} (a : Fin r → F) :
     ‖∑ x ∈ (valueBag a).toFinset, ψ x‖ ≤ r := by
   calc
     ‖∑ x ∈ (valueBag a).toFinset, ψ x‖ ≤
@@ -69,9 +69,9 @@ theorem norm_support_character_sum_le
       rw [hcard] at h
       exact_mod_cast h
 
-/-- Every complement period is an `r`-bounded perturbation of the original period. -/
-theorem norm_complementPeriod_sub_period_le
-    (ψ : AddChar F ℂ) (G : Finset F) {r : ℕ} (a : Fin r → F)
+-- Every complement period is an `r`-bounded perturbation of the original period.
+omit [Fintype F] in theorem norm_complementPeriod_sub_period_le
+    [Finite F] (ψ : AddChar F ℂ) (G : Finset F) {r : ℕ} (a : Fin r → F)
     (ha : a ∈ Fintype.piFinset fun _ : Fin r => G) :
     ‖complementPeriod ψ G a - ∑ x ∈ G, ψ x‖ ≤ r := by
   rw [complementPeriod_eq_period_sub_support ψ G a ha]
