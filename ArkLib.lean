@@ -2288,6 +2288,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G187WeightedConvolutionBr
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G188ExplicitDefectDCBarrier
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G189DisjointFirstCollisionPartition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G190FirstCollisionCovariancePolarization
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G191FirstCollisionCovarianceRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G58AllDepthLedgerReversal
