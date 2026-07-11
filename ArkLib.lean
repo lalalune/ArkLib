@@ -2265,6 +2265,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G164UniformOrbitDivisor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G165PrimitiveModFourResidue
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G166EvenDepthSignedSectorEmpty
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G167MinimalZeroSumDeletionBound
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G168DoubleDeletionCoreBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G58AllDepthLedgerReversal
