@@ -2272,6 +2272,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G171ShiftedREnergyAutocor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G172SubsetSumToREnergy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G173AllDepthDeletionREnergy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G174DCDeletionConsumer
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G175CenteredDeletionMonotonicityNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G58AllDepthLedgerReversal
