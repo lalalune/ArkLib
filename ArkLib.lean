@@ -2259,6 +2259,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G158FactorialSquaredCoreL
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G159InjectiveDepthFiberExact
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G160RepeatedDefectAmbientBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G161NegationStabilizerRigidity
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G162SignedSwapMinimalZeroSum
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G58AllDepthLedgerReversal
