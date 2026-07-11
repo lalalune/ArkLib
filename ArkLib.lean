@@ -2219,12 +2219,12 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G126DisjointCensusGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G127MomentLPDual
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G128ProductionDescentBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G129FullDescentBudget
-import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G130DisjointCensusFourierNormalForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G130UniformRungBudgets
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G131AdditiveLiftSaddleNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G131PerRungDescentSeries
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G132PerRungBudgetAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G133CensusTower
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G133DisjointCensusFourierNormalForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G134ProductionCrossoverPin
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G135CensusToSupBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G136AccidentTolerance
