@@ -1,35 +1,43 @@
 #!/usr/bin/env bash
 
-set -u
+tmpfile=$(mktemp)
+issues_found=0
 
 validate_spaces () {
-    local issues_found=0
-    while IFS= read -r -d '' file; do
+    find ArkLib -type f -name "*.lean" | while IFS= read -r file; do
         # Check for trailing whitespace and print line number if found
         while IFS=: read -r line_num line; do
             echo "Trailing whitespace found in $file at line $line_num: $line"
-            issues_found=1
+            echo 1 > "$tmpfile"
         done < <(grep -n "[[:blank:]]$" "$file")
 
         # Check if the last line ends with a new line
-        if [ -s "$file" ] && [ "$(tail -c 1 "$file" | od -An -t x1 | tr -d '[:space:]')" != "0a" ]; then
+        if [ "$(tail -c 1 "$file" | od -c | awk 'NR==1 {print $2}')" != "\n" ]; then
             echo "Last line does not end with a new line in: $file"
-            issues_found=1
+            echo 1 > "$tmpfile"
         fi
-    done < <(find ArkLib -type f -name '*.lean' -print0)
+    done
 
-    if [ "$issues_found" -ne 0 ]; then
-        echo "Run \`bash ./scripts/lintWhitespace.sh -i\` to fix whitespace issues."
+    if [ -f "$tmpfile" ]; then
+        issues_found=$(<"$tmpfile")
+    fi
+    rm -f "$tmpfile"
+
+    if [ $issues_found ]; then
+        echo "Run \`bash ./scripts/lintWhitespace.sh -i\` to fix whitespace issues."; 
     fi
 
-    return "$issues_found"
+    exit $issues_found
 }
 
 fix_spaces_inplace() {
-    while IFS= read -r -d '' file; do
-        # Perl's in-place mode has the same syntax on GNU/Linux and macOS.
-        perl -0777 -pi -e 's/[ \t]+(?=\n)//g; s/[ \t]+\z//; s/\z/\n/ unless /\n\z/' "$file"
-    done < <(find ArkLib -type f -name '*.lean' -print0)
+    for file in $(find ArkLib -type f -name "*.lean")
+    do 
+        # Remove trailing `\t` and ` `.
+        sed -i 's/[ \t]*$//' "$file"
+        # Add trailing '\n' to the file
+        sed -i -e '$a\' "$file"
+    done
 }
 
 is_inplace=0
@@ -39,15 +47,13 @@ while getopts ":i" option; do
     i)
       is_inplace=1 ;;
     *)
-      echo "Usage: $0 [-i]"
+      echo "Usage: $0 [-i]" 
       exit 1
       ;;
   esac
 done
 
-if [ "$is_inplace" -eq 1 ]; then
-    fix_spaces_inplace
-else
-    validate_spaces
-fi
+if [ $is_inplace -eq 1 ]; then fix_spaces_inplace; else validate_spaces; fi
+    
+
 
