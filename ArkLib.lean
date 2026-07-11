@@ -2237,6 +2237,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G136UnitCircleMann
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G137MannPairingCensusConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G138CyclotomicLiftHandoff
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G139NoAccidentEntropyObstruction
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G140QuantitativeAccidentDCFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G58AllDepthLedgerReversal
