@@ -2291,6 +2291,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G190FirstCollisionCovaria
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G191FirstCollisionCovarianceRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G192DepthThreeSymmetricPatterns
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G193SymmetricPatternCovarianceRefuted
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G194DepthThreeMobiusTransform
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G58AllDepthLedgerReversal
