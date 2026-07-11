@@ -2252,6 +2252,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G151CompositePacketOnsetD
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G152DepthFourCompositeCensus
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G153AllDepthCompositeConvolution
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G154PrimitiveMajorantClosure
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G155PrimitiveAmbientEntropyGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G58AllDepthLedgerReversal
