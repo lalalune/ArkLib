@@ -2240,6 +2240,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G139NoAccidentEntropyObst
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G140QuantitativeAccidentDCFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G141OffDiagonalAccidentIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G142SubsetCollisionCancellationCore
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G143DepthStratifiedSubsetAccidents
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G58AllDepthLedgerReversal
