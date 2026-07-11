@@ -2298,6 +2298,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G197F5MobiusSignRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G198MobiusIncidenceNormalForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G199MultiplicativeIncidenceNormalization
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G200CoefficientAbsorptionStepanov
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G201CommonEnvelopeStepanov
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G58AllDepthLedgerReversal
