@@ -2295,6 +2295,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G194DepthThreeMobiusTrans
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G195DepthThreeCenteredMobius
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G196F7MobiusCancellation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G197F5MobiusSignRefuted
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G198MobiusIncidenceNormalForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G58AllDepthLedgerReversal
