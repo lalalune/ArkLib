@@ -2268,6 +2268,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G167MinimalZeroSumDeletio
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G168DoubleDeletionCoreBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G169StepanovDoubleDeletionBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G170TwoDeletionEnergyBound
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G171ShiftedREnergyAutocorrelation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G58AllDepthLedgerReversal
