@@ -2244,6 +2244,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G143DepthStratifiedSubset
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G144IntersectionAwareCancellationCode
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G145LowerDepthMultiplicityEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G146GlobalSubsetAccidentEnvelope
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G147ConnectedBalancedCoreRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G58AllDepthLedgerReversal
