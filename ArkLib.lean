@@ -2255,6 +2255,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G154PrimitiveMajorantClos
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G155PrimitiveAmbientEntropyGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G156PrimitiveSwapParity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G157EvenPrimitiveMajorant
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G158FactorialSquaredCoreLift
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G58AllDepthLedgerReversal
