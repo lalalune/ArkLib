@@ -112196,7 +112196,7 @@
         {
           "doc": "**FS-side collapse of the canonical coupling.** The full canonical coupling identity (the `coupling` hypothesis of `fiatShamir_hvzkTransfer_of_coupling`, specialized to the canonical lazy random-oracle implementation) reduces *definitionally up to the proven run-collapse* to the tight `canonicalFSCouplingKernel`. The Fiat-Shamir verifier's whole transcript-checking machinery has been collapsed to the explicit honest execution by `honestTranscriptDist_fiatShamir_eq_honestExecution`, and the empty-cache initial state has been threaded through.",
           "kind": "theorem",
-          "line": 278,
+          "line": 277,
           "name": "Reduction.canonicalFSCoupling_of_kernel",
           "namespace": "Reduction",
           "short_name": "canonicalFSCoupling_of_kernel",
@@ -112205,7 +112205,7 @@
         {
           "doc": "**Canonical basic Fiat-Shamir HVZK transfer.** Given the tight canonical coupling kernel `canonicalFSCouplingKernel` \u2014 the single distributional kernel of #116 \u2014 the basic Fiat-Shamir transform preserves perfect HVZK for the canonical lazy random-oracle challenge implementation. This is `fiatShamir_hvzkTransfer_of_coupling` instantiated at `fsInit := canonicalFSInit init`, `fsImpl := canonicalFSImpl impl`, with the FS side collapsed to the honest execution by `canonicalFSCoupling_of_kernel`.",
           "kind": "theorem",
-          "line": 315,
+          "line": 314,
           "name": "Reduction.fiatShamir_hvzkTransferResidual_canonical",
           "namespace": "Reduction",
           "short_name": "fiatShamir_hvzkTransferResidual_canonical",
@@ -112214,7 +112214,7 @@
         {
           "doc": "**Canonical basic Fiat-Shamir HVZK transfer from the per-state lazy-vs-eager coupling.** Composes `canonicalFSCouplingKernel_of_perStateCoupling` (the sorry-free structural reduction of the coupling kernel) with `fiatShamir_hvzkTransferResidual_canonical`: given only the irreducible per-`oSpec`-state coupling residual `canonicalFSPerStateCoupling`, the basic Fiat-Shamir transform preserves perfect HVZK for the canonical lazy random-oracle challenge implementation. This is the form in which the whole HVZK transfer is reduced to the single coupling residual.",
           "kind": "theorem",
-          "line": 343,
+          "line": 342,
           "name": "Reduction.fiatShamir_hvzkTransferResidual_canonical_of_perStateCoupling",
           "namespace": "Reduction",
           "short_name": "fiatShamir_hvzkTransferResidual_canonical_of_perStateCoupling",
