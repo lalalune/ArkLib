@@ -253,12 +253,11 @@ theorem canonicalFSCouplingKernel_of_perStateCoupling
   have bridge : ∀ {β : Type} (mx my : OptionT ProbComp β),
       evalDist mx.run = evalDist my.run → evalDist mx = evalDist my := by
     intro β mx my h
-    rw [show (𝒟[mx] : SPMF β) = ((MonadHom.ofLift ProbComp SPMF) mx.run >>= fun y =>
+    rw [show (𝒟[mx] : SPMF β) = (𝒟[mx.run] >>= fun y =>
           match y with | some a => pure a | none => failure : SPMF β) from rfl,
-        show (𝒟[my] : SPMF β) = ((MonadHom.ofLift ProbComp SPMF) my.run >>= fun y =>
+        show (𝒟[my] : SPMF β) = (𝒟[my.run] >>= fun y =>
           match y with | some a => pure a | none => failure : SPMF β) from rfl]
-    have hrun : ((MonadHom.ofLift ProbComp SPMF) mx.run : SPMF (Option β)) = (MonadHom.ofLift ProbComp SPMF) my.run := h
-    rw [hrun]
+    rw [h]
   refine bridge _ _ ?_
   rw [OptionT.run_map]
   unfold honestTranscriptDist canonicalFSImpl
