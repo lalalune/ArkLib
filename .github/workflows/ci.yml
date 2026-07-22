@@ -25,6 +25,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Reclaim runner disk for Lean artifacts
+        run: |
+          echo "Disk before cleanup:"
+          df -h /
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc
+          echo "Disk after cleanup:"
+          df -h /
+
       - name: Initialize timing paths
         env:
           BUILD_SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
