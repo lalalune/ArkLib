@@ -1,0 +1,4 @@
+G246 follow-up — cross-check via independent cofactor (Leibniz) path
+  cell n=8 p=1009 m=126 rows=(0, 1, 2, 4) det=-285768 expected=-285768 [G246 Lean-pinned certificate] -> PASS
+  cell n=10 p=2011 m=201 rows=(0, 1, 2, 3) det=308582838 expected=308582838 [G246 follow-up second-cell minor] -> PASS
+CROSS-CHECK: ALL MATCH

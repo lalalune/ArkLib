@@ -1,0 +1,10 @@
+G246 follow-up — verdict stability across larger primes
+  n=8 p=1009 m=126 rank_seed=3 rank_aug=4 verdict=HOLDS det_pinned=0
+  n=8 p=1033 m=129 rank_seed=3 rank_aug=4 verdict=HOLDS det_pinned=0
+  n=8 p=1049 m=131 rank_seed=3 rank_aug=4 verdict=HOLDS det_pinned=0
+  n=10 p=2011 m=201 rank_seed=3 rank_aug=4 verdict=HOLDS det_pinned=308582838
+  n=10 p=2081 m=208 rank_seed=3 rank_aug=4 verdict=HOLDS det_pinned=0
+  n=10 p=2111 m=211 rank_seed=2 rank_aug=4 verdict=HOLDS det_pinned=0
+RESULT: verdict STABLE across 6 cells (p up to 2111)
+note: exhaustive enumeration is O(p) memory; q ~ n*2^128 not reachable by this method
+scope: finite-order stability audit; NOT prize closure

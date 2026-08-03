@@ -1,0 +1,18 @@
+G246 follow-up — pin the nonzero 4-row minor at the second cell
+Implementation: independent stdlib-only Bareiss (fraction-free), no sympy/numpy/float
+
+cell1 n=8 p=1009 m=126 [G246-cell (reproduction)]
+  rank_seed=3 rank_aug=4
+  pinned minor rows=(0, 1, 2, 4) det=-285768
+  OK: reproduced Lean-pinned det=-285768 via independent Bareiss path
+
+cell2 n=10 p=2011 m=201 [G320-new-cell (extension)]
+  rank_seed=3 rank_aug=4
+  VERDICT: countermodel holds (rank_aug > rank_seed: R6^c not in degree-2 Krylov span)
+  Scanning 4-row subsets for a nonzero minor ...
+  FOUND nonzero minor: rows=(0, 1, 2, 3) det=308582838 (after 1 subsets)
+  self-check: minor recomputed equal (deterministic)
+
+total wall time: 0.0s
+VERDICT: POSITIVE
+scope: finite-order audit (n=8,10); NOT prize closure
