@@ -1,0 +1,17 @@
+G246-family extension: degree-2 Krylov countermodel audit at n=16
+builds on PR #524 (n=8, n=10); pure stdlib; two independent det paths
+
+n=16 p=337 m=21 rank_seed=3 rank_aug=4 verdict=HOLDS
+  first nonzero minor: rows=(0, 1, 2, 3) det=750141 (after 1 subsets; cofactor MATCH)
+n=16 p=353 m=22 rank_seed=3 rank_aug=4 verdict=HOLDS
+  first nonzero minor: rows=(0, 1, 2, 3) det=-7520392 (after 1 subsets; cofactor MATCH)
+n=16 p=401 m=25 rank_seed=3 rank_aug=4 verdict=HOLDS
+  first nonzero minor: rows=(0, 1, 2, 3) det=13559450 (after 1 subsets; cofactor MATCH)
+n=16 p=433 m=27 rank_seed=3 rank_aug=4 verdict=HOLDS
+  first nonzero minor: rows=(0, 1, 2, 3) det=-9703719 (after 1 subsets; cofactor MATCH)
+n=16 p=449 m=28 rank_seed=3 rank_aug=4 verdict=HOLDS
+  first nonzero minor: rows=(0, 1, 2, 3) det=10639664 (after 1 subsets; cofactor MATCH)
+
+RESULT: rank obstruction HOLDS at n=16 across 5 cells (p in [337, 353, 401, 433, 449])
+wall time: 0.0s
+scope: finite-order audit; NOT prize closure (O(p) enumeration)
