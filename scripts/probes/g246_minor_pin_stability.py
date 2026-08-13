@@ -131,7 +131,9 @@ def audit(n: int, p: int) -> dict:
                 break
         return r
 
-    rs = rank(aug[:3])
+    # Full-height column rank of the 3 seed Krylov columns (zero-pad to reuse
+    # the width-4 eliminator; a zero column never changes the rank).
+    rs = rank([row[:3] + [0] for row in aug])
     ra = rank(aug)
     # nonzero minor at pinned rows?
     pinned = (0, 1, 2, 3)
