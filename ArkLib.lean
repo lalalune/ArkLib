@@ -2251,6 +2251,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G142SubsetCollisionCancel
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G143DepthStratifiedSubsetAccidents
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G144IntersectionAwareCancellationCode
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G145LowerDepthMultiplicityEnvelope
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G146GlobalSubsetAccidentEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G146CenteredCumulantPacketNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G167NegationStabilizerCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G168ScalingCosetConfinement
