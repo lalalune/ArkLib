@@ -2246,6 +2246,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G139AccidentQuantizationC
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G139PhiInjectiveSidonBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G139SidonModNegClean
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G140QuantitativeAccidentDCFloor
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G141OffDiagonalAccidentIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G146CenteredCumulantPacketNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G167NegationStabilizerCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G168ScalingCosetConfinement
