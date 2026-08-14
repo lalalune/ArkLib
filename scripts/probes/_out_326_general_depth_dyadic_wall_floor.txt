@@ -1,0 +1,74 @@
+======================================================================
+G326 probe: general depth-d dyadic wall floor (intelegenq q/r formula)
+======================================================================
+
+
+--- published-claim reproduction ---
+  G215 d=2 (4m-3)    -> REPRODUCED for m in [2, 99]
+  G316 d=3 (6m-5/6m-3) -> REPRODUCED for m in [2, 99]
+  G324 d=4 (8m-7)     -> REPRODUCED for m in [2, 99]
+
+--- 3-way agreement: brute vs DP vs closed, d in [2,6], m in [2,30] ---
+  -> ALL AGREE
+
+--- canonical witness at scale: d in [2, 8], m in {999999, 1000000, 1000001} ---
+  -> WITNESS SOUND AT SCALE
+
+--- naive 2d(m-1)+1 vs actual closed form, d=5, m in [2, 25] ---
+  d=5 (the pattern-break depth):
+    m=  2  naive=  11  actual=   9  brute=   9  witness=(0, 0, 1, 0, 0)  PATTERN BREAK
+    m=  3  naive=  21  actual=  25  brute=  25  witness=(0, 0, 0, 0, 1)  PATTERN BREAK
+    m=  4  naive=  31  actual=  29  brute=  29  witness=(0, 1, 0, 0, 1)  PATTERN BREAK
+    m=  5  naive=  41  actual=  41  brute=  41  witness=(0, 0, 0, 1, 1)  matches
+    m=  6  naive=  51  actual=  51  brute=  51  witness=(1, 0, 0, 0, 2)  matches
+    m=  7  naive=  61  actual=  59  brute=  59  witness=(0, 0, 1, 0, 2)  PATTERN BREAK
+    m=  8  naive=  71  actual=  75  brute=  75  witness=(0, 0, 0, 0, 3)  PATTERN BREAK
+    m=  9  naive=  81  actual=  79  brute=  79  witness=(0, 1, 0, 0, 3)  PATTERN BREAK
+    m= 10  naive=  91  actual=  91  brute=  91  witness=(0, 0, 0, 1, 3)  matches
+    m= 11  naive= 101  actual= 101  brute= 101  witness=(1, 0, 0, 0, 4)  matches
+    m= 12  naive= 111  actual= 109  brute= 109  witness=(0, 0, 1, 0, 4)  PATTERN BREAK
+    m= 13  naive= 121  actual= 125  brute= 125  witness=(0, 0, 0, 0, 5)  PATTERN BREAK
+    m= 14  naive= 131  actual= 129  brute= 129  witness=(0, 1, 0, 0, 5)  PATTERN BREAK
+    m= 15  naive= 141  actual= 141  brute= 141  witness=(0, 0, 0, 1, 5)  matches
+    m= 16  naive= 151  actual= 151  brute= 151  witness=(1, 0, 0, 0, 6)  matches
+    m= 17  naive= 161  actual= 159  brute= 159  witness=(0, 0, 1, 0, 6)  PATTERN BREAK
+    m= 18  naive= 171  actual= 175  brute= 175  witness=(0, 0, 0, 0, 7)  PATTERN BREAK
+    m= 19  naive= 181  actual= 179  brute= 179  witness=(0, 1, 0, 0, 7)  PATTERN BREAK
+    m= 20  naive= 191  actual= 191  brute= 191  witness=(0, 0, 0, 1, 7)  matches
+    m= 21  naive= 201  actual= 201  brute= 201  witness=(1, 0, 0, 0, 8)  matches
+    m= 22  naive= 211  actual= 209  brute= 209  witness=(0, 0, 1, 0, 8)  PATTERN BREAK
+    m= 23  naive= 221  actual= 225  brute= 225  witness=(0, 0, 0, 0, 9)  PATTERN BREAK
+    m= 24  naive= 231  actual= 229  brute= 229  witness=(0, 1, 0, 0, 9)  PATTERN BREAK
+    m= 25  naive= 241  actual= 241  brute= 241  witness=(0, 0, 0, 1, 9)  matches
+  -> 15 breaks, 9 matches in d=5, m in [2, 25]
+
+--- naive 2d(m-1)+1 vs actual closed form, d in {2, 3, 4} ---
+  d=2: naive == closed for m in [2, 99]  (the d<=4 coincidence)
+  d=3: 33 cells differ by +2 (the G316 m mod 3 == 2 split, expected)
+  d=4: naive == closed for m in [2, 99]  (the d<=4 coincidence)
+
+--- intelegenq's specific d=5 pattern-break witnesses ---
+  d=5 m=7: expected=59, closed=59, brute=59, witness=(0, 0, 1, 0, 2)  OK
+  d=5 m=8: expected=75, closed=75, brute=75, witness=(0, 0, 0, 0, 3)  OK
+  d=5 m=9: expected=79, closed=79, brute=79, witness=(0, 1, 0, 0, 3)  OK
+  d=5 m=10: expected=91, closed=91, brute=91, witness=(0, 0, 0, 1, 3)  OK
+
+--- depth monotonicity F(d+1, m) > F(d, m), d in [2, 7], m in [2, 200] ---
+  -> STRICTLY INCREASING (degenerate band: 9 cells)
+
+--- Lean-file specific-m claim correspondence (3-way) ---
+  -> ALL 36 LEAN CLAIMS VERIFIED by 3-way agreement
+
+======================================================================
+VERDICT:
+  [PASS] published-claim reproduction
+  [PASS] 3-way agreement
+  [PASS] witness at scale
+  [PASS] pattern break at d=5
+  [PASS] pattern holds at d=2,3,4
+  [PASS] specific d=5 counterexamples
+  [PASS] depth monotonicity
+  [PASS] Lean-file claim correspondence
+
+OVERALL: PASS
+======================================================================
