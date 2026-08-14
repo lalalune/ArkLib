@@ -2133,6 +2133,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EtaFrequencyParity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EtaRealNegClosed
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EtaSignNonMultiplicative
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ExpanderMixingBound
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._F1PolytopeMiddleCountermodel
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FAKatzPerCosetFloorVerdict
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FCPhaseAwareChainingMetric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FErightedgeLDPRateFloor
@@ -2239,6 +2240,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G136LawfulCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G136ProductionInstantiation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G136UnitCircleMann
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G139AccidentQuantizationConsumer
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G139PhiInjectiveSidonBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G139SidonModNegClean
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G146CenteredCumulantPacketNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G167NegationStabilizerCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G168ScalingCosetConfinement
@@ -2312,6 +2315,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G300WindowSignOscillation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G302CommonOrderSevenNormalNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G307SponsorTwoConductorFifteenSpanNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G309TargetOrientedCubicGenericRowNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G316DyadicWallFloorDepth3
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G320KrylovD2CountermodelStdlib
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G321RankReflectionN12P13
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G324DyadicWallFloorDepth4
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56AllDepthPatternDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G56PrimitiveConcentrationFactorialNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G57AllDepthWraparoundDCConsumer
@@ -4411,6 +4418,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.OrbitCountPinNecessity
 import ArkLib.Data.CodingTheory.ProximityGap.OrbitSpectrumBound
 import ArkLib.Data.CodingTheory.ProximityGap.OrderStatResort
 import ArkLib.Data.CodingTheory.ProximityGap.OverdetIncidenceMaxClosedForm
+import ArkLib.Data.CodingTheory.ProximityGap.OverdetIncidenceMaxClosedFormExt
 import ArkLib.Data.CodingTheory.ProximityGap.Overreach
 import ArkLib.Data.CodingTheory.ProximityGap.OwnershipBound
 import ArkLib.Data.CodingTheory.ProximityGap.OwnershipCensusSharpened

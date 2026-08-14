@@ -6,6 +6,15 @@ so we zero in. Keep lemmas that *constrain* even if they don't fully disprove.
 Default assumption: my disproof is wrong — find the precise reason it fails and
 make that reason a sorry-free Lean lemma.
 
+## [466-G310-k2-interior-ceiling-prize-scale] A07 r=3 / k=2 interior-ceiling counts survive at a prize-scale Proth prime: the ceiling #bad is 40 and the below-ceiling monomial-pencil maximum is 9, q-independent at q ≈ 21·2^128 (2026-08-14)
+
+Extends sweep A07 (`docs/kb/deltastar-sweep-A07-k2-interior-2026-06-14.md`) from the small primes 257 / 12289 / 65537 to the prize-scale prime `p = 21·2^128 + 1` (Proth certificate with witness `a = 5`).  On the smooth 8-point domain `μ_8 = ⟨ω⟩` with `ω = 5^((p-1)/8)` (`ω^4 = -1`), the dimension-two (rate 1/4) Reed-Solomon code has the same exact integers as at the small primes:
+
+- Ceiling stack `(u₀,u₁) = (x³, x²)` at threshold `t = 3`: `#bad = 40` = the KKH26 `TwoPowerSubsetSumSpectrum` value `N(3,3) = 2³·C(4,3) + 2·C(4,1) = 32 + 8`.
+- Below-ceiling maximum over the 64 monomial pencils `(x^a, x^b)`, `0 ≤ a,b < 8`, at threshold `t = 4`: `max #bad = 9`, attained at `(a,b) = (4,3)`.
+
+Both numbers were produced by two independent stdlib-only exact-arithmetic probes (`scripts/probes/probe_k2_interior_ceiling_prize_scale.py` and `..._crosscheck.py`); the second uses a direct 2×2 elimination / `mcaEventNat` implementation rather than the first's collinearity/slope method.  The results are field-size independent at this scale, which corroborates the q-independence of the in-tree `KKH26DimTwoPin.lean` pin `deltaStar_dimTwo_pin_F12289`.  No δ* closure is claimed: `n = 8` is a fixed small rung, not the production `n = 2^32`; the full-window / production-dimension question remains open.
+
 ## [466-G299-prize-depth-in-window] The production prize depth lies INSIDE the palindrome census window, refuting G296's "prize rank escapes the window / certificate at depth `r ≳ n`" prose (2026-07-13, direct Opus 4.8 formalizer)
 
 Kernel-checked correction of a FALSE frontier inference carried by the G295/G296 files, their KB notes, and DISPROOF entries. G296's docstring claimed: "the genuine prize rank `r ≈ log p` on a thin cell `n ≈ p^{1/5.27}` satisfies `r > n` so `n+1-r < 2` (outside the window) … it escapes the window entirely. The certificate must live at depth `r ≳ n`." This is false at the campaign's own production parameters (`q = 2^158`, `n = 2^30`, ledger deep sup-control depth `r* ≈ 89`; see `CumulantOrderThreshold.lean` `log_n q ≈ 5.27`, `BadPrimeNormBound.lean` `q = n·2^128 = 2^158`). Concretely `2 ≤ 89 < 2^30`, and asymptotically for a fixed base `log_n q` grows far slower than `n`, so the prize rank never exceeds `n`; it lies deep inside the window `[2, n-1]`, and so does its reflection `σ(2^30) 89 = 2^30 - 88`.
@@ -53380,3 +53389,228 @@ prove both a positive sponsor-two odd-cubic value and a transfer theorem using a
 adjacent-rank row structure. Formal payload `_G309TargetOrientedCubicGenericRowNoGo.lean`; exact
 probe `g309_target_oriented_cubic_generic_row_nogo.py`; full note
 `docs/kb/deltastar-466-g309-target-oriented-cubic-generic-row-nogo-2026-07-14.md`. CORE OPEN / ON-BGK.
+
+---
+
+### [466-G310-tail-floor-scale-audit] extra `n=32` tail-floor collisions persist past the recorded G210 cells, but the same certificate is clean at the certified Proth-prime scale `p=111*2^128+1` for `n=32,64` (2026-08-01)
+
+G210 proved that the depth-two tail floor is attained exactly when the primitive labels
+`2^n, (1+g^d)^n` for `1 <= d < n/2` are pairwise distinct. G310 is a finite exact-arithmetic scale
+audit of that per-prime certificate, not a theorem about eventual flatness and not a production
+claim.
+
+The probe first reproduces the recorded `n=32` exceptions `p=50177` and `p=51137`, both with
+`sumsq/floor = 73/61`. It then sweeps every prime `p == 1 mod 32` in `(51137, 10^6]` and checks
+4,578 primes. The only additional exceptions are `65537, 68449, 156353, 194977`; each is certified by
+both the label-collision implementation and an independent direct relation scan
+`1 + g^d = a(1 + g^e)` with `a in G`.
+
+The same test is clean at mission-scale field size for toy orders. Proth theorem certifies
+`p = 111*2^128 + 1` prime with witness `5`; using the witness to construct primitive roots, the probe
+finds no label collisions for `n=32` or `n=64`, with exact floor equalities `61/61` and `125/125`.
+
+Scope: finite per-prime audit. The new medium-prime exceptions reinforce G210's warning that
+"large" is not the same as collision-free; the certified Proth-prime clean cells show that this
+exception species does not automatically persist at `q >= n*2^128` for these toy orders. This does
+not address `n=2^30`, logarithmic depth, or the signed late-Newton/BGK covariance. CORE OPEN / ON-BGK.
+
+Probe: `scripts/probes/g310_tail_floor_scale_audit.py`; note:
+`docs/kb/deltastar-466-g310-tail-floor-scale-audit-2026-08-01.md`.
+
+---
+
+### [466-G311-dilation-anchor-scale-audit] the coefficient-1 dilation anchor still has the wrong sign for the coefficient-2 target at certified field scale `p=111*2^128+1` in the toy order `n=16` (2026-08-01)
+
+G297 killed coefficient-anchor sign transport on the small cell `mu_16 <= F_113^*`: `r=5` has
+`A1=-2977296 < 0 < A2=1727120`, while `r=6` reverses direction with
+`A1=152176 > 0 > A2=-77440`. G311 asks only whether this sign-transport obstruction is a small-field
+artifact for the same toy order.
+
+Proth theorem certifies `p=111*2^128+1` prime with witness `5`, and `p > 16*2^128`. For
+`mu_16 <= F_p^*`, two independent exact implementations (sparse row/kernel querying and direct
+subset-pair enumeration) give:
+
+```text
+r=5: A1=-2035138560, A2=+12132759625789254812263498506989117214991787712
+r=6: A1=-8954609664, A2=+40205630224372760716789501328599919806465162752
+```
+
+So the sign-transport verdict persists at the required field-size scale in this toy order:
+coefficient one is negative while the coefficient-two target is positive at both adjacent ranks
+checked. Equivalently, the canonical `a=1` anchor still cannot select the `a=2` quotient coset even
+after leaving the small-characteristic regime.
+
+Scope: finite scale audit only. This is `n=16`, not production `n=2^30`, and it proves no
+logarithmic-depth or worst-case-over-frequency estimate. It reinforces G297's obstruction under
+large-field discipline, but CORE remains OPEN / ON-BGK.
+
+Probe: `scripts/probes/g311_dilation_anchor_scale_audit.py`; note:
+`docs/kb/deltastar-466-g311-dilation-anchor-scale-audit-2026-08-01.md`.
+
+---
+
+### [466-G312-carry-scale-audit] the G278 small-field spread-carry obstruction flips at certified field scale: for `p=111*2^128+1`, `n=16`, ranks five/six have all mass in carry zero (2026-08-01)
+
+G278 showed that on its small/medium checked cells the adjacent-rank CORE alignment does not localize
+cleanly into carry zero or nonzero carry buckets. G312 tests whether that obstruction is stable under
+the mission's large-field discipline in the toy order `n=16`.
+
+The probe first reproduces the published G278 cell `p=433,n=16`: at `r=5`,
+`A=+3425440`, `J=4708000`, `need=4700090`, with carry profile
+`{-3:1185,-2:105117,-1:1057270,0:2380856,1:1057270,2:105117,3:1185}`; at `r=6`,
+`A=+52032`, `J=20680512`, `need=20680392`, with carry profile
+`{-3:8741,-2:531582,-1:4773523,0:10052820,1:4773523,2:531582,3:8741}`. In both, carry zero alone is
+below the gate and nonzero carries are genuinely present.
+
+At certified large field size, Proth theorem proves `p=111*2^128+1` prime with witness `5`, and
+`p > 16*2^128`. For `mu_16 <= F_p^*`, the integer-carry census and an independent direct modular
+subset-pair enumeration agree exactly:
+
+```text
+r=5: A=+12132759625789254812263498506989117214991787712, J=321216,  carries={0:321216}
+r=6: A=+40205630224372760716789501328599919806465162752, J=1064448, carries={0:1064448}
+```
+
+Thus the small-field spread-carry obstruction is scale-sensitive in this toy order: at the checked
+large field, all counted mass lies in carry zero and the small-field nonzero-carry phenomenon vanishes.
+This is a finite scale audit only, not a production `n=2^30` or logarithmic-depth theorem, and not a
+CORE closure. CORE OPEN / ON-BGK.
+
+Probe: `scripts/probes/g312_carry_scale_audit.py`; note:
+`docs/kb/deltastar-466-g312-carry-scale-audit-2026-08-01.md`.
+
+---
+
+### [466-G313-all-rank-window-scale-audit] the coefficient-2 CORE target is positive on every adjacent rank at certified toy field scale (2026-08-01)
+
+G300 shows that the coefficient-2 adjacent-rank CORE covariance can oscillate inside the small
+window: on `mu_8 <= F_113^*`, the exact sequence is
+`[392, 128, -7240, -13128, -13128, -7240, 128]`. G297 shows that the coefficient-1
+dilation anchor does not reliably transport its sign to coefficient 2 on `mu_16 <= F_113^*`:
+`r=5: A1=-2977296, A2=+1727120`; `r=6: A1=+152176, A2=-77440`.
+
+G313 repeats the exact adjacent-rank weighted-kernel audit at certified Proth-prime scale
+`p=111*2^128+1` (Proth witness `5`). For `n=16`, sparse subset histograms show that coefficient 1
+has zero exact alignment at every rank `r=1..15`, hence
+`A1=-256*C(16,r)*C(16,r-1)<0`, while coefficient 2 has dot values
+`[16,576,8064,64064,321216,1064448,2369472,3544608,3544608,2369472,1064448,321216,64064,8064,576]`
+and therefore `A2>0` at every adjacent rank. The probe also checks the expected reflection
+palindrome on `r=2..15` and direct-enumerates subset pairs for `r=5,6`.
+
+This is a finite toy-order scale audit, not a production theorem: it uses `n=16`, does not touch
+`n=2^30`, and proves no logarithmic-depth or worst-case-over-frequency estimate. It records that
+the small-cell sign pathologies do not persist uniformly under this `n=16` large-field audit, and
+that the coefficient-2 target is all-rank positive at the certified checked scale. Exact probe
+`g313_all_rank_window_scale_audit.py`; full note
+`docs/kb/deltastar-466-g313-all-rank-window-scale-audit-2026-08-01.md`. CORE OPEN / ON-BGK.
+
+---
+
+### [466-G314-antipodal-relation-model] the certified `n=16` all-rank table is exactly the antipodal-pair relation model (2026-08-01)
+
+At certified Proth-prime scale `p=111*2^128+1`, the `n=16` coefficient-1 / coefficient-2
+adjacent-rank table has a finite structural explanation. Write the 16th roots as eight pairs
+`{e_j,-e_j}`. For each ordered kernel pair `(y,z)` and each root pair, count only selections of the
+`r`-subset `A` and `(r-1)`-subset `B` that balance the signed coordinate in
+`coefficient*y - z - sum(A) + sum(B)=0`.
+
+This pure antipodal-pair model gives coefficient-1 dot values
+`[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]` and coefficient-2 dot values
+`[16,576,8064,64064,321216,1064448,2369472,3544608,3544608,2369472,1064448,321216,64064,8064,576]`.
+Exact finite-field computation at `p=111*2^128+1,n=16` matches these dots at every rank `r=1..15`;
+direct subset-pair enumeration agrees for ranks `5,6`.
+
+The same model does not match the small G297 cell `p=113,n=16`: the field dots at ranks `5,6` are
+much larger and even reverse signs relative to the large-scale behavior. Thus those small signs
+include extra finite-field relations, while the certified large-scale toy table is exactly governed
+by the antipodal-pair relation model. This is still a finite `n=16` audit, not the production
+`n=2^30` theorem. Exact probe `g314_antipodal_relation_model.py`; full note
+`docs/kb/deltastar-466-g314-antipodal-relation-model-2026-08-01.md`. CORE OPEN / ON-BGK.
+
+---
+
+### [466-G315-n32-antipodal-live-ranks] the certified antipodal model persists one toy order higher at ranks five/six (2026-08-01)
+
+After the `n=16` all-rank audit suggested an antipodal-pair normal form, G315 tests the same mechanism
+at `n=32` for the live ranks `r=5,6`. At the certified Proth prime `p=111*2^128+1` (witness `5`),
+the pure antipodal-pair model gives coefficient-1 dots `0,0` and coefficient-2 dots
+`20115200,200992512`.
+
+The exact finite-field sparse subset-histogram computation matches those model dots. Coefficient 1
+has
+`r=5: A=-7415276503040, dot=0`; `r=6: A=-186864967876608, dot=0`.
+Coefficient 2 has
+`r=5: A=+759778113246774813208690492278676928490593775360, dot=20115200` and
+`r=6: A=+7591757056558709115750550940264470531009269655296, dot=200992512`.
+
+This does not prove production `n=2^30`, but it shows the certified-scale antipodal relation model is
+not merely an `n=16` artifact: it survives the first larger-order live-rank stress test. Exact probe
+`g315_n32_antipodal_live_ranks.py`; full note
+`docs/kb/deltastar-466-g315-n32-antipodal-live-ranks-2026-08-01.md`. CORE OPEN / ON-BGK.
+
+---
+
+### [466-G316-antipodal-closed-formula] coefficient one vanishes by parity and coefficient two has a two-term formula in the antipodal model (2026-08-01)
+
+G316 turns the G314/G315 antipodal-pair model into a compact formula. Let `n=2h`, pair roots as
+`{e_j,-e_j}`, and let `u,v` mark the subset sizes on the adjacent-rank pair `(r,r-1)`. The local
+balanced-choice polynomials are
+`N=1+2uv+u^2+v^2+u^2v^2`, `U=u+v+u^2v+uv^2`, and `D=uv`.
+
+For coefficient 1, the possible global cases are `N^h`, `D*N^(h-1)`, and `U^2*N^(h-2)`. Each has
+even `deg_u-deg_v`, so the adjacent-rank coefficient is always zero. For coefficient 2, with
+`T_m(r)=[u^r v^(r-1)] U*N^m`, the antipodal-model dot is
+`D_2(h,r)=2h*T_{h-1}(r)+4h(h-1)*T_{h-2}(r-1)`, separating the same-pair `z=y` case from the
+different-pair case.
+
+The probe checks the formula against the brute antipodal model for `n=16` at every rank and for
+`n=32` at ranks `5,6`. At the live ranks this specializes to
+`D_2(h,5)=2h*(11*C(h-1,2)+161*C(h-1,3)+406*C(h-1,4))` and
+`D_2(h,6)=2h*(C(h-1,2)+81*C(h-1,3)+786*C(h-1,4)+1722*C(h-1,5))`. It then emits the
+rank-five/six predictions:
+`n=64: (864230400,20331698688)` and `n=128: (31776632832,1609610978304)`.
+This is a formula for the model, not a proof that finite-field cells have no extra modular
+relations. Exact probe `g316_antipodal_closed_formula.py`; full note
+`docs/kb/deltastar-466-g316-antipodal-closed-formula-2026-08-01.md`. CORE OPEN / ON-BGK.
+
+---
+
+### [466-G317-n64-r5-targeted-audit] the certified finite-field count matches the antipodal model at `n=64`, rank five (2026-08-01)
+
+G316 predicts the antipodal-model dots for `n=64,r=5`: coefficient 1 has dot `0`, and coefficient 2
+has dot `864230400`. G317 checks the actual finite-field count at the certified Proth prime
+`p=111*2^128+1` (witness `5`) using the quotient identity
+`sum_t W_a(t)R(t)=n*sum_{u in G} R(a-u)`, where `u=z/y`. This evaluates only `64` quotient shifts
+instead of materializing all `4096` ordered kernel pairs.
+
+The exact sparse subset histograms through rank five have support sizes
+`1,64,1985,39744,577345,6483776`. The finite-field dots match the antipodal model exactly:
+coefficient 1 has `A=-19842793211953152, dot=0`; coefficient 2 has
+`A=+32643142634550265248631476078696581721630936603648, dot=864230400`.
+
+This is still a finite toy-order audit and checks only rank five. Rank six at `n=64` is expected to
+need about `58573633` support states, so the safe next version should use a lower-level or disk-backed
+counter. Exact probe `g317_n64_r5_targeted_audit.py`; full note
+`docs/kb/deltastar-466-g317-n64-r5-targeted-audit-2026-08-01.md`. CORE OPEN / ON-BGK.
+
+---
+
+### [466-G318-n64-r6-norm-guard] a cyclotomic norm bound certifies the `n=64`, rank-six antipodal count without the huge histogram (2026-08-01)
+
+G317 checked `n=64,r=5` directly, but `n=64,r=6` is expected to need about `58573633` sparse support
+states. G318 replaces that brute-force histogram with a cyclotomic norm guard. A coefficient-`a`
+relation counted at adjacent rank six has the form
+`zeta^u + sum_{i in A} zeta^i - sum_{j in B} zeta^j - a = 0 mod p`, with `|A|=6`, `|B|=5`, and
+`a in {1,2}`. Its coefficient `l1` norm is at most `14`, so if the corresponding 64th-cyclotomic
+integer is nonzero, its algebraic norm has absolute value at most `14^phi(64)=14^32`.
+
+The certified Proth prime `p=111*2^128+1` (witness `5`) satisfies `p > 14^32`. Thus a nonzero
+relation cannot vanish modulo `p`; every finite-field relation in this audit is already a complex
+cyclotomic relation, and for 64th roots those are exactly the antipodal-pair cancellations. Combining
+this guard with the G316 formula gives
+coefficient 1 `dot=0, A=-2341449599010471936` and coefficient 2
+`dot=20331698688, A=+767955559391433686463300268059000302726608177666560`.
+
+This is finite `n=64,r=6` evidence only: the simple norm inequality does not reach the production
+degree. Exact probe `g318_n64_r6_norm_guard.py`; full note
+`docs/kb/deltastar-466-g318-n64-r6-norm-guard-2026-08-01.md`. CORE OPEN / ON-BGK.
