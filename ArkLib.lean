@@ -2247,6 +2247,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G146GlobalSubsetAccidentE
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G146CenteredCumulantPacketNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G147ConnectedBalancedCoreRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G148FinitePrimitivePacketTree
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G149PrimitivePacketChargeTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G167NegationStabilizerCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G168ScalingCosetConfinement
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G169StepanovThicknessFence
