@@ -1,0 +1,48 @@
+# Retries a failed CI run once when every failed job died in a short-lived
+# step — the transient network-flake signature (e.g. curl exit 35 resetting
+# the lean-action elan bootstrap, which killed a 16-stage staged run in 54 ms
+# on PR #513's head). A real Lean compilation failure runs for minutes and is
+# never retried; a second attempt is never retried, so the worst case is one
+# extra bootstrap per genuinely red run. lean-action's installer has no curl
+# retry and no input to skip it, so job-level rerun is the only repo-side
+# mitigation available.
+name: Retry transient CI failures
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+permissions:
+  actions: write
+jobs:
+  retry:
+    if: >-
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.run_attempt == 1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Rerun failed jobs when the failure signature is transient
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+          jobs=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/jobs?per_page=100" \
+            --jq '[.jobs[] | select(.conclusion == "failure")]')
+          count=$(jq 'length' <<<"$jobs")
+          if [ "$count" -eq 0 ]; then
+            echo "no failed jobs recorded; nothing to retry"
+            exit 0
+          fi
+          # Transient signature: every failed job's failing step lasted under
+          # 90 seconds. A genuine Lean failure spends minutes compiling first.
+          transient=$(jq '[.[]
+              | [.steps[] | select(.conclusion == "failure")
+                 | ((.completed_at | fromdateiso8601) - (.started_at | fromdateiso8601))]
+              | (length > 0 and all(. < 90))
+            ] | all' <<<"$jobs")
+          if [ "$transient" != "true" ]; then
+            echo "a failed step ran 90s+ (real failure) — not retrying"
+            exit 0
+          fi
+          echo "all ${count} failed job(s) died in <90s — retrying failed jobs once"
+          gh run rerun "$RUN_ID" --failed -R "$GITHUB_REPOSITORY"

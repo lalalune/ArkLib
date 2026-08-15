@@ -171,6 +171,9 @@ can be affected (`Mathlib.LinearAlgebra.Matrix.AbsoluteValue` was one instance).
 - By default it runs the forbidden-token precheck, `lake build`, the `ArkLib/Data/**` warning
   budget, the zero-hole sorry census, the flagship axiom audit, umbrella-import checks, docs
   integrity checks, and knowledge-base checks, so a clean local `validate.sh` matches the CI gate set
+  `retry-transient.yml` additionally re-runs a failed CI run's failed jobs once when
+  every failing step died in under 90 seconds (the transient toolchain-bootstrap
+  network-flake signature); failures that spent minutes compiling are never retried.
   (issue #111 parity).
 - The lower-level scripts remain valid when you only want one specific check.
 - `scripts/build-project.sh` is now just a compile-only helper, not the convenience wrapper.
