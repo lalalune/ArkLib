@@ -1,0 +1,38 @@
+schema_version = 1
+artifact_id = "CLM-043"
+proof_id = "PRF-021"
+output_schema_version = 1
+completeness_mode = "six-cell-exact-diagnostics"
+claimed_domain = [
+  "exact prime-quadratic affine-intersection/cyclotomic-row transfer on the six frozen diagnostic cells",
+]
+
+[[cells]]
+cell_id = "p97-n3-even-m"
+p = 97
+n = 3
+
+[[cells]]
+cell_id = "p257-n4-even-m"
+p = 257
+n = 4
+
+[[cells]]
+cell_id = "p641-n5-even-m"
+p = 641
+n = 5
+
+[[cells]]
+cell_id = "p1297-n6-even-m"
+p = 1297
+n = 6
+
+[[cells]]
+cell_id = "p1459-n6-odd-m"
+p = 1459
+n = 6
+
+[[cells]]
+cell_id = "p2521-n7-even-m"
+p = 2521
+n = 7
