@@ -278,6 +278,59 @@ theorem overdetIncidenceMax_values_m101_150 :
     overdetIncidenceMax 149 = 6571497 ∧ overdetIncidenceMax 150 = 6705001 := by
   decide
 
+/-! ## G329: still further extended value pin (m = 151 … 200) -/
+
+/-- G329: still further extended pin of the over-determined incidence MAX at
+`m = 151 … 200` (`n = 604 … 800`).  Continues the
+`overdetIncidenceMax_values_m101_150` pin by 50 more cells, confirming
+the closed form `I_max(m) = 2·m³ − 2·m² + 1` holds at every `n = 4·m`
+for `m = 151 … 200`.  All 50 cells proved by `decide` (kernel-blessed
+for `ℕ` literal equality).  Values: 6840301, 6977409, 7116337, 7257097,
+7399701, 7544161, 7690489, 7838697, 7988797, 8140801, 8294721, 8450569,
+8608357, 8768097, 8929801, 9093481, 9259149, 9426817, 9596497, 9768201,
+9941941, 10117729, 10295577, 10475497, 10657501, 10841601, 11027809,
+11216137, 11406597, 11599201, 11793961, 11990889, 12189997, 12391297,
+12594801, 12800521, 13008469, 13218657, 13431097, 13645801, 13862781,
+14082049, 14303617, 14527497, 14753701, 14982241, 15213129, 15446377,
+15681997, 15920001.
+
+Probe-confirmed via two independent implementations
+(`g329_overdet_incidence_max_m151_200.py`): direct `2·m³ − 2·m² + 1` and
+the binomial `4·m · C(m, 2) + 1`.  Combined with the prior pins, the
+in-tree pin now covers `m = 2 … 200` (199 contiguous cells, `n = 8 … 800`).
+
+Honest scope: (P) extension.  The closed form continues to hold at every
+probed cell, consistent with the campaign's published sequence.  No new
+proof techniques; just more cells of the same `decide` pin.  Does NOT
+close CORE (`s*(n, k)` budget-crossing asymptotic remains OPEN / ON-BGK). -/
+theorem overdetIncidenceMax_values_m151_200 :
+    overdetIncidenceMax 151 = 6840301 ∧ overdetIncidenceMax 152 = 6977409 ∧
+    overdetIncidenceMax 153 = 7116337 ∧ overdetIncidenceMax 154 = 7257097 ∧
+    overdetIncidenceMax 155 = 7399701 ∧ overdetIncidenceMax 156 = 7544161 ∧
+    overdetIncidenceMax 157 = 7690489 ∧ overdetIncidenceMax 158 = 7838697 ∧
+    overdetIncidenceMax 159 = 7988797 ∧ overdetIncidenceMax 160 = 8140801 ∧
+    overdetIncidenceMax 161 = 8294721 ∧ overdetIncidenceMax 162 = 8450569 ∧
+    overdetIncidenceMax 163 = 8608357 ∧ overdetIncidenceMax 164 = 8768097 ∧
+    overdetIncidenceMax 165 = 8929801 ∧ overdetIncidenceMax 166 = 9093481 ∧
+    overdetIncidenceMax 167 = 9259149 ∧ overdetIncidenceMax 168 = 9426817 ∧
+    overdetIncidenceMax 169 = 9596497 ∧ overdetIncidenceMax 170 = 9768201 ∧
+    overdetIncidenceMax 171 = 9941941 ∧ overdetIncidenceMax 172 = 10117729 ∧
+    overdetIncidenceMax 173 = 10295577 ∧ overdetIncidenceMax 174 = 10475497 ∧
+    overdetIncidenceMax 175 = 10657501 ∧ overdetIncidenceMax 176 = 10841601 ∧
+    overdetIncidenceMax 177 = 11027809 ∧ overdetIncidenceMax 178 = 11216137 ∧
+    overdetIncidenceMax 179 = 11406597 ∧ overdetIncidenceMax 180 = 11599201 ∧
+    overdetIncidenceMax 181 = 11793961 ∧ overdetIncidenceMax 182 = 11990889 ∧
+    overdetIncidenceMax 183 = 12189997 ∧ overdetIncidenceMax 184 = 12391297 ∧
+    overdetIncidenceMax 185 = 12594801 ∧ overdetIncidenceMax 186 = 12800521 ∧
+    overdetIncidenceMax 187 = 13008469 ∧ overdetIncidenceMax 188 = 13218657 ∧
+    overdetIncidenceMax 189 = 13431097 ∧ overdetIncidenceMax 190 = 13645801 ∧
+    overdetIncidenceMax 191 = 13862781 ∧ overdetIncidenceMax 192 = 14082049 ∧
+    overdetIncidenceMax 193 = 14303617 ∧ overdetIncidenceMax 194 = 14527497 ∧
+    overdetIncidenceMax 195 = 14753701 ∧ overdetIncidenceMax 196 = 14982241 ∧
+    overdetIncidenceMax 197 = 15213129 ∧ overdetIncidenceMax 198 = 15446377 ∧
+    overdetIncidenceMax 199 = 15681997 ∧ overdetIncidenceMax 200 = 15920001 := by
+  decide
+
 /-! ## Alternative form: 2·m²·(m − 1) + 1 -/
 
 /-- The over-det MAX equals the bulk plus 1 in factored form: `2·m³ − 2·m² + 1 =
@@ -480,6 +533,7 @@ end ArkLib.ProximityGap.OverdetIncidence
 #print axioms ArkLib.ProximityGap.OverdetIncidence.overdetIncidenceMax_values_m26_50
 #print axioms ArkLib.ProximityGap.OverdetIncidence.overdetIncidenceMax_values_m51_100
 #print axioms ArkLib.ProximityGap.OverdetIncidence.overdetIncidenceMax_values_m101_150
+#print axioms ArkLib.ProximityGap.OverdetIncidence.overdetIncidenceMax_values_m151_200
 #print axioms ArkLib.ProximityGap.OverdetIncidence.overdetIncidenceMax_eq_bulk_plus_one
 #print axioms ArkLib.ProximityGap.OverdetIncidence.overdetIncidenceMax_strict_mono
 #print axioms ArkLib.ProximityGap.OverdetIncidence.overdetIncidenceMax_gt_double_budget
