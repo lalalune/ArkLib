@@ -1,0 +1,36 @@
+======================================================================
+G328 probe: even further extended pin of overdet incidence MAX (m=101..150)
+======================================================================
+
+--- 2-impl agreement: cubic vs binomial, m in [101, 150] ---
+  -> 50/50 cells agree (cubic and binomial forms)
+
+--- Lean-file claim correspondence (50 cells) ---
+  -> ALL 50 LEAN CLAIMS VERIFIED by 2-impl agreement
+
+--- strict monotonicity I_max(m) < I_max(m+1), m in [101, 149] ---
+  -> 49/49 cells: I_max(m) < I_max(m+1)
+
+--- discrete derivative I_max(m+1) - I_max(m) = 2*m*(3*m+1), m in [101, 149] ---
+  -> 49/49 cells: discrete derivative matches 2*m*(3*m+1)
+
+--- cumulative in-tree pin summary ---
+  G222  m=2..10     (9 cells, from parent file)
+  G322  m=11..15    (5 cells, extended)
+  G325  m=16..25    (10 cells, further extended)
+  G325  m=26..50    (25 cells, even further extended)
+  G327  m=51..100   (50 cells, further extended)
+  G328  m=101..150  (50 cells, NEW)
+  Total: 149 contiguous cells, n=4m=8..600
+  All `decide` (kernel-blessed), all 2-impl agree
+
+======================================================================
+VERDICT:
+  [PASS] 2-impl agreement
+  [PASS] Lean claim correspondence
+  [PASS] strict monotonicity
+  [PASS] discrete derivative
+  [PASS] cumulative pin summary
+
+OVERALL: PASS
+======================================================================
