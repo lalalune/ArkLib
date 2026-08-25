@@ -174,6 +174,163 @@ theorem overdetIncidenceMax_values_m26_50 :
     overdetIncidenceMax 50 = 245001 := by
   decide
 
+/-! ## G327: further extended value pin (m = 51 … 100) -/
+
+/-- G327: further extended pin of the over-determined incidence MAX at
+`m = 51 … 100` (`n = 204 … 400`).  Continues the
+`overdetIncidenceMax_values_m26_50` pin by 50 more cells, confirming the
+closed form `I_max(m) = 2·m³ − 2·m² + 1` holds at every `n = 4·m` for
+`m = 51 … 100`.  All 50 cells proved by `decide` (kernel-blessed for `ℕ`
+literal equality).  Values: 260101, 275809, 292137, 309097, 326701,
+344961, 363889, 383497, 403797, 424801, 446521, 468969, 492157, 516097,
+540801, 566281, 592549, 619617, 647497, 676201, 705741, 736129, 767377,
+799497, 832501, 866401, 901209, 936937, 973597, 1011201, 1049761, 1089289,
+1129797, 1171297, 1213801, 1257321, 1301869, 1347457, 1394097, 1441801,
+1490581, 1540449, 1591417, 1643497, 1696701, 1751041, 1806529, 1863177,
+1920997, 1980001.
+
+Probe-confirmed via two independent implementations
+(`g327_overdet_incidence_max_m51_100.py`): direct `2·m³ − 2·m² + 1` and
+the binomial `4·m · C(m, 2) + 1`.  Combined with the prior pins, the
+in-tree pin now covers `m = 2 … 100` (99 contiguous cells, `n = 8 … 400`).
+
+Honest scope: (P) extension.  The closed form continues to hold at every
+probed cell, consistent with the campaign's published sequence.  No new
+proof techniques; just more cells of the same `decide` pin.  Does NOT
+close CORE (`s*(n, k)` budget-crossing asymptotic remains OPEN / ON-BGK). -/
+theorem overdetIncidenceMax_values_m51_100 :
+    overdetIncidenceMax 51 = 260101 ∧ overdetIncidenceMax 52 = 275809 ∧
+    overdetIncidenceMax 53 = 292137 ∧ overdetIncidenceMax 54 = 309097 ∧
+    overdetIncidenceMax 55 = 326701 ∧ overdetIncidenceMax 56 = 344961 ∧
+    overdetIncidenceMax 57 = 363889 ∧ overdetIncidenceMax 58 = 383497 ∧
+    overdetIncidenceMax 59 = 403797 ∧ overdetIncidenceMax 60 = 424801 ∧
+    overdetIncidenceMax 61 = 446521 ∧ overdetIncidenceMax 62 = 468969 ∧
+    overdetIncidenceMax 63 = 492157 ∧ overdetIncidenceMax 64 = 516097 ∧
+    overdetIncidenceMax 65 = 540801 ∧ overdetIncidenceMax 66 = 566281 ∧
+    overdetIncidenceMax 67 = 592549 ∧ overdetIncidenceMax 68 = 619617 ∧
+    overdetIncidenceMax 69 = 647497 ∧ overdetIncidenceMax 70 = 676201 ∧
+    overdetIncidenceMax 71 = 705741 ∧ overdetIncidenceMax 72 = 736129 ∧
+    overdetIncidenceMax 73 = 767377 ∧ overdetIncidenceMax 74 = 799497 ∧
+    overdetIncidenceMax 75 = 832501 ∧ overdetIncidenceMax 76 = 866401 ∧
+    overdetIncidenceMax 77 = 901209 ∧ overdetIncidenceMax 78 = 936937 ∧
+    overdetIncidenceMax 79 = 973597 ∧ overdetIncidenceMax 80 = 1011201 ∧
+    overdetIncidenceMax 81 = 1049761 ∧ overdetIncidenceMax 82 = 1089289 ∧
+    overdetIncidenceMax 83 = 1129797 ∧ overdetIncidenceMax 84 = 1171297 ∧
+    overdetIncidenceMax 85 = 1213801 ∧ overdetIncidenceMax 86 = 1257321 ∧
+    overdetIncidenceMax 87 = 1301869 ∧ overdetIncidenceMax 88 = 1347457 ∧
+    overdetIncidenceMax 89 = 1394097 ∧ overdetIncidenceMax 90 = 1441801 ∧
+    overdetIncidenceMax 91 = 1490581 ∧ overdetIncidenceMax 92 = 1540449 ∧
+    overdetIncidenceMax 93 = 1591417 ∧ overdetIncidenceMax 94 = 1643497 ∧
+    overdetIncidenceMax 95 = 1696701 ∧ overdetIncidenceMax 96 = 1751041 ∧
+    overdetIncidenceMax 97 = 1806529 ∧ overdetIncidenceMax 98 = 1863177 ∧
+    overdetIncidenceMax 99 = 1920997 ∧ overdetIncidenceMax 100 = 1980001 := by
+  decide
+
+/-! ## G328: even further extended value pin (m = 101 … 150) -/
+
+/-- G328: even further extended pin of the over-determined incidence MAX at
+`m = 101 … 150` (`n = 404 … 600`).  Continues the
+`overdetIncidenceMax_values_m51_100` pin by 50 more cells, confirming
+the closed form `I_max(m) = 2·m³ − 2·m² + 1` holds at every `n = 4·m`
+for `m = 101 … 150`.  All 50 cells proved by `decide` (kernel-blessed
+for `ℕ` literal equality).  Values: 2040201, 2101609, 2164237, 2228097,
+2293201, 2359561, 2427189, 2496097, 2566297, 2637801, 2710621, 2784769,
+2860257, 2937097, 3015301, 3094881, 3175849, 3258217, 3341997, 3427201,
+3513841, 3601929, 3691477, 3782497, 3875001, 3969001, 4064509, 4161537,
+4260097, 4360201, 4461861, 4565089, 4669897, 4776297, 4884301, 4993921,
+5105169, 5218057, 5332597, 5448801, 5566681, 5686249, 5807517, 5930497,
+6055201, 6181641, 6309829, 6439777, 6571497, 6705001.
+
+Probe-confirmed via two independent implementations
+(`g328_overdet_incidence_max_m101_150.py`): direct `2·m³ − 2·m² + 1` and
+the binomial `4·m · C(m, 2) + 1`.  Combined with the prior pins, the
+in-tree pin now covers `m = 2 … 150` (149 contiguous cells, `n = 8 … 600`).
+
+Honest scope: (P) extension.  The closed form continues to hold at every
+probed cell, consistent with the campaign's published sequence.  No new
+proof techniques; just more cells of the same `decide` pin.  Does NOT
+close CORE (`s*(n, k)` budget-crossing asymptotic remains OPEN / ON-BGK). -/
+theorem overdetIncidenceMax_values_m101_150 :
+    overdetIncidenceMax 101 = 2040201 ∧ overdetIncidenceMax 102 = 2101609 ∧
+    overdetIncidenceMax 103 = 2164237 ∧ overdetIncidenceMax 104 = 2228097 ∧
+    overdetIncidenceMax 105 = 2293201 ∧ overdetIncidenceMax 106 = 2359561 ∧
+    overdetIncidenceMax 107 = 2427189 ∧ overdetIncidenceMax 108 = 2496097 ∧
+    overdetIncidenceMax 109 = 2566297 ∧ overdetIncidenceMax 110 = 2637801 ∧
+    overdetIncidenceMax 111 = 2710621 ∧ overdetIncidenceMax 112 = 2784769 ∧
+    overdetIncidenceMax 113 = 2860257 ∧ overdetIncidenceMax 114 = 2937097 ∧
+    overdetIncidenceMax 115 = 3015301 ∧ overdetIncidenceMax 116 = 3094881 ∧
+    overdetIncidenceMax 117 = 3175849 ∧ overdetIncidenceMax 118 = 3258217 ∧
+    overdetIncidenceMax 119 = 3341997 ∧ overdetIncidenceMax 120 = 3427201 ∧
+    overdetIncidenceMax 121 = 3513841 ∧ overdetIncidenceMax 122 = 3601929 ∧
+    overdetIncidenceMax 123 = 3691477 ∧ overdetIncidenceMax 124 = 3782497 ∧
+    overdetIncidenceMax 125 = 3875001 ∧ overdetIncidenceMax 126 = 3969001 ∧
+    overdetIncidenceMax 127 = 4064509 ∧ overdetIncidenceMax 128 = 4161537 ∧
+    overdetIncidenceMax 129 = 4260097 ∧ overdetIncidenceMax 130 = 4360201 ∧
+    overdetIncidenceMax 131 = 4461861 ∧ overdetIncidenceMax 132 = 4565089 ∧
+    overdetIncidenceMax 133 = 4669897 ∧ overdetIncidenceMax 134 = 4776297 ∧
+    overdetIncidenceMax 135 = 4884301 ∧ overdetIncidenceMax 136 = 4993921 ∧
+    overdetIncidenceMax 137 = 5105169 ∧ overdetIncidenceMax 138 = 5218057 ∧
+    overdetIncidenceMax 139 = 5332597 ∧ overdetIncidenceMax 140 = 5448801 ∧
+    overdetIncidenceMax 141 = 5566681 ∧ overdetIncidenceMax 142 = 5686249 ∧
+    overdetIncidenceMax 143 = 5807517 ∧ overdetIncidenceMax 144 = 5930497 ∧
+    overdetIncidenceMax 145 = 6055201 ∧ overdetIncidenceMax 146 = 6181641 ∧
+    overdetIncidenceMax 147 = 6309829 ∧ overdetIncidenceMax 148 = 6439777 ∧
+    overdetIncidenceMax 149 = 6571497 ∧ overdetIncidenceMax 150 = 6705001 := by
+  decide
+
+/-! ## G329: still further extended value pin (m = 151 … 200) -/
+
+/-- G329: still further extended pin of the over-determined incidence MAX at
+`m = 151 … 200` (`n = 604 … 800`).  Continues the
+`overdetIncidenceMax_values_m101_150` pin by 50 more cells, confirming
+the closed form `I_max(m) = 2·m³ − 2·m² + 1` holds at every `n = 4·m`
+for `m = 151 … 200`.  All 50 cells proved by `decide` (kernel-blessed
+for `ℕ` literal equality).  Values: 6840301, 6977409, 7116337, 7257097,
+7399701, 7544161, 7690489, 7838697, 7988797, 8140801, 8294721, 8450569,
+8608357, 8768097, 8929801, 9093481, 9259149, 9426817, 9596497, 9768201,
+9941941, 10117729, 10295577, 10475497, 10657501, 10841601, 11027809,
+11216137, 11406597, 11599201, 11793961, 11990889, 12189997, 12391297,
+12594801, 12800521, 13008469, 13218657, 13431097, 13645801, 13862781,
+14082049, 14303617, 14527497, 14753701, 14982241, 15213129, 15446377,
+15681997, 15920001.
+
+Probe-confirmed via two independent implementations
+(`g329_overdet_incidence_max_m151_200.py`): direct `2·m³ − 2·m² + 1` and
+the binomial `4·m · C(m, 2) + 1`.  Combined with the prior pins, the
+in-tree pin now covers `m = 2 … 200` (199 contiguous cells, `n = 8 … 800`).
+
+Honest scope: (P) extension.  The closed form continues to hold at every
+probed cell, consistent with the campaign's published sequence.  No new
+proof techniques; just more cells of the same `decide` pin.  Does NOT
+close CORE (`s*(n, k)` budget-crossing asymptotic remains OPEN / ON-BGK). -/
+theorem overdetIncidenceMax_values_m151_200 :
+    overdetIncidenceMax 151 = 6840301 ∧ overdetIncidenceMax 152 = 6977409 ∧
+    overdetIncidenceMax 153 = 7116337 ∧ overdetIncidenceMax 154 = 7257097 ∧
+    overdetIncidenceMax 155 = 7399701 ∧ overdetIncidenceMax 156 = 7544161 ∧
+    overdetIncidenceMax 157 = 7690489 ∧ overdetIncidenceMax 158 = 7838697 ∧
+    overdetIncidenceMax 159 = 7988797 ∧ overdetIncidenceMax 160 = 8140801 ∧
+    overdetIncidenceMax 161 = 8294721 ∧ overdetIncidenceMax 162 = 8450569 ∧
+    overdetIncidenceMax 163 = 8608357 ∧ overdetIncidenceMax 164 = 8768097 ∧
+    overdetIncidenceMax 165 = 8929801 ∧ overdetIncidenceMax 166 = 9093481 ∧
+    overdetIncidenceMax 167 = 9259149 ∧ overdetIncidenceMax 168 = 9426817 ∧
+    overdetIncidenceMax 169 = 9596497 ∧ overdetIncidenceMax 170 = 9768201 ∧
+    overdetIncidenceMax 171 = 9941941 ∧ overdetIncidenceMax 172 = 10117729 ∧
+    overdetIncidenceMax 173 = 10295577 ∧ overdetIncidenceMax 174 = 10475497 ∧
+    overdetIncidenceMax 175 = 10657501 ∧ overdetIncidenceMax 176 = 10841601 ∧
+    overdetIncidenceMax 177 = 11027809 ∧ overdetIncidenceMax 178 = 11216137 ∧
+    overdetIncidenceMax 179 = 11406597 ∧ overdetIncidenceMax 180 = 11599201 ∧
+    overdetIncidenceMax 181 = 11793961 ∧ overdetIncidenceMax 182 = 11990889 ∧
+    overdetIncidenceMax 183 = 12189997 ∧ overdetIncidenceMax 184 = 12391297 ∧
+    overdetIncidenceMax 185 = 12594801 ∧ overdetIncidenceMax 186 = 12800521 ∧
+    overdetIncidenceMax 187 = 13008469 ∧ overdetIncidenceMax 188 = 13218657 ∧
+    overdetIncidenceMax 189 = 13431097 ∧ overdetIncidenceMax 190 = 13645801 ∧
+    overdetIncidenceMax 191 = 13862781 ∧ overdetIncidenceMax 192 = 14082049 ∧
+    overdetIncidenceMax 193 = 14303617 ∧ overdetIncidenceMax 194 = 14527497 ∧
+    overdetIncidenceMax 195 = 14753701 ∧ overdetIncidenceMax 196 = 14982241 ∧
+    overdetIncidenceMax 197 = 15213129 ∧ overdetIncidenceMax 198 = 15446377 ∧
+    overdetIncidenceMax 199 = 15681997 ∧ overdetIncidenceMax 200 = 15920001 := by
+  decide
+
 /-! ## Alternative form: 2·m²·(m − 1) + 1 -/
 
 /-- The over-det MAX equals the bulk plus 1 in factored form: `2·m³ − 2·m² + 1 =
@@ -374,6 +531,9 @@ end ArkLib.ProximityGap.OverdetIncidence
 #print axioms ArkLib.ProximityGap.OverdetIncidence.overdetIncidenceMax_values_extended
 #print axioms ArkLib.ProximityGap.OverdetIncidence.overdetIncidenceMax_values_m16_25
 #print axioms ArkLib.ProximityGap.OverdetIncidence.overdetIncidenceMax_values_m26_50
+#print axioms ArkLib.ProximityGap.OverdetIncidence.overdetIncidenceMax_values_m51_100
+#print axioms ArkLib.ProximityGap.OverdetIncidence.overdetIncidenceMax_values_m101_150
+#print axioms ArkLib.ProximityGap.OverdetIncidence.overdetIncidenceMax_values_m151_200
 #print axioms ArkLib.ProximityGap.OverdetIncidence.overdetIncidenceMax_eq_bulk_plus_one
 #print axioms ArkLib.ProximityGap.OverdetIncidence.overdetIncidenceMax_strict_mono
 #print axioms ArkLib.ProximityGap.OverdetIncidence.overdetIncidenceMax_gt_double_budget
