@@ -13,6 +13,10 @@
 // In candidate-closure mode, optional --root T Y S wideY wideS initialL
 // precedes those triples. This changes numerical root caps only; the caller
 // must establish the root interpolants and all associated algebraic gates.
+// That mode also accepts --errors E, --padding P, and --joint Bm BL TY TS TL.
+// --joint adds the correlated ChainGroupMaj complement from official commit
+// 032154395c51fd6f77715a7f42d9a987ab9fb48a. It prints the remaining fixed tails
+// separately. Options precede sources and may appear in any order, once each.
 // The default four-source receipts remain unchanged. Additional sources use
 // the same strict-slope recursion; they do not certify a Lean soundness theorem.
 // Signed 128-bit arithmetic is intentional: a negative nullity must not be
@@ -49,6 +53,37 @@ Integer positive(Integer x) { return std::max<Integer>(0, x); }
 Integer ceiling(Integer x, Integer y) {
   assert(y > 0);
   return x >= 0 ? (x + y - 1) / y : x / y;
+}
+
+// RCN260.UnequalParameters.regularCountCap. Coordinates are Y, R, Z.
+Integer regular_count(int errors, std::array<Integer,3> left,
+                      std::array<Integer,3> right) {
+  auto agreement=[](std::array<Integer,3> x) {
+    return std::array<Integer,3>{1+2*w*x[0], w*positive(2*x[1]-1), 2*w*x[2]+1};
+  };
+  auto a=agreement(left), b=agreement(right);
+  std::array<Integer,3> mix{left[1]*right[2]+left[2]*right[1],
+    left[0]*right[2]+left[2]*right[0], left[0]*right[1]+left[1]*right[0]};
+  Integer dot=0, gap=n-w-errors;
+  for (int i=0;i<3;++i) dot+=std::max(a[i],b[i])*mix[i];
+  return ((n-w)*dot+(errors+1)*gap*mix[2])/gap;
+}
+
+// RCN318.TightParameters.countCap at slope 1, the R-free chain tail.
+Integer tight_count(int errors, Integer weighted, int limit) {
+  Integer y=(weighted-1)/w, z=limit, gap=n-w-errors;
+  Integer dot=(1+2*w*y)*z+w*(2*y*z)+(2*w*z+1)*y;
+  return ((n-w)*dot+(errors+1)*gap*y+2*z*z*gap)/gap;
+}
+
+// Closed-form floor of the numerator sum, not the sum of floors. This is
+// exactly ChainGroupMaj.chainMaj, including Nat subtraction at r=0 and r=1.
+Integer chain_majorant(int errors, int zc, int r, int y) {
+  Integer z=zc, yr=y, rr=r, gap=n-w-errors;
+  Integer a=(n-w)*((1+2*w*yr)*(z*rr)+w*positive(2*rr-1)*(2*z*yr)
+      +(2*w*z+1)*(yr*rr))+(errors+1)*gap*(yr*rr);
+  Integer b=(n-w)*((1+2*w*yr)*z+(2*w*z+1)*yr)+(errors+1)*gap*yr;
+  return (positive(rr-1)*a+b*rr*positive(rr-1)/2)/gap;
 }
 
 // LocatorFactorAggregate.FlagDegree, flagMixed, and paddedTail.
@@ -247,22 +282,47 @@ int main(int argc, char** argv) try {
   if (!baseline && mode!="candidate" && !keep_z)
     throw std::invalid_argument("mode must be baseline, candidate, candidate-z, or candidate-closure");
   int errors=baseline?80771:80781, y_cap=baseline?132:135;
-  int total_cap=baseline?6412:6676, agreements=n-errors;
+  int total_cap=baseline?6412:6676;
   int slope_cap=29, wide_y=153, wide_slope=33, initial_limit=130000;
-  int source_start=2;
-  bool custom_root=argc>2 && std::string(argv[2])=="--root";
-  if (custom_root) {
-    if (!closure || argc<9)
-      throw std::invalid_argument("--root requires candidate-closure and T Y S wideY wideS initialL");
-    total_cap=std::stoi(argv[3]); y_cap=std::stoi(argv[4]); slope_cap=std::stoi(argv[5]);
-    wide_y=std::stoi(argv[6]); wide_slope=std::stoi(argv[7]); initial_limit=std::stoi(argv[8]);
-    source_start=9;
-    if (slope_cap<1 || slope_cap>64 || y_cap<slope_cap || y_cap>256
-        || total_cap<y_cap || total_cap>20000 || wide_y<y_cap || wide_y>1000
-        || wide_slope<slope_cap || wide_slope>wide_y
-        || initial_limit<total_cap || initial_limit>2000000)
-      throw std::invalid_argument("root caps outside the bounded research range");
+  int source_start=2, padding=0, b_m=0, b_limit=0, t_y=0, t_s=0, t_limit=0;
+  bool custom_root=false, custom_errors=false, custom_padding=false, joint_ledger=false;
+  while (source_start<argc && std::string(argv[source_start]).rfind("--",0)==0) {
+    std::string option=argv[source_start++];
+    if (!closure) throw std::invalid_argument("options require candidate-closure");
+    auto next=[&]() {
+      if (source_start>=argc) throw std::invalid_argument("missing value for "+option);
+      std::string value=argv[source_start++];
+      std::size_t used=0;
+      int result=std::stoi(value,&used);
+      if (used!=value.size()) throw std::invalid_argument("noninteger option value");
+      return result;
+    };
+    if (option=="--root" && !custom_root) {
+      custom_root=true;
+      total_cap=next(); y_cap=next(); slope_cap=next();
+      wide_y=next(); wide_slope=next(); initial_limit=next();
+    } else if (option=="--errors" && !custom_errors) {
+      custom_errors=true; errors=next();
+      if (errors<80771 || errors>81000)
+        throw std::invalid_argument("error cell outside bounded research range");
+    } else if (option=="--padding" && !custom_padding) {
+      custom_padding=true; padding=next();
+      if (padding<0 || padding>1000000) throw std::invalid_argument("invalid potential padding");
+    } else if (option=="--joint" && !joint_ledger) {
+      joint_ledger=true;
+      b_m=next(); b_limit=next(); t_y=next(); t_s=next(); t_limit=next();
+    } else throw std::invalid_argument("unknown or repeated option "+option);
   }
+  if (slope_cap<1 || slope_cap>64 || y_cap<slope_cap || y_cap>256
+      || total_cap<y_cap || total_cap>20000 || wide_y<y_cap || wide_y>1000
+      || wide_slope<slope_cap || wide_slope>wide_y
+      || initial_limit<total_cap || initial_limit>2000000)
+    throw std::invalid_argument("root caps outside the bounded research range");
+  if (joint_ledger && (b_m<1 || b_m>100000 || b_limit<total_cap || b_limit>2000000
+      || t_y<1 || t_y>10000 || t_s<1 || t_s>t_y || t_limit!=total_cap+3
+      || (std::int64_t(b_m)*(n-errors)-1)/w>wide_y))
+    throw std::invalid_argument("invalid correlated residual parameters");
+  int agreements=n-errors;
   bool custom_sources=argc>source_start;
   if (custom_sources && ((argc-source_start)%3 || argc>source_start+3*max_phases))
     throw std::invalid_argument("expected optionally 1..256 source triples");
@@ -298,7 +358,7 @@ int main(int argc, char** argv) try {
         && Integer(y_cap)*limit+Integer(total_cap)*y<characteristic
         && Integer(y_cap)*slope+Integer(slope_cap)*y<characteristic;
     if (!gates) { std::cout<<"SOURCE_GATE_FAILED "<<m<<"\n"; return 3; }
-    if (baseline) for (Integer& coefficient:source.potential) coefficient+=10000;
+    for (Integer& coefficient:source.potential) coefficient+=baseline?10000:padding;
     sources.push_back(source);
     std::cout<<"source "<<m<<" "<<limit<<" "<<slope<<" y "<<y
       <<" nullity "<<decimal(source.gap)<<" potential";
@@ -329,16 +389,33 @@ int main(int argc, char** argv) try {
       current(previous.size());
   Potential initial=baseline ? Potential{5961153504LL,5974067721865LL,22929595672934LL}
                              : potential(errors,initial_limit,y_cap,slope_cap,wide_y,wide_slope);
+  if (!baseline) for (Integer& coefficient:initial) coefficient+=padding;
+  std::cout<<"initial_potential";
+  for (Integer coefficient:initial) std::cout<<" "<<decimal(coefficient);
+  std::cout<<"\n";
+  Integer fixed_tails=joint_ledger ?
+      (wide_slope+1)*tight_count(errors,Integer(b_m)*agreements,total_cap) : 0;
+  // This is independent of z and stays outside the phase/prefix recurrence.
+  auto correlated=[&](int r,int v) -> Integer {
+    if (!joint_ledger) return 0;
+    int residual_r=wide_slope-r;
+    return chain_majorant(errors,total_cap,r,r+v)
+      +chain_majorant(errors,total_cap,residual_r,wide_y-v)
+      +regular_count(errors,{wide_y,std::max(1,residual_r),b_limit},{t_y,t_s,t_limit})
+      +chain_majorant(errors,b_limit,residual_r,wide_y)
+      +2*tight_count(errors,Integer(b_m)*agreements,b_limit);
+  };
   // Empty universal child: all positive-R factors use the initial helper.
   // This case is small for the pinned receipts but belongs to the envelope.
   int empty_r=std::min({total_cap,wide_y,wide_slope});
   int empty_v=std::min(total_cap-empty_r,wide_y-empty_r);
-  Integer maximum=evaluate(initial,empty_r,empty_v,total_cap-empty_r-empty_v);
+  Integer maximum=evaluate(initial,empty_r,empty_v,total_cap-empty_r-empty_v)+correlated(0,0);
   int best_r=0,best_v=0,best_z=0;
   std::array<Integer,max_phases> best_costs{};
   std::array<std::uint64_t,max_phases> source_winners{};
   for (int r=1;r<=slope_cap;++r) {
     for (int v=0;r+v<=y_cap;++v) {
+      Integer correlated_cost=correlated(r,v);
       std::vector<Line> lines;
       std::array<Integer,3> small{};
       for (int i=1;i<=r;++i) for (int j=0;j<=v;++j) if (zero[r-i][v-j]>=0) {
@@ -390,7 +467,7 @@ int main(int argc, char** argv) try {
         }
         int rt=total_cap-r-v-z, ry=wide_y-r-v, rr=wide_slope-r;
         int nr=std::min({rt,ry,rr}), nv=std::min(rt-nr,ry-nr);
-        Integer joint=cap+evaluate(initial,nr,nv,rt-nr-nv);
+        Integer joint=cap+evaluate(initial,nr,nv,rt-nr-nv)+correlated_cost;
         if (joint>maximum) {
           maximum=joint; best_r=r; best_v=v; best_z=z; best_costs=costs;
         }
@@ -419,14 +496,19 @@ int main(int argc, char** argv) try {
     assert(maximum==published_cap);
     std::cout<<"PUBLISHED_BASELINE_REPRODUCED\n";
   }
-  if (!baseline && !custom_sources && !custom_root) {
+  if (!baseline && !custom_sources && !custom_root && !custom_errors && !custom_padding && !joint_ledger) {
     Integer expected=keep_z ? Integer(274535875126515098LL)
                             : Integer(274912523147183536LL);
     assert(maximum==expected);
     assert(maximum>candidate_allocation);
     std::cout<<"CANDIDATE_BUDGET_FAILURE_REPRODUCED\n";
   }
-  if (!baseline && !custom_root) {
+  if (joint_ledger) {
+    std::cout<<"CORRELATED max "<<decimal(maximum)<<" fixed_tails "<<decimal(fixed_tails)
+      <<" total_before_list "<<decimal(maximum+fixed_tails)
+      <<" correlated_at_max "<<decimal(correlated(best_r,best_v))<<"\n";
+  }
+  if (!baseline && !custom_root && !custom_errors && !custom_padding && !joint_ledger) {
     std::cout<<(custom_sources ? "original_separate_chain_allocation " : "fixed_allocation ")
       <<decimal(candidate_allocation)
       <<(custom_sources ? " excess_before_chain_revision " : " excess ")

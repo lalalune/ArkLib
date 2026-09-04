@@ -68,11 +68,12 @@ total-degree-two quotient dimension by `194725418`. A scalar interpolant
 list budget `5529601254`. The ordinary mixed-characteristic endpoint at support
 caps `(R,Y)=(30,136)` is `2113404958 < p`.
 
-These are necessary gates only. **No 68.04 phase envelope, combined count, full
-Lean proof, or verifier acceptance has been established.** In particular, the
-68.03 phase receipts and its ordinary-gate certificate cannot be relabeled as
-68.04 proofs. The next work is to evaluate the new correlated ledger with
-retuned sources and then port the resulting proof at the current official pin.
+These are necessary gates only. Subsequent
+[joint-ledger evaluation](proximity-astra-joint-ledger-2026-09-04.md) finds that
+both a six-source and a denser 29-source 68.04 candidate **fail** the budget.
+No full Lean proof or verifier acceptance has been established. In particular,
+the 68.03 phase receipts and its ordinary-gate certificate cannot be relabeled
+as 68.04 proofs.
 
 The user's ArkLib remote main and research branches remained at
 `8e2fc19130e2fea9e175c52b0953b88804b8f333` and

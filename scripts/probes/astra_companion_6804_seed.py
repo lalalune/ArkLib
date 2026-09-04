@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Necessary interpolation checks for 68.04 after the upstream 68.03 update.
 
-This has no phase-ledger bound and proves no ProtocolClaim. The previous
-68.03 certificates do not automatically apply to these new parameters.
+This script checks no phase-ledger bound and proves no ProtocolClaim. The
+separate astra_companion_joint_audit.py evaluates candidates at these roots;
+both recorded 68.04 candidates fail the combined budget. The previous 68.03
+certificates do not automatically apply to these new parameters.
 """
 import json
 
@@ -38,14 +40,15 @@ def main() -> None:
     assert score["exact_integer_score_check"]
     assert not score_check(ERRORS-1, 6804)["exact_integer_score_check"]
     print(json.dumps({
-        "status": "SEED_KERNELS_ONLY_PHASE_LEDGER_UNEVALUATED",
+        "status": "SEED_KERNELS_ONLY_PHASE_LEDGER_NOT_CHECKED_HERE",
         "upstream_baseline_commit": UPSTREAM, "upstream_score": 6803,
         "target_score": score, "kernels": rows, "scalar": scalar,
         "T_quotient_dimension": quotient,
         "T_quotient_margin": rows["T"]["signed_nullity_lower_bound"]-quotient,
         "proposed_selected_total_cap": 6919,
         "ordinary_mixed_characteristic_endpoint": ordinary_mixed,
-        "warning": "No 68.04 phase cap, combined-count estimate, or Lean proof has been established"
+        "joint_audit": "scripts/probes/astra_companion_joint_audit.py",
+        "warning": "Recorded 68.04 joint candidates fail the budget; no ProtocolClaim is proved"
     }, indent=2, sort_keys=True))
 
 
