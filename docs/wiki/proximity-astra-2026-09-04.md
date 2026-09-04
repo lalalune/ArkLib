@@ -80,9 +80,12 @@ spot-check bits when inspected. These are threshold-derived scores, not a
 claim of full-protocol security. Its pinned contract is
 [`b34c0131cfa36b51111521541d7d3e35c8791082`](https://github.com/proximity-prize/proximity-prize/tree/b34c0131cfa36b51111521541d7d3e35c8791082).
 The 68.03 candidate is not a new record: positive interpolation nullity is only
-one part of the required argument. New phase, factor-count, and quotient
-certificates must be constructed and the complete `ProtocolClaim` must pass
-Lean before submission is justified.
+one part of the required argument. Reconstructing the phase recurrence exposes
+an actual budget failure. Retaining the full z-dependent prefixes and recursively
+closing all four sources improves the envelope to `274535875126515098`, still
+`14399698464318138` above its allocation. These refinements therefore do not
+yield a new score. A substantially sharper factor bound and the complete Lean
+`ProtocolClaim` remain necessary.
 
 ## Local reproduction
 
@@ -97,9 +100,14 @@ python3 scripts/probes/astra_companion_parameters.py
 python3 scripts/probes/astra_pg_iterate_exit_check.py
 python3 scripts/probes/astra_clm043_remainder.py
 python3 scripts/probes/astra_orbit_product_marginal.py
+python3 scripts/probes/astra_companion_parameters.py --check-phases
 ```
 
-These eight Python probes passed locally. The repository-wide forbidden-token precheck
+These eight Python probes passed locally. The optional phase replay compiled
+the C++ evaluator and reproduced the published baseline and all three rejected
+candidate envelopes. An independent build with UndefinedBehaviorSanitizer also
+passed all four modes and the bounded T-kernel search without diagnostics.
+The repository-wide forbidden-token precheck
 also passed, with nine pre-existing documented residual axioms. Full repository
 validation then stopped at the build step with exit 127 because `lake` is absent.
 The Lean assembly draft is kept outside the library import tree at

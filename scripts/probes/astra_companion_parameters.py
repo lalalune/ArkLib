@@ -5,12 +5,18 @@ Source: proximity-prize/proximity-prize at
 b34c0131cfa36b51111521541d7d3e35c8791082 (retrieved 2026-09-04).
 This checks integer inequalities and searches parameters. It is NOT a proof of
 ProtocolClaim, does not run Lean, and must not be used as a soundness certificate.
-Only the standard library is required. JSON stdout is deterministic.
+The default audit uses only the standard library. Optional --check-phases also
+needs a C++17 compiler with 128-bit integer support. JSON stdout is deterministic.
 """
 from __future__ import annotations
 
 import json
+import argparse
 from math import comb
+from pathlib import Path
+import shutil
+import subprocess
+import tempfile
 
 COMMIT = "b34c0131cfa36b51111521541d7d3e35c8791082"
 N, W, P = 262144, 131071, 2130706433
@@ -18,6 +24,8 @@ FIELD_SIZE = P**6
 CAPACITY = FIELD_SIZE // 2**128
 DENOMINATOR = 2**25
 OLD_FIXED_REGULAR_CAP = 254595720129422441
+FIRST_CANDIDATE_PHASE_CAP = 274912523147183536
+Z_AWARE_CANDIDATE_PHASE_CAP = 274535875126515098
 
 
 def sub(a: int, b: int) -> int:
@@ -184,6 +192,10 @@ def orbit_search() -> list:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check-phases", action="store_true",
+                        help="compile and run the exact C++ baseline/candidate phase audit")
+    args = parser.parse_args()
     old_rows = {name: locator_row(80771, m, limit, slope) for name, m, limit, slope in
                 (("A", 96, 130000, 29), ("B", 111, 12960, 33),
                  ("C", 270, 130000, 81), ("T", 181, 6415, 56))}
@@ -208,14 +220,47 @@ def main() -> None:
     assert scalar["mixed_degree_below_characteristic"]
     score = score_check(errors, 6803)
     assert score["exact_integer_score_check"] and score["error_cell_floor"] == errors
+    quotient_space = locator_coefficients(rows["T"]["weighted_degree"], 2, 56)
+    assert quotient_space == 326956325
+    assert rows["T"]["signed_nullity_lower_bound"]-quotient_space == 40459519
+    ledger = remaining_ledger(errors, 14914, 6679, scalar["list_budget"])
+    fixed_allocation = ledger["available_for_UNPROVED_fixed_regular_cap"]
+    assert fixed_allocation == 260136176662196960
+    assert FIRST_CANDIDATE_PHASE_CAP-fixed_allocation == 14776346484986576
+    assert Z_AWARE_CANDIDATE_PHASE_CAP-fixed_allocation == 14399698464318138
+    phase_runs = None
+    if args.check_phases:
+        compiler = shutil.which("clang++") or shutil.which("g++")
+        if not compiler:
+            parser.error("--check-phases requires a C++17 compiler supporting __int128")
+        source = Path(__file__).with_name("astra_companion_phases.cpp")
+        with tempfile.TemporaryDirectory(prefix="astra-companion-phases-") as folder:
+            binary = str(Path(folder)/"phases")
+            subprocess.run([compiler, "-O3", "-std=c++17", str(source), "-o", binary],
+                           check=True)
+            phase_runs = {}
+            for mode in ("baseline", "candidate", "candidate-z", "candidate-closure"):
+                process = subprocess.run([binary, mode], capture_output=True,
+                                         text=True, check=True)
+                phase_runs[mode] = process.stdout.splitlines()
     report = {
-        "status": "EXACT_ARITHMETIC_ONLY_FULL_SOUNDNESS_UNPROVED",
+        "status": "EXACT_ARITHMETIC_AUDIT_FIRST_CANDIDATE_FAILS_PHASE_BUDGET",
         "source_commit": COMMIT, "field_capacity_floor": CAPACITY,
         "baseline_receipts_reproduced": True,
         "candidate": {"errors": errors, "agreements": N-errors, "gap": N-errors-W,
                       "score": score, "locator_kernels": rows, "scalar_kernel": scalar,
-                      "ledger_expressions": remaining_ledger(errors, 14914, 6679,
-                                                               scalar["list_budget"])},
+                      "T_quotient_space": quotient_space,
+                      "T_nullity_excess_over_quotient_space": 40459519,
+                      "ledger_expressions": ledger,
+                      "phase_receipts": {
+                          "regenerate_with": "--check-phases",
+                          "first_candidate_cap": FIRST_CANDIDATE_PHASE_CAP,
+                          "first_candidate_excess": FIRST_CANDIDATE_PHASE_CAP-fixed_allocation,
+                          "z_aware_candidate_cap": Z_AWARE_CANDIDATE_PHASE_CAP,
+                          "z_aware_excess": Z_AWARE_CANDIDATE_PHASE_CAP-fixed_allocation,
+                          "fits_phase_budget": False,
+                          "warning": "Numeric envelopes, not retuned Lean theorems"}},
+        "phase_probe_runs_this_invocation": phase_runs,
         "bounded_published_orbit_construction_search": orbit_search(),
         "unproved_obligations": [
             "Retuned coefficient-support, characteristic, and quotient gates",
