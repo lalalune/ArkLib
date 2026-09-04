@@ -35,6 +35,7 @@ to a prize organizer. Verification status is recorded separately below.
 | Result | Evidence | Limit |
 |---|---|---|
 | Complete order-eight, threshold-four monomial census is uniform in every odd-characteristic field with an eighth root of order eight; maximum nine | Exhaustive arithmetic in `Z[z]/(z^4+1)`; all relevant nonzero norms are powers of two | 64 monomial pencils, not arbitrary received-word pairs |
+| Lean kernel accepts the complete finite monomial arithmetic predicate | Ordinary `by decide`, `import Std`, exit zero; axiom audit `[propext]` | Field-specialization and MCA interpretation remain written proofs |
 | Explicit nonmonomial pencil has exactly ten bad scalars for every prime `p=1 mod8` outside six explicit exceptions | Cyclotomic norm certificate and exhaustive exceptional-field census | One constructed family, not the full MCA maximum |
 | That construction has eleven scalars in specified `F41` and `F137` cells | Independent enumeration of scalar and affine-polynomial witnesses | Finite cells; generator choice matters for the constructed words |
 | Cubic/quadratic ceiling count 40 and witness multiplicity profile follow by assembling G330 with existing generic lemmas | Written proof and an explicitly uncompiled Lean candidate | Existing lemmas assembled; no new kernel verification |
@@ -52,6 +53,7 @@ Proofs, exact definitions, reproduction instructions, and qualification of the
 remaining obligations are in:
 
 * [Monomial census](../kb/proximity-astra-monomial-census-2026-09-04.md).
+* [Lean kernel verification and reproduction](../kb/astra-core-certificate-2026-09-04.md).
 * [Explicit nonmonomial construction](../kb/proximity-astra-nonmonomial-witness-2026-09-04.md).
 * [Nonmonomial census and complete exceptional table](../kb/proximity-astra-nonmonomial-exact-2026-09-04.md).
 * [Ceiling assembly and audit of historical claims](../kb/proximity-astra-ceiling-bridge-2026-09-04.md).
@@ -92,15 +94,26 @@ python3 scripts/probes/astra_pg_iterate_exit_check.py
 python3 scripts/probes/astra_clm043_remainder.py
 ```
 
-These six probes passed locally. The repository-wide forbidden-token precheck
+These seven probes passed locally. The repository-wide forbidden-token precheck
 also passed, with nine pre-existing documented residual axioms. Full repository
 validation then stopped at the build step with exit 127 because `lake` is absent.
 The Lean assembly draft is kept outside the library import tree at
 `docs/kb/proximity-astra-ceiling-draft.lean` until it can be compiled and audited.
-The real Lean attempt now correctly exits 127
-with `lake: command not found`. Before the repair, the same quiet invocation
-incorrectly exited zero and printed `OK`. The uncompiled candidate is therefore
-not accepted as proof merely because a wrapper once said it passed.
+The Mathlib-dependent wrapper attempt correctly exits 127 with
+`lake: command not found`. Before the repair, the same quiet invocation incorrectly
+exited zero and printed `OK`.
+
+The separate core-only certificate subsequently passed:
+
+```sh
+lean scripts/probes/astra_core_certificate.lean
+# 'AstraCoreCertificate.certificate' depends on axioms: [propext]
+```
+
+This actual kernel run took 68.91 seconds using the official Lean 4.30.0-rc2
+runtime. It proves the finite Boolean audit; it does not validate the ceiling
+draft or the complete ArkLib project. The [verification receipt](../kb/astra-core-certificate-2026-09-04.md)
+records the exact command, resource use, and remaining formalization boundary.
 
 Research changes are being committed and pushed to the authorized research
 branch. The user's `main` checkout is unchanged. No email, prize submission,

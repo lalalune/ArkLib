@@ -9,7 +9,10 @@ order eight**. The four maximizing exponent pairs are `(4,3)`, `(4,7)`, `(5,2)`,
 
 This improves the G328/G330 state from finite-prime observations of the below-ceiling
 monomial profile to a field-uniform arithmetic certificate. It is a mathematical
-argument backed by an exhaustive exact Python certificate, **not a Lean-checked theorem**.
+argument backed by an exhaustive exact Python certificate. The finite arithmetic
+predicate has now also passed an ordinary Lean kernel decision with only `propext`
+in its axiom audit; see the [kernel verification receipt](astra-core-certificate-2026-09-04.md).
+The general field-specialization theorem is **not yet formalized in Lean**.
 The production Proximity Prize problem remains open. The restriction to monomial pencils
 is essential; this result does not bound arbitrary received-word pencils or the full
 MCA supremum.
