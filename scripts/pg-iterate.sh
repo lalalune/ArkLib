@@ -20,6 +20,11 @@ F="${1:?usage: pg-iterate.sh [-q] <file.lean>}"
 START=$(date +%s)
 OUT="$(lake env lean "$F" 2>&1)" && RC=0 || RC=$?
 ELAPSED=$(( $(date +%s) - START ))
+if (( RC != 0 )); then
+  echo "❌ FAIL (${ELAPSED}s, Lean command exited ${RC}):"
+  printf '%s\n' "$OUT" | sed -n '1,30p'
+  exit "$RC"
+fi
 ERRS="$(echo "$OUT" | grep -E 'error|sorry' | grep -viE 'depends on axioms' || true)"
 if [[ -n "$ERRS" ]]; then
   echo "❌ FAIL (${ELAPSED}s):"; echo "$ERRS" | head -30; exit 1
@@ -28,5 +33,7 @@ fi
 if echo "$OUT" | grep -q "sorryAx"; then
   echo "⚠️  compiles but has sorryAx (not axiom-clean):"; echo "$OUT" | grep -A3 sorryAx | head; exit 2
 fi
-[[ $QUIET -eq 0 ]] && echo "$OUT" | grep "depends on axioms" | head
+if [[ $QUIET -eq 0 ]]; then
+  printf '%s\n' "$OUT" | sed -n '/depends on axioms/p' | sed -n '1,10p'
+fi
 echo "✅ OK (${ELAPSED}s) — $F"

@@ -301,3 +301,13 @@ Hard-won rules for multi-agent sessions where several agents land commits on
   imports, not a tainted proof.** Rebuild the import closure
   (`lake build <each imported module>`) and re-check before debugging the
   proof. Confirmed twice on 2026-06-10/11.
+
+## Verification wrapper failure handling
+
+`scripts/pg-iterate.sh` preserves a nonzero exit status from `lake env lean`,
+including a missing toolchain or a terminated compiler. Quiet mode suppresses
+routine output, not command failures. Successful elaboration with no printed
+axiom audit is allowed; it does not itself establish which axioms a theorem uses.
+To exercise this process boundary without installing Lean, run
+`python3 scripts/probes/astra_pg_iterate_exit_check.py`. This regression check
+does not verify any mathematical theorem.
