@@ -126,11 +126,13 @@ def main() -> None:
             if args.check_phases or args.sanitize else None,
         "lean_run_this_invocation": False,
         "lean_arithmetic_certificate": "scripts/probes/astra_companion_chain_budget.lean",
+        "lean_ordinary_gates_certificate": "scripts/probes/astra_companion_ordinary_gates.lean",
         "unproved_obligations": [
             "Port the polynomial derivative-support and regular-pair bridges",
             "Combine the fixed and residual covers using QB=H*Q",
             "Prove the strict-slope recursion for the six-source phase envelope",
-            "Prove every retuned ordinary-factor, kernel, support, quotient, and characteristic gate",
+            "Port the per-factor counting bounds using the checked ordinary-gate certificate",
+            "Prove every remaining retuned kernel, support, quotient, and characteristic gate",
             "Build ProtocolClaim 6803 10340095 33554432 with an allowed axiom census",
             "Obtain acceptance from the pinned independent verifier before claiming a score"]
     }, indent=2, sort_keys=True))

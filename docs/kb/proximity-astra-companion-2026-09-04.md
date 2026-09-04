@@ -343,6 +343,7 @@ python3 scripts/probes/astra_companion_shared_candidate.py
 python3 scripts/probes/astra_companion_shared_candidate.py --check-phases
 python3 scripts/probes/astra_companion_shared_candidate.py --sanitize
 lean scripts/probes/astra_companion_chain_budget.lean
+lean scripts/probes/astra_companion_ordinary_gates.lean
 ```
 
 The phase replay compiles the C++ evaluator and asserts the same maximum in
@@ -368,6 +369,58 @@ The search is not an optimality certificate. A 15-source set reaches
 sources above. Removing one further source from that particular six-source set
 gave a best tested five-source cap `266498137406098741`, just outside the
 refined allocation. Other five-source choices are not ruled out.
+
+## Ordinary-factor arithmetic at the new radius
+
+The published ordinary-factor wrappers are hardcoded to errors 80771, gap
+50302, weighted cap 17411808, and support caps 29 / 132 / 6412. The candidate
+changes these to 80781, 50292, 17773574, and 29 / 135 / 6676. A phase envelope
+cannot simply reuse the wrappers without checking the numerical lemmas inside
+their proofs.
+
+The new
+[`astra_companion_ordinary_gates.lean`](../../scripts/probes/astra_companion_ordinary_gates.lean)
+proves the relevant retuned arithmetic using Std alone. It transcribes the
+`LocatorFixedStage` padded tails and `LocatorHybridIdentityC2` hybrid tails,
+the common `flagMixed` expression, and the identity-curve degree. It proves,
+for every natural support coordinate and flag,
+
+```
+50292 * paddedCost = 131073 * 80782 * identityDegree + paddedSlack
+50292 * hybridCost(a,b+1,s)
+  = 131073 * 80782 * identityDegree(a,b+1,s) + hybridSlack.
+```
+
+All coefficients of both new slack polynomials are nonnegative. Thus both
+identity-branch bounds remain dominated by the existing cost expressions at
+the new radius. The hybrid proof explicitly requires its middle support
+coordinate to be at least one, as the C2 branch does. These are universal
+polynomial identities, not a numerical sample over cells. Lean proves them
+using distributivity, multiplication rearrangement, exact numeral reduction,
+and integer arithmetic.
+
+The file also proves universal bounds for the retuned mixed-characteristic,
+product-characteristic, flag-coordinate, rational-coordinate, padded-coordinate,
+and weighted-cap inequalities. The endpoint estimates are:
+
+| Gate | Upper bound | Required comparison |
+|---|---:|---|
+| Identity mixed degree | 2027275186 | `< 2130706433` |
+| Reduced mixed degree | 2009595933 | `< 2130706433` |
+| Sharp mixed degree | 2027290653 | `< 2130706433` |
+| Product degree | 89151304 | `< 2130706433` |
+
+A single monotone bound at cut weight 131072 and slope factor 57 covers all
+three mixed gates. The smaller identity and reduced values follow by inserting
+their respective cut weight and slope factor. The field-dependent curve and
+seed-count theorems still need to consume these new lemmas; this certificate
+does not formalize that application.
+
+Lean 4.30.0-rc2 checked the file with exit 0 in 3.80 seconds, maximum resident
+set size 767377408 bytes. The padded and hybrid budget theorems use exactly
+`[propext, Quot.sound]`; the mixed and product characteristic theorems have no
+axiom dependencies. No new full-companion build or verifier acceptance is
+claimed by this additional arithmetic certificate.
 
 ## Attack direction checked
 
@@ -429,7 +482,8 @@ To turn this candidate into an improvement:
 5. Run the pinned independent verifier before claiming any ranked improvement.
 
 No full companion Lean build, official verification, or prize submission was
-performed. The finite monomial certificate and new derivative-chain arithmetic
-theorems are separately kernel-checked. Neither grand challenge is resolved.
+performed. The finite monomial certificate, derivative-chain arithmetic,
+and ordinary-factor arithmetic theorems are separately kernel-checked.
+Neither grand challenge is resolved.
 The first 68.03 candidate fails its phase allocation; the six-source successor
 fits its refined numerical ledger but still needs the full formal proof.
