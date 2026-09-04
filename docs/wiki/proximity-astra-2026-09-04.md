@@ -19,6 +19,8 @@ to a prize organizer. Verification status is recorded separately below.
   committed and pushed as `335b4a0e1`. Reviewed remote contribution
   [PR #542](https://github.com/lalalune/ArkLib/pull/542) was then cherry-picked
   with its original authorship preserved and pushed as `390c9e0f9`.
+  The sharper remainder proof was pushed as `9fc80e92b`, and the kernel-checked
+  finite certificate as `736d38cf2`.
 * The source `main`, source `research/proximity-prize`, and pinned official
   companion heads had no new commits on the follow-up fetch. Open
   [PR #543](https://github.com/lalalune/ArkLib/pull/543) was inspected but not
@@ -40,7 +42,8 @@ to a prize organizer. Verification status is recorded separately below.
 | That construction has eleven scalars in specified `F41` and `F137` cells | Independent enumeration of scalar and affine-polynomial witnesses | Finite cells; generator choice matters for the constructed words |
 | Cubic/quadratic ceiling count 40 and witness multiplicity profile follow by assembling G330 with existing generic lemmas | Written proof and an explicitly uncompiled Lean candidate | Existing lemmas assembled; no new kernel verification |
 | CLM-043 remainder coefficient improves from 87 to 24, including arbitrary distinct nonzero evaluation sets over odd finite fields | Ordered-overlap proof using classical Hasse; six frozen cells and 581 additional subgroup cases | The main term `U` remains unbounded; this proof is not Lean formalized |
-| Companion candidate score 68.03 at radius `10340095/33554432` is arithmetically feasible under retuned interpolation parameters | Exact kernel nullities, field-size and score inequalities, partial ledger | New phase/factor/quotient certificates remain unproved |
+| Initial companion candidate 68.03 passes interpolation dimensions but fails the regenerated coarse factor budget | Published baseline reproduced exactly; candidate charge `274912523147183536` exceeds allocation `260136176662196960` | Positive interpolation nullity alone does not establish soundness; tighter variants remain research |
+| Exact best product-label marginal cannot rescue the 256-fibre attack candidate | Subset-sum DP and independent Ramanujan formula agree on every label | Does not rule out concentration in the joint coefficient/product map |
 | Quiet proof wrapper now propagates compiler failure | Reproduced missing-compiler false success, then 14 process-boundary checks | Process handling only, not mathematical validation |
 
 The monomial result's extension-field coverage was independently checked using
@@ -59,6 +62,7 @@ remaining obligations are in:
 * [Ceiling assembly and audit of historical claims](../kb/proximity-astra-ceiling-bridge-2026-09-04.md).
 * [Sharper CLM-043 remainder and its precise scope](../kb/proximity-astra-clm043-remainder-2026-09-04.md).
 * [Companion target and parameter audit](../kb/proximity-astra-companion-2026-09-04.md).
+* [Exact product-marginal obstruction](../kb/proximity-astra-orbit-product-marginal-2026-09-04.md).
 
 ## What prevents a prize claim
 
@@ -92,9 +96,10 @@ python3 scripts/probes/astra_nonmonomial_exact_census.py
 python3 scripts/probes/astra_companion_parameters.py
 python3 scripts/probes/astra_pg_iterate_exit_check.py
 python3 scripts/probes/astra_clm043_remainder.py
+python3 scripts/probes/astra_orbit_product_marginal.py
 ```
 
-These seven probes passed locally. The repository-wide forbidden-token precheck
+These eight Python probes passed locally. The repository-wide forbidden-token precheck
 also passed, with nine pre-existing documented residual axioms. Full repository
 validation then stopped at the build step with exit 127 because `lake` is absent.
 The Lean assembly draft is kept outside the library import tree at
