@@ -1,5 +1,10 @@
 # Companion audit and a numerically feasible 68.03-bit proof candidate
 
+**Live update:** the official repository subsequently promoted a 68.03
+submission at `032154395c51fd6f77715a7f42d9a987ab9fb48a`. Our candidate below
+is now a historical arithmetic receipt, not an improvement over the current
+record. See the [upstream update and 68.04 starting point](proximity-astra-upstream-6803-2026-09-04.md).
+
 Status: **a six-source successor fits the arithmetic budget after a shared-chain
 refinement; chain arithmetic kernel-checked; full companion proof unported;
 no new verified score**.
