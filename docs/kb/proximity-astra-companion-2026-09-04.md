@@ -1,7 +1,8 @@
-# Companion challenge audit and the obstruction to a 68.03-bit candidate
+# Companion audit and a numerically feasible 68.03-bit proof candidate
 
-Status: **first candidate rejected by regenerated phase budget; no new score;
-companion Lean proof not compiled**.
+Status: **a six-source successor fits the arithmetic budget after a shared-chain
+refinement; chain arithmetic kernel-checked; full companion proof unported;
+no new verified score**.
 
 This audit checked the live prize sites on 2026-09-04 and inspected the official
 companion contract at commit
@@ -9,9 +10,10 @@ companion contract at commit
 [`scripts/probes/astra_companion_parameters.py`](../../scripts/probes/astra_companion_parameters.py)
 is dependency-free and reproduces published integer receipts before testing new
 parameters. The compact C++ phase evaluator also reproduces the published fixed
-regular cap exactly. The proposed change passes basic interpolation tests but
-fails the full numerical phase allocation by over 5%. Neither script asserts a
-new theorem, leaderboard score, or prize solution.
+regular cap exactly. The first candidate failed the numerical phase allocation
+by over 5%. The later six-source construction below fits a refined ledger, with
+the full polynomial and phase proof still outstanding. The numerical scripts
+do not certify a new theorem, leaderboard score, or prize solution.
 
 ## What the official targets mean
 
@@ -50,10 +52,13 @@ The contract pins upstream ArkLib at
 checkout and is not automatically an admissible companion submission. The
 companion source policy and verifier pin must be respected when porting proofs.
 
-The linked [ABF26 paper landing page](https://eprint.iacr.org/2026/680) reports a
-2026-07-06 revision. Its PDF download returned HTTP 403 during this audit;
-statements about the exact executable challenge here rely on the inspected
-pinned Lean interfaces, not a claimed complete reading of the PDF.
+The linked [ABF26 paper](https://eprint.iacr.org/2026/680) reports a 2026-07-06
+revision. Its PDF initially returned HTTP 403, but a subsequent retrieval on
+2026-09-04 succeeded. The relevant introduction, Definition 4.3, positive and
+negative results in Section 4, and Appendix C were inspected. They confirm the
+distinction between the broad sharp-threshold challenge and the executable
+fixed-profile companion contract. Claims about the executable target below
+use the pinned Lean interfaces.
 
 ## Why changing the radius alone cannot improve the record
 
@@ -279,8 +284,90 @@ Additional bounded experiments did not close the gap:
   instead of A98 lowers the Y cap by one but raises the potential complement;
   the z-aware envelope increases to `275262086275345898`.
 - Replacing all four defects by recursively closed final-child defects gave the
-  same z-aware maximum. Source-shape sweeps also failed to produce a viable
+  same z-aware maximum. The initial source-shape sweeps failed to produce a viable
   bound; those searches are exploratory and do not establish optimality.
+
+## Numerically feasible successor using a shared chain budget
+
+The [derivative-chain note](proximity-astra-derivative-chain-2026-09-04.md)
+identifies two refinements. First, the j-th derivative has smaller weighted and
+slope degrees. Second, the fixed gcd H and residual Q satisfy `QB=H*Q`, so their
+two factor-degree lists share a total R-degree budget of 33. Charging each stage
+the full budget separately is unnecessary.
+
+The new Std-only Lean file proves the corresponding arithmetic for every
+finite degree partition. Applying it to the actual polynomial factors and seed
+cover remains a formalization obligation. With the larger B box used for both
+chains, the new combined chain charge is `7829081955871376`. It saves
+`6253464528887728` against the original two-chain expression.
+
+The root A/B/C/T and scalar interpolants are unchanged from the candidate table
+above. A bounded search found the following compact phase-source set:
+
+| m | L | S | Y | Signed nullity |
+|---:|---:|---:|---:|---:|
+| 8000 | 560000 | 2464 | 11069 | 40890965512431461440 |
+| 4000 | 280000 | 1232 | 5534 | 2515200173660695446 |
+| 1600 | 112000 | 492 | 2213 | 61152530622794379 |
+| 1200 | 84000 | 369 | 1660 | 18802099200935610 |
+| 650 | 52000 | 200 | 899 | 1754780192812150 |
+| 250 | 20000 | 77 | 345 | 24306064036059 |
+
+The exact recurrence retains z in the prefix and uses final child caps from
+strictly smaller R-degree. Its fixed regular envelope is
+`266199718851190708`, attained at `(r,v,z)=(14,35,6523)`. The initial A-helper
+complement is included, as is the empty universal-child case. All six source
+kernels have positive nullity and pass the necessary shape, domination, and
+mixed-characteristic inequalities checked by the evaluator.
+
+| Ledger quantity | Exact integer |
+|---|---:|
+| Fixed regular envelope | 266199718851190708 |
+| Other terms after the shared-chain refinement | 8591081656209308 |
+| Scalar list budget | 5264101091 |
+| Combined proposed count | 274790805771501107 |
+| Field count capacity | 274980728111395087 |
+| Positive margin | 189922339893980 |
+
+Thus the proposed integer count passes
+`combined_count * 2^128 <= p^6`. The radius-to-score inequality for 6803 also
+passes. **A numerical count expression fitting the budget is not a proof that
+the true winning-set count is bounded by that expression.** The polynomial
+bridges, phase soundness, and the rest of the retuned theorem gates must still
+be proved and compiled.
+
+Run the complete arithmetic receipt with:
+
+```sh
+python3 scripts/probes/astra_companion_shared_candidate.py
+python3 scripts/probes/astra_companion_shared_candidate.py --check-phases
+python3 scripts/probes/astra_companion_shared_candidate.py --sanitize
+lean scripts/probes/astra_companion_chain_budget.lean
+```
+
+The phase replay compiles the C++ evaluator and asserts the same maximum in
+forward, reverse, and rotated source orders. The sanitizer mode also checks for
+undefined integer behavior. The independent Python transcription checks source
+nullities, root kernels, quotient dimension, scalar conditions, and both exact
+integer capacity and score inequalities. Its inner coefficient sums are
+evaluated using exact sums of 1, i, and i-squared, and cross-checked against the
+original double sum on the four root kernels.
+
+The 2026-09-04 runs passed in all three source orders, both optimized and under
+undefined-behavior instrumentation. Nine malformed/out-of-range input cases
+were rejected. An additional multiplicity-96000 source exercised the widened
+integer paths; its nullity matched the independent Python calculation and the
+six-source maximum stayed unchanged. The four original baseline/candidate
+replays also retained their exact recorded values. Tracked documentation links
+and the forbidden-token precheck passed. Full `scripts/validate.sh` stopped at
+exit 127 because `lake` is unavailable; it did not complete a repository build.
+
+The search is not an optimality certificate. A 15-source set reaches
+`265783441651992192`; a 52-source set reaches `265483881194044562`, and a
+194-source set reaches `265309898373802401`. Greedy pruning produced the six
+sources above. Removing one further source from that particular six-source set
+gave a best tested five-source cap `266498137406098741`, just outside the
+refined allocation. Other five-source choices are not ruled out.
 
 ## Attack direction checked
 
@@ -341,7 +428,8 @@ To turn this candidate into an improvement:
    inspect the axiom census for the allowed standard axioms only.
 5. Run the pinned independent verifier before claiming any ranked improvement.
 
-No companion Lean build, official verification, or prize submission was
-performed. The separately kernel-checked finite monomial arithmetic certificate
-is outside this companion contract. Neither grand challenge is resolved, and the
-68.03 candidate is rejected by the regenerated phase allocation.
+No full companion Lean build, official verification, or prize submission was
+performed. The finite monomial certificate and new derivative-chain arithmetic
+theorems are separately kernel-checked. Neither grand challenge is resolved.
+The first 68.03 candidate fails its phase allocation; the six-source successor
+fits its refined numerical ledger but still needs the full formal proof.

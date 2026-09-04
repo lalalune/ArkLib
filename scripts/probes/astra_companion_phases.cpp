@@ -9,7 +9,12 @@
 // /tmp/astra-phases candidate-z
 // /tmp/astra-phases candidate-closure
 // /tmp/astra-phases search-t
-// Optional final 12 arguments replace the four (multiplicity, limit, slope) triples.
+// Optional final arguments give 1..256 (multiplicity, limit, slope) triples.
+// In candidate-closure mode, optional --root T Y S wideY wideS initialL
+// precedes those triples. This changes numerical root caps only; the caller
+// must establish the root interpolants and all associated algebraic gates.
+// The default four-source receipts remain unchanged. Additional sources use
+// the same strict-slope recursion; they do not certify a Lean soundness theorem.
 // Signed 128-bit arithmetic is intentional: a negative nullity must not be
 // hidden by Nat subtraction. Bounds here are for the displayed small inputs.
 
@@ -23,7 +28,8 @@
 #include <vector>
 
 using Integer = __int128_t;
-constexpr int n = 262144, w = 131071, slope_cap = 29;
+constexpr int n = 262144, w = 131071;
+constexpr int max_phases = 256;
 constexpr Integer published_cap = Integer(254595720129422441LL);
 constexpr Integer candidate_allocation = Integer(260136176662196960LL);
 
@@ -94,10 +100,10 @@ Integer rank_bound(int m, int limit, int slope) {
   }
   return result;
 }
-Integer coefficients(int weighted, int limit, int slope) {
+Integer coefficients(std::int64_t weighted, int limit, int slope) {
   Integer result = 0;
   for (int j=0; j<=slope; ++j) {
-    Integer a=Integer(weighted)-(w-1)*j, b=limit+1-j;
+    Integer a=Integer(weighted)-Integer(w-1)*j, b=limit+1-j;
     if (a<=0 || b<=0) break;
     Integer i=std::min<Integer>(b-1,(a-1)/w);
     Integer sum1=i*(i+1)/2, sum2=i*(i+1)*(2*i+1)/6;
@@ -117,7 +123,9 @@ Integer channels(int t, int y, int s) {
 
 using Potential = std::array<Integer,3>; // total, middle, slope coefficients
 struct Source {
-  int multiplicity, limit, y, slope, weighted, delta;
+  int multiplicity, limit, y, slope;
+  std::int64_t weighted;
+  int delta;
   Integer gap;
   Potential potential;
 };
@@ -144,14 +152,15 @@ bool routeable(const Source& source, int r, int v, int z) {
   int t=r+v+z, y=r+v;
   if (!r || t>source.limit || y>source.y || r>source.slope) return false;
   int fuel=std::min({source.limit/t,source.y/y,source.slope/r});
-  int cap=w*(source.y+1)-source.slope-(w*y-r), contact=w*y-r;
+  std::int64_t cap=std::int64_t(w)*(source.y+1)-source.slope-(w*y-r);
+  int contact=w*y-r;
   Integer band=0, thin=0;
   for (int j=1; j<=fuel; ++j) {
     int qt=source.limit-j*t, qy=source.y-j*y, qs=source.slope-j*r;
     band += Integer(source.delta)*channels(qt,qy,qs);
-    int thin_y=std::min(qy,std::max(0,(cap+qs-1)/w));
+    int thin_y=int(std::min<std::int64_t>(qy,std::max<std::int64_t>(0,(cap+qs-1)/w)));
     thin += Integer(source.delta)*channels(qt,thin_y,qs);
-    cap=std::max(0,cap-source.delta-contact);
+    cap=std::max<std::int64_t>(0,cap-source.delta-contact);
     if (band>=source.gap && thin>=source.gap) return false;
   }
   return band<source.gap || thin<source.gap;
@@ -230,28 +239,51 @@ void search_t_candidates() {
   std::cout<<"KERNEL_AND_QUOTIENT_DIMENSIONS_ONLY; FULL_SOUNDNESS_UNPROVED\n";
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv) try {
   std::string mode=argc>1 ? argv[1] : "baseline";
   if (mode=="search-t" && argc==2) { search_t_candidates(); return 0; }
   bool baseline=mode=="baseline", closure=mode=="candidate-closure";
   bool keep_z=mode=="candidate-z" || closure;
   if (!baseline && mode!="candidate" && !keep_z)
     throw std::invalid_argument("mode must be baseline, candidate, candidate-z, or candidate-closure");
-  if (argc!=2 && argc!=14 && argc!=1)
-    throw std::invalid_argument("expected mode and optionally 12 source-shape integers");
   int errors=baseline?80771:80781, y_cap=baseline?132:135;
   int total_cap=baseline?6412:6676, agreements=n-errors;
-  std::array<std::array<int,3>,4> shapes{{
-    {4800,328400,1480},{1200,82100,370},{1000,42000,310},{390,19500,120}}};
-  if (argc==14) for (int i=0;i<4;++i) for (int j=0;j<3;++j)
-    shapes[i][j]=std::stoi(argv[2+3*i+j]);
+  int slope_cap=29, wide_y=153, wide_slope=33, initial_limit=130000;
+  int source_start=2;
+  bool custom_root=argc>2 && std::string(argv[2])=="--root";
+  if (custom_root) {
+    if (!closure || argc<9)
+      throw std::invalid_argument("--root requires candidate-closure and T Y S wideY wideS initialL");
+    total_cap=std::stoi(argv[3]); y_cap=std::stoi(argv[4]); slope_cap=std::stoi(argv[5]);
+    wide_y=std::stoi(argv[6]); wide_slope=std::stoi(argv[7]); initial_limit=std::stoi(argv[8]);
+    source_start=9;
+    if (slope_cap<1 || slope_cap>64 || y_cap<slope_cap || y_cap>256
+        || total_cap<y_cap || total_cap>20000 || wide_y<y_cap || wide_y>1000
+        || wide_slope<slope_cap || wide_slope>wide_y
+        || initial_limit<total_cap || initial_limit>2000000)
+      throw std::invalid_argument("root caps outside the bounded research range");
+  }
+  bool custom_sources=argc>source_start;
+  if (custom_sources && ((argc-source_start)%3 || argc>source_start+3*max_phases))
+    throw std::invalid_argument("expected optionally 1..256 source triples");
+  std::cout<<"root T "<<total_cap<<" Y "<<y_cap<<" S "<<slope_cap
+    <<" wideY "<<wide_y<<" wideS "<<wide_slope<<" initialL "<<initial_limit<<"\n";
+  std::vector<std::array<int,3>> shapes{
+    {4800,328400,1480},{1200,82100,370},{1000,42000,310},{390,19500,120}};
+  if (custom_sources) {
+    shapes.resize((argc-source_start)/3);
+    for (int i=0;i<int(shapes.size());++i) for (int j=0;j<3;++j)
+      shapes[i][j]=std::stoi(argv[source_start+3*i+j]);
+  }
+  int phase_count=int(shapes.size());
   std::vector<Source> sources;
   for (auto shape:shapes) {
     auto [m,limit,slope]=shape;
-    if (m<=0 || m>10000 || slope<=0 || slope>m
-        || limit<m+slope || limit>2000000)
-      throw std::invalid_argument("source requires 0<S<=m<=10000 and m+S<=L<=2000000");
-    int weighted=m*agreements, y=(weighted-1)/w;
+    if (m<=0 || m>100000 || slope<=0 || slope>m
+        || limit<m+slope || limit>20000000)
+      throw std::invalid_argument("source requires 0<S<=m<=100000 and m+S<=L<=20000000");
+    std::int64_t weighted=std::int64_t(m)*agreements;
+    int y=int((weighted-1)/w);
     Source source{m,limit,y,slope,weighted,agreements-w+1,
       coefficients(weighted,limit,slope)-n*rank_bound(m,limit,slope),
       potential(errors,limit,y,slope)};
@@ -287,14 +319,24 @@ int main(int argc, char** argv) {
 
   // Coarse prefixes forget z. The optional experiment retains z with rolling
   // slope layers; it still requires a new proof/certificate of prefix soundness.
-  using Cell=std::array<std::uint64_t,4>;
-  using Layer=std::vector<std::vector<Cell>>;
-  Layer previous(y_cap+1,std::vector<Cell>(keep_z?total_cap+1:1)), current=previous;
+  // Store only active sources; a four-source replay should not pay the memory
+  // cost of a large optional search. The phase index is contiguous.
+  int z_extent=keep_z?total_cap+1:1;
+  auto offset=[&](int v,int z,int phase) {
+    return (std::size_t(v)*z_extent+z)*phase_count+phase;
+  };
+  std::vector<std::uint64_t> previous(std::size_t(y_cap+1)*z_extent*phase_count),
+      current(previous.size());
   Potential initial=baseline ? Potential{5961153504LL,5974067721865LL,22929595672934LL}
-                             : potential(errors,130000,135,29,153,33);
-  Integer maximum=-1;
+                             : potential(errors,initial_limit,y_cap,slope_cap,wide_y,wide_slope);
+  // Empty universal child: all positive-R factors use the initial helper.
+  // This case is small for the pinned receipts but belongs to the envelope.
+  int empty_r=std::min({total_cap,wide_y,wide_slope});
+  int empty_v=std::min(total_cap-empty_r,wide_y-empty_r);
+  Integer maximum=evaluate(initial,empty_r,empty_v,total_cap-empty_r-empty_v);
   int best_r=0,best_v=0,best_z=0;
-  std::array<Integer,4> best_costs{};
+  std::array<Integer,max_phases> best_costs{};
+  std::array<std::uint64_t,max_phases> source_winners{};
   for (int r=1;r<=slope_cap;++r) {
     for (int v=0;r+v<=y_cap;++v) {
       std::vector<Line> lines;
@@ -305,76 +347,94 @@ int main(int argc, char** argv) {
         for (int z=0;z<3;++z) small[z]=std::max(small[z],raw[i][j][z]+rest);
       }
       auto hull=upper_hull(lines);
-      std::array<int,4> thresholds;
-      for (int phase=0;phase<4;++phase)
+      std::array<int,max_phases> thresholds{};
+      for (int phase=0;phase<phase_count;++phase)
         thresholds[phase]=route_threshold(sources[phase],r,v,total_cap);
-      std::array<Integer,4> local{};
+      std::array<Integer,max_phases> local{};
       int index=0;
       for (int z=0;z<=total_cap-r-v;++z) {
         while (index+1<int(hull.size()) && hull[index+1].start<=z) ++index;
         Integer cap=z<3 ? small[z] : hull[index].intercept+hull[index].slope*z;
-        std::array<Integer,4> costs;
-        for (int phase=0;phase<4;++phase) {
+        std::array<Integer,max_phases> costs{};
+        int winner=-1;
+        for (int phase=0;phase<phase_count;++phase) {
           Integer charge=evaluate(sources[phase].potential,r,v,z);
           Integer point=0;
           if (z<thresholds[phase]) {
             point=positive(cap-charge);
             local[phase]=std::max(local[phase],point);
-          } else cap=std::min(cap,charge+previous[v][keep_z?z:0][phase]);
+          } else {
+            Integer routed=charge+previous[offset(v,keep_z?z:0,phase)];
+            if (routed<cap) { cap=routed; winner=phase; }
+          }
           if (keep_z) {
             // In closure mode this is recomputed below using the final child
             // cap. No same-slope cap is read: all sources use previous layer.
-            Integer prefix=std::max({point,Integer(previous[v][z][phase]),
-                v?Integer(current[v-1][z][phase]):Integer(0),
-                z?Integer(current[v][z-1][phase]):Integer(0)});
+            Integer prefix=std::max({point,Integer(previous[offset(v,z,phase)]),
+                v?Integer(current[offset(v-1,z,phase)]):Integer(0),
+                z?Integer(current[offset(v,z-1,phase)]):Integer(0)});
             assert(prefix<(Integer(1)<<64));
-            current[v][z][phase]=std::uint64_t(prefix);
+            current[offset(v,z,phase)]=std::uint64_t(prefix);
           }
           costs[phase]=cap;
         }
-        if (closure) for (int phase=0;phase<4;++phase) {
+        if (winner>=0) ++source_winners[winner];
+        if (closure) for (int phase=0;phase<phase_count;++phase) {
           Integer charge=evaluate(sources[phase].potential,r,v,z);
           Integer point=z<thresholds[phase] ? positive(cap-charge) : 0;
-          Integer prefix=std::max({point,Integer(previous[v][z][phase]),
-              v?Integer(current[v-1][z][phase]):Integer(0),
-              z?Integer(current[v][z-1][phase]):Integer(0)});
+          Integer prefix=std::max({point,Integer(previous[offset(v,z,phase)]),
+              v?Integer(current[offset(v-1,z,phase)]):Integer(0),
+              z?Integer(current[offset(v,z-1,phase)]):Integer(0)});
           assert(prefix<(Integer(1)<<64));
-          current[v][z][phase]=std::uint64_t(prefix);
+          current[offset(v,z,phase)]=std::uint64_t(prefix);
         }
-        int rt=total_cap-r-v-z, ry=153-r-v, rr=33-r;
+        int rt=total_cap-r-v-z, ry=wide_y-r-v, rr=wide_slope-r;
         int nr=std::min({rt,ry,rr}), nv=std::min(rt-nr,ry-nr);
         Integer joint=cap+evaluate(initial,nr,nv,rt-nr-nv);
         if (joint>maximum) {
           maximum=joint; best_r=r; best_v=v; best_z=z; best_costs=costs;
         }
       }
-      if (!keep_z) for (int phase=0;phase<4;++phase) {
-        Integer prefix=std::max({local[phase],Integer(previous[v][0][phase]),
-                                v?Integer(current[v-1][0][phase]):Integer(0)});
+      if (!keep_z) for (int phase=0;phase<phase_count;++phase) {
+        Integer prefix=std::max({local[phase],Integer(previous[offset(v,0,phase)]),
+                                v?Integer(current[offset(v-1,0,phase)]):Integer(0)});
         assert(prefix<(Integer(1)<<64));
-        current[v][0][phase]=std::uint64_t(prefix);
+        current[offset(v,0,phase)]=std::uint64_t(prefix);
       }
     }
     previous.swap(current);
-    for (auto& row:current) std::fill(row.begin(),row.end(),Cell{});
+    std::fill(current.begin(),current.end(),0);
+  }
+  if (closure) {
+    std::cout<<"source_winner_cells";
+    for (int phase=0;phase<phase_count;++phase) std::cout<<" "<<source_winners[phase];
+    std::cout<<"\n";
   }
   std::cout<<"FINAL "<<mode<<" errors "<<errors<<" Y "<<y_cap<<" T "<<total_cap
            <<" max "<<decimal(maximum)<<" at "<<best_r<<" "<<best_v<<" "<<best_z
            <<" costs";
-  for (Integer cost:best_costs) std::cout<<" "<<decimal(cost);
+  for (int phase=0;phase<phase_count;++phase) std::cout<<" "<<decimal(best_costs[phase]);
   std::cout<<"\n";
-  if (baseline && argc!=14) {
+  if (baseline && !custom_sources) {
     assert(maximum==published_cap);
     std::cout<<"PUBLISHED_BASELINE_REPRODUCED\n";
   }
-  if (!baseline && argc!=14) {
+  if (!baseline && !custom_sources && !custom_root) {
     Integer expected=keep_z ? Integer(274535875126515098LL)
                             : Integer(274912523147183536LL);
     assert(maximum==expected);
     assert(maximum>candidate_allocation);
     std::cout<<"CANDIDATE_BUDGET_FAILURE_REPRODUCED\n";
   }
-  if (!baseline) std::cout<<"fixed_allocation "<<decimal(candidate_allocation)
-    <<" excess "<<decimal(maximum-candidate_allocation)<<"\n";
+  if (!baseline && !custom_root) {
+    std::cout<<(custom_sources ? "original_separate_chain_allocation " : "fixed_allocation ")
+      <<decimal(candidate_allocation)
+      <<(custom_sources ? " excess_before_chain_revision " : " excess ")
+      <<decimal(maximum-candidate_allocation)<<"\n";
+  }
   std::cout<<"RESEARCH_EVALUATOR_ONLY; RETUNED_PROOF_GATES_AND_LEAN_UNCHECKED\n";
+  return 0;
+} catch (const std::exception& error) {
+  std::cerr<<"INVALID_INPUT "<<error.what()<<"\n";
+  return 64;
 }
