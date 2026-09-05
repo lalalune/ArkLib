@@ -77,6 +77,12 @@ satisfied for either the published or candidate error cap. This choice does
 not assert any global farness or universal-kernel provenance from the full
 prize argument.
 
+The subsequent [contact-variation example](astra_contact_variation-2026-09-05.md)
+has a one-dimensional full source kernel and a genuine MCA-bad seed while
+retaining transverse tails. That different example has R degree one. It
+cannot be combined with this example to claim a witness satisfying both
+full-kernel provenance and the binding C2 flag.
+
 ## Linearizing the actual contact derivation
 
 First work over `K(X)`, where differentiation with respect to `X` is defined.

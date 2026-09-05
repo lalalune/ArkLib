@@ -52,6 +52,15 @@ length, and its stated list bound does not meet the numerical prize budget.
 The external asymptotic result and its derivative method retain their own
 scope; this audit supplies no prize solution.
 
+The [contact-variation audit](../kb/astra_contact_variation-2026-09-05.md)
+now gives a full-kernel countermodel to a general multiplicity-two shortcut:
+three exact F17 examples have one-dimensional contact kernels, a genuine bad
+MCA seed, and simple intersections of the first two tails. Their factor has
+R degree one, so the binding C2 case remains open. The new examples also
+have no nonzero polynomial Jacobi variation, illustrating why the existing
+rigidity lemma does not imply a multiplicity improvement. These are written
+arguments and finite checks, not new Lean proofs.
+
 For the single-hole branch, the
 [reduced exact-error algebra](../kb/astra_mca_exact_error_eliminant-2026-09-05.md)
 removes padded locators and extra algebraic multiplicities. Its value

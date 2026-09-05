@@ -201,3 +201,9 @@ allowance, moving budget, or selected-factor count follows from this lemma
 alone. Further application must establish one of those missing connections
 using the actual source and family, rather than equating local rigidity with
 a cardinality estimate.
+
+The [full-kernel follow-up](astra_contact_variation-2026-09-05.md) supplies
+independent received words and a genuine singleton MCA-bad family whose full
+source kernel is one-dimensional. Its extracted factor has zero polynomial
+Jacobi space and transverse first two tails. That example has R degree one;
+the binding C2 flag and a large selected family remain absent.

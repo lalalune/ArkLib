@@ -457,6 +457,13 @@ python3 -m pip install leanblueprint
   constraint. Its rigidity gate does not count isolated solutions. Run
   `python3 scripts/probes/astra_selected_family_constraint_check.py` for
   the contact expansions, Jacobi matrices, and exact profile boundary.
+  The [full-kernel simple-tail example](../kb/astra_contact_variation-2026-09-05.md)
+  adds a one-dimensional complete source kernel and independent received
+  words to a genuine singleton MCA-bad family. Its transverse tails rule out
+  a general multiplicity-two shortcut; its R degree is one, so it does not
+  settle the binding C2 case. Run
+  `python3 scripts/probes/astra_contact_variation_check.py` for complete
+  contact ranks, bad-seed censuses, and formal tail identities.
   The [September 5 capacity-preprint audit](../kb/astra_capacity_finite_gates-2026-09-05.md)
   records why the external theorem's explicit constants and list bound do
   not certify this finite target. Run

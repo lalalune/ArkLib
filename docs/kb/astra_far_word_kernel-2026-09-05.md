@@ -182,3 +182,9 @@ zero-word limitation to an actual far word. A successful quotient bound must
 still exploit universal-divisor/source provenance or the selected-family
 conditions; those are absent from this construction. No claim about the
 current global moving budget, ProtocolClaim, or prize closure follows.
+
+The [contact-variation follow-up](astra_contact_variation-2026-09-05.md)
+adapts the exact order-two block to a rank-two line with an actual bad MCA
+seed. Its full kernel is one-dimensional and the extracted regular factor's
+first two tails meet simply. This supplies a different limitation, at R
+degree one; it does not realize the binding C2 flag or a large selected family.
