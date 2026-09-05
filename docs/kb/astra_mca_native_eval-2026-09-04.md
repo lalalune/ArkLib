@@ -192,10 +192,15 @@ acceptance on Linux. It then invokes `--scan 1073741824 4 8193`: the array needs
 8 GiB plus sixteen bytes, and the existing 4 GiB reserve remains mandatory.
 The workflow does not change the mathematical evaluator or its resource gates.
 
-The workflow runs on a push changing that workflow file on the research branch,
-or on a manual dispatch. It refuses to scan when its source pin is stale.
+The initial run is triggered by a push changing that workflow file on the
+research branch. Rerunning an existing run retains its reviewed source revision;
+a new revision is refused when its source pin is stale.
 Small artifacts retain the acceptance, source and binary hashes, exact command,
 exit status, raw output, and output hashes. The child deadline is two hours.
 An unsuccessful or incomplete run cannot be reported as a completed count;
 a successful lower-bound computation remains separate from Lean verification
 and from a universal predecessor bound. No hosted result is asserted here.
+
+The [resumable driver](astra_mca_resumable_scan-2026-09-04.md) is a separate
+local fallback with verified chunk persistence. Its later source revision does
+not alter the source or binary used by an already running hosted job.

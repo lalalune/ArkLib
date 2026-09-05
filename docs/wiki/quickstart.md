@@ -337,6 +337,10 @@ python3 -m pip install leanblueprint
   arithmetic, formula, batch, and counting checks; this default check never
   starts the production scan. Full scans use a separately requested command
   and report resource failures as incomplete.
+  The [resumable driver](../kb/astra_mca_resumable_scan-2026-09-04.md) retains
+  verified chunks and deterministic fingerprint lower bounds across resource
+  interruptions. It requires a matching compiling acceptance receipt and
+  defaults to plan-only mode.
   The [fixed-pencil predecessor obstruction](../kb/astra_mca_fixed_pencil_predecessor-2026-09-04.md)
   rules out full-cover constructions with at most five sufficiently large
   joint cores. It records necessary conditions for six cores and for four
@@ -346,6 +350,12 @@ python3 -m pip install leanblueprint
   [incidence classification](../kb/astra_mca_six_pencil_types-2026-09-04.md)
   identifies seven remaining geometric types and stronger necessary overlap
   bounds. Their polynomial realizability and scalar counts remain open.
+  The [locator consistency identities](../kb/astra_mca_six_locator_consistency-2026-09-04.md)
+  force a three-dimensional polynomial span and a constant private-locator
+  relation. For one concrete remaining pattern, the
+  [birationality argument](../kb/astra_mca_six_locator_birationality-2026-09-04.md)
+  proves that its locator map would be birational; the genus bound still has
+  positive slack and does not exclude that pattern.
   The [decoding-curve incidence bound](../kb/astra_mca_decoding_curve_incidence-2026-09-04.md)
   quantifies what a separately constructed curve carrier would suffice to
   prove. The existence of such a carrier for arbitrary MCA events is open.

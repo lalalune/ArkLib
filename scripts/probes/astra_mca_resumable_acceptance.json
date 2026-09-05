@@ -1,0 +1,119 @@
+{
+  "acceptance": {
+    "binary_sha256": "2b7c40cd0204bcfb8b7c039e0f406903d7d852b29c7d6b88e095947b213e4baf",
+    "boundary_field_pairs": 1849,
+    "compiled_from_current_source_by_this_run": true,
+    "cooperative_pause_resume_every_slot_compared": 65538,
+    "cooperative_pause_resume_waiters": 3,
+    "cooperative_pause_timeout_and_warning_fail_closed": true,
+    "explicit_test_reserve_bytes": 67108864,
+    "forced_hash_collision_exact_resolution": true,
+    "general_partition_checks": [
+      {
+        "exact_count": 258,
+        "hash_bits": 4,
+        "partition_bits": 1
+      },
+      {
+        "exact_count": 258,
+        "hash_bits": 64,
+        "partition_bits": 1
+      },
+      {
+        "exact_count": 258,
+        "hash_bits": 4,
+        "partition_bits": 3
+      },
+      {
+        "exact_count": 258,
+        "hash_bits": 64,
+        "partition_bits": 3
+      },
+      {
+        "exact_count": 258,
+        "hash_bits": 4,
+        "partition_bits": 4
+      },
+      {
+        "exact_count": 258,
+        "hash_bits": 64,
+        "partition_bits": 4
+      }
+    ],
+    "mixed_and_all_pole_batch_checks": true,
+    "oversized_worker_number_rejected": true,
+    "parallel_batch_checksums_match": true,
+    "partition_capacity_overflow_reports_incomplete": true,
+    "production_arbitrary_exponents": 117,
+    "production_arbitrary_slots": 119,
+    "production_array_allocated": false,
+    "production_contiguous_slots_compared": 4098,
+    "production_size_rejected_by_test_mode": true,
+    "random_montgomery_products": 1000,
+    "resumable_checkpoint_checks": {
+      "acceptance_provenance_rejection_cases": [
+        "source",
+        "binary",
+        "driver",
+        "uncompiled",
+        "status",
+        "checkpoint_status",
+        "duplicate"
+      ],
+      "driver_sha256": "bfea235fcde60f7c641db5f614a1b26bfa42daa81d57159fa1f66fa056ba113c",
+      "duplicate_and_wrong_range_rejected": true,
+      "empty_prefixes_checked": 14,
+      "final_store_bytes": 41472,
+      "forced_four_bit_lower_bound": 16,
+      "forced_ties_report_inconclusive": true,
+      "full_hash_lower_bound": 258,
+      "identical_binary_copy_accepted_by_hash": true,
+      "n": 256,
+      "partial_write_and_cleanup_recovered": true,
+      "plan_only_requires_matching_compiling_acceptance": true,
+      "production_launched": false,
+      "range_starts_compared": [
+        1,
+        3,
+        4095,
+        4096
+      ],
+      "raw_and_receipt_corruption_rejected": true,
+      "resume_gap_recomputed_without_rewriting_verified_chunk": true,
+      "slots_per_range_compared": 4098,
+      "source_binary_chart_changes_rejected": true,
+      "status": "PASS_BOUNDED_CHECKPOINT_ACCEPTANCE",
+      "summary_verified_after_raw_cleanup": true,
+      "working_store_and_free_disk_gates_checked": true
+    },
+    "small_domain_checks": [
+      {
+        "all_slots_compared": 18,
+        "n": 16
+      },
+      {
+        "all_slots_compared": 66,
+        "n": 64
+      },
+      {
+        "all_slots_compared": 258,
+        "n": 256
+      }
+    ],
+    "source_sha256": "571476a374951bd2e455a356368f0368a4db8924f299574d88824a7fd019fe10",
+    "status": "PASS_BOUNDED_NATIVE_ACCEPTANCE_NOT_PRODUCTION_SCAN",
+    "two_partition_exact_counts_checked_at_bits": [
+      1,
+      4,
+      64
+    ],
+    "zero_allowance_production_gate_rejected": true,
+    "zero_residual_rejected": true
+  },
+  "root_cli_check": {
+    "current_compiling_receipt_plan_accepted": true,
+    "plan_created_no_checkpoint_store": true,
+    "stale_driver_receipt_rejected": true
+  },
+  "scope": "Bounded resumable-driver acceptance; no production scan or exact scalar census."
+}

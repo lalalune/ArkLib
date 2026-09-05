@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
+#include <fstream>
 #include <iostream>
 #include <limits>
 #include <memory>
@@ -18,11 +19,12 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <cerrno>
+#include <fcntl.h>
+#include <unistd.h>
 #ifdef __APPLE__
 #include <mach/mach.h>
 #include <sys/sysctl.h>
-#else
-#include <fstream>
 #endif
 
 using U = uint64_t;
@@ -261,12 +263,13 @@ struct PauseTest {
 };
 // Callback receives the slot number: private slots0..3, then exponent=slot-2.
 template<class Callback>
-Totals stream(const Model &model,U count,unsigned workers,Callback callback,bool memory_watch=false,U memory_floor=512*MIB,PauseTest *test=nullptr) {
+Totals stream(const Model &model,U count,unsigned workers,Callback callback,bool memory_watch=false,U memory_floor=512*MIB,PauseTest *test=nullptr,U first_slot=0) {
   constexpr U BLOCK=4096;
-  if (count>model.n+2 || workers==0 || workers>18) throw std::runtime_error("invalid stream bounds");
-  if(test && (model.n!=65536 || count!=65538 || workers!=4 || !memory_watch))
+  if (first_slot>model.n+2 || count>model.n+2-first_slot || workers==0 || workers>18) throw std::runtime_error("invalid stream bounds");
+  if(test && (model.n!=65536 || count!=65538 || workers!=4 || !memory_watch || first_slot!=0))
     throw std::runtime_error("synthetic pause restricted to fixed bounded test");
-  std::atomic<U> next{0},poles{0},checksum{0}; std::atomic<bool> stop{false},paused{false};
+  const U final_slot=first_slot+count;
+  std::atomic<U> next{first_slot},poles{0},checksum{0}; std::atomic<bool> stop{false},paused{false};
   std::exception_ptr failure; std::mutex lock,pause_lock;
   std::condition_variable pause_changed; std::vector<std::thread> threads;
   auto fail=[&](std::exception_ptr error) {
@@ -349,11 +352,11 @@ Totals stream(const Model &model,U count,unsigned workers,Callback callback,bool
     try {
       std::vector<Direction> rows; std::vector<Value> values; rows.reserve(BLOCK);
       while(!stop.load(std::memory_order_relaxed)) {
-        U begin=next.fetch_add(BLOCK); if(begin>=count) break;
+        U begin=next.fetch_add(BLOCK); if(begin>=final_slot) break;
         if(!boundary(begin))break;
-        if(memory_watch && begin%(BLOCK*256)==0)monitor();
+        if(memory_watch && (begin==first_slot || (begin-first_slot)%(BLOCK*256)==0))monitor();
         if(!boundary(begin))break;
-        U end=std::min(count,begin+BLOCK); rows.clear();
+        U end=std::min(final_slot,begin+BLOCK); rows.clear();
         U exponent=begin<4 ? 2 : begin-2; F x=power(model.omega,exponent);
         for(U s=begin;s<end;++s) {
           rows.push_back(model.slot(s,x));
@@ -558,6 +561,119 @@ void partition_scan(U n,unsigned workers,U cap_bytes,unsigned bits=64,unsigned p
     <<",\"evaluation_seconds\":"<<evaluation<<",\"sort_seconds\":"<<sorting
     <<",\"checksum\":"<<first_checksum<<",\"scope\":\"native_finite_computation_not_Lean_proof\"}\n";
 }
+// Disk chunk format v1: headerless little-endian uint64 fingerprints, finite
+// values only. The Python driver binds and hashes files in atomic directories.
+void write_words_exclusive(const std::string &path,const U *words,U count) {
+  int fd=open(path.c_str(),O_WRONLY|O_CREAT|O_EXCL,0600);
+  if(fd<0)throw Incomplete("cannot exclusively create fingerprint output");
+  try {
+    std::array<unsigned char,65536> buffer{};
+    for(U start=0;start<count;) {
+      U length=std::min<U>(count-start,buffer.size()/8);
+      for(U j=0;j<length;++j)for(unsigned b=0;b<8;++b)buffer[j*8+b]=unsigned((words[start+j]>>(8*b))&255);
+      size_t offset=0,bytes=length*8;
+      while(offset<bytes) {
+        ssize_t written=write(fd,buffer.data()+offset,bytes-offset);
+        if(written<0 && errno==EINTR)continue;
+        if(written<=0)throw Incomplete("fingerprint output write failed");
+        offset+=size_t(written);
+      }
+      start+=length;
+    }
+    if(fsync(fd)!=0)throw Incomplete("fingerprint output sync failed");
+    if(close(fd)!=0){fd=-1;throw Incomplete("fingerprint output close failed");}
+    fd=-1;
+  }catch(...){if(fd>=0)close(fd);throw;}
+}
+void chunk_keys(U n,unsigned workers,U begin,U count,unsigned partition_bits,U partition,
+                const std::string &path,bool bounded_test=false,unsigned hash_bits=64) {
+  if(partition_bits<1 || partition_bits>4 || partition>=(U(1)<<partition_bits)
+     || count==0 || count>(U(1)<<24) || begin>n+2 || count>n+2-begin)
+    throw std::runtime_error("invalid chunk bounds");
+  if((bounded_test && n>65536) || (!bounded_test && hash_bits!=64) || hash_bits<1 || hash_bits>64)
+    throw std::runtime_error("invalid chunk test bounds");
+  Model model(n);U bytes=count*8,reserve=(bounded_test?64:1024)*MIB;
+  require_normal_pressure();
+  if(available_bytes()<bytes+reserve)throw Incomplete("chunk memory gate failed: require buffer+reserve");
+  std::unique_ptr<U[]> keys(new U[count]);std::atomic<U> used{0};
+  Totals total=stream(model,count,workers,[&](U,Value value){
+    if(value.finite) {
+      U key=key_for(value,hash_bits);
+      if((key>>(64-partition_bits))==partition) {
+        U index=used.fetch_add(1);
+        if(index>=count)throw Incomplete("chunk buffer capacity exceeded");
+        keys[index]=key;
+      }
+    }
+  },true,(bounded_test?64:512)*MIB,nullptr,begin);
+  require_normal_pressure();U length=used.load();
+  write_words_exclusive(path,keys.get(),length);
+  std::cout<<"{\"mode\":\"fingerprint_chunk_complete\",\"format\":\"finite-fingerprint-le64-v1\",\"n\":"<<n
+    <<",\"slot_begin\":"<<begin<<",\"slot_end\":"<<begin+count<<",\"slots\":"<<total.slots
+    <<",\"partition_bits\":"<<partition_bits<<",\"partition\":"<<partition<<",\"hash_bits\":"<<hash_bits
+    <<",\"stored_finite_keys\":"<<length<<",\"chart_pole_slots\":"<<total.poles<<",\"checksum\":"<<total.checksum
+    <<",\"key_bytes\":"<<length*8<<",\"buffer_bytes\":"<<bytes<<",\"reserve_bytes\":"<<reserve
+    <<",\"seconds\":"<<total.seconds<<",\"complete_domain_certificate\":false}\n";
+}
+void reduce_keys(U n,unsigned partition_bits,U partition,U cap_bytes,const std::string &manifest,
+                 const std::string &ties_path,bool bounded_test=false) {
+  if(partition_bits<1 || partition_bits>4 || partition>=(U(1)<<partition_bits)
+     || cap_bytes>576*MIB || (bounded_test && (n>65536 || cap_bytes>MIB)))
+    throw std::runtime_error("invalid reducer bounds");
+  Model model(n);(void)model;
+  std::ifstream list(manifest);if(!list)throw Incomplete("cannot read chunk manifest");
+  std::vector<std::string> paths;std::vector<U> sizes;std::string path;U length=0;
+  while(std::getline(list,path)) {
+    if(path.empty() || paths.size()>=10000)throw std::runtime_error("invalid chunk manifest");
+    std::ifstream input(path,std::ios::binary|std::ios::ate);
+    auto bytes=input.tellg();
+    if(!input || bytes<0 || U(bytes)%8)throw Incomplete("invalid or unreadable chunk file");
+    U size=U(bytes)/8;
+    if(size>cap_bytes/8-length)throw Incomplete("partition key capacity exceeded");
+    length+=size;paths.push_back(path);sizes.push_back(size);
+  }
+  if(paths.empty() || length>n+2)throw std::runtime_error("invalid partition manifest size");
+  U bytes=length*8,reserve=bounded_test?64*MIB:std::max<U>(1024*MIB,bytes/2),floor=(bounded_test?64:512)*MIB;
+  require_normal_pressure();
+  if(available_bytes()<bytes+reserve)throw Incomplete("reducer memory gate failed: require array+reserve");
+  std::unique_ptr<U[]> keys(new U[length]);U used=0;
+  for(size_t j=0;j<paths.size();++j) {
+    std::ifstream input(paths[j],std::ios::binary);std::array<unsigned char,65536> buffer{};
+    for(U done=0;done<sizes[j];) {
+      U take=std::min<U>(sizes[j]-done,buffer.size()/8);
+      if(!input.read(reinterpret_cast<char*>(buffer.data()),take*8))throw Incomplete("short chunk read");
+      for(U i=0;i<take;++i) {
+        U key=0;for(unsigned b=0;b<8;++b)key|=U(buffer[i*8+b])<<(8*b);
+        if((key>>(64-partition_bits))!=partition)throw std::runtime_error("key has wrong partition prefix");
+        keys[used++]=key;
+      }
+      done+=take;
+      if(used%(U(1)<<20)<take) {
+        require_normal_pressure();
+        if(available_bytes()<floor)throw Incomplete("reducer memory fell below scan floor");
+      }
+    }
+    if(input.peek()!=std::char_traits<char>::eof())throw Incomplete("chunk length changed during reduction");
+  }
+  require_normal_pressure();std::sort(keys.get(),keys.get()+length);require_normal_pressure();
+  U distinct=0,tied_slots=0;std::vector<U> ties;
+  for(U begin=0;begin<length;) {
+    U end=begin+1;while(end<length && keys[end]==keys[begin])++end;
+    ++distinct;
+    if(end-begin>1) {
+      if(ties.size()>=2000000)throw Incomplete("too many tied keys for bounded receipt");
+      ties.push_back(keys[begin]);ties.push_back(end-begin);tied_slots+=end-begin;
+    }
+    begin=end;
+  }
+  write_words_exclusive(ties_path,ties.data(),ties.size());
+  std::cout<<"{\"mode\":\"fingerprint_partition_reduced\",\"n\":"<<n<<",\"partition_bits\":"<<partition_bits
+    <<",\"partition\":"<<partition<<",\"input_files\":"<<paths.size()<<",\"stored_finite_keys\":"<<length
+    <<",\"distinct_fingerprint_lower_bound\":"<<distinct<<",\"tied_keys\":"<<ties.size()/2
+    <<",\"tied_key_slots\":"<<tied_slots<<",\"ties_bytes\":"<<ties.size()*8
+    <<",\"array_bytes\":"<<bytes<<",\"reserve_bytes\":"<<reserve
+    <<",\"count_mode\":\"distinct-fingerprint-lower-bound\",\"complete_domain_certificate\":false}\n";
+}
 U number(const char*s){
   if(!s[0])throw std::runtime_error("empty number");
   for(const char*p=s;*p;++p)if(*p<'0' || *p>'9')throw std::runtime_error("invalid unsigned number");
@@ -593,6 +709,15 @@ int main(int argc,char**argv) {
       else if(scenario=="warning")pause_test(PauseTest::Warning);
       else throw std::runtime_error("pause test must be resume, timeout or warning");
       return 0;
+    }
+    if((mode=="--chunk-keys" && argc==9) || (mode=="--chunk-keys-test" && argc==10)) {
+      U pb=number(argv[6]),part=number(argv[7]),hb=argc==10?number(argv[9]):64;
+      if(pb<1 || pb>4 || hb<1 || hb>64)throw std::runtime_error("invalid chunk fingerprint bits");
+      chunk_keys(number(argv[2]),worker_number(argv[3]),number(argv[4]),number(argv[5]),unsigned(pb),part,argv[8],argc==10,unsigned(hb));return 0;
+    }
+    if((mode=="--reduce-keys" || mode=="--reduce-keys-test") && argc==8) {
+      U pb=number(argv[3]);if(pb<1 || pb>4)throw std::runtime_error("invalid reducer partition bits");
+      reduce_keys(number(argv[2]),unsigned(pb),number(argv[4]),number(argv[5]),argv[6],argv[7],mode=="--reduce-keys-test");return 0;
     }
     if(mode=="--normalize-input") {
       std::string first,second;std::vector<Direction> rows;

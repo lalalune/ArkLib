@@ -191,6 +191,8 @@ def main():
         assert "pause_test_complete" not in failed.stdout
         phases = [json.loads(row)["phase"] for row in failed.stdout.splitlines()]
         assert phases == ["resource_pause","resource_pause_incomplete"]
+    from astra_mca_resumable_scan import checkpoint_checks
+    checkpoint_receipt = checkpoint_checks(binary)
     receipt = {
         "status": "PASS_BOUNDED_NATIVE_ACCEPTANCE_NOT_PRODUCTION_SCAN",
         "source_sha256": digest,
@@ -216,6 +218,7 @@ def main():
         "cooperative_pause_resume_every_slot_compared": resumed["slots"],
         "cooperative_pause_resume_waiters": resumed["waiters"],
         "cooperative_pause_timeout_and_warning_fail_closed": True,
+        "resumable_checkpoint_checks": checkpoint_receipt,
         "oversized_worker_number_rejected": True,
         "production_array_allocated": False,
     }
