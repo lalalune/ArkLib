@@ -240,11 +240,12 @@ python3 -m pip install leanblueprint
   checks local markdown links and the `CLAUDE.md` symlink.
 - [`../../.github/workflows/proximity-strip-proof.yml`](../../.github/workflows/proximity-strip-proof.yml)
   checks the standalone Mathlib contact-strip projection, the Std
-  arithmetic gates for the proposed 68.04 row, and the finite C2 scalar-budget
-  obstruction on the `codex/proximity-astra-20260904` research branch when a proof source or the workflow
+  arithmetic gates for the proposed 68.04 row, the finite C2 scalar-budget
+  obstruction, and three T-interpolant dimension witnesses on the
+  `codex/proximity-astra-20260904` research branch when a proof source or the workflow
   changes. Its two jobs use this repository's pinned dependencies (Lean
   4.30.0-rc2) and the official companion's `032154395c51fd6f77715a7f42d9a987ab9fb48a`
-  pin (Lean 4.32.2), respectively. Each checks all fourteen
+  pin (Lean 4.32.2), respectively. Each checks all eighteen
   named theorem reports against the repository's axiom allowlist, and rejects
   missing reports, compiler warnings, errors, or forbidden source tokens. It runs on a standard
   public-repository runner without artifact or cache uploads. This focused
@@ -257,7 +258,15 @@ python3 -m pip install leanblueprint
   modes and their bounded negative results. The
   [C2 budget audit](../kb/astra_c2_budget_obstruction-2026-09-04.md) separates a
   removable rounding from the need for new geometric correlations; its scalar
-  countermodel is not a polynomial counterexample.
+  countermodel is not a polynomial counterexample. The
+  [T-cutoff audit](../kb/astra_t_cutoff-2026-09-04.md) optimizes the quotient
+  cutoff and records an improved, still failing count. The phase evaluator's
+  `--quotient-cutoff K` flag defaults to 2 and requires `--joint` with
+  `T.L = selected_total + K + 1`; the separate audit checks the dimension
+  witness. Use `python3 scripts/probes/astra_t_audit.py --check-search --check-phases`
+  to reproduce that search and the four full envelopes, or
+  `--sanitize --phase-case least_old_point_charge` to check the search and
+  improved envelope with undefined-behavior checks.
 
 ## Manual Timing Helper
 

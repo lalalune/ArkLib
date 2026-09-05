@@ -131,3 +131,9 @@ Both `exact_values` and `scalar_caps_do_not_imply_six_percent` report **no
 axioms** under `#print axioms`. The proof uses `decide`, not `native_decide`.
 The finite arithmetic certificate is separate from the source-level
 geometric tightening and its outstanding integration.
+
+The [two-version CI run](https://github.com/lalalune/ArkLib/actions/runs/33935578742)
+also passed at commit `40ea4a5ba28c2bd05a5cb164f97ab90c218b655d`, on research
+Lean 4.30.0-rc2 and official-companion Lean 4.32.2. Both new reports were
+axiom-free in both jobs; all fourteen auxiliary reports per job passed the
+allowlist audit. This does not validate the unintegrated geometric change.

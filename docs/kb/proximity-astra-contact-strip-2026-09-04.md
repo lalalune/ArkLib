@@ -147,7 +147,7 @@ python3 scripts/probes/astra_companion_limit_audit.py --sanitize
 ```
 
 The audit independently recomputes the reported source margins, nullities,
-and charges in Python. The search returns no prize score. The final candidate
+and charges in Python. The search returns no prize score. This source-refined candidate
 still exceeds capacity by 6.26%; integrating the strip theorem cannot by
 itself fix this failed numerical inequality.
 
@@ -156,6 +156,24 @@ then minimizes each atom over the available source charges and enumerates
 factor partitions inside a bounded rectangle. It improves intermediate cells
 but leaves the maximum unchanged. A dense local source search also fails to
 improve the ordinary singleton allowance at a nearby flag.
+
+The subsequent [T-cutoff audit](astra_t_cutoff-2026-09-04.md) changes the
+interpolant and quotient cutoff to `(m,L,S,k)=(166,7159,51,1)`. Its full
+combined allowance is **292119564672092577**, still **6.23% above capacity**,
+with the same critical flag. Optimized and sanitized replays agree. This is
+the best T tuning in the audit's stated bounded class for this fixed
+49-source numerical envelope; it is not a globally optimal mathematical bound.
+The new dimension arithmetic is separately kernel-checked, with the official
+polynomial integration and final protocol proof still outstanding.
+
+The [C2 scalar-budget audit](astra_c2_budget_obstruction-2026-09-04.md)
+isolates a removable rounding too small to close this gap, and proves that
+the independent scalar caps alone cannot force a six-percent reduction.
+On the attack side, the [joint-key audit](astra_attack_joint_key_obstructions-2026-09-04.md)
+excludes two simple key-space restrictions at the production prime, while the
+[mixed-cycle audit](astra_attack_mixed_cycles-2026-09-04.md) shows that its
+conditional-support counting estimate is dominated by the pure-cycle family.
+Neither result bounds nonlinear key concentration or proves a new score.
 
 ## Reproduction
 

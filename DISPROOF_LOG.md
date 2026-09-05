@@ -17008,3 +17008,37 @@ possible sources or geometric arguments.
 Executable checks: `scripts/probes/astra_companion_atom_audit.py`.
 Details: `docs/kb/proximity-astra-factor-partition-2026-09-04.md`.
 The prize and the production CORE remain open.
+
+## [astra-6804-t-only-envelope] bounded T tuning improves but cannot close the fixed allowance (2026-09-04)
+
+The exhaustive affine-kernel/cutoff search covers 18,900 `(m,S)` shapes in
+the specified C ambient class, checks 1,145,265 small-L cases, and retains
+5,205 Pareto choices. The best T-only numerical allowance is
+`292119564672092577` at `(m,L,S,k)=(166,7159,51,1)`, still above capacity
+`274980728111395087` by `17138836560697490`. A point obstruction at raw flag
+`(10,37,2317)`, the independently checked source charges, and monotonicity of
+the point ledger certify optimality only in this fixed 49-source numerical
+envelope and bounded T class. They do not lower-bound the actual bad-seed
+count, rule out other interpolation supports, or solve the prize.
+
+Four full optimized envelopes and a sanitized replay of the improved row
+agree. The new Std Lean file checks three finite kernel-dimension witnesses;
+it does not instantiate the official polynomial API or final ProtocolClaim.
+Details: `docs/kb/astra_t_cutoff-2026-09-04.md`.
+
+## [astra-attack-joint-and-mixed-keys] two elementary key restrictions and one support estimate fail (2026-09-04)
+
+At the production prime, seven explicit 136-subsets in the maximal product
+class have full six-dimensional affine span in both top coefficients and
+power sums. A same-class evaluation ratio has full multiplicative order.
+Thus neither an affine coefficient identity nor a fixed proper-coset
+restriction on the extra evaluation key supplies the missing pigeonhole gain.
+
+For mixed cyclic families, each fixed partial pattern's ordinary counting
+certificate is dominated by a pure coarse-fibre family. Taking the union of
+the corresponding conditional support bounds cannot improve that certificate.
+The exact antipodal scan checks 3,802 classes with every pattern multiplicity.
+These results leave nonlinear overlap and concentration of the actual joint
+key images open; they do not establish an upper bound on all attack families.
+Details: `docs/kb/astra_attack_joint_key_obstructions-2026-09-04.md` and
+`docs/kb/astra_attack_mixed_cycles-2026-09-04.md`.

@@ -14,6 +14,9 @@
 // precedes those triples. This changes numerical root caps only; the caller
 // must establish the root interpolants and all associated algebraic gates.
 // That mode also accepts --errors E, --padding P, and --joint Bm BL TY TS TL.
+// --quotient-cutoff K (default 2) records the total-degree cutoff used by the
+// joint kernel projection: TL = T + K + 1. Kernel dimensions require a separate
+// audit; this evaluator only checks the parameter relation.
 // --joint adds the correlated ChainGroupMaj complement from official commit
 // 032154395c51fd6f77715a7f42d9a987ab9fb48a. It prints the remaining fixed tails
 // separately. Options precede sources and may appear in any order, once each.
@@ -323,7 +326,9 @@ int main(int argc, char** argv) try {
   int total_cap=baseline?6412:6676;
   int slope_cap=29, wide_y=153, wide_slope=33, initial_limit=130000;
   int source_start=2, padding=0, b_m=0, b_limit=0, t_y=0, t_s=0, t_limit=0, band_rule=0;
+  int quotient_cutoff=2;
   bool custom_root=false, custom_errors=false, custom_padding=false, joint_ledger=false;
+  bool custom_cutoff=false;
   while (source_start<argc && std::string(argv[source_start]).rfind("--",0)==0) {
     std::string option=argv[source_start++];
     if (!closure) throw std::invalid_argument("options require candidate-closure");
@@ -349,6 +354,11 @@ int main(int argc, char** argv) try {
     } else if (option=="--joint" && !joint_ledger) {
       joint_ledger=true;
       b_m=next(); b_limit=next(); t_y=next(); t_s=next(); t_limit=next();
+    } else if (option=="--quotient-cutoff" && !custom_cutoff) {
+      custom_cutoff=true;
+      quotient_cutoff=next();
+      if (quotient_cutoff<0 || quotient_cutoff>20000)
+        throw std::invalid_argument("quotient cutoff outside bounded research range");
     } else if (option=="--actual-contact" && band_rule==0) {
       band_rule=1;
     } else if (option=="--clipped-band" && band_rule==0) {
@@ -360,8 +370,10 @@ int main(int argc, char** argv) try {
       || wide_slope<slope_cap || wide_slope>wide_y
       || initial_limit<total_cap || initial_limit>2000000)
     throw std::invalid_argument("root caps outside the bounded research range");
+  if (custom_cutoff && !joint_ledger)
+    throw std::invalid_argument("quotient cutoff requires --joint");
   if (joint_ledger && (b_m<1 || b_m>100000 || b_limit<total_cap || b_limit>2000000
-      || t_y<1 || t_y>10000 || t_s<1 || t_s>t_y || t_limit!=total_cap+3
+      || t_y<1 || t_y>10000 || t_s<1 || t_s>t_y || t_limit!=total_cap+quotient_cutoff+1
       || (std::int64_t(b_m)*(n-errors)-1)/w>wide_y))
     throw std::invalid_argument("invalid correlated residual parameters");
   int agreements=n-errors;
@@ -558,6 +570,8 @@ int main(int argc, char** argv) try {
     std::cout<<"CANDIDATE_BUDGET_FAILURE_REPRODUCED\n";
   }
   if (joint_ledger) {
+    std::cout<<"QUOTIENT cutoff "<<quotient_cutoff<<" total_cap "<<total_cap
+      <<" limit "<<t_limit<<"\n";
     std::cout<<"CORRELATED max "<<decimal(maximum)<<" fixed_tails "<<decimal(fixed_tails)
       <<" total_before_list "<<decimal(maximum+fixed_tails)
       <<" correlated_at_max "<<decimal(correlated(best_r,best_v))<<"\n";

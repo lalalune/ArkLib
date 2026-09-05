@@ -7,6 +7,7 @@ on:
       - "scripts/probes/astra_companion_strip_projection.lean"
       - "scripts/probes/astra_companion_6804_ordinary_gates.lean"
       - "scripts/probes/astra_c2_budget_obstruction.lean"
+      - "scripts/probes/astra_companion_t_kernel_gates.lean"
       - ".github/workflows/proximity-strip-proof.yml"
   workflow_dispatch:
 
@@ -55,7 +56,7 @@ jobs:
           set -euo pipefail
           lean --version
           : > "$RUNNER_TEMP/strip-proof.log"
-          for proof in astra_companion_strip_projection astra_companion_6804_ordinary_gates astra_c2_budget_obstruction; do
+          for proof in astra_companion_strip_projection astra_companion_6804_ordinary_gates astra_c2_budget_obstruction astra_companion_t_kernel_gates; do
             python3 "$GITHUB_WORKSPACE/scripts/forbidden_tokens.py" "$GITHUB_WORKSPACE/scripts/probes/$proof.lean"
             lake env lean "$GITHUB_WORKSPACE/scripts/probes/$proof.lean" 2>&1 | tee -a "$RUNNER_TEMP/strip-proof.log"
           done
@@ -80,6 +81,8 @@ jobs:
               "padded_coordinate", "weighted_cap_characteristic")]
           expected += ["AstraC2BudgetObstruction." + name for name in (
               "exact_values", "scalar_caps_do_not_imply_six_percent")]
+          expected += ["AstraCompanionTKernelGates." + name for name in (
+              "row_166", "row_194", "row_197", "ambient_and_cutoffs")]
           for declaration in expected:
               if declaration not in reported:
                   raise SystemExit("Missing axiom report: " + declaration)
