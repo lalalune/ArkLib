@@ -241,7 +241,9 @@ python3 -m pip install leanblueprint
 - [`../../.github/workflows/proximity-strip-proof.yml`](../../.github/workflows/proximity-strip-proof.yml)
   checks the standalone Mathlib contact-strip projection on the
   `codex/proximity-astra-20260904` research branch when its source or workflow
-  changes. It uses the pinned toolchain and Mathlib manifest, checks all four
+  changes. Its two jobs use this repository's pinned dependencies (Lean
+  4.30.0-rc2) and the official companion's `032154395c51fd6f77715a7f42d9a987ab9fb48a`
+  pin (Lean 4.32.2), respectively. Each checks all four
   named theorem reports against the repository's axiom allowlist, and rejects
   missing reports, compiler warnings, errors, or forbidden source tokens. It runs on a standard
   public-repository runner without artifact or cache uploads. This focused

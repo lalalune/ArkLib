@@ -20,10 +20,25 @@ jobs:
     if: github.event.repository.private == false
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [arklib, companion]
+    defaults:
+      run:
+        working-directory: ${{ matrix.project == 'companion' && 'companion' || '.' }}
     steps:
       - uses: actions/checkout@v7
+      - name: Check out official companion pin
+        if: matrix.project == 'companion'
+        uses: actions/checkout@v7
+        with:
+          repository: proximity-prize/proximity-prize
+          ref: 032154395c51fd6f77715a7f42d9a987ab9fb48a
+          path: companion
       - uses: leanprover/lean-action@v1.5.0
         with:
+          lake-package-directory: ${{ matrix.project == 'companion' && 'companion' || '.' }}
           auto-config: false
           build: false
           test: false
@@ -31,19 +46,20 @@ jobs:
           use-github-cache: false
           use-mathlib-cache: false
       - name: Fetch pinned Mathlib dependencies
-        run: ./scripts/lake-locked.sh exe cache get
+        run: '"$GITHUB_WORKSPACE/scripts/lake-locked.sh" exe cache get'
       - name: Check exact strip projection and axiom report
         shell: bash
         run: |
           set -euo pipefail
           lean --version
-          python3 scripts/forbidden_tokens.py scripts/probes/astra_companion_strip_projection.lean
-          lake env lean scripts/probes/astra_companion_strip_projection.lean 2>&1 | tee "$RUNNER_TEMP/strip-proof.log"
+          python3 "$GITHUB_WORKSPACE/scripts/forbidden_tokens.py" "$GITHUB_WORKSPACE/scripts/probes/astra_companion_strip_projection.lean"
+          lake env lean "$GITHUB_WORKSPACE/scripts/probes/astra_companion_strip_projection.lean" 2>&1 | tee "$RUNNER_TEMP/strip-proof.log"
           python3 - "$RUNNER_TEMP/strip-proof.log" <<'PY'
+          import os
           import re
           import sys
           from pathlib import Path
-          sys.path.insert(0, "scripts")
+          sys.path.insert(0, str(Path(os.environ["GITHUB_WORKSPACE"]) / "scripts"))
           from axiom_audit import ALLOWED, DEP_RE, NODEP_RE
           output = Path(sys.argv[1]).read_text()
           if re.search(r"sorryAx|error:|warning:", output):

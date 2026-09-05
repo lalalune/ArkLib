@@ -50,6 +50,12 @@ workflow now uses Python to enforce the complete axiom allowlist, report
 presence, and absence of warnings. A subsequent clean run is still pending
 for that stricter gate. The job does not build ArkLib or certify a prize claim.
 
+The workflow also checks the same file with the official companion's pinned
+dependencies. That project uses Lean 4.32.2 and upstream ArkLib
+`e65197892890b8fd9b0dc05b8980273cf1d595cc`; these differ from this research
+checkout. Passing with this checkout's 4.30.0-rc2 alone does not establish
+compatibility with the companion. The second toolchain check is pending.
+
 The projection-to-selector integration, identity between the fast arithmetic
 and the formal sum, concrete source tables, retuned ordinary-factor gates,
 and final companion assembly remain separate proof obligations.
