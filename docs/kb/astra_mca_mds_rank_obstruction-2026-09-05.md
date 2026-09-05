@@ -195,3 +195,47 @@ finite support, matching, and degree audit. A PASS is evidence for those
 calculations; the existence and MCA implications are the written proof.
 No numerical matrix, RS realization, production-length counterexample,
 universal predecessor result, or Lean closure is claimed.
+
+## Weighted self-duality adds a rank-four constraint
+
+The production half-rate RS code has additional structure absent from the
+generic construction above. On its subgroup domain, the nondegenerate form
+
+```text
+B(v,w)=sum_{x in Omega} x*v(x)*w(x)
+```
+
+vanishes on C times C: every monomial in `X*f*g` has degree between one and
+`2k-1=n-1`, and its sum on the subgroup is zero. Since `dim C=n/2`, this
+gives `C=C^perp` for B.
+
+For any weighted self-dual C and quotient-rank-two D as above,
+`D^perp=C intersect u0^perp intersect u1^perp` has dimension `k-2` and lies
+in D. The two conditions on C are independent: a dependent combination
+would put a nonzero quotient combination of u0,u1 in `C^perp=C`.
+Consequently `D/D^perp` is a nondegenerate four-dimensional space. The
+Gram matrix of any collection of error vectors in D therefore has rank
+at most four.
+
+Explicitly, for `r_gamma=u0+gamma*u1-w_gamma`, with `w_gamma in C`, put
+`q_gamma=(1,gamma)^T`, `h_gamma=(B(w_gamma,u0),B(w_gamma,u1))^T`, and
+`S=(B(ui,uj))`. Then
+
+```text
+B(r_gamma,r_eta)
+ =q_gamma^T*S*q_eta-q_gamma^T*h_eta-h_gamma^T*q_eta.
+```
+
+This is a genuine necessary condition, but no scalar-count bound or
+weighted-self-dual version of the generic counterexample is proved here.
+In particular, a rank-four Gram matrix alone does not limit the number of
+vectors with different quotient directions.
+
+The RS determinant argument also retains polynomial root multiplicities.
+For a fully covered triple with total joint-core incidence `2n-2`, let Ej
+count coordinates owned by exactly j members. Then `E1=E3+2`. The triple
+determinant can be nonzero at all E1 single-owner coordinates; a single
+Schur-product parity equation cannot count the triple-owner roots twice.
+The polynomial divisor argument does count those double roots before
+reduction modulo the domain locator. Weighted self-duality alone has not
+recovered that information.

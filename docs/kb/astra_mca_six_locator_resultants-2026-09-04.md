@@ -142,3 +142,10 @@ two-pair example, an unsaturated example, a transformed example with genuine
 infinity factors, and changes of the annihilator basis. These are checks of
 the algebraic identity and its edge cases, not realizations of the six-pencil
 production hypotheses.
+
+The subsequent [low-degree rigidity result](astra_mca_low_degree_saturation-2026-09-05.md)
+settles this implication only at b=1,2: saturation is impossible at b=1,
+and four saturated points force a common degree-two cover at b=2. A sharp
+three-point example and a birational b=3 example with one square resultant
+show why the hypotheses and degree restriction matter. The five-square
+production question remains open.

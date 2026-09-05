@@ -370,6 +370,11 @@ python3 -m pip install leanblueprint
   factors. Run `python3 scripts/probes/astra_mca_six_resultant_check.py` for
   the bounded identity checks; the necessary equations do not exclude every
   six-pencil configuration.
+  The [low-degree saturation theorem](../kb/astra_mca_low_degree_saturation-2026-09-05.md)
+  proves that four saturated points force a degree-two cover when b=2 and
+  gives a sharp three-point example without that cover. Run
+  `python3 scripts/probes/astra_mca_low_degree_saturation_check.py` for 930
+  projective checks. This theorem does not extend to production degree here.
   The [decoding-curve incidence bound](../kb/astra_mca_decoding_curve_incidence-2026-09-04.md)
   quantifies what a separately constructed curve carrier would suffice to
   prove. The existence of such a carrier for arbitrary MCA events is open.
