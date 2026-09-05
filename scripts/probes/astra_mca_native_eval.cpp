@@ -6,6 +6,7 @@
 #include <array>
 #include <atomic>
 #include <chrono>
+#include <condition_variable>
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
@@ -229,7 +230,7 @@ U available_bytes() {
   kern_return_t a=host_page_size(host,&page);
   kern_return_t b=host_statistics64(host,HOST_VM_INFO64,reinterpret_cast<host_info64_t>(&vm),&count);
   mach_port_deallocate(mach_task_self(),host);
-  if (a!=KERN_SUCCESS || b!=KERN_SUCCESS) throw std::runtime_error("cannot inspect available memory");
+  if (a!=KERN_SUCCESS || b!=KERN_SUCCESS) throw Incomplete("cannot inspect available memory");
   // HOST_VM_INFO64 free_count already includes speculative_count. See Apple's
   // mach/vm_statistics.h and osfmk/kern/host.c. Do not add it a second time.
   // Deliberately exclude other file cache, anonymous and compressed pages.
@@ -237,7 +238,7 @@ U available_bytes() {
 #else
   std::ifstream f("/proc/meminfo"); std::string key, unit; U value;
   while (f>>key>>value>>unit) if(key=="MemAvailable:") return value*1024;
-  throw std::runtime_error("cannot inspect available memory");
+  throw Incomplete("cannot inspect available memory");
 #endif
 }
 void require_normal_pressure() {
@@ -250,24 +251,108 @@ void require_normal_pressure() {
 #endif
 }
 struct Totals { U slots=0, poles=0, checksum=0; double seconds=0; };
+// Synthetic resource readings are reachable only through the fixed small test
+// below. They never change the production floor, pressure gate or 60s deadline.
+struct PauseTest {
+  enum Kind { Resume, Timeout, Warning } kind;
+  std::atomic<U> pauses{0},waiters{0};
+  bool started=false; // Protected by stream's pause_lock.
+  explicit PauseTest(Kind k):kind(k){}
+};
 // Callback receives the slot number: private slots0..3, then exponent=slot-2.
 template<class Callback>
-Totals stream(const Model &model,U count,unsigned workers,Callback callback,bool memory_watch=false,U memory_floor=512*MIB) {
+Totals stream(const Model &model,U count,unsigned workers,Callback callback,bool memory_watch=false,U memory_floor=512*MIB,PauseTest *test=nullptr) {
   constexpr U BLOCK=4096;
   if (count>model.n+2 || workers==0 || workers>18) throw std::runtime_error("invalid stream bounds");
-  std::atomic<U> next{0},poles{0},checksum{0}; std::atomic<bool> stop{false};
-  std::exception_ptr failure; std::mutex lock; std::vector<std::thread> threads;
+  if(test && (model.n!=65536 || count!=65538 || workers!=4 || !memory_watch))
+    throw std::runtime_error("synthetic pause restricted to fixed bounded test");
+  std::atomic<U> next{0},poles{0},checksum{0}; std::atomic<bool> stop{false},paused{false};
+  std::exception_ptr failure; std::mutex lock,pause_lock;
+  std::condition_variable pause_changed; std::vector<std::thread> threads;
+  auto fail=[&](std::exception_ptr error) {
+    {std::lock_guard<std::mutex> guard(lock);if(!failure)failure=error;}
+    {std::lock_guard<std::mutex> guard(pause_lock);stop=true;}
+    pause_changed.notify_all();
+  };
+  // A worker keeps its already reserved begin index while parked. A block that
+  // passed this gate may finish, but no worker starts its next block while paused.
+  auto boundary=[&](U begin) {
+    std::unique_lock<std::mutex> guard(pause_lock);
+    // Make the synthetic test exercise real waiters regardless of scheduling:
+    // other reserved blocks cannot run before block0 has requested its pause.
+    if(test && begin!=0)
+      pause_changed.wait(guard,[&]{return test->started || stop.load();});
+    if(paused.load() && !stop.load()) {
+      if(test)test->waiters.fetch_add(1);
+      pause_changed.wait(guard,[&]{return !paused.load() || stop.load();});
+    }
+    return !stop.load();
+  };
+  auto monitor=[&] {
+    if(!test)require_normal_pressure();
+    U available=test?memory_floor-1:available_bytes();
+    if(available>=memory_floor)return;
+    const U resume_floor=memory_floor+128*MIB;
+    const auto timeout=std::chrono::milliseconds(test?200:60000);
+    auto pause_start=std::chrono::steady_clock::now();
+    {
+      std::lock_guard<std::mutex> guard(pause_lock);
+      if(stop.load() || paused.load())return; // Another checkpoint owns polling.
+      paused=true;
+      if(test){test->started=true;test->pauses.fetch_add(1);}
+      std::cout<<"{\"phase\":\"resource_pause\",\"available_bytes\":"<<available
+        <<",\"floor_bytes\":"<<memory_floor<<",\"resume_bytes\":"<<resume_floor
+        <<",\"timeout_ms\":"<<timeout.count()<<",\"synthetic_test\":"<<(test?"true":"false")<<"}\n"<<std::flush;
+    }
+    pause_changed.notify_all();
+    // Only the pause owner polls. The shared stop predicate wakes it when any
+    // other worker fails; the catch below wakes all parked workers on any error.
+    try {
+      for(;;) {
+        if(stop.load())return;
+        auto now=std::chrono::steady_clock::now();
+        auto elapsed=now-pause_start;
+        if(elapsed>=timeout)throw Incomplete("resource pause timed out before safe recovery");
+        if(test) {
+          if(test->kind==PauseTest::Warning && elapsed>=std::chrono::milliseconds(25))
+            throw Incomplete("synthetic memory pressure is not NORMAL");
+          available=(test->kind==PauseTest::Resume && elapsed>=std::chrono::milliseconds(50)
+                     && test->waiters.load()>=workers-1)?resume_floor:memory_floor-1;
+        }else {
+          require_normal_pressure();
+          available=available_bytes();
+        }
+        if(available>=resume_floor) {
+          std::lock_guard<std::mutex> guard(pause_lock);
+          if(stop.load())return;
+          std::cout<<"{\"phase\":\"resource_resume\",\"available_bytes\":"<<available
+            <<",\"seconds_paused\":"<<std::chrono::duration<double>(elapsed).count()
+            <<",\"synthetic_test\":"<<(test?"true":"false")<<"}\n"<<std::flush;
+          paused=false;
+          pause_changed.notify_all();
+          return;
+        }
+        std::unique_lock<std::mutex> guard(pause_lock);
+        pause_changed.wait_until(guard,std::min(pause_start+timeout,now+std::chrono::milliseconds(25)),[&]{return stop.load();});
+      }
+    }catch(...) {
+      std::lock_guard<std::mutex> guard(pause_lock);
+      std::cout<<"{\"phase\":\"resource_pause_incomplete\",\"available_bytes\":"<<available
+        <<",\"seconds_paused\":"<<std::chrono::duration<double>(std::chrono::steady_clock::now()-pause_start).count()
+        <<",\"synthetic_test\":"<<(test?"true":"false")<<"}\n"<<std::flush;
+      throw;
+    }
+  };
   auto start=std::chrono::steady_clock::now();
+  try {
   for(unsigned t=0;t<workers;++t) threads.emplace_back([&]{
     try {
       std::vector<Direction> rows; std::vector<Value> values; rows.reserve(BLOCK);
       while(!stop.load(std::memory_order_relaxed)) {
         U begin=next.fetch_add(BLOCK); if(begin>=count) break;
-        if(memory_watch && begin%(BLOCK*256)==0) {
-          require_normal_pressure();
-          if(available_bytes()<memory_floor)
-            throw Incomplete("available memory fell below scan floor; scan aborted");
-        }
+        if(!boundary(begin))break;
+        if(memory_watch && begin%(BLOCK*256)==0)monitor();
+        if(!boundary(begin))break;
         U end=std::min(count,begin+BLOCK); rows.clear();
         U exponent=begin<4 ? 2 : begin-2; F x=power(model.omega,exponent);
         for(U s=begin;s<end;++s) {
@@ -281,11 +366,38 @@ Totals stream(const Model &model,U count,unsigned workers,Callback callback,bool
         }
         poles.fetch_add(local_poles);checksum.fetch_xor(local_hash);
       }
-    } catch(...) { std::lock_guard<std::mutex> guard(lock); if(!failure) failure=std::current_exception(); stop=true; }
+    } catch(...) {
+      fail(std::current_exception());
+    }
   });
+  }catch(...){fail(std::current_exception());} // Also join after thread-launch failure.
   for(auto &thread:threads) thread.join();
   if(failure) std::rethrow_exception(failure);
   return {count,poles.load(),checksum.load(),std::chrono::duration<double>(std::chrono::steady_clock::now()-start).count()};
+}
+void pause_test(PauseTest::Kind kind) {
+  constexpr U N=65536,COUNT=N+2;Model model(N);
+  std::vector<Value> expected(COUNT),actual(COUNT);
+  std::unique_ptr<std::atomic<unsigned>[]> visits(new std::atomic<unsigned>[COUNT]);
+  for(U s=0;s<COUNT;++s)visits[s]=0;
+  Totals baseline=stream(model,COUNT,4,[&](U s,Value v){expected[s]=v;});
+  PauseTest test(kind);
+  Totals resumed=stream(model,COUNT,4,[&](U s,Value v){
+    if(visits[s].fetch_add(1)!=0)throw std::runtime_error("pause test repeated a slot");
+    actual[s]=v;
+  },true,64*MIB,&test);
+  if(kind!=PauseTest::Resume)throw std::runtime_error("pause failure test unexpectedly completed");
+  for(U s=0;s<COUNT;++s)
+    if(visits[s]!=1 || expected[s].finite!=actual[s].finite
+       || (expected[s].finite && !eq(expected[s].gamma,actual[s].gamma)))
+      throw std::runtime_error("paused stream changed slot coverage or value");
+  if(baseline.checksum!=resumed.checksum || baseline.poles!=resumed.poles
+     || test.pauses!=1 || test.waiters<3)
+    throw std::runtime_error("pause test did not preserve totals or exercise waiters");
+  std::cout<<"{\"mode\":\"pause_test_complete\",\"slots\":"<<COUNT
+    <<",\"each_slot_visited_once\":true,\"every_value_compared\":true,\"checksum\":"<<resumed.checksum
+    <<",\"baseline_checksum\":"<<baseline.checksum<<",\"pauses\":"<<test.pauses.load()
+    <<",\"waiters\":"<<test.waiters.load()<<",\"production_array_allocated\":false}\n";
 }
 bool less_f(F a,F b) { return a.c!=b.c?a.c<b.c:a.b!=b.b?a.b<b.b:a.a<b.a; }
 void arithmetic_check() {
@@ -474,6 +586,14 @@ int main(int argc,char**argv) {
           <<' '<<(zero(am)?"zero":decimal_out(ordinary(inverse(am))))<<'\n';
       }return 0;
     }
+    if(mode=="--pause-test" && argc==3) {
+      std::string scenario=argv[2];
+      if(scenario=="resume")pause_test(PauseTest::Resume);
+      else if(scenario=="timeout")pause_test(PauseTest::Timeout);
+      else if(scenario=="warning")pause_test(PauseTest::Warning);
+      else throw std::runtime_error("pause test must be resume, timeout or warning");
+      return 0;
+    }
     if(mode=="--normalize-input") {
       std::string first,second;std::vector<Direction> rows;
       while(std::cin>>first>>second) {
@@ -537,7 +657,7 @@ int main(int argc,char**argv) {
       U pb=argc==6?number(argv[5]):1;if(pb<1 || pb>4)throw std::runtime_error("partition bits must be in1..4");
       partition_scan(n,2,cap,unsigned(bits),unsigned(pb),true);return 0;
     }
-    std::cerr<<"Usage: --self-check | --memory | --field-vectors | --field-input | --normalize-input | --emit N START COUNT STEP | --emit-slots N COUNT THREADS | --benchmark N SLOTS THREADS | --scan N THREADS MAX_ARRAY_MIB | --partition-scan N THREADS CAP_MIB [PARTITION_BITS] | --scan-test N HASH_BITS | --partition-test N HASH_BITS CAP_BYTES [PARTITION_BITS]\n";return 2;
+    std::cerr<<"Usage: --self-check | --memory | --field-vectors | --field-input | --normalize-input | --pause-test resume|timeout|warning | --emit N START COUNT STEP | --emit-slots N COUNT THREADS | --benchmark N SLOTS THREADS | --scan N THREADS MAX_ARRAY_MIB | --partition-scan N THREADS CAP_MIB [PARTITION_BITS] | --scan-test N HASH_BITS | --partition-test N HASH_BITS CAP_BYTES [PARTITION_BITS]\n";return 2;
   }catch(const Incomplete&e){std::cerr<<"INCOMPLETE: "<<e.what()<<'\n';return 3;}
   catch(const std::bad_alloc&){std::cerr<<"INCOMPLETE: allocation failed\n";return 3;}
   catch(const std::exception&e){std::cerr<<"FAIL: "<<e.what()<<'\n';return 1;}

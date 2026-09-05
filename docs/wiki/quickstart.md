@@ -337,6 +337,10 @@ python3 -m pip install leanblueprint
   arithmetic, formula, batch, and counting checks; this default check never
   starts the production scan. Full scans use a separately requested command
   and report resource failures as incomplete.
+  The [fixed-pencil predecessor obstruction](../kb/astra_mca_fixed_pencil_predecessor-2026-09-04.md)
+  rules out full-cover constructions with at most five sufficiently large
+  joint cores. It records necessary conditions for six cores and for four
+  unequal cores; it does not prove the universal predecessor bound.
   The [anchor filter](../kb/astra_mca_anchor_multiplicity-2026-09-04.md)
   rules out pure power lifts as a general way to guarantee enough directions.
   The [Paley scope audit](../kb/astra_paley_scope-2026-09-04.md) distinguishes

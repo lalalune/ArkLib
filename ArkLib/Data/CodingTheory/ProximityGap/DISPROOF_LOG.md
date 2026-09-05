@@ -53707,3 +53707,21 @@ separate open brick.  No production-scale δ* conclusion follows; the prize rema
 
 Formal payload `Frontier/_G330SpectrumExactBoundary.lean` (all audited declarations depend only on
 `propext`, `Classical.choice`, `Quot.sound`); exact probe `g330_spectrum_exact_boundary.py`.
+
+---
+
+### Fixed-pencil predecessor obstruction (2026-09-04)
+
+For `n=6h+4`, `k=3h+2`, `h>=1`, and predecessor agreement `S=4h+4`, a full cover
+by at most five fixed polynomial pencils with exact joint cores of size at least
+`4h+2` supplies at most `n` MCA-bad scalars. The determinant multiplicity bound
+forces rational collinearity if any core is larger; a primitive polynomial
+direction then gives at most one finite cancellation scalar per coordinate.
+When all cores have the minimum size, each pencil supplies at most `h+1` scalars.
+
+The independently reviewed written argument, six-pencil rank and pairing
+requirements, and necessary four-unequal-core escape are in
+[`astra_mca_fixed_pencil_predecessor-2026-09-04.md`](../../../../docs/kb/astra_mca_fixed_pencil_predecessor-2026-09-04.md).
+This is not Lean-formalized. It excludes the stated counterexample architecture;
+it does not bound every received pair or all decoding codewords, and does not
+close the universal predecessor-radius bound or the prize.

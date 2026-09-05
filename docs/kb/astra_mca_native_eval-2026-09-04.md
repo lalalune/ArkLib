@@ -3,8 +3,9 @@
 The native runner implements the reviewed
 [compact two-generator evaluator](astra_mca_twogen_lift_eval-2026-09-04.md).
 Its bounded acceptance checks pass. This note records the implementation and
-verification scope before any production-domain scan; it does not report a
-production count or a Lean proof.
+verification scope. Two initial production attempts stopped on the memory
+floor before completing a partition; neither gives a production count or a
+Lean proof.
 
 The source is
 [`astra_mca_native_eval.cpp`](../../scripts/probes/astra_mca_native_eval.cpp),
@@ -67,7 +68,15 @@ that accounting error.
 
 The macOS pressure flag must be NORMAL at preflight, each memory checkpoint
 during evaluation, and before and after each large sort. The stream retains
-its 512 MiB available-memory floor. Explicit
+its 512 MiB available-memory floor. If a checkpoint sees fewer available bytes
+while pressure remains NORMAL, one coordinator pauses all worker loops at
+block boundaries for at most 60 seconds. Already reserved blocks remain with
+their workers, and an in-flight block may finish. Evaluation resumes only when
+pressure is NORMAL and available memory reaches the floor plus 128 MiB.
+Warning/critical pressure, a resource-read failure, or expiration returns
+`INCOMPLETE`; every waiting worker is notified before joining and releasing
+the array. JSON pause/resume records include available bytes and duration.
+Explicit
 test modes, restricted to `n<=65536`, use a 64 MiB reserve and stream floor;
 this exception cannot be selected for a production-sized domain. macOS's
 `memory_pressure -Q` percentage includes active/inactive memory and is not
@@ -81,7 +90,8 @@ the full canonical field value, not a random oracle.
 Equal scalars necessarily have equal fingerprints and enter the same partition.
 Therefore distinct fingerprints give a rigorous lower bound on distinct finite
 scalars, regardless of hash distribution. Every tied fingerprint is resolved
-by another streaming pass, collecting and comparing the full 158-bit values.
+by another streaming pass, collecting and comparing full canonical field values
+(up to 159 bits, since the modulus is slightly above 2^158).
 If a partition has K distinct fingerprints and a tied key contains d distinct
 field values, replacing that key's contribution 1 by d gives the exact count.
 The partition counts add because equal scalars cannot cross partitions.
@@ -127,6 +137,10 @@ The driver checks:
   258 small-domain values, and capacity exhaustion returning `INCOMPLETE`;
 - exact agreement of the 2-, 8-, and 16-partition totals with 258, including
   forced collisions, complete partition coverage, and summed slot counts;
+- a forced cooperative pause with four workers and 65,538 slots, comparing
+  every value, every per-slot visit count, and the checksum with an unpaused
+  stream; synthetic timeout and pressure-warning cases return `INCOMPLETE`
+  without hanging or emitting a completed result;
 - rejection of a production scan with zero array allowance and invalid worker
   counts before any production allocation.
 
@@ -147,3 +161,15 @@ the written construction. Its source, binary, command, output, and exit status
 must be retained separately from a Lean kernel proof. In particular, a bad
 event at a boundary radius constrains a supremum but does not by itself refute
 an equal lower bound for that supremum.
+
+## Initial production attempts
+
+The [initial receipts](../../scripts/probes/astra_mca_native_initial_receipts.json)
+bind the bounded acceptance and two production attempts to source hash
+`d664f628729f16e85f95aef1cd84c39eb3805b2ca3e9d0307fdff7fa11d7ada2`
+at commit `845aec5b276a04d1264807d47cccf1581761c9c9`. The first used
+two partitions and a 4.25 GiB cap; the second used sixteen partitions and
+a 576 MiB cap. Both exited with code 3 when available pages fell below the
+runtime floor. Neither completed its first partition. They are resource
+failures, not negative results about distinctness, and contain no complete
+production certificate. The receipts preserve the exact output and its hashes.

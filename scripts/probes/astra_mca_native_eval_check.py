@@ -32,9 +32,9 @@ def main():
         subprocess.run(["clang++", "-std=c++17", "-O3", "-pthread", "-Wall", "-Wextra",
                         str(source), "-o", str(binary)], check=True)
 
-    def run(*arguments, stdin=None, expected_success=True):
+    def run(*arguments, stdin=None, expected_success=True, timeout=None):
         result = subprocess.run([str(binary), *map(str, arguments)], input=stdin,
-                                text=True, capture_output=True)
+                                text=True, capture_output=True, timeout=timeout)
         if expected_success:
             assert result.returncode == 0, (arguments, result.stderr)
         return result
@@ -174,6 +174,23 @@ def main():
     assert invalid_partitions.returncode != 0 and "partition bits must" in invalid_partitions.stderr
     invalid_test_size = run("--partition-test",PRODUCTION_N,4,4096,4,expected_success=False)
     assert invalid_test_size.returncode != 0 and "bounded partition test" in invalid_test_size.stderr
+    # Real multiworker parking with synthetic readings, fixed to 65,538 slots.
+    # The resume mode compares every output and atomic per-slot visit count with
+    # a separate unpaused stream. Subprocess deadlines detect lost notifications.
+    pause_rows = [json.loads(row) for row in run("--pause-test","resume",timeout=10).stdout.splitlines()]
+    resumed = pause_rows[-1]
+    assert resumed["mode"] == "pause_test_complete"
+    assert resumed["slots"] == 65538 and resumed["each_slot_visited_once"]
+    assert resumed["every_value_compared"] and resumed["checksum"] == resumed["baseline_checksum"]
+    assert resumed["pauses"] == 1 and resumed["waiters"] >= 3
+    assert [row["phase"] for row in pause_rows[:-1]] == ["resource_pause","resource_resume"]
+    assert all(row["synthetic_test"] for row in pause_rows[:-1])
+    for scenario, reason in (("timeout","timed out"),("warning","not NORMAL")):
+        failed = run("--pause-test",scenario,expected_success=False,timeout=10)
+        assert failed.returncode == 3 and "INCOMPLETE" in failed.stderr and reason in failed.stderr
+        assert "pause_test_complete" not in failed.stdout
+        phases = [json.loads(row)["phase"] for row in failed.stdout.splitlines()]
+        assert phases == ["resource_pause","resource_pause_incomplete"]
     receipt = {
         "status": "PASS_BOUNDED_NATIVE_ACCEPTANCE_NOT_PRODUCTION_SCAN",
         "source_sha256": digest,
@@ -196,6 +213,9 @@ def main():
         "explicit_test_reserve_bytes": 64*2**20,
         "production_size_rejected_by_test_mode": True,
         "partition_capacity_overflow_reports_incomplete": True,
+        "cooperative_pause_resume_every_slot_compared": resumed["slots"],
+        "cooperative_pause_resume_waiters": resumed["waiters"],
+        "cooperative_pause_timeout_and_warning_fail_closed": True,
         "oversized_worker_number_rejected": True,
         "production_array_allocated": False,
     }
