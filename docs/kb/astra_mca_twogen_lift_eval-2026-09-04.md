@@ -198,6 +198,17 @@ does not establish that claim. The apparent simple possibility that the deleted
 map is a Mobius transform of an odd monomial is rejected exactly at n=16
 (and also at n=64,256), by cross-ratio checks on all ordinary slots.
 
+The [pair-basis completeness theorem](astra_mca_pair_basis_complete-2026-09-05.md)
+now proves that, for these fixed two-deletion regions and the production
+degree cap, every allowed pair lies in the constant span of the two columns.
+An invertible basis change preserves every collision. Adding the X multiples
+requires the degree room of four deletions, whose core budget is too small
+for the sharper radius using one extra agreement per core. An independent
+dense 16-node reconstruction also finds collisions in F97 and other small
+fields, while the production-field control still has eighteen directions.
+These results limit attempted shortcuts; they do not settle the remaining
+production collision count.
+
 ## Reproduction
 
 Run

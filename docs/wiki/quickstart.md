@@ -405,6 +405,8 @@ python3 -m pip install leanblueprint
   independent dense polynomial controls on 16 nodes across six fields.
   The F97 collision refutes field-independent injectivity; it does not
   determine the production collision count or improve the threshold.
+  Both pins passed at `81b9178c4aa0b9718070a14100f4a03c9c94d5c2` in
+  [run 33998942942](https://github.com/lalalune/ArkLib/actions/runs/33998942942).
   Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
   check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run
   `python3 scripts/probes/astra_mca_two_generator_probe.py` for the complete

@@ -53996,7 +53996,9 @@ The three-core incidence sum is 2n-i, where i counts private coordinates.
 At the sharper radius, cores needing only one new agreement must all have
 size at least 715827882, which forces i <= 2. Rearranging a four-private
 partition cannot meet this budget. Thirteen Lean statements pass locally
-with only standard axioms and are required by both CI pins.
+and on both pins in
+[run 33998942942](https://github.com/lalalune/ArkLib/actions/runs/33998942942)
+with only standard axioms.
 
 Dense exact reconstruction on 16 nodes finds a projective collision in F97:
 the nonzero residual rows at exponents 4 and 10 are (67,1) and (71,72).

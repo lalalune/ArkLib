@@ -4,8 +4,8 @@ The two-deletion construction already spans every polynomial pair with its
 prescribed regions and degree cap. Changing this basis cannot remove any
 projective collision. Thirteen statements in the
 [Lean module](../../scripts/probes/astra_mca_pair_basis_complete.lean)
-pass local Lean 4.30.0-rc2 with only standard axioms and no diagnostics.
-Both CI pins are configured to require the same thirteen reports.
+pass local Lean 4.30.0-rc2 and both CI pins with only standard axioms and
+no diagnostics. Both pins require the same thirteen reports.
 
 This limits a proposed shortcut to the sharper upper bound. It does not
 improve either bound, prove the universal lower bound, or solve the prize.
@@ -126,6 +126,10 @@ Mathlib dependencies cached, as described in the
 [quickstart](../wiki/quickstart.md). The new Lean source SHA-256 is
 `581959200e7f5376fb8fcf70c7947fb76ab8db7dc74a89b9b0369f2f71daa2f8`.
 The helper compiles this file after its polynomial-basis dependency.
-The CI audit requires 154 reports on ArkLib and 132 on the companion pin,
-including these thirteen. Required report counts are validation coverage,
-not a measure of progress toward a prize solution.
+Both jobs passed in
+[run 33998942942](https://github.com/lalalune/ArkLib/actions/runs/33998942942)
+at source commit `81b9178c4aa0b9718070a14100f4a03c9c94d5c2`.
+The ArkLib Lean 4.30.0-rc2 audit accepted 154 required reports, and the
+companion Lean 4.32.2 audit accepted 132. Both include these thirteen and
+accept only the permitted standard axioms. Required report counts are
+validation coverage, not a measure of progress toward a prize solution.
