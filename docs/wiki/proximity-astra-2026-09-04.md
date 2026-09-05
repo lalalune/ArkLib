@@ -194,6 +194,13 @@ positive full first-order kernels have irreducible universal factors of
 acceleration degree six and relative degree one, with regular bad seeds.
 The examples are finite and do not realize the binding production flag.
 
+The [full-kernel properness follow-up](../kb/astra_full_kernel_properness-2026-09-05.md)
+finds second-Hasse equations escaping those degree-six factors at all three
+tested characteristics. A further 44-direction search has 39 explicit
+escapes and five cases without a common positive-R factor in the old kernel.
+These complete finite kernels do not establish universal properness or
+improve the production bound.
+
 The [regularity-cube audit](../kb/astra_tail_regularity_cube-2026-09-05.md)
 proves an exact H^3 factor in raw tails and tests its removal from the
 counting argument. The resulting support bound has worse R degree and

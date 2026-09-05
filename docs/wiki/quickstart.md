@@ -529,6 +529,12 @@ python3 -m pip install leanblueprint
   and exhibits positive full kernels with degree-six acceleration. Run
   `python3 scripts/probes/astra_acceleration_chart_check.py` for complete
   finite kernels, irreducibility certificates, and the repair boundary.
+  The [full-kernel properness follow-up](../kb/astra_full_kernel_properness-2026-09-05.md)
+  constructs second-Hasse escapes for these factors and checks 44 further
+  finite directions. With NumPy installed, run
+  `python3 scripts/probes/astra_full_kernel_properness_check.py`.
+  This includes exact arithmetic at the companion characteristic; universal
+  properness and the production bound remain open.
   The [regularity-cube audit](../kb/astra_tail_regularity_cube-2026-09-05.md)
   checks the exact H^3 factor in raw tails, its primitive recurrence,
   production-index residues, and the support-cost tradeoff. Run

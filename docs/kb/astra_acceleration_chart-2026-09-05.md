@@ -244,3 +244,9 @@ contact expansion routine with the new first-order examples.
 
 General high-degree acceleration, the actual production factor, the full
 phase recurrence, independent review and Lean formalization remain open.
+
+The [full-kernel properness follow-up](astra_full_kernel_properness-2026-09-05.md)
+constructs proper second-Hasse pullbacks for these three degree-six factors.
+Thus their failure of the low-degree sufficient condition is not a failure
+of properness in these finite examples. General production properness
+remains open.
