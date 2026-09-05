@@ -13,8 +13,8 @@ import Mathlib.Tactic.Ring
 # Polynomial algebra for the four-deletion MCA construction
 
 The initial determinant identity, constant changes of basis, cofactor
-independence, fixed-anchor selection, and preservation of roots, relations
-and determinants under two selected point deletions are formalized here.
+independence, fixed-anchor selection, and two successive deletion pairs
+preserving the complete polynomial basis data are formalized here.
 See docs/kb/astra_mca_polynomial_basis-2026-09-05.md for their place in the
 construction and the remaining assembly. No threshold theorem or complete
 production construction is asserted by this file.
@@ -381,6 +381,194 @@ theorem deleted_locator_formula (S : Finset F) (xi eta c s : F) (d : F[X])
 
 end Deletion
 
+section BasisAssembly
+
+variable {F : Type*} [Field F] [DecidableEq F]
+
+open scoped BigOperators
+
+/-- Agreement on a finite set supplies a cofactor with the required degree bound. -/
+theorem cofactor_of_agreement (f g : F[X]) (S : Finset F) (D : ℕ)
+    (hagree : ∀ x ∈ S, f.eval x = g.eval x)
+    (hf : f.natDegree ≤ D) (hg : g.natDegree ≤ D) :
+    ∃ w : F[X], f = g + (∏ x ∈ S, (X - C x)) * w ∧ w.natDegree ≤ D - S.card := by
+  have hdiv : (∏ x ∈ S, (X - C x)) ∣ f - g := by
+    by_cases hp : f - g = 0
+    · rw [hp]
+      exact dvd_zero _
+    · change (S.val.map (fun x => X - C x)).prod ∣ f - g
+      apply (Multiset.prod_X_sub_C_dvd_iff_le_roots hp S.val).mpr
+      apply (Multiset.le_iff_subset S.nodup).mpr
+      intro x hx
+      exact (Polynomial.mem_roots hp).mpr (by simp [hagree x hx])
+  let L : F[X] := ∏ x ∈ S, (X - C x)
+  have hmonic : L.Monic := Polynomial.monic_prod_X_sub_C id S
+  have hexact : L * ((f - g) /ₘ L) = f - g := by
+    have h := Polynomial.modByMonic_add_div (f - g) L
+    rw [(Polynomial.modByMonic_eq_zero_iff_dvd hmonic).mpr hdiv, zero_add] at h
+    exact h
+  refine ⟨(f - g) /ₘ L, ?_, ?_⟩
+  · change f = g + L * ((f - g) /ₘ L)
+    rw [hexact]
+    ring
+  · rw [Polynomial.natDegree_divByMonic _ hmonic]
+    have hL : L.natDegree = S.card := Polynomial.natDegree_finset_prod_X_sub_C_eq_card S id
+    rw [hL]
+    exact Nat.sub_le_sub_right ((Polynomial.natDegree_sub_le _ _).trans (max_le hf hg)) S.card
+
+/-- Polynomial data carried from one pair-region deletion to the next. -/
+structure PairRegionBasis (A B S : Finset F) (D : ℕ) where
+  f₀ : F[X]
+  f₁ : F[X]
+  g₀ : F[X]
+  g₁ : F[X]
+  scale : F
+  scale_ne_zero : scale ≠ 0
+  f_roots : ∀ x ∈ A, f₀.eval x = 0 ∧ f₁.eval x = 0
+  g_roots : ∀ x ∈ B, g₀.eval x = 0 ∧ g₁.eval x = 0
+  agrees : ∀ x ∈ S, f₀.eval x = g₀.eval x ∧ f₁.eval x = g₁.eval x
+  degree_f₀ : f₀.natDegree ≤ D
+  degree_f₁ : f₁.natDegree ≤ D
+  degree_g₀ : g₀.natDegree ≤ D
+  degree_g₁ : g₁.natDegree ≤ D
+  determinant : f₀ * g₁ - f₁ * g₀ = C scale * ∏ x ∈ A ∪ B ∪ S, (X - C x)
+
+/-- Every chosen B anchor admits an A deletion preserving the entire polynomial basis data. -/
+theorem exists_basis_after_deletion (A B S : Finset F) (D : ℕ)
+    (basis : PairRegionBasis A B S D)
+    (hAB : Disjoint A B) (hAS : Disjoint A S) (hBS : Disjoint B S)
+    (hdegree : D < (A ∪ B).card) (hcofactor : D - S.card < A.card)
+    (eta : F) (heta : eta ∈ B) :
+    ∃ xi ∈ A, Nonempty (PairRegionBasis (A.erase xi) (B.erase eta) S (D - 1)) := by
+  obtain ⟨w₀, hrel₀, hdeg₀⟩ := cofactor_of_agreement basis.f₀ basis.g₀ S D
+    (fun x hx => (basis.agrees x hx).1) basis.degree_f₀ basis.degree_g₀
+  obtain ⟨w₁, hrel₁, hdeg₁⟩ := cofactor_of_agreement basis.f₁ basis.g₁ S D
+    (fun x hx => (basis.agrees x hx).2) basis.degree_f₁ basis.degree_g₁
+  let L : F[X] := ∏ x ∈ S, (X - C x)
+  have hdet : basis.f₀ * basis.g₁ - basis.f₁ * basis.g₀ ≠ 0 := by
+    rw [basis.determinant]
+    exact mul_ne_zero (Polynomial.C_ne_zero.mpr basis.scale_ne_zero)
+      (Polynomial.monic_prod_X_sub_C id (A ∪ B ∪ S)).ne_zero
+  have hind := cofactor_pair_independent basis.f₀ basis.f₁ basis.g₀ basis.g₁ w₀ w₁ L A B
+    (fun x hx => (basis.f_roots x hx).1) (fun x hx => (basis.f_roots x hx).2)
+    (fun x hx => (basis.g_roots x hx).1) (fun x hx => (basis.g_roots x hx).2)
+    hrel₀ hrel₁ ((max_le basis.degree_f₀ basis.degree_f₁).trans_lt hdegree) hdet
+  have heta_all : eta ∈ A ∪ B ∪ S := Finset.mem_union_left S (Finset.mem_union_right A heta)
+  have hsimple : (basis.f₀ * basis.g₁ - basis.f₁ * basis.g₀).derivative.eval eta ≠ 0 := by
+    rw [basis.determinant]
+    exact simple_locator_derivative (A ∪ B ∪ S) basis.scale eta basis.scale_ne_zero heta_all
+  have hrow := cofactor_row_nonzero basis.f₀ basis.f₁ basis.g₀ basis.g₁ w₀ w₁ L eta
+    hrel₀ hrel₁ (Or.inr (basis.g_roots eta heta)) hsimple
+  obtain ⟨xi, hxi, hsep⟩ := exists_separated_at_anchor w₀ w₁ A eta hind
+    (hdeg₀.trans_lt hcofactor) (hdeg₁.trans_lt hcofactor) hrow
+  have hetaA : eta ∉ A := fun h => Finset.disjoint_left.mp hAB h heta
+  have hxiB : xi ∉ B := fun h => Finset.disjoint_left.mp hAB hxi h
+  have hxiS : xi ∉ S := fun h => Finset.disjoint_left.mp hAS hxi h
+  have hetaS : eta ∉ S := fun h => Finset.disjoint_left.mp hBS heta h
+  have hetaAE : eta ∉ A.erase xi := fun h => hetaA (Finset.mem_of_mem_erase h)
+  have hne : eta ≠ xi := fun h => hetaA (h.symm ▸ hxi)
+  have hxi_all : xi ∈ A ∪ B ∪ S := Finset.mem_union_left S (Finset.mem_union_left B hxi)
+  have hsets : ((A ∪ B ∪ S).erase xi).erase eta = A.erase xi ∪ B.erase eta ∪ S := by
+    simp only [Finset.erase_union_distrib, Finset.erase_eq_of_notMem hxiB,
+      Finset.erase_eq_of_notMem hxiS, Finset.erase_eq_of_notMem hetaAE,
+      Finset.erase_eq_of_notMem hetaS]
+  have hpresξ := delete_at_preserves basis.f₀ basis.f₁ basis.g₀ basis.g₁ w₀ w₁ L xi
+    hrel₀ hrel₁ (Or.inl (basis.f_roots xi hxi))
+  have hpresη := delete_at_preserves basis.f₀ basis.f₁ basis.g₀ basis.g₁ w₀ w₁ L eta
+    hrel₀ hrel₁ (Or.inr (basis.g_roots eta heta))
+  have hLroot (x : F) (hx : x ∈ S) : L.eval x = 0 := by
+    simp only [L, Polynomial.eval_prod]
+    exact Finset.prod_eq_zero hx (by simp)
+  have hd := (two_anchor_deleted_determinant basis.f₀ basis.f₁ basis.g₀ basis.g₁ w₀ w₁ L xi eta
+    hrel₀ hrel₁ (basis.f_roots xi hxi) (basis.g_roots eta heta) hsep hdet).1
+  rw [basis.determinant] at hd
+  have hnewdet := deleted_locator_formula (A ∪ B ∪ S) xi eta basis.scale
+    (w₀.eval xi * w₁.eval eta - w₁.eval xi * w₀.eval eta) _ hxi_all heta_all hne hd
+  rw [hsets] at hnewdet
+  refine ⟨xi, hxi, ⟨{
+    f₀ := deleteAt w₀ w₁ basis.f₀ basis.f₁ xi
+    f₁ := deleteAt w₀ w₁ basis.f₀ basis.f₁ eta
+    g₀ := deleteAt w₀ w₁ basis.g₀ basis.g₁ xi
+    g₁ := deleteAt w₀ w₁ basis.g₀ basis.g₁ eta
+    scale := (w₀.eval xi * w₁.eval eta - w₁.eval xi * w₀.eval eta) * basis.scale
+    scale_ne_zero := mul_ne_zero hsep basis.scale_ne_zero
+    f_roots := ?_
+    g_roots := ?_
+    agrees := ?_
+    degree_f₀ := delete_at_degree _ _ _ _ xi D basis.degree_f₀ basis.degree_f₁
+    degree_f₁ := delete_at_degree _ _ _ _ eta D basis.degree_f₀ basis.degree_f₁
+    degree_g₀ := delete_at_degree _ _ _ _ xi D basis.degree_g₀ basis.degree_g₁
+    degree_g₁ := delete_at_degree _ _ _ _ eta D basis.degree_g₀ basis.degree_g₁
+    determinant := hnewdet }⟩⟩
+  · intro x hx
+    obtain ⟨hxxi, hxA⟩ := Finset.mem_erase.mp hx
+    obtain ⟨hf₀, hf₁⟩ := basis.f_roots x hxA
+    have hxeta : x ≠ eta := fun h => hetaA (h ▸ hxA)
+    exact ⟨hpresξ.2.1 x hxxi hf₀ hf₁, hpresη.2.1 x hxeta hf₀ hf₁⟩
+  · intro x hx
+    obtain ⟨hxeta, hxB⟩ := Finset.mem_erase.mp hx
+    obtain ⟨hg₀, hg₁⟩ := basis.g_roots x hxB
+    have hxxi : x ≠ xi := fun h => hxiB (h ▸ hxB)
+    exact ⟨hpresξ.2.2 x hxxi hg₀ hg₁, hpresη.2.2 x hxeta hg₀ hg₁⟩
+  · intro x hx
+    constructor
+    · rw [hpresξ.1]
+      simp only [Polynomial.eval_add, Polynomial.eval_mul, hLroot x hx, zero_mul, add_zero]
+    · rw [hpresη.1]
+      simp only [Polynomial.eval_add, Polynomial.eval_mul, hLroot x hx, zero_mul, add_zero]
+
+/-- Two deletion pairs can be performed with all point sets and degree conditions tracked. -/
+theorem exists_basis_after_two_deletions (A B S : Finset F) (D : ℕ)
+    (basis : PairRegionBasis A B S D)
+    (hAB : Disjoint A B) (hAS : Disjoint A S) (hBS : Disjoint B S)
+    (hB : 2 ≤ B.card)
+    (hdegree₀ : D < (A ∪ B).card) (hcofactor₀ : D - S.card < A.card)
+    (hdegree₁ : D - 1 < (A ∪ B).card - 2)
+    (hcofactor₁ : (D - 1) - S.card < A.card - 1) :
+    ∃ xi₀ ∈ A, ∃ eta₀ ∈ B, ∃ xi₁ ∈ A.erase xi₀, ∃ eta₁ ∈ B.erase eta₀,
+      Nonempty (PairRegionBasis ((A.erase xi₀).erase xi₁)
+        ((B.erase eta₀).erase eta₁) S (D - 2)) := by
+  obtain ⟨eta₀, heta₀⟩ := Finset.card_pos.mp (by omega : 0 < B.card)
+  obtain ⟨xi₀, hxi₀, ⟨basis₁⟩⟩ := exists_basis_after_deletion A B S D basis hAB hAS hBS
+    hdegree₀ hcofactor₀ eta₀ heta₀
+  have hAB₁ : Disjoint (A.erase xi₀) (B.erase eta₀) :=
+    hAB.mono (Finset.erase_subset _ _) (Finset.erase_subset _ _)
+  have hAS₁ : Disjoint (A.erase xi₀) S := hAS.mono_left (Finset.erase_subset _ _)
+  have hBS₁ : Disjoint (B.erase eta₀) S := hBS.mono_left (Finset.erase_subset _ _)
+  have hcard : (A.erase xi₀ ∪ B.erase eta₀).card = (A ∪ B).card - 2 := by
+    rw [Finset.card_union_of_disjoint hAB₁, Finset.card_union_of_disjoint hAB,
+      Finset.card_erase_of_mem hxi₀, Finset.card_erase_of_mem heta₀]
+    have hApos := Finset.card_pos.mpr ⟨xi₀, hxi₀⟩
+    omega
+  obtain ⟨eta₁, heta₁⟩ := Finset.card_pos.mp
+    (by rw [Finset.card_erase_of_mem heta₀]; omega : 0 < (B.erase eta₀).card)
+  obtain ⟨xi₁, hxi₁, hfinal⟩ := exists_basis_after_deletion (A.erase xi₀) (B.erase eta₀)
+    S (D - 1) basis₁ hAB₁ hAS₁ hBS₁
+    (by rw [hcard]; exact hdegree₁)
+    (by rw [Finset.card_erase_of_mem hxi₀]; exact hcofactor₁) eta₁ heta₁
+  refine ⟨xi₀, hxi₀, eta₀, heta₀, xi₁, hxi₁, eta₁, heta₁, ?_⟩
+  simpa only [Nat.sub_sub, Nat.reduceAdd] using hfinal
+
+/-- Production-sized initial basis data yields the four-deleted basis with exact remaining sizes. -/
+theorem production_basis_after_four_deletions (A B S : Finset F)
+    (basis : PairRegionBasis A B S 536870912)
+    (hAB : Disjoint A B) (hAS : Disjoint A S) (hBS : Disjoint B S)
+    (hA : A.card = 357913941) (hB : B.card = 357913941) (hS : S.card = 357913942) :
+    ∃ A' B' : Finset F, A' ⊆ A ∧ B' ⊆ B ∧ A'.card = 357913939 ∧ B'.card = 357913939 ∧
+      Nonempty (PairRegionBasis A' B' S 536870910) := by
+  have hcard : (A ∪ B).card = 715827882 := by
+    rw [Finset.card_union_of_disjoint hAB, hA, hB]
+  obtain ⟨xi₀, hxi₀, eta₀, heta₀, xi₁, hxi₁, eta₁, heta₁, hfinal⟩ :=
+    exists_basis_after_two_deletions A B S 536870912 basis hAB hAS hBS
+      (by omega) (by omega) (by omega) (by omega) (by omega)
+  refine ⟨(A.erase xi₀).erase xi₁, (B.erase eta₀).erase eta₁,
+    (Finset.erase_subset _ _).trans (Finset.erase_subset _ _),
+    (Finset.erase_subset _ _).trans (Finset.erase_subset _ _), ?_, ?_, hfinal⟩
+  · rw [Finset.card_erase_of_mem hxi₁, Finset.card_erase_of_mem hxi₀, hA]
+  · rw [Finset.card_erase_of_mem heta₁, Finset.card_erase_of_mem heta₀, hB]
+
+end BasisAssembly
+
 /-- The two production deletion steps have the same root-count margin. -/
 theorem production_anchor_margins :
     357913941 - (536870912 - 357913942) = 178956971 ∧
@@ -405,4 +593,8 @@ end AstraMcaPolynomialBasis
 #print axioms AstraMcaPolynomialBasis.delete_at_preserves
 #print axioms AstraMcaPolynomialBasis.two_anchor_deleted_determinant
 #print axioms AstraMcaPolynomialBasis.deleted_locator_formula
+#print axioms AstraMcaPolynomialBasis.cofactor_of_agreement
+#print axioms AstraMcaPolynomialBasis.exists_basis_after_deletion
+#print axioms AstraMcaPolynomialBasis.exists_basis_after_two_deletions
+#print axioms AstraMcaPolynomialBasis.production_basis_after_four_deletions
 #print axioms AstraMcaPolynomialBasis.production_anchor_margins

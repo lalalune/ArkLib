@@ -8,11 +8,12 @@ one Hamming step **weaker** than the existing
 `357913941/2^30`. It does not improve the strongest numerical bound,
 prove a matching lower bound, or solve a grand prize challenge.
 
-Eighteen [supporting Lean theorems](astra_mca_polynomial_basis-2026-09-05.md)
+Twenty-two [supporting Lean theorems](astra_mca_polynomial_basis-2026-09-05.md)
 now verify the initial determinant algebra, cofactor independence, anchor
-selection, and preservation of roots, relations and determinants under
-selected point deletions. The full production construction
-and threshold consequence below are not yet assembled in Lean.
+selection, and two consecutive deletion pairs preserving the complete basis
+data, including at the production dimensions. Existence of the initial
+production basis and the full threshold consequence below are not yet
+assembled in Lean.
 
 The useful change is structural: two further deletions permit multiplication
 of each generator by X. Evaluation at different coordinates then gives

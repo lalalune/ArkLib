@@ -1,11 +1,11 @@
 # Lean-checked algebra and anchor selection for the MCA basis
 
-Eighteen supporting theorems for the
+Twenty-two supporting theorems for the
 [four-deletion construction](astra_mca_four_delete-2026-09-05.md) now pass
 local Lean 4.30.0-rc2 with the repository's exact Mathlib pin. They verify
 the initial determinant algebra, cofactor independence, fixed-anchor
-selection, and preservation of roots, relations and determinants under
-selected point deletions. **The complete production construction
+selection, and two consecutive deletion pairs preserving the complete
+polynomial basis data. **The complete production construction
 and threshold theorem are not yet formalized.** The production upper bound
 remains a written result; the matching universal lower bound remains open.
 
@@ -13,7 +13,7 @@ The source is
 [`astra_mca_polynomial_basis.lean`](../../scripts/probes/astra_mca_polynomial_basis.lean).
 It imports only the needed polynomial and ring-tactic modules. The existing
 [two-version auxiliary workflow](../../.github/workflows/proximity-strip-proof.yml)
-now includes all eighteen declarations and checks their explicit axiom reports.
+now includes all twenty-two declarations and checks their explicit axiom reports.
 
 ## What the formal statements establish
 
@@ -68,24 +68,6 @@ At production this is 178956971. The exact arithmetic is checked by
 `production_anchor_margins`. Applying the count to the full construction
 still requires the domain, nonzero-row and degree hypotheses to be wired.
 
-## Remaining assembly
-
-The Lean file does not yet construct H with its prescribed values, instantiate
-the initial degree and pair-region data, or apply two consecutive deletion
-pairs to that initial data. The four evaluation
-functionals, finite-field ratio selection, actual same-support MCA witnesses,
-probability bound and threshold ledger also remain to be connected to this
-source. Existing repository lemmas already cover parts of that later chain,
-including
-[`_FiniteFunctionalRatioAvoidance.lean`](../../ArkLib/Data/CodingTheory/ProximityGap/Frontier/_FiniteFunctionalRatioAvoidance.lean)
-and the support channel in
-[`_SYZ3OverBudgetStackWitness.lean`](../../ArkLib/Data/CodingTheory/ProximityGap/Frontier/_SYZ3OverBudgetStackWitness.lean).
-Their existence is not evidence that the new assembly is complete.
-
-This formalization establishes supporting algebra for an upper-bound
-construction. It supplies no universal lower bound, new companion score,
-or grand-prize solution.
-
 ## Preservation under selected point deletions
 
 `simple_locator_derivative` proves that the derivative of
@@ -129,8 +111,73 @@ given s nonzero, the original determinant nonzero, and the selected F/G
 root conditions. `deleted_locator_formula` cancels the two linear factors
 and identifies the new determinant as `s*c` times the locator of
 `(S.erase xi).erase eta`, when xi and eta are distinct members of S.
-Thus the individual identities needed to repeat a deletion are checked.
-The production initialization and two applications remain separate work.
+These identities support the assembled existence theorems below.
+
+## Assembled deletion and production dimensions
+
+`PairRegionBasis A B S D` records the four polynomial components, their
+degree bounds, the F roots on A, the G roots on B, agreement on S, and
+the determinant identity with a nonzero scalar and the full domain locator.
+It is explicit polynomial data, not an assumed conclusion of the deletion
+argument.
+
+`cofactor_of_agreement` derives W and the bound
+`natDegree W <= D-card S` from agreement of F and G on S. The proof
+shows that the locator of S divides F-G, including when F-G is zero.
+The assembled theorem no longer takes these cofactors as extra input.
+
+`exists_basis_after_deletion` assumes pairwise disjoint A, B and S, an
+initial `PairRegionBasis`, and the two strict numerical guards
+
+```text
+D < card(A union B),
+D-card S < card A.
+```
+
+For any chosen eta in B, it proves that some xi in A gives
+`PairRegionBasis (A.erase xi) (B.erase eta) S (D-1)`. The proof derives
+cofactor independence, a nonzero anchor row and a separated partner, then
+checks every field of the resulting basis. The determinant remains a
+nonzero scalar times the locator of precisely the remaining points.
+
+`exists_basis_after_two_deletions` applies this result twice. It tracks
+the erased point sets, their disjointness and cardinalities, and all four
+degree/root-count guards. The two A points are distinct, as are the two
+B points; disjointness separates the A and B choices.
+
+At the production dimensions, `production_basis_after_four_deletions`
+checks the resulting implication:
+
+```text
+Input:  PairRegionBasis A B S 536870912,
+        card A=card B=357913941, card S=357913942,
+        A, B, S pairwise disjoint.
+Output: A' subset A, B' subset B,
+        card A'=card B'=357913939,
+        PairRegionBasis A' B' S 536870910.
+```
+
+This is a kernel-checked transformation of supplied initial data. The
+existence of that initial production basis is still not proved by the
+file, and this implication is not a production threshold theorem.
+
+## Remaining assembly
+
+The Lean file does not yet construct H with its prescribed values or
+instantiate the initial degree and pair-region data. Given those data,
+the deletion theorem now supplies both consecutive deletion pairs.
+The four evaluation functionals, finite-field ratio selection, actual
+same-support MCA witnesses, probability bound and threshold ledger also
+remain to be connected. Existing repository lemmas cover parts of that
+later chain, including
+[`_FiniteFunctionalRatioAvoidance.lean`](../../ArkLib/Data/CodingTheory/ProximityGap/Frontier/_FiniteFunctionalRatioAvoidance.lean)
+and the support channel in
+[`_SYZ3OverBudgetStackWitness.lean`](../../ArkLib/Data/CodingTheory/ProximityGap/Frontier/_SYZ3OverBudgetStackWitness.lean).
+Their existence is not evidence that the new assembly is complete.
+
+This formalization establishes supporting algebra for an upper-bound
+construction. It supplies no universal lower bound, new companion score,
+or grand-prize solution.
 
 ## Local reproduction
 
@@ -148,7 +195,10 @@ From a matching Mathlib environment, run:
 lake env lean /absolute/path/to/arklib/scripts/probes/astra_mca_polynomial_basis.lean
 ```
 
-The local audit requires all eighteen named reports, rejects compiler errors,
+The local audit requires all twenty-two named reports, rejects compiler errors,
 warnings and `sorryAx`, and permits only `propext`, `Classical.choice`, and
 `Quot.sound`. The arithmetic theorem uses no axioms. Cross-version CI status
-is recorded separately once its run completes.
+is recorded separately once its run completes. The earlier eighteen-theorem
+revision `8a8f40fc812039d22151922f15c087cd5d1e5ea8` passed both versions in
+[run 33986904416](https://github.com/lalalune/ArkLib/actions/runs/33986904416);
+that run does not verify the four subsequent assembly theorems.

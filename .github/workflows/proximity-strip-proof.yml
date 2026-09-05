@@ -98,6 +98,8 @@ jobs:
               "remove_root_preserves_eval", "remove_root_preserves_relation",
               "killed_combination_roots", "delete_at_degree", "delete_at_preserves",
               "two_anchor_deleted_determinant", "deleted_locator_formula",
+              "cofactor_of_agreement", "exists_basis_after_deletion",
+              "exists_basis_after_two_deletions", "production_basis_after_four_deletions",
               "production_anchor_margins")]
           for declaration in expected:
               if declaration not in reported:
