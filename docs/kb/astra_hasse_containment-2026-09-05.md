@@ -230,3 +230,10 @@ shows that properness on each first-tail curve is unnecessary if the extra
 equation is proper on the original surface. The examples here still have
 zero restriction on that surface, so they do not satisfy the weaker
 condition either.
+
+The [squarefree-denominator follow-up](astra_squarefree_denominator-2026-09-05.md)
+extends the rational direction to 1/L with arbitrary squarefree L. At its
+specified degree cutoff, the contained subspace is exactly one-dimensional,
+while a positive margin forces the full source to have dimension at least
+two. Thus that structured extension cannot furnish a positive-margin
+containment counterexample. Arbitrary production properness remains open.

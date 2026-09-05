@@ -535,6 +535,11 @@ python3 -m pip install leanblueprint
   `python3 scripts/probes/astra_full_kernel_properness_check.py`.
   This includes exact arithmetic at the companion characteristic; universal
   properness and the production bound remain open.
+  The [squarefree-denominator argument](../kb/astra_squarefree_denominator-2026-09-05.md)
+  proves a dimension separation for a structured rational-direction family.
+  Run `python3 scripts/probes/astra_squarefree_denominator_check.py` with
+  NumPy for complete kernels and exact polynomial restriction maps.
+  Its family-specific conclusion does not establish production properness.
   The [regularity-cube audit](../kb/astra_tail_regularity_cube-2026-09-05.md)
   checks the exact H^3 factor in raw tails, its primitive recurrence,
   production-index residues, and the support-cost tradeoff. Run

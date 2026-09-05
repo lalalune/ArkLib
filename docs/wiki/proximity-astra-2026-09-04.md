@@ -201,6 +201,13 @@ escapes and five cases without a common positive-R factor in the old kernel.
 These complete finite kernels do not establish universal properness or
 improve the production bound.
 
+The [squarefree-denominator argument](../kb/astra_squarefree_denominator-2026-09-05.md)
+handles an entire structured family: the contained subspace has dimension
+one, and positivity plus redundant agreement equations forces the full
+kernel to have dimension at least two. Eighteen complete finite controls
+pass. The written proof awaits independent review and Lean integration;
+it does not cover arbitrary production directions or improve the prize bound.
+
 The [regularity-cube audit](../kb/astra_tail_regularity_cube-2026-09-05.md)
 proves an exact H^3 factor in raw tails and tests its removal from the
 counting argument. The resulting support bound has worse R degree and
