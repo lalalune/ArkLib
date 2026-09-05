@@ -90,6 +90,31 @@ profile this needs at least 7320 high-contact agreement nodes. That gate is
 not automatic, and rigidity does not count isolated solutions or reduce
 the companion budget excess.
 
+The [exact-locator rank theorem](../kb/astra_locator_rank_bound-2026-09-05.md)
+extends the pencil bound: at the punctured production parameter shape,
+rank r bounds a decoded family by `4^(r-1)`, including heterogeneous error
+degrees. A uniform rank bound of 16 would meet the scalar production budget;
+that rank bound remains unproved. Three integer polynomial identities,
+4464 rational endpoint cases, a sharp rank-two family, and a heterogeneous
+rank-three control pass. The generalized proof has not had independent
+agent review or a Lean kernel check.
+
+The [carrier counting lemmas](../kb/astra_carrier_dimension_bound-2026-09-05.md)
+give a different conditional route: a coefficient-space carrier of controlled
+dimension and total degree bounds the scalar list by an explicit product of
+incidence ratios. A separate recurrence respects MCA's same-support no-joint
+condition; an actual affine plane containing one witness per bad scalar
+would meet the predecessor budget with allowance n-13. No such universal
+carrier is constructed. Exact finite scalar and MCA controls pass.
+
+The [bounded production Hasse search](../kb/astra_hasse_production-2026-09-05.md)
+now excludes a positive dimension certificate in all 1426 specified small
+multiplicity/derivative-cap profiles, for every nonnegative total cap T.
+An exact slice recurrence reduces the infinite T tail to its negative slope.
+The earlier first-derivative source at m=166 is reproduced as a calibration;
+it is outside this search. The exclusion does not prove that production
+interpolants are nonexistent or rule out other interpolation shapes.
+
 ## Revisions and environment
 
 * Original clone: `/Users/nubs/Git/arklib`, clean `main` at

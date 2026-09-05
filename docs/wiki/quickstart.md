@@ -430,6 +430,11 @@ python3 -m pip install leanblueprint
   value count remains open. Run
   `python3 scripts/probes/astra_mca_locator_pencils_check.py` for all nine
   constructed same-support MCA witnesses and the exhaustive cubic census.
+  The [exact-locator rank bound](../kb/astra_locator_rank_bound-2026-09-05.md)
+  extends the cap to `4^(r-1)` for locator rank r, allowing different error
+  degrees. A universal production rank cap of 16 remains unproved. Run
+  `python3 scripts/probes/astra_locator_rank_check.py` for the integer
+  polynomial identities, rational endpoint cases, and exact-error fixtures.
   The [reduced exact-error eliminant](../kb/astra_mca_exact_error_eliminant-2026-09-05.md)
   gives one algebra point per decoded polynomial and a minimal polynomial
   counting distinct values. It removes padding and nonreduced-scheme
@@ -461,6 +466,17 @@ python3 -m pip install leanblueprint
   regime, with a failing production control. Run
   `python3 scripts/probes/astra_hasse_order_two_check.py` for its independent
   local matrices and exact threshold comparison.
+  The [production Hasse exclusion](../kb/astra_hasse_production-2026-09-05.md)
+  covers 1426 bounded multiplicity/derivative profiles and every total cap T
+  by an exact affine-tail test. Run
+  `python3 scripts/probes/astra_hasse_production_check.py` to replay the
+  profile vector, 16 direct-count comparisons, and passing m=166 calibration.
+  This does not exclude actual kernels or larger source shapes.
+  The [carrier counting bounds](../kb/astra_carrier_dimension_bound-2026-09-05.md)
+  quantify what a small carrier in coefficient space would imply for scalar
+  lists and, separately, selected MCA witnesses. No sufficient universal
+  carrier is known. Run `python3 scripts/probes/astra_carrier_dimension_check.py`
+  for finite scalar lists, an actual MCA plane, and exact production budgets.
   The [large-field interleaving transfer](../kb/astra_interleaved_projection-2026-09-05.md)
   preserves scalar list budgets, and separately linear-observable image
   budgets, when `binomial(B+1,2)<=q`. Both fixed profiles pass the arithmetic

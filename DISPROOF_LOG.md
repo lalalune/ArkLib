@@ -17609,3 +17609,51 @@ Universal source divisibility does not automatically supply a polynomial
 deformation or turn this local rigidity into a bound on isolated solutions.
 The moving allowance and total excess 17138836560697490 remain unchanged.
 See `docs/kb/astra_selected_family_constraint-2026-09-05.md`.
+
+## [astra-locator-rank-bound] rank controls exact decoded families, but the needed rank cap is open (2026-09-05)
+
+At N=6b-3,k=3b-1,A=4b-1 with b>=3, a decoded family of exact locator
+rank r has at most 4^(r-1) members. The proof combines the pair-union root
+bound with incidence moments: if every noncommon node has incidence at most
+L, a family of 4L+1 members would force incompatible upper and lower bounds
+on the common-error defect. Evaluation kernels then induct on rank.
+Different exact error degrees are allowed. Rank 16 would meet the actual
+scalar budget 2^30; no uniform rank-16 bound is supplied.
+
+Three identities are checked in the integer polynomial ring, 4464 rational
+endpoint cases pass, and actual F101 controls attain four at rank two and
+include error degrees 5,6,6,6 at rank three. These support a written theorem,
+not a complete finite-list census, independent agent review, or new Lean
+verification. See `docs/kb/astra_locator_rank_bound-2026-09-05.md`.
+
+## [astra-carrier-dimension-bound] dimension and total degree give conditional counting budgets (2026-09-05)
+
+A fixed-word scalar decoding carrier of dimension r and total component
+degree D gives at most floor(D*product_(j=1..r)(n-k+j)/(A-k+j)) candidates.
+Vandermonde independence bounds the containing node hyperplanes; proper
+sections and degree accounting finish the induction. A separate MCA
+recurrence starts from its same-support no-joint line bound n-t+1.
+At the production predecessor, an affine plane carrying one actual witness
+per bad scalar would give at most n-13 scalars. Neither that plane nor an
+alternative carrier with a sufficient degree budget has been constructed.
+
+F7 scalar controls on two linear spaces, a parabola, and a quadric pass;
+an actual F17 MCA plane has three selected bad scalars and bound five.
+These checks do not certify the geometric proof in Lean or bound the degree
+of a differential reconstruction map. See
+`docs/kb/astra_carrier_dimension_bound-2026-09-05.md`.
+
+## [astra-hasse-production-all-T] bounded derivative profiles fail for every total cap (2026-09-05)
+
+For companion n=262144,w=131071,A=181353 and D=m*A, all 1426 profiles
+with 1<=m<=24, 0<=S1<=min(12,m), and 1<=S2<=min(6,m) fail the strict
+dimension surplus test for every T>=0. The total-degree slices stop at
+H<=33, and the surplus beyond H is affine with strictly negative slope
+in every profile. The largest slope is -242369. Sixteen comparisons with
+the earlier direct count API pass; the m=166,S1=51,S2=0 calibration first
+passes at T=7159 with surplus 228451639, outside the excluded family.
+
+This excludes the specified dimension certificates, not actual interpolation
+kernels, larger multiplicities, arbitrary derivative shapes, or the desired
+prize claim. The profile digest and exact replay are documented in
+`docs/kb/astra_hasse_production-2026-09-05.md`.
