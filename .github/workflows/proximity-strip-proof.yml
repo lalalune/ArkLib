@@ -1,0 +1,43 @@
+name: Proximity strip proof
+
+on:
+  push:
+    branches: ["codex/proximity-astra-20260904"]
+    paths:
+      - "scripts/probes/astra_companion_strip_projection.lean"
+      - ".github/workflows/proximity-strip-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: proximity-strip-proof-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    if: github.event.repository.private == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - uses: leanprover/lean-action@v1.5.0
+        with:
+          auto-config: false
+          build: false
+          test: false
+          lint: false
+          use-github-cache: false
+          use-mathlib-cache: false
+      - name: Fetch pinned Mathlib dependencies
+        run: ./scripts/lake-locked.sh exe cache get
+      - name: Check exact strip projection and axiom report
+        shell: bash
+        run: |
+          set -euo pipefail
+          lean --version
+          lake env lean scripts/probes/astra_companion_strip_projection.lean | tee "$RUNNER_TEMP/strip-proof.log"
+          if rg 'sorryAx|error:' "$RUNNER_TEMP/strip-proof.log"; then
+            exit 1
+          fi

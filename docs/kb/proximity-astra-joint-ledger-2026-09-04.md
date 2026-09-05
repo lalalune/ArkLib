@@ -7,6 +7,10 @@ combined counting budget**. A new generic Lean theorem validates the
 simultaneous-source closure principle, but no concrete closure table,
 polynomial bridge, or new `ProtocolClaim` has been certified.
 
+The [exact contact-strip follow-up](proximity-astra-contact-strip-2026-09-04.md)
+records a smaller coefficient projection, its verification status, and a
+thirty-source numerical envelope that still fails the 68.04 budget.
+
 ## Exact arithmetic reproduction
 
 [`astra_companion_joint_audit.py`](../../scripts/probes/astra_companion_joint_audit.py)

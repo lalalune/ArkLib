@@ -238,6 +238,15 @@ python3 -m pip install leanblueprint
   checks that `ArkLib.lean` matches the tracked source tree.
 - [`../../.github/workflows/docs-integrity.yml`](../../.github/workflows/docs-integrity.yml)
   checks local markdown links and the `CLAUDE.md` symlink.
+- [`../../.github/workflows/proximity-strip-proof.yml`](../../.github/workflows/proximity-strip-proof.yml)
+  checks the standalone Mathlib contact-strip projection on the
+  `codex/proximity-astra-20260904` research branch when its source or workflow
+  changes. It uses the pinned toolchain and Mathlib manifest, prints theorem
+  axioms, and rejects `sorryAx` or compiler errors. It runs on a standard
+  public-repository runner without artifact or cache uploads. This focused
+  check is not a full ArkLib build or a companion `ProtocolClaim` check. See
+  the [contact-strip research note](../kb/proximity-astra-contact-strip-2026-09-04.md)
+  for local reproduction and remaining proof obligations.
 
 ## Manual Timing Helper
 

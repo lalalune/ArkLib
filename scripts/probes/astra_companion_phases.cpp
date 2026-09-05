@@ -17,6 +17,9 @@
 // --joint adds the correlated ChainGroupMaj complement from official commit
 // 032154395c51fd6f77715a7f42d9a987ab9fb48a. It prints the remaining fixed tails
 // separately. Options precede sources and may appear in any order, once each.
+// --actual-contact uses the source's actual weighted degree in the thin band.
+// --clipped-band additionally charges each boundary channel its exact width.
+// These two alternative research rules require new polynomial rank bridges.
 // The default four-source receipts remain unchanged. Additional sources use
 // the same strict-slope recursion; they do not certify a Lean soundness theorem.
 // Signed 128-bit arithmetic is intentional: a negative nullity must not be
@@ -156,6 +159,31 @@ Integer channels(int t, int y, int s) {
   return ((j+1)*(2*b*c-b*b+b)-(2*c+1)*sum1+sum2)/2;
 }
 
+// Sum_{j=0}^last max(0, base+j), using integer arithmetic only.
+Integer positive_ramp(std::int64_t base, int last) {
+  std::int64_t first=std::max<std::int64_t>(0,1-base);
+  if (first>last) return 0;
+  return Integer(last-first+1)*(2*Integer(base)+first+last)/2;
+}
+
+// Exact dimension of the strip Dhigh-delta <= x+w*y+(w-1)*r < Dhigh,
+// with y+r+z<=T, y+r<=Y, r<=S. Write k=y+r; the x-width of channel (k,r)
+// is min(delta,max(0,Dhigh-w*k+r)). All earlier k-rows have full width.
+// At the supported source sizes delta+S<2*w, so there are at most two
+// partial rows. This formula also works without that speed assumption.
+Integer clipped_band(std::int64_t high, int delta, int t, int y, int s) {
+  if (high<=0 || delta<=0) return 0;
+  int top=int(std::min<std::int64_t>({t,y,(high+s-1)/w}));
+  int full=high>=delta ? int(std::min<std::int64_t>({t,y,(high-delta)/w})) : -1;
+  Integer result=full>=0 ? Integer(delta)*channels(t,full,s) : 0;
+  for (int k=full+1;k<=top;++k) {
+    std::int64_t base=high-std::int64_t(w)*k;
+    int last=std::min(k,s);
+    result+=Integer(t-k+1)*(positive_ramp(base,last)-positive_ramp(base-delta,last));
+  }
+  return result;
+}
+
 using Potential = std::array<Integer,3>; // total, middle, slope coefficients
 struct Source {
   int multiplicity, limit, y, slope;
@@ -163,6 +191,7 @@ struct Source {
   int delta;
   Integer gap;
   Potential potential;
+  int band_rule=0; // 0: published thin, 1: actual contact thin, 2: clipped strip
 };
 
 // Componentwise ceiling majorant of the regular mixed numerator. The initial
@@ -187,14 +216,22 @@ bool routeable(const Source& source, int r, int v, int z) {
   int t=r+v+z, y=r+v;
   if (!r || t>source.limit || y>source.y || r>source.slope) return false;
   int fuel=std::min({source.limit/t,source.y/y,source.slope/r});
-  std::int64_t cap=std::int64_t(w)*(source.y+1)-source.slope-(w*y-r);
+  std::int64_t cap=(source.band_rule ? source.weighted :
+      std::int64_t(w)*(source.y+1)-source.slope)-(w*y-r);
+  cap=std::max<std::int64_t>(0,cap);
   int contact=w*y-r;
   Integer band=0, thin=0;
   for (int j=1; j<=fuel; ++j) {
     int qt=source.limit-j*t, qy=source.y-j*y, qs=source.slope-j*r;
     band += Integer(source.delta)*channels(qt,qy,qs);
     int thin_y=int(std::min<std::int64_t>(qy,std::max<std::int64_t>(0,(cap+qs-1)/w)));
-    thin += Integer(source.delta)*channels(qt,thin_y,qs);
+    Integer thin_step=Integer(source.delta)*channels(qt,thin_y,qs);
+    if (source.band_rule==2) {
+      Integer clipped=clipped_band(cap,source.delta,qt,qy,qs);
+      assert(clipped<=thin_step);
+      thin_step=clipped;
+    }
+    thin += thin_step;
     cap=std::max<std::int64_t>(0,cap-source.delta-contact);
     if (band>=source.gap && thin>=source.gap) return false;
   }
@@ -284,7 +321,7 @@ int main(int argc, char** argv) try {
   int errors=baseline?80771:80781, y_cap=baseline?132:135;
   int total_cap=baseline?6412:6676;
   int slope_cap=29, wide_y=153, wide_slope=33, initial_limit=130000;
-  int source_start=2, padding=0, b_m=0, b_limit=0, t_y=0, t_s=0, t_limit=0;
+  int source_start=2, padding=0, b_m=0, b_limit=0, t_y=0, t_s=0, t_limit=0, band_rule=0;
   bool custom_root=false, custom_errors=false, custom_padding=false, joint_ledger=false;
   while (source_start<argc && std::string(argv[source_start]).rfind("--",0)==0) {
     std::string option=argv[source_start++];
@@ -311,6 +348,10 @@ int main(int argc, char** argv) try {
     } else if (option=="--joint" && !joint_ledger) {
       joint_ledger=true;
       b_m=next(); b_limit=next(); t_y=next(); t_s=next(); t_limit=next();
+    } else if (option=="--actual-contact" && band_rule==0) {
+      band_rule=1;
+    } else if (option=="--clipped-band" && band_rule==0) {
+      band_rule=2;
     } else throw std::invalid_argument("unknown or repeated option "+option);
   }
   if (slope_cap<1 || slope_cap>64 || y_cap<slope_cap || y_cap>256
@@ -347,6 +388,7 @@ int main(int argc, char** argv) try {
     Source source{m,limit,y,slope,weighted,agreements-w+1,
       coefficients(weighted,limit,slope)-n*rank_bound(m,limit,slope),
       potential(errors,limit,y,slope)};
+    source.band_rule=band_rule;
     if (source.gap<=0) { std::cout<<"INFEASIBLE source "<<m<<"\n"; return 2; }
     // PhaseKernelRealization.shape, phase-source domination, helper-pair
     // characteristic bounds, and raw-z route monotonicity prerequisites.
@@ -496,7 +538,7 @@ int main(int argc, char** argv) try {
     assert(maximum==published_cap);
     std::cout<<"PUBLISHED_BASELINE_REPRODUCED\n";
   }
-  if (!baseline && !custom_sources && !custom_root && !custom_errors && !custom_padding && !joint_ledger) {
+  if (!baseline && !custom_sources && !custom_root && !custom_errors && !custom_padding && !joint_ledger && !band_rule) {
     Integer expected=keep_z ? Integer(274535875126515098LL)
                             : Integer(274912523147183536LL);
     assert(maximum==expected);
@@ -508,12 +550,13 @@ int main(int argc, char** argv) try {
       <<" total_before_list "<<decimal(maximum+fixed_tails)
       <<" correlated_at_max "<<decimal(correlated(best_r,best_v))<<"\n";
   }
-  if (!baseline && !custom_root && !custom_errors && !custom_padding && !joint_ledger) {
+  if (!baseline && !custom_root && !custom_errors && !custom_padding && !joint_ledger && !band_rule) {
     std::cout<<(custom_sources ? "original_separate_chain_allocation " : "fixed_allocation ")
       <<decimal(candidate_allocation)
       <<(custom_sources ? " excess_before_chain_revision " : " excess ")
       <<decimal(maximum-candidate_allocation)<<"\n";
   }
+  if (band_rule) std::cout<<"RESEARCH_BAND_RULE "<<band_rule<<"\n";
   std::cout<<"RESEARCH_EVALUATOR_ONLY; RETUNED_PROOF_GATES_AND_LEAN_UNCHECKED\n";
   return 0;
 } catch (const std::exception& error) {
