@@ -10,6 +10,7 @@ on:
       - "scripts/probes/astra_companion_t_kernel_gates.lean"
       - "scripts/probes/astra_exact_list_projection.lean"
       - "scripts/probes/astra_mca_polynomial_basis.lean"
+      - "scripts/probes/astra_mca_pair_basis_complete.lean"
       - "scripts/probes/astra_mca_residual_rows.lean"
       - "scripts/probes/astra_mca_evaluations.lean"
       - "scripts/probes/astra_mca_scalar_projection.lean"
@@ -136,6 +137,14 @@ jobs:
               "production_anchor_margins")]
           expected += ["ArkLib.ProximityGap.PrizeShapePrimeP30." + name for name in (
               "prime_P", "orderOf_g", "exists_orderOf_two_pow_30")]
+          expected += ["AstraMcaPairBasisComplete." + name for name in (
+              "basis_determinant_ne_zero", "cramer_numerators_vanish",
+              "cramer_numerator_degree", "coefficient_from_locator",
+              "pair_basis_complete", "pair_basis_coefficients_unique",
+              "pair_basis_constant_span", "production_two_deletion_constant_span",
+              "production_four_deletion_linear_span", "constant_change_between_bases",
+              "projective_collisions_preserved", "three_core_budget",
+              "production_sharp_core_budget")]
           expected += ["AstraMcaResidualRows." + name for name in (
               "row_lift_ne_zero", "row_lift_same_coordinate", "determinant_nonzero_off_domain",
               "basis_values_not_all_zero", "slot_count", "base_row_nonzero",

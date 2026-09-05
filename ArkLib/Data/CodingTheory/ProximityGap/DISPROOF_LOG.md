@@ -53978,3 +53978,31 @@ order three, independently checked against 231 contact conditions, so the
 multiple-candidate hypothesis is essential. Higher-degree sources and other
 contact constructions remain open. No prize threshold or arbitrary-list
 allowance is improved by this result.
+
+---
+
+### Two-deletion basis changes cannot repair collisions (2026-09-05)
+
+The [pair-basis completeness proof](../../../../docs/kb/astra_mca_pair_basis_complete-2026-09-05.md)
+uses the exact locator determinant and Cramer's rule to represent every
+allowed polynomial pair with coefficient degrees at most T+D-|A union B union S|.
+At the production two-deletion sizes this is zero: all pairs lie in the
+constant span of two columns. Every other basis is an invertible constant
+change, which preserves all zero wedges and hence projective collisions.
+At four deletions the coefficient cap is one, explaining the extra two
+generators in the existing weaker upper-bound construction.
+
+The three-core incidence sum is 2n-i, where i counts private coordinates.
+At the sharper radius, cores needing only one new agreement must all have
+size at least 715827882, which forces i <= 2. Rearranging a four-private
+partition cannot meet this budget. Thirteen Lean statements pass locally
+with only standard axioms and are required by both CI pins.
+
+Dense exact reconstruction on 16 nodes finds a projective collision in F97:
+the nonzero residual rows at exponents 4 and 10 are (67,1) and (71,72).
+Their wedge is 49*97. This invalidates a characteristic-independent
+injectivity claim. A six-field control, including the production prime,
+finds 13,17,17,18,17,18 directions among eighteen slots. The production-field
+control still has only sixteen nodes. Neither this small-field collision nor
+the basis completeness theorem supplies the unresolved production direction
+count. No numerical threshold improves, and the universal lower bound is open.

@@ -397,6 +397,14 @@ python3 -m pip install leanblueprint
   order-three exception. Neither obstruction proves a prize list bound.
   Both pins passed at `738598a9ea823c1cd45c314bfc3e8d203c3a057a` in
   [run 33997478724](https://github.com/lalalune/ArkLib/actions/runs/33997478724).
+  The helper also checks thirteen
+  [pair-basis completeness statements](../kb/astra_mca_pair_basis_complete-2026-09-05.md).
+  They show that the two-deletion pair space has only two constant generators,
+  and an invertible change of basis preserves every projective collision.
+  Run `python3 scripts/probes/astra_mca_pair_basis_complete_check.py` for
+  independent dense polynomial controls on 16 nodes across six fields.
+  The F97 collision refutes field-independent injectivity; it does not
+  determine the production collision count or improve the threshold.
   Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
   check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run
   `python3 scripts/probes/astra_mca_two_generator_probe.py` for the complete
