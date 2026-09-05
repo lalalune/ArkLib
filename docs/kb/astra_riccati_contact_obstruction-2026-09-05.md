@@ -174,8 +174,8 @@ is not needed for this obstruction.
 
 All eight named reports in
 [`astra_riccati_contact_obstruction.lean`](../../scripts/probes/astra_riccati_contact_obstruction.lean)
-pass local Lean 4.30.0-rc2 without diagnostics, using only propext,
-Classical.choice and Quot.sound. They cover the exact expansion, the local
+pass local Lean 4.30.0-rc2 and both CI pins without diagnostics, using only
+propext, Classical.choice and Quot.sound. They cover the exact expansion, the local
 divisibility implication, the product divisor and its degree, the production
 gap for every positive m, the vanishing derivative coefficient, and the
 zero quadratic conclusion from three distinct polynomial solutions.
@@ -188,6 +188,14 @@ counting argument (3) are not formalized by these eight reports. The
 [construction helper](../../scripts/check-mca-production-basis.sh) and
 [CI axiom audit](../../.github/workflows/proximity-strip-proof.yml) now
 include the module on both toolchain pins.
+
+Both jobs succeeded in
+[run 33995562671](https://github.com/lalalune/ArkLib/actions/runs/33995562671)
+at `4b72b913f05999c078ce0071d41d390464e7a6da`. The ArkLib job used Lean
+4.30.0-rc2 and accepted all 126 required axiom reports; the companion job
+used Lean 4.32.2 and accepted its 104 reports. Both totals include these
+eight new obstruction statements. They retain the separate status of the
+earlier upper-bound construction and do not prove a universal lower bound.
 
 Run `python3 scripts/probes/astra_riccati_contact_check.py` for two exact
 boundary controls and the integer arithmetic checks:

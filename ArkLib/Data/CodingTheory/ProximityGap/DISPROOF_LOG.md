@@ -53931,7 +53931,9 @@ extracts the pure-R and pure-z conditions for
 Q=a_0(X)+a_1(X)Y+a_2(X)Y^2+d_1(X)R. They force the domain locator to power
 max(1,m-1) to divide d_1. At N=1073741823, w=536870911 and A=715827883,
 this has strictly larger degree than the permitted mA-w for every m>0.
-Eight local Lean reports, with only the standard allowed axioms, verify
+Eight Lean reports, passing both pins in
+[run 33995562671](https://github.com/lalalune/ArkLib/actions/runs/33995562671)
+with only the standard allowed axioms, verify
 the expansion, local/global divisibility, exact degree gap, d_1=0 and the
 zero-source conclusion when three distinct polynomial solutions are supplied.
 

@@ -387,6 +387,8 @@ python3 -m pip install leanblueprint
   for its exact boundary kernels and degree controls. The Lean result forces
   the derivative coefficient to zero for every production contact order in
   this specific shape; it leaves equations containing YR or R^2 open.
+  Both pins passed at `4b72b913f05999c078ce0071d41d390464e7a6da` in
+  [run 33995562671](https://github.com/lalalune/ArkLib/actions/runs/33995562671).
   Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
   check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run
   `python3 scripts/probes/astra_mca_two_generator_probe.py` for the complete

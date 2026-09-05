@@ -76,8 +76,10 @@ Separately, a complete 930930-pair affine-line census bounds the entire
 degree-twelve list at order 16 over P by one, including a variable extra
 root. Neither result bounds the number of production outside-factor fibres.
 The [Riccati contact obstruction](../kb/astra_riccati_contact_obstruction-2026-09-05.md)
-tests a route to counting the whole scalar list directly. Eight local Lean
-reports verify that its derivative coefficient is forced to zero at every
+tests a route to counting the whole scalar list directly. Eight Lean reports,
+passing both pins in
+[run 33995562671](https://github.com/lalalune/ArkLib/actions/runs/33995562671),
+verify that its derivative coefficient is forced to zero at every
 positive contact multiplicity under the production weighted-degree cap.
 A 61-column order-16 kernel provides an exact boundary control where a
 derivative term does survive. Generalized equations with YR or R^2 remain
