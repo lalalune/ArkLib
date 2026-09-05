@@ -317,6 +317,15 @@ python3 -m pip install leanblueprint
   excludes its entire architecture in every admissible characteristic;
   use `python3 scripts/probes/astra_mca_paircover_four_cosets.py` for the
   small-domain rank checks in the production prime.
+  The [two-generator bridge](../kb/astra_mca_two_generator_bridge-2026-09-04.md)
+  supplies production-length polynomial bases by two-point deletion; the
+  remaining obligation is the number of distinct cancellation directions.
+  Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
+  check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run
+  `python3 scripts/probes/astra_mca_two_generator_probe.py` for the complete
+  irregular mu16 receipt, and
+  `python3 scripts/probes/astra_mca_two_generator_delete_probe.py` for the
+  three deletion cells with agreement and no-joint parity checks.
   These results are not Lean formalized and establish no improved prize score.
 
 ## Manual Timing Helper

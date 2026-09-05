@@ -163,3 +163,16 @@ cosets of mu_n. They do not settle the production dyadic-domain problem.
 This positive control is not a novelty claim about arbitrary-domain
 Reed--Solomon counterexamples, and neither it nor the general conversion
 has been formalized in Lean.
+
+## Subsequent route using two independent generators
+
+The [two-generator bridge](astra_mca_two_generator_bridge-2026-09-04.md)
+uses two independent local polynomial triples of degree less than k,
+instead of requiring a degree-at-most-k-2 triple and multiplying it by X.
+It deletes two pair-agreement constraints into private coordinates while
+keeping the evaluation domain unchanged. The required balanced polynomial
+basis exists at production length by the proved deletion lemma. The new
+remaining condition is a count of distinct projective residual directions.
+The [finite certificates](astra_mca_two_generator_probe-2026-09-04.md)
+verify this condition and actual MCA witnesses at n=16,64,256, but not
+at production length.

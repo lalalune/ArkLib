@@ -17291,3 +17291,35 @@ review; none of these new results is Lean formalized.
 Details: `docs/kb/astra_mca_paircover_four_cosets-2026-09-04.md`,
 `docs/kb/astra_mca_paircover_production-2026-09-04.md`, and
 `docs/kb/astra_mca_paircover_target-2026-09-04.md`.
+
+## [astra-mca-two-generators] two-point deletion avoids the single-generator construction's degree obstruction (2026-09-04)
+
+Two independent syzygy generators of degree less than k give local
+polynomial pairs on three cores of size s-1, with n+2 absent-core/coordinate
+slots. Nonzero residual directions give genuine MCA witnesses on a core
+plus one point. Polynomial uniqueness, independently checked by dual parity
+rows in the finite probes, excludes a joint explanation on that support.
+At least n+1 distinct directions would exceed the production numerator
+budget, but distinctness is not automatic.
+
+A general two-point deletion lemma supplies the required degree-balanced
+basis at production length: start with the four-coset full partition's
+degree-n/2 basis, choose independent cofactor evaluation directions at one
+AB point and one AC point, and divide appropriate basis combinations by
+their common linear root factors. Those coordinates become private A;
+the evaluation domain is unchanged. Both resulting generator degrees are
+n/2-1, and their determinant has the prescribed pair-locator product.
+Thus the earlier full-cover degree obstruction is not an obstruction to
+this modified architecture. The remaining production step is collision
+control, not existence of the polynomial basis.
+
+Actual deletion probes at n=16,64,256 over the production prime certify
+18,66,258 distinct bad scalars, with every agreement and no-joint parity
+check passing. They use the first valid deletion pair, without optimizing
+the pair to remove collisions. A separate irregular mu16 example has a
+full exact receipt and independent verification of all 18 witnesses.
+None of these finite counts exceeds floor(P/2^128)=2^30. The general
+bridge and deletion proof are independently reviewed but not Lean
+formalized; no production unsafe radius or prize solution is claimed.
+Details: `docs/kb/astra_mca_two_generator_bridge-2026-09-04.md` and
+`docs/kb/astra_mca_two_generator_probe-2026-09-04.md`.
