@@ -224,3 +224,9 @@ positive uniform dimension margins of the new production sources. A
 properness theorem could still use that stronger condition, their higher
 degree flags, or an effective bound on the subspace of differential
 consequences. Neither such a theorem nor its negation is proved here.
+
+The [component-splitting follow-up](astra_hasse_component_split-2026-09-05.md)
+shows that properness on each first-tail curve is unnecessary if the extra
+equation is proper on the original surface. The examples here still have
+zero restriction on that surface, so they do not satisfy the weaker
+condition either.

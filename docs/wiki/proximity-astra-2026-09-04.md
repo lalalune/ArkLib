@@ -147,6 +147,15 @@ polynomial-identity controls pass, including the companion characteristic
 at small n,w. Its uniform dimension margin is nonpositive, so the example
 does not settle the positive production case.
 
+The [component split](../kb/astra_hasse_component_split-2026-09-05.md) now
+allows the extra equation to contain entire first-tail curves. Properness
+on the irreducible surface suffices for a written counting argument using
+ordinary Bezout bounds and the existing weighted multiplicity certificate.
+At cutoff M=2048, all four production extra-cut degrees fit the conditional
+binding-cell budget. A seven-profile derivative-trimming test does not force
+the missing degree separation. Surface properness, independent proof review,
+Lean integration, and the full phase recurrence remain open.
+
 The [fixed-word differential carrier](../kb/astra_scalar_differential_carrier-2026-09-05.md)
 now supplies an actual curve and degree bound for the scalar companion
 profile. Its written argument gives at most 12546010856 degree-at-most-131071

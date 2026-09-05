@@ -493,6 +493,13 @@ python3 -m pip install leanblueprint
   it does not refute the production certificates. Run
   `python3 scripts/probes/astra_hasse_containment_check.py` for seven full
   finite matrices and the differential-consequence identities.
+  The [component split](../kb/astra_hasse_component_split-2026-09-05.md)
+  reduces the needed extra-cut condition to properness on the surface:
+  contained first-tail curves can be charged using their degree. Run
+  `python3 scripts/probes/astra_hasse_component_split_check.py --derivative-trim`
+  for the conditional binding-cell budgets and seven bounded derivative
+  source tests. It does not prove surface properness or improve the verified
+  prize bound.
   The [carrier counting bounds](../kb/astra_carrier_dimension_bound-2026-09-05.md)
   quantify what a small carrier in coefficient space would imply for scalar
   lists and, separately, selected MCA witnesses. No sufficient universal

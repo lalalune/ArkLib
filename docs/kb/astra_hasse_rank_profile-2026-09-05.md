@@ -203,6 +203,14 @@ still a multiple of the old regular factor. That construction has total
 degree one and nonpositive uniform dimension margin. It does not refute
 properness for the positive production profiles above.
 
+The subsequent [component split](astra_hasse_component_split-2026-09-05.md)
+weakens the sufficient geometric condition: it allows B_Q to contain
+first-tail components, provided B_Q is nonzero on the irreducible surface
+being counted. It uses the degree of B_Q for contained components and the
+existing weighted divisor certificate for components of large multiplicity.
+All four source degree bounds fit its conditional binding-cell allowance.
+Surface properness and the complete phase/Lean integration remain open.
+
 ## A limited Z-degree obstruction to trivial multiples
 
 There is a useful constraint on the raw differential relation
