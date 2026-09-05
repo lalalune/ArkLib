@@ -180,6 +180,13 @@ the T=1042 or T=1031 source. This degree hypothesis is not known in general.
 Three finite full-kernel controls and extension-field rank checks pass;
 independent review, Lean integration, and general properness remain open.
 
+The [coordinate and jet-repair follow-up](../kb/astra_acceleration_chart-2026-09-05.md)
+allows up to w-2 zero direction entries without changing coordinates.
+It also checks that low acceleration degree is not automatic: three
+positive full first-order kernels have irreducible universal factors of
+acceleration degree six and relative degree one, with regular bad seeds.
+The examples are finite and do not realize the binding production flag.
+
 The [fixed-word differential carrier](../kb/astra_scalar_differential_carrier-2026-09-05.md)
 now supplies an actual curve and degree bound for the scalar companion
 profile. Its written argument gives at most 12546010856 degree-at-most-131071

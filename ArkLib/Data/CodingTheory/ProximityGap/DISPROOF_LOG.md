@@ -53817,3 +53817,25 @@ example has relative degree one. Three complete finite kernels, exact
 coordinate identities, and irreducible finite-extension rank controls
 pass. The production hypothesis, independent review, Lean integration,
 and a complete improved phase bound remain open.
+
+---
+
+### Positive full-kernel provenance does not imply low acceleration degree (2026-09-05)
+
+The [coordinate and jet-repair controls](../../../../docs/kb/astra_acceleration_chart-2026-09-05.md)
+reconstruct a complete first-order kernel on nine nodes with 532 columns,
+local rank 59, global rank 531, and uniform margin one. Its generator is
+irreducible and divides the entire kernel. It has a regular selected bad
+seed and received words independent modulo the quadratic code. Nevertheless
+the acceleration has generic degree six and generates the full parameter
+extension. Exact irreducibility and field-degree certificates pass in
+characteristics 257,65537,2130706433. These finite controls refute an
+automatic low-degree deduction, not the production properness statement.
+
+The same note proves that a rational acceleration can acquire arbitrarily
+large degree under a constant-codeword shift. A generic-jet repair avoids
+unnecessary shifts: at most w-2 zero direction entries still suffice for
+the extension criterion. Its scalar root-count inequality can fail by one
+at w-1 zeros, as an exact family of primitive equations demonstrates.
+The general high-degree case, production factor, independent review and
+Lean integration remain open. No prize allowance is improved.

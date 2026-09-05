@@ -518,6 +518,11 @@ python3 -m pip install leanblueprint
   `python3 scripts/probes/astra_acceleration_extension_check.py` for exact
   normalization, finite extension ranks, and three full-kernel controls.
   The needed production field-degree hypothesis and Lean proof remain open.
+  The [coordinate and jet-repair follow-up](../kb/astra_acceleration_chart-2026-09-05.md)
+  allows a bounded number of zero direction entries without normalization
+  and exhibits positive full kernels with degree-six acceleration. Run
+  `python3 scripts/probes/astra_acceleration_chart_check.py` for complete
+  finite kernels, irreducibility certificates, and the repair boundary.
   The [carrier counting bounds](../kb/astra_carrier_dimension_bound-2026-09-05.md)
   quantify what a small carrier in coefficient space would imply for scalar
   lists and, separately, selected MCA witnesses. No sufficient universal

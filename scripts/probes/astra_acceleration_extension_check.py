@@ -21,25 +21,30 @@ def basis(D, w, T, r, s):
             for x in range(max(0, D-w*y-(w-1)*rr-(w-2)*ss))]
 
 
-def contact(mon, node, u0, u1, m, p):
+def contact(mon, node, u0, u1, m, p, order=2):
     """Exact truncated expansion; local exponents are (t,v,R,S,Z)."""
+    assert order in (1,2)
     x, y, r, s, z = mon
     terms = {(0,0,0,0,0): u0, (0,0,0,0,1): u1,
-             (1,0,1,0,0): 1, (2,0,0,1,0): -1, (0,1,0,0,0): 1}
+             (1,0,1,0,0): 1, (0,1,0,0,0): 1}
+    if order == 2:
+        terms[2,0,0,1,0] = -1
+    else:
+        assert s == 0
     power = {(0,0,0,0,0): 1}
     for _ in range(y):
         out = {}
         for a, ca in power.items():
             for b, cb in terms.items():
                 key = tuple(i+j for i,j in zip(a,b))
-                if key[0]+3*key[1] < m:
+                if key[0]+(order+1)*key[1] < m:
                     out[key] = (out.get(key,0)+ca*cb) % p
         power = {a:c for a,c in out.items() if c}
     out = {}
     for j in range(min(x,m-1)+1):
         c = comb(x,j)*pow(node,x-j,p) % p
         for (t,v,rr,ss,zz), a in power.items():
-            if t+j+3*v < m:
+            if t+j+(order+1)*v < m:
                 key = (t+j,v,rr+r,ss+s,zz+z)
                 out[key] = (out.get(key,0)+c*a) % p
     return {a:c for a,c in out.items() if c}

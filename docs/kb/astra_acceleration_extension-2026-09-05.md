@@ -47,6 +47,14 @@ u1_i nonzero at every node. Algebraic degrees of the acceleration must also
 be measured in that coordinate system. They are not claimed invariant
 under an arbitrary change of coordinates.
 
+The [generic-jet repair](astra_acceleration_chart-2026-09-05.md) subsequently
+weakens this restriction: the criterion also holds in any unchanged
+coordinate system with at most w-2 zero direction entries. This matters
+because a constant shift can turn rational acceleration into full algebraic
+degree. At the companion n,w, at most two constants violate this weaker
+zero-count condition; the low-degree acceleration condition is still a
+separate requirement.
+
 ## No parameter-independent universal factor
 
 Let V be a nonzero full second-Hasse contact kernel in the displayed box,
@@ -187,6 +195,14 @@ extension field L. Since J is nonzero at every simple root of W, the
 acceleration is affine in Z with nonzero coefficient J/(L0*W^2). Thus Z
 is recovered from a over K0: E=L, e=1 and rho=d. A high degree of F in Z
 alone does not imply a small rho or a large relative degree e.
+
+The [positive full-kernel field-degree controls](astra_acceleration_chart-2026-09-05.md)
+give an additional limitation: an actual irreducible universal first-order
+factor with a positive uniform margin and a regular MCA-bad selected seed
+can have rho=d=6 and e=1. These controls use nine nodes, including at the
+companion characteristic. They do not realize the binding production flag,
+but show that the low-degree hypothesis is not automatic from those
+provenance conditions.
 
 ## Exact finite controls
 
