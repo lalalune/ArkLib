@@ -328,14 +328,15 @@ python3 -m pip install leanblueprint
   projectively distinct evaluations and a finite-field projection. Run
   `python3 scripts/probes/astra_mca_four_delete_check.py` for its dense
   finite witnesses, no-joint parity checks, and production arithmetic.
-  Independent proof review and Lean formalization remain open.
+  Independent proof review remains open; the exact production instance now
+  has a complete Lean upper-bound proof as described below.
   Its [supporting polynomial algebra](../kb/astra_mca_polynomial_basis-2026-09-05.md)
   now checks thirty-one theorems locally against the exact Mathlib pin,
   constructing the complete polynomial basis from the root-domain hypotheses. Run
   `lake env lean scripts/probes/astra_mca_polynomial_basis.lean` from an
   environment with those imports cached; a matching standalone Mathlib
-  checkout can use the absolute proof path. The full threshold assembly
-  is still open, and the auxiliary workflow audits both supported pins.
+  checkout can use the absolute proof path. The auxiliary workflow audits
+  this construction on both supported pins.
   The [concrete production instantiation](../kb/astra_mca_production_basis-2026-09-05.md)
   is checked by `bash scripts/check-mca-production-basis.sh /tmp/mca-proof-lib`
   from a matching Lake environment. This compiles the existing prime/root
@@ -344,7 +345,7 @@ python3 -m pip install leanblueprint
   then checks the concrete power-domain result and its 1073741828 distinct
   scalar challenges; it does not build all ArkLib modules. The
   [production event and threshold assembly](../kb/astra_mca_production_upper-2026-09-05.md)
-  now uses these scalars to prove the upper bound in local Lean.
+  now uses these scalars to prove the upper bound in local Lean and CI.
   For the [actual-event bridge](../kb/astra_mca_event_bridge-2026-09-05.md), build
   `ArkLib.Data.CodingTheory.ProximityGap.KKH26WitnessSpread` and
   `ArkLib.Data.CodingTheory.ProximityGap.Frontier._PrizeShapePrimeP30`
@@ -353,7 +354,10 @@ python3 -m pip install leanblueprint
   Its optional second argument supplies the compiled ArkLib library path.
   This checks the bridge, production events, probability/threshold, and KKH26
   adapter on the ArkLib pin; the companion check covers the
-  separate Mathlib-based construction chain.
+  separate Mathlib-based construction chain. Both jobs passed at
+  `450cb330ef2101b0daed1e41b597ad361f96a140` in
+  [run 33990217749](https://github.com/lalalune/ArkLib/actions/runs/33990217749).
+  The matching universal lower bound remains open.
   Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
   check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run
   `python3 scripts/probes/astra_mca_two_generator_probe.py` for the complete

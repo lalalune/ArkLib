@@ -7,7 +7,7 @@ slot ratios are finite and pairwise distinct. The evaluation lemmas identify
 these ratios with polynomial agreements and exclude a degree-bounded
 explanation on the same enlarged core. The subsequent
 [production assembly](astra_mca_production_upper-2026-09-05.md) checks the
-actual events, probability, and upper threshold locally. **The universal
+actual events, probability, and upper threshold locally and in CI. **The universal
 lower bound remains open.**
 
 Sources:

@@ -6,7 +6,7 @@ theorems against the repository's unchanged `ReedSolomon.code` and
 warnings or axioms beyond the permitted standard three. **These are general
 bridge theorems. The subsequent [production assembly](astra_mca_production_upper-2026-09-05.md)
 now checks the support choice, event count, probability, and upper threshold
-locally. The universal lower bound remains open.**
+locally and in CI. The universal lower bound remains open.**
 
 ## What the bridge proves
 
@@ -57,13 +57,14 @@ lemma names in `Probability.Instances` and `ProximityGap.Errors`. These sources
 were not edited. Dependency build failures still fail CI; the new theorem
 sources must compile without diagnostics and pass their axiom audit.
 
-The 69-report construction checkpoint `59f6cee640546b7185656fa370353c0c182ea5ae`
-passed both toolchains in
-[run 33989276174](https://github.com/lalalune/ArkLib/actions/runs/33989276174).
-That run predates this event bridge; this addition needs its own CI result.
+The full production checkpoint `450cb330ef2101b0daed1e41b597ad361f96a140`
+passed both CI jobs in
+[run 33990217749](https://github.com/lalalune/ArkLib/actions/runs/33990217749).
+The ArkLib job checks this bridge and the complete upper-bound assembly;
+the companion job checks the separate 69-report construction chain.
 
 The [production assembly](astra_mca_production_upper-2026-09-05.md) now chooses
 supports of size 715827882, instantiates the domain embedding, applies this
 bridge to all 1073741828 distinct slot scalars, and derives the probability
-and upper-threshold consequence. The direct KKH26 adapter has its own CI
-obligation. These two general bridge theorems alone are not a prize solution.
+and upper-threshold consequence. The direct KKH26 adapter also passed that
+ArkLib CI job. The matching universal lower bound remains open.

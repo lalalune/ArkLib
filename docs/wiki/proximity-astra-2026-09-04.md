@@ -20,9 +20,11 @@ absent-core evaluations; a large-field projection produces n+4 actual
 MCA witnesses at radius `357913942/2^30`. This is one Hamming step weaker
 than the existing computational bound. The
 [production upper-bound assembly](../kb/astra_mca_production_upper-2026-09-05.md)
-now passes local Lean through the actual events, probability, and threshold;
-the direct KKH26 adapter awaits the expanded CI check. Independent review
-and the matching universal lower bound remain open.
+now passes local Lean through the actual events, probability, and threshold.
+The direct KKH26 adapter also passed
+[CI run 33990217749](https://github.com/lalalune/ArkLib/actions/runs/33990217749)
+at commit `450cb330ef2101b0daed1e41b597ad361f96a140`. Independent review and
+the matching universal lower bound remain open.
 Thirty-one [supporting polynomial theorems](../kb/astra_mca_polynomial_basis-2026-09-05.md)
 now pass local Lean 4.30.0-rc2. They construct the complete polynomial basis
 from a domain of 2^30 distinct 2^30-th roots, including the partition,
@@ -39,7 +41,9 @@ Two [event bridge theorems](../kb/astra_mca_event_bridge-2026-09-05.md)
 now check the transport into ArkLib's actual indexed RS MCA event, with
 explicit domain and support-size conditions. Six production-event and four
 probability/code/threshold theorems now complete the local upper-bound
-construction. This does not close the universal floor.
+construction. Two further KKH26 adapter theorems complete the CI-checked
+83-report chain on the ArkLib pin; the companion pin checks its 69-report
+construction portion. This does not close the universal floor.
 
 The [single-hole reduction](../kb/astra_mca_single_hole_reduction-2026-09-05.md)
 also identifies a necessary subproblem for the universal bound: controlling

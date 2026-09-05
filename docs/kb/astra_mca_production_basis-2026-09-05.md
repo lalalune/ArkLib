@@ -7,7 +7,8 @@ generator. Seven additional theorems in
 pass local Lean 4.30.0-rc2. **This proves the concrete polynomial basis and scalar projection.**
 The subsequent [production assembly](astra_mca_production_upper-2026-09-05.md)
 now checks the indexed MCA witnesses, probability, and upper-threshold consequence
-locally. **The universal lower bound remains open.**
+locally and in CI, including the original KKH26 code adapter in CI.
+**The universal lower bound remains open.**
 
 ## What is instantiated
 

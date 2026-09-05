@@ -2,7 +2,8 @@
 
 **Status:** the [production upper-bound assembly](astra_mca_production_upper-2026-09-05.md)
 now passes local Lean, including the actual events, probability, and threshold.
-The adapter to the existing KKH26 definition awaits the expanded CI check;
+The adapter to the existing KKH26 definition also passed
+[CI run 33990217749](https://github.com/lalalune/ArkLib/actions/runs/33990217749);
 independent mathematical review remains open. This gives the production upper bound
 `mcaDeltaStar <= 357913942/2^30` without a production collision scan. It is
 one Hamming step **weaker** than the existing
