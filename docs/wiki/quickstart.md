@@ -402,6 +402,11 @@ python3 -m pip install leanblueprint
   one domain point, so the full-cover obstruction does not apply. Run
   `python3 scripts/probes/astra_mca_single_hole_check.py` for its complete
   F17 control; the universal production value-image bound remains open.
+  Its [locator formulation](../kb/astra_mca_single_hole_locator-2026-09-05.md)
+  shows why the error-locator divisor requirement is essential: removing it
+  admits almost every scalar even for a production-domain word. Run
+  `python3 scripts/probes/astra_mca_single_hole_locator_check.py` for the
+  independent finite comparison of actual and relaxed values.
   The [native-count workflow](../../.github/workflows/proximity-native-count.yml)
   runs the separately pinned, bounded-tested native source on a standard
   public-repository Linux runner. It preserves computation receipts; it does

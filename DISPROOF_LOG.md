@@ -17418,3 +17418,22 @@ established. All 24 arithmetic checks pass; the general conclusions are
 independently reviewed written proofs, not Lean theorems. See
 `docs/kb/astra_mca_incidence_feasibility-2026-09-05.md` and
 `scripts/probes/astra_mca_incidence_feasibility_check.py`.
+
+## [astra-mca-single-hole-locators] linear locator equations alone admit almost every scalar (2026-09-05)
+
+The punctured-list value image is exactly the ratio
+`rem(Lambda*V,P_D)(a)/Lambda(a)` over monic degree-e locators dividing P_D
+whose remainder has degree less than k+e. At production these are b linear
+equations on an ambient locator space of dimension 2b-1, plus the essential
+divisor condition. An explicit received word on any production-size domain
+has two true candidate values. Their locator span already gives every
+field value after dropping divisibility; its monic slice retains at least
+|K|-1. Thus this linear relaxation cannot establish the required n-cap.
+
+A complete order-eight F17 control independently compares all polynomials,
+all degree-two domain divisors, all monic degree-two polynomials, and all
+original MCA support/scalar cases. It has three actual values and sixteen
+relaxed values. This is a refutation of a relaxation-based shortcut, not an
+MCA counterexample. The general proof is written and not Lean-formalized.
+See `docs/kb/astra_mca_single_hole_locator-2026-09-05.md` and
+`scripts/probes/astra_mca_single_hole_locator_check.py`.

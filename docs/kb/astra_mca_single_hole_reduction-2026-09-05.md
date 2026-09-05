@@ -147,6 +147,11 @@ every a and every punctured received word v:
 ```
 
 A cap on the entire list L(v) would suffice but is stronger than (2).
+The [exact locator formulation](astra_mca_single_hole_locator-2026-09-05.md)
+expresses the value image as a ratio of two linear functionals on locators
+that divide the punctured domain polynomial. It also proves that removing
+this divisor requirement yields almost every field value for an explicit
+production-domain word, so the linear relaxation cannot establish (2).
 This does not newly identify the general punctured-list difficulty:
 [_S2PuncturedJohnsonDischarge.lean](../../ArkLib/Data/CodingTheory/ProximityGap/Frontier/_S2PuncturedJohnsonDischarge.lean)
 already handles the within-Johnson part of the large-zero branch, and
