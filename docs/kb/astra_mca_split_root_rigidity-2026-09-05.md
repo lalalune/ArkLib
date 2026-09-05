@@ -279,6 +279,12 @@ For a fixed received word, the entire list is therefore partitioned into
 fibres of size at most three by Q_f. No bound on the number of different
 factors Q_f is proved here. This is a restriction on an arbitrary list,
 not a bound on its total size or its full evaluation image.
+The [outside-factor investigation](astra_mca_outside_factor_frontier-2026-09-05.md)
+constructs a production word with two candidates whose outside factors are
+nonconstant and coprime. Thus a common outside factor cannot be assumed for
+the whole list. Separately, its complete affine-line census bounds the
+whole list by one for degree-twelve received words on mu_16 over P, including
+a variable extra root. That finite result is not a production-length bound.
 
 ## Verification and the unresolved root-escape case
 

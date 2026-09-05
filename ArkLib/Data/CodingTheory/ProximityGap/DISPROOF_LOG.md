@@ -53900,3 +53900,24 @@ received word, separate flat-factor control, and direct value counting are
 not excluded. The checker verifies the formulas by block sums on 660 pairs
 and evaluates the production arithmetic; the general calculation is written,
 not Lean-formalized. The universal lower bound remains open.
+
+---
+
+### A common outside factor cannot be assumed for the production list (2026-09-05)
+
+The [outside-factor construction](../../../../docs/kb/astra_mca_outside_factor_frontier-2026-09-05.md)
+gives a received polynomial of degree 984263338 with candidates 0 and R,
+where deg R=447392427 and both candidates have exactly 715827883 punctured
+agreements at the production prime. Their two monic outside factors have
+degree 268435455 each and are nonconstant and coprime. The Bezout identity
+F_0 Q_0-F_1 Q_1=1 proves coprimality; a four-coset formula reduces absence
+of domain roots to eight exhaustive field checks, all passing. Polynomial
+identities, factor extraction, agreement counts and distinct extrapolated
+values are also checked at orders 16, 64 and 256 over the actual prime.
+
+This rules out promoting the fixed-outside-factor fibre bound to the whole
+list by assuming every candidate has the same outside factor, or a common
+nonconstant outside divisor. It does not refute a bound on the number of
+different fibres: the construction supplies only two candidates. The
+production argument is written, not Lean-formalized or independently
+reviewed, and the universal lower bound remains open.

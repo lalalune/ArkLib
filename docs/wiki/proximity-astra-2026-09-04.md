@@ -67,6 +67,14 @@ with a fixed outside-domain factor by three. Its 840 production interval
 gates, complete small split-polynomial censuses, and construction checks
 pass. The number of different outside factors, independent review, and Lean
 formalization remain open; this does not prove the universal lower bound.
+The [outside-factor investigation](../kb/astra_mca_outside_factor_frontier-2026-09-05.md)
+gives an actual production pair with two nonconstant, coprime outside
+factors, so a common factor for all candidates cannot be assumed. Eight
+exhaustive possible-domain-root checks verify those factors avoid mu_n;
+the polynomial construction is written and checked at small orders.
+Separately, a complete 930930-pair affine-line census bounds the entire
+degree-twelve list at order 16 over P by one, including a variable extra
+root. Neither result bounds the number of production outside-factor fibres.
 An exact [monomial-minor certificate](../kb/astra_monomial_minor_norm-2026-09-05.md)
 excludes every monomial seed on mu16 over the production prime and classifies
 its exceptional characteristics. The complex Fourier nonvanishing theorem

@@ -375,6 +375,12 @@ python3 -m pip install leanblueprint
   sublist bounds. The written proof bounds each fixed outside-factor fibre
   by three, including arbitrary repeated roots in the domain. It does not
   bound the number of different outside factors or the whole list.
+  Run `python3 scripts/probes/astra_mca_outside_factor_check.py` for the
+  [outside-factor controls](../kb/astra_mca_outside_factor_frontier-2026-09-05.md):
+  all affine-line pairs for the variable-extra-root problem at order 16 in
+  four fields, and a production construction of two candidates with coprime
+  outside factors. The latter's eight possible-domain-root checks pass;
+  this is not an over-budget example or a bound on all production factors.
   Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
   check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run
   `python3 scripts/probes/astra_mca_two_generator_probe.py` for the complete
