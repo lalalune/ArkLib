@@ -249,7 +249,8 @@ python3 -m pip install leanblueprint
   public-repository runner without artifact or cache uploads. This focused
   check is not a full ArkLib build or a companion `ProtocolClaim` check. See
   the [contact-strip research note](../kb/proximity-astra-contact-strip-2026-09-04.md)
-  for local reproduction and remaining proof obligations.
+  for local reproduction, the bounded source-limit search and its independent
+  arithmetic audit, and remaining proof obligations.
 
 ## Manual Timing Helper
 

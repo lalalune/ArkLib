@@ -9,7 +9,7 @@ polynomial bridge, or new `ProtocolClaim` has been certified.
 
 The [exact contact-strip follow-up](proximity-astra-contact-strip-2026-09-04.md)
 records a smaller coefficient projection, its verification status, and a
-thirty-source numerical envelope that still fails the 68.04 budget.
+49-source numerical envelope that still fails the 68.04 budget.
 
 ## Exact arithmetic reproduction
 
