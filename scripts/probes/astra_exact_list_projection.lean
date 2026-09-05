@@ -109,6 +109,7 @@ def projectLinear {m : ℕ} {W : Type*} [AddCommGroup W] [Module F W]
     intro a b
     simp [project, Finset.smul_sum, smul_smul]
 
+omit [Fintype F] in
 theorem project_sub {m : ℕ} {W : Type*} [AddCommGroup W] [Module F W]
     (lam : Fin m → F) (v z : Fin m → W) :
     project lam (v - z) = project lam v - project lam z := by
@@ -174,6 +175,7 @@ noncomputable def jointAgreements {ι : Type*} [Fintype ι] {m : ℕ}
   classical
   exact (univ.filter fun x => ∀ j, u j x = v j x).card
 
+omit [Fintype F] in
 theorem joint_agreements_le_projected {ι : Type*} [Fintype ι] {m : ℕ}
     (lam : Fin m → F) (u v : Fin m → ι → F) :
     jointAgreements u v ≤ agreements (project lam u) (project lam v) := by
@@ -218,7 +220,7 @@ theorem scalar_budget_to_interleaved {ι : Type*} [Fintype ι] {m B A : ℕ}
     simp only [scalarList, mem_filter, mem_univ, true_and]
     refine ⟨C.sum_mem (fun j _ => C.smul_mem (lam j) (hmem.1 j)), ?_⟩
     exact le_trans hmem.2 (joint_agreements_le_projected lam v u)
-  have hinjOn : Set.InjOn (project lam) S := by
+  have hinjOn : Set.InjOn (project lam) (↑S : Set (Fin m → ι → F)) := by
     intro v hv z hz heq
     have h : (⟨v, hv⟩ : S) = ⟨z, hz⟩ := hinj heq
     exact congrArg Subtype.val h
