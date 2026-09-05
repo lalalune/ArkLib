@@ -1,5 +1,10 @@
 # A finite production Hasse search covering every total cap
 
+The [rank-profile follow-up](astra_hasse_rank_profile-2026-09-05.md) finds
+positive production certificates at larger multiplicities, including
+m=80,S1=24,S2=6,T=1042. The exclusion here concerns only its explicitly
+bounded profiles. Properness of the new source's extra cut remains open.
+
 The exact [order-two local rank formula](astra_hasse_order_two-2026-09-05.md)
 does not produce a positive dimension certificate in the bounded production
 family below, for **any nonnegative total degree cap T**. This limits a specific

@@ -200,3 +200,10 @@ after adding full-kernel provenance and a bad MCA seed. An argument for the
 binding C2 case would still have to exploit its higher R degree, a large
 selected family, or further relations specific to its production sources.
 This example does not reduce the current moving budget.
+
+The [second-Hasse follow-up](astra_hasse_containment-2026-09-05.md) uses the
+same received words to construct a full order-three contact kernel. It can
+be nonzero when the matching first-order source is empty, yet every new
+polynomial is a differential consequence of F and supplies no extra cut.
+Its uniform dimension margin is nonpositive, so it does not refute the
+strictly positive production second-Hasse certificates.

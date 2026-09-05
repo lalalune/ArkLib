@@ -53734,3 +53734,24 @@ also excludes saturated constructions with any pair's absence intersection
 larger than `b-2`, where `b=h+1`. Seven line-incidence types and an explicit
 one-triple feasible weight pattern remain; no general six-pencil exclusion is
 claimed. These are independently reviewed written arguments, not Lean proofs.
+
+---
+
+### A nonzero second-Hasse kernel need not supply an independent cut (2026-09-05)
+
+The [full-kernel containment construction](../../../../docs/kb/astra_hasse_containment-2026-09-05.md)
+has a one-dimensional complete second-Hasse kernel and an empty matching
+first-order kernel. Every new polynomial is nevertheless a differential
+consequence of the earlier regular factor, so its pullback vanishes modulo
+that factor. The construction includes independent received words and a
+genuine singleton MCA-bad family. Seven exact full-matrix controls, separate
+contact coefficients, and polynomial identities pass; the general proof is
+written and has not received independent review or Lean verification.
+
+This refutes the unqualified inference from improved interpolation existence
+to a proper additional cut. Its total degree is one and its uniform dimension
+margin is nonpositive. It neither realizes the binding C2 flag nor refutes
+properness for the strictly positive production certificates. A high-Z variant
+also shows cancellation between a factor and its raw differential relation;
+that variant does not have the original first-order kernel provenance.
+The prize remains open.

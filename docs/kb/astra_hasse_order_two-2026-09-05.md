@@ -149,6 +149,11 @@ factor and list analyses; matching the total degree cap does not supply them.
 
 ## Reproduction
 
+The [rank-profile follow-up](astra_hasse_rank_profile-2026-09-05.md) reuses
+this block formula to give positive second-Hasse certificates at the actual
+companion radius. Its existence argument does not yet prove a proper extra
+cut or a stronger MCA count.
+
 Run `python3 scripts/probes/astra_hasse_order_two_check.py`.
 The [checker](../../scripts/probes/astra_hasse_order_two_check.py) verifies
 the displayed counts and finite thresholds. It independently constructs

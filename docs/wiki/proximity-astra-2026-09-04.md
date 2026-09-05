@@ -128,6 +128,25 @@ The earlier first-derivative source at m=166 is reproduced as a calibration;
 it is outside this search. The exclusion does not prove that production
 interpolants are nonexistent or rule out other interpolation shapes.
 
+The [rank-profile follow-up](../kb/astra_hasse_rank_profile-2026-09-05.md)
+finds positive second-Hasse sources outside that small family. At the actual
+companion radius, m=80,S1=24,S2=6,T=1042 gives a guaranteed source nullity
+of 653072574. One ordered elimination per homogeneous slice answers all
+contact cutoffs, and an exact common-factor shift handles the higher slices.
+The checker passes 4500 comparisons against the earlier block expansion,
+reproduces the 1426-profile exclusion, and finds 123 positive profiles in a
+specified 528-profile larger search. The lower-degree extra cut has an
+attractive conditional mixed cost, but properness on the components being
+counted is unproved. There is no improved MCA allowance or Lean theorem yet.
+
+The [full second-Hasse containment example](../kb/astra_hasse_containment-2026-09-05.md)
+shows why that qualifier matters: its full second-order kernel is nonzero
+while the matching first-order kernel is empty, but every pullback is
+divisible by the old regular factor. Seven complete finite matrix and
+polynomial-identity controls pass, including the companion characteristic
+at small n,w. Its uniform dimension margin is nonpositive, so the example
+does not settle the positive production case.
+
 The [fixed-word differential carrier](../kb/astra_scalar_differential_carrier-2026-09-05.md)
 now supplies an actual curve and degree bound for the scalar companion
 profile. Its written argument gives at most 12546010856 degree-at-most-131071

@@ -480,6 +480,19 @@ python3 -m pip install leanblueprint
   `python3 scripts/probes/astra_hasse_production_check.py` to replay the
   profile vector, 16 direct-count comparisons, and passing m=166 calibration.
   This does not exclude actual kernels or larger source shapes.
+  The [positive production Hasse sources](../kb/astra_hasse_rank_profile-2026-09-05.md)
+  use an exact rank filtration to find a source at m=80,S1=24,S2=6,T=1042
+  with guaranteed nullity 653072574. Run
+  `python3 scripts/probes/astra_hasse_rank_profile_check.py --scan` for
+  4500 sparse-block comparisons, the earlier exclusion, and the bounded
+  larger search. Properness of the resulting extra cut is still unproved;
+  these sources do not yet improve the prize bound.
+  The [full second-Hasse containment example](../kb/astra_hasse_containment-2026-09-05.md)
+  has a nonzero complete kernel, an empty matching first-order kernel, and
+  no proper pullback cut. Its uniform dimension margin is nonpositive;
+  it does not refute the production certificates. Run
+  `python3 scripts/probes/astra_hasse_containment_check.py` for seven full
+  finite matrices and the differential-consequence identities.
   The [carrier counting bounds](../kb/astra_carrier_dimension_bound-2026-09-05.md)
   quantify what a small carrier in coefficient space would imply for scalar
   lists and, separately, selected MCA witnesses. No sufficient universal
