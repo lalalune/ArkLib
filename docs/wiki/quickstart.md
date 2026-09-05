@@ -331,6 +331,12 @@ python3 -m pip install leanblueprint
   `python3 scripts/probes/astra_mca_twogen_lift_eval.py` for dense small-domain
   comparisons and the constant-size production checks. Its partial count
   268435460 is below the 1073741825 required; the full collision count is open.
+  The [native evaluator](../kb/astra_mca_native_eval-2026-09-04.md) provides
+  exact finite-value counting with bounded partition arrays. Run
+  `python3 scripts/probes/astra_mca_native_eval_check.py` for independent
+  arithmetic, formula, batch, and counting checks; this default check never
+  starts the production scan. Full scans use a separately requested command
+  and report resource failures as incomplete.
   The [anchor filter](../kb/astra_mca_anchor_multiplicity-2026-09-04.md)
   rules out pure power lifts as a general way to guarantee enough directions.
   The [Paley scope audit](../kb/astra_paley_scope-2026-09-04.md) distinguishes
