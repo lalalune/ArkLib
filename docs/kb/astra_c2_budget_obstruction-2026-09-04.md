@@ -137,3 +137,9 @@ also passed at commit `40ea4a5ba28c2bd05a5cb164f97ab90c218b655d`, on research
 Lean 4.30.0-rc2 and official-companion Lean 4.32.2. Both new reports were
 axiom-free in both jobs; all fourteen auxiliary reports per job passed the
 allowlist audit. This does not validate the unintegrated geometric change.
+
+The [geometric follow-up](astra_c2_geometry_contact_obstruction-2026-09-04.md)
+constructs an actual irreducible factor at this flag whose first and second
+tails meet with multiplicity one. This refutes a uniform local-multiplicity
+shortcut, while leaving large-family and interpolation-provenance arguments
+open. Its general proof is a reviewed mathematical note, not a Lean theorem.

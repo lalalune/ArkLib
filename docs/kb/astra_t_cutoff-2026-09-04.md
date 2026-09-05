@@ -249,6 +249,13 @@ have empty axiom lists in the local check. The formulas were independently
 compared with the probes. This proves the displayed finite arithmetic; the
 identification with the official companion coefficient APIs is still separate.
 
+The [two-version CI run](https://github.com/lalalune/ArkLib/actions/runs/33935910795)
+passed at commit `68482821a56351b76b90f459cc6849ec2565f22a`. Each job checked
+all eighteen auxiliary theorem reports on Lean 4.30.0-rc2 or Lean 4.32.2.
+All four T-gate reports were axiom-free in both jobs. The full repository
+build remains unavailable locally because Lake and the Mathlib cache are
+absent; this focused check does not replace it.
+
 Remaining work includes identifying the arithmetic with the packed coefficient
 definitions, instantiating the common-divisor dimension theorem, updating
 selected-box and residual-polynomial consumers, retuning ordinary-factor

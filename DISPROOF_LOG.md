@@ -17042,3 +17042,23 @@ These results leave nonlinear overlap and concentration of the actual joint
 key images open; they do not establish an upper bound on all attack families.
 Details: `docs/kb/astra_attack_joint_key_obstructions-2026-09-04.md` and
 `docs/kb/astra_attack_mixed_cycles-2026-09-04.md`.
+
+## [astra-c2-contact-transversality] contact vanishing does not force doubled local multiplicity (2026-09-04)
+
+At the exact raw flag `(10,37,2317)`, put `A=Y-X`, `B=R-1`, and
+`F=B-X*A-Z+A^47+B^10+Z^2364`. This factor is geometrically irreducible
+and has the regular polynomial solution `gamma=0,f(X)=X`. On its smooth
+surface the contact derivation modulo the square of the selected ideal is
+`D(A)=X*A+Z`, `D(Z)=0`, `D(X)=1`. The first variations of consecutive
+tails have determinant `(-1)^n*n!`, nonzero at `n=w+1=131072<p`.
+The source normalization multiplies them only by local units. The first
+tail is consequently reduced at the solution and the next tail has a
+simple zero, despite all higher tails vanishing there.
+
+This rules out a universal pointwise multiplicity gain. It does not
+construct a large bad family, a far direction, or membership in every
+interpolation kernel, and does not saturate the global counting budget.
+The irreducibility and transversality arguments received independent review;
+the finite polynomial/recurrence probe passes at the production prime.
+The general argument is not Lean formalized.
+Details: `docs/kb/astra_c2_geometry_contact_obstruction-2026-09-04.md`.
