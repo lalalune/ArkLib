@@ -8,6 +8,11 @@ one Hamming step **weaker** than the existing
 `357913941/2^30`. It does not improve the strongest numerical bound,
 prove a matching lower bound, or solve a grand prize challenge.
 
+Nine [supporting Lean theorems](astra_mca_polynomial_basis-2026-09-05.md)
+now verify the initial determinant algebra, cofactor independence, anchor
+selection and root-division identities. The full production construction
+and threshold consequence below are not yet assembled in Lean.
+
 The useful change is structural: two further deletions permit multiplication
 of each generator by X. Evaluation at different coordinates then gives
 different projective linear functionals automatically. A polynomial root

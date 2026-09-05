@@ -9,6 +9,7 @@ on:
       - "scripts/probes/astra_c2_budget_obstruction.lean"
       - "scripts/probes/astra_companion_t_kernel_gates.lean"
       - "scripts/probes/astra_exact_list_projection.lean"
+      - "scripts/probes/astra_mca_polynomial_basis.lean"
       - ".github/workflows/proximity-strip-proof.yml"
   workflow_dispatch:
 
@@ -57,7 +58,7 @@ jobs:
           set -euo pipefail
           lean --version
           : > "$RUNNER_TEMP/strip-proof.log"
-          for proof in astra_companion_strip_projection astra_companion_6804_ordinary_gates astra_c2_budget_obstruction astra_companion_t_kernel_gates astra_exact_list_projection; do
+          for proof in astra_companion_strip_projection astra_companion_6804_ordinary_gates astra_c2_budget_obstruction astra_companion_t_kernel_gates astra_exact_list_projection astra_mca_polynomial_basis; do
             python3 "$GITHUB_WORKSPACE/scripts/forbidden_tokens.py" "$GITHUB_WORKSPACE/scripts/probes/$proof.lean"
             lake env lean "$GITHUB_WORKSPACE/scripts/probes/$proof.lean" 2>&1 | tee -a "$RUNNER_TEMP/strip-proof.log"
           done
@@ -89,6 +90,11 @@ jobs:
               "joint_agreements_le_projected", "scalar_budget_to_interleaved",
               "interleaved_budget_to_scalar", "exact_budget_iff", "grand_field_gate",
               "companion_field_gate", "scalar_carrier_field_gate")]
+          expected += ["AstraMcaPolynomialBasis." + name for name in (
+              "initial_determinant", "change_basis_determinant", "divided_determinant",
+              "cofactor_pair_independent", "exists_separated_at_anchor",
+              "many_separated_at_anchor", "remove_root_exact", "remove_root_degree",
+              "production_anchor_margins")]
           for declaration in expected:
               if declaration not in reported:
                   raise SystemExit("Missing axiom report: " + declaration)
