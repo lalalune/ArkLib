@@ -10,8 +10,12 @@ gives a written scalar estimate at the companion radius 80791/262144,
 with independent review and Lean formalization still outstanding. Neither
 argument identifies the MCA bad set with a decoding list.
 
-This note gives an elementary written proof and reproducible finite checks,
-not a Lean theorem or a novelty claim. The general interleaving literature is
+This note gives an elementary written proof and reproducible finite checks.
+A [general Lean candidate](../../scripts/probes/astra_exact_list_projection.lean)
+now states the exact list-budget equivalence at integer agreement thresholds;
+its compiler and axiom checks are pending in the two-version auxiliary-proof
+CI workflow. It is not yet a verified Lean theorem or a novelty claim.
+The general interleaving literature is
 reviewed in [ABF26, Definition 2.9 and Lemma 2.10](https://eprint.iacr.org/2026/680).
 The in-tree [product bound](../../ArkLib/Data/CodingTheory/InterleavedListSize.lean)
 applies without linearity and transfers B to B^m; the argument here uses
@@ -178,3 +182,11 @@ A separate repetition-plus-free-coordinate code has full list maxima 3 and
 9 over F3, but its decoded repetition value is unique at both arities,
 checking the distinction between full lists and observable images.
 No production list or field is enumerated.
+
+The Lean candidate covers avoidance of at most q proper subspaces, separation
+of a finite family using unordered collision pairs, monotonicity of agreement
+under projection, both directions of the budget equivalence, and the three
+field-size gates used here and in the scalar differential-carrier note.
+It imports Mathlib alone and does not claim the scalar production bound or
+an MCA reduction. CI compiles it against both repository pins and audits nine
+explicit axiom reports, in addition to the existing auxiliary checks.
