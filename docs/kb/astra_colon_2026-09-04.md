@@ -7,6 +7,12 @@ that bound is far larger than the available source-kernel dimension lower bound,
 even under the favorable extra assumption that the divisor has contact order
 zero at every node. This gives no improved protocol bound or leaderboard score.
 
+Follow-up: the [same-kernel repair/descent argument](astra_kernel_descent_2026-09-04.md)
+now excludes an all-order-zero positive-R factor from being universal on a
+nonzero **full** source kernel. The failed dimension comparison below remains
+correct, but does not limit that stronger argument. Applying descent to a
+projected source subspace requires a separate stability proof.
+
 The source pin is
 [`032154395c51fd6f77715a7f42d9a987ab9fb48a`](https://github.com/proximity-prize/proximity-prize/commit/032154395c51fd6f77715a7f42d9a987ab9fb48a).
 This follows the [T-cutoff investigation](astra_t_cutoff-2026-09-04.md), at error

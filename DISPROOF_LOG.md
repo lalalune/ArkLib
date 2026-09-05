@@ -17080,3 +17080,78 @@ actual factor contact degree or a stronger actual-kernel dimension bound can
 change the comparison. The general filtration proof is not Lean formalized;
 24 direct finite-field matrices validate the probe's transcription, with a
 separate 27-case root check. Details: `docs/kb/astra_colon_2026-09-04.md`.
+
+Follow-up: the same-kernel descent below excludes the all-order-zero universal
+factor case without relying on this failed comparison.
+
+## [astra-kernel-descent] repair inside the full kernel excludes zero-order universal factors (2026-09-04)
+
+If a positive-R factor F divides every polynomial in a nonzero full contact
+kernel, replacing a minimum-R-degree element Q by P Q/F gives a contradiction
+whenever an R-free P repairs the lost contacts within F's weighted and total
+degrees. Taking P=1 excludes factor contact order zero at every node. A
+nodewise locator gives `sum min(m,nu_i)>contactWeight(F)`, and an R-free
+interpolation rank count gives an additional necessary contact-profile bound.
+At exact degrees `(total,YS,R)=(2364,47,10)`, the characteristic-free local
+bound `nu_i<=57` implies at least 108076 positive-contact nodes and at least
+453 nodes of order at least 34.
+
+These restrictions use actual full-source universal divisibility. A projected
+source subspace requires a separate stability argument. The all-order-34
+arithmetic profile still passes; no polynomial realizing it is asserted, and
+there is no binding-case exclusion or score gain. The general proof received
+independent review; 473 binomial determinants and 24 direct local matrices
+check the probe transcription. It is not Lean formalized.
+Details: `docs/kb/astra_kernel_descent_2026-09-04.md`.
+
+The derivative-repair follow-up raises the positive-node minimum to 131071:
+`sum min(h,nu_i)>h*(w-1)` for every `1<=h<=degree_R(F)<char K`. Multiplying
+the hth R derivative of F by a factor-specific locator repairs contact while
+lowering the replacement's R degree. The regular derivative H also gives
+`sum_agree max(0,nu_i-1)<=contactWeight(F)-(w-1)`. Uniform order 34 still
+passes with 44608 degree slack, so these conditions do not close the bound.
+Independent proof review and 384 local identity checks pass; not Lean
+formalized. Details: `docs/kb/astra_incidence_derivative_repair-2026-09-04.md`.
+
+Allowing an interpolation repair of R-degree at most 9 further raises the
+necessary number of nodes of order at least 34 from 453 to 6009. The fixed
+repair box has 2856185117975 coefficients; order-33 nodes leave a nullity
+lower bound of 138332486935. Each order-at-most-57 replacement increases the
+rank bound by at most 23021800, giving the stated rounded threshold. The
+uniform order-34 profile still passes. All 58 literal rank sums and 27 direct
+contact matrices pass; the general argument is not Lean formalized.
+Details: `docs/kb/astra_kernel_lowr_2026-09-04.md`.
+
+## [astra-global-tail-ideal] all later tails need not reduce the first-two-tail locus (2026-09-04)
+
+For `F=R-X*(Y-P(Z))-Q(Z)`, the adjacent derivative determinant is
+`(-1)^j*j!`, so at `j=w+1<p` the first two tail equations generate exactly
+`(Y-P(Z),Q(Z))`. This ideal is derivation-stable and already equals the ideal
+of all later tails. With squarefree Q of degree 2364 it has 2364 reduced
+points. The exact polynomial and derivative checks pass at the production
+prime. This example has raw flag `(1,0,2363)`, outside C2, and fails large
+agreement by a direct incidence count. It only rules out a strict reduction
+from the actual first-two-tail locus using later tails alone in all regular
+factors; it does not saturate the published allowance or obstruct a C2-specific
+argument. Written proof, not Lean formalized.
+Details: `docs/kb/astra_global_tail_ideal_scope-2026-09-04.md`.
+
+## [astra-grand-smooth-middle] actual smooth-domain syzygies refute RegionMiddleExclusion (2026-09-04)
+
+Three disjoint cubic root sets on `mu_16` have no constant syzygy but have a
+linear-cofactor syzygy. Substituting `X^m` proves exact minimal product degree
+`4m` for three degree-`3m` region polynomials on `mu_(16m)`. The profile
+`(a,b,c,t,k,delta_1)=(3m,3m,3m,4m-1,8m,4m)`, `m>=4`, satisfies every
+`RegionSyzygyRealizable` face and lies in the middle band. This refutes the
+actual sufficient-side `RegionMiddleExclusion` predicate and unrestricted
+`SYZ40.UniformSylvesterInjective`, including at production dyadic order in
+fields containing the required roots. A field-uniform written proof supplies
+the large-instance argument; 32 seed and 40 full-domain exact checks validate
+the construction, including 12 with field size greater than `n^4`.
+
+Three actual codewords agree with one received word at more than `2n/3`
+positions. This does not give an over-budget MCA family or the missing genuine
+large-stack bridge. The general counterexample is independently reviewed but
+not Lean formalized. Conditional theorems using the refuted predicate remain
+logically valid; the predicate cannot serve as an unconditional proof input.
+Details: `docs/kb/astra_grand_smooth_middle_counterexample-2026-09-04.md`.

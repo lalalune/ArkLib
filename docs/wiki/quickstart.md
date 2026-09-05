@@ -271,6 +271,23 @@ python3 -m pip install leanblueprint
   and [colon/Hermite audit](../kb/astra_colon_2026-09-04.md) document subsequent
   arguments and their exact Python probes. Those general mathematical
   arguments have independent review but are not part of the Lean proof suite.
+  The [same-kernel descent](../kb/astra_kernel_descent_2026-09-04.md) strengthens
+  the colon analysis by proving necessary contact-profile conditions for a
+  universal positive-R factor in a full source kernel. Reproduce its exact
+  checks with `python3 scripts/probes/astra_kernel_descent.py`.
+  The [derivative repair and incidence bound](../kb/astra_incidence_derivative_repair-2026-09-04.md)
+  strengthens the necessary profile conditions; reproduce with
+  `python3 scripts/probes/astra_incidence_derivative_repair.py`.
+  The [cap-nine repair audit](../kb/astra_kernel_lowr_2026-09-04.md) strengthens
+  the high-order node count; run `python3 scripts/probes/astra_kernel_lowr_audit.py`.
+  The [all-tail ideal scope check](../kb/astra_global_tail_ideal_scope-2026-09-04.md)
+  has `python3 scripts/probes/astra_global_tail_ideal_check.py`; its example is
+  outside C2 and fails large agreement. The separate
+  [smooth-domain middle-band counterexample](../kb/astra_grand_smooth_middle_counterexample-2026-09-04.md)
+  refutes `RegionMiddleExclusion`, an overly strong sufficient conjecture,
+  with a field-uniform written proof and an actual three-codeword construction.
+  Use `python3 scripts/probes/astra_grand_smooth_middle_counterexample.py`.
+  These results are not Lean formalized and establish no improved prize score.
 
 ## Manual Timing Helper
 

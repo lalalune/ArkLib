@@ -11,6 +11,17 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SYZ59EmptyMiddle
 /-!
 # F1 — the region-syzygy realizability interface for the middle-band residual
 
+## Research update (2026-09-04; not Lean formalized)
+
+`docs/kb/astra_grand_smooth_middle_counterexample-2026-09-04.md` gives a written,
+independently reviewed counterexample to `RegionMiddleExclusion`: on `μ_{16m}`, the
+profile `(a,b,c,t,k,δ₁) = (3m,3m,3m,4m-1,8m,4m)` satisfies this interface for `m ≥ 4`.
+The proof works over every field containing the required roots, including production
+dyadic order; an exact Python probe checks smaller domains. This refutes the
+sufficient-side conjecture, not the genuine over-budget stack statement. The definitions
+and conditional transport theorems below remain valid. No Lean counterexample theorem
+or prize closure is claimed here.
+
 ## Where this sits
 
 PR #528 (`_F1PolytopeMiddleCountermodel.lean`, merged at `5e1a2667e`) refuted the numeric statement
@@ -79,7 +90,8 @@ discharges the genuine middle exclusion.  The converse direction needs the lift 
    discharge must prove the PR #528 numeric family carries **no** region/syzygy configuration at
    `δ₁ = d+1`, and conversely a single such configuration refutes it.
    `family_within_interface_window` records in checkable form that the interface theorems
-   (3)–(4) do **not** decide the family: the exclusion is genuinely open at this interface.
+   (3)–(4) do **not** decide that family. The research update above uses a different
+   realizable family to refute the general sufficient-side exclusion.
 
 ## Scope honesty
 
@@ -88,10 +100,9 @@ discharges the genuine middle exclusion.  The converse direction needs the lift 
   file does not attack it.  `regionMiddleExclusion_kills_family` excludes region/syzygy
   configurations for the family profiles; it does **not** show the family cannot arise from an
   actual over-budget witness stack.
-* `RegionMiddleExclusion` is **NOT proved** here, for any field.  On the region-syzygy layer it
-  is the SYZ45-shaped geometric obstruction ("no realizable low-degree non-constant
-  dependence"), which SYZ49 identifies with the BGK additive-log-phase level-set wall.  Nothing
-  here touches that wall.
+* `RegionMiddleExclusion` is **NOT proved** here, and the research update refutes it by a
+  written construction. The genuine stack-restricted F1/BGK obstruction remains open;
+  the unrestricted region-syzygy statement cannot replace that missing input.
 * Non-vacuity of `RegionSyzygyRealizable` at the polynomial level is the SYZ50 Question-C
   empirical fact (357 constant-syzygy witnesses on `μ₁₄ ⊂ 𝔽₂₉`); it is **not** formalized here.
   This file is statement-interface plus elementary polynomial theory; it constructs no
@@ -336,14 +347,15 @@ theorem two_class_of_regionSyzygyRealizable
 
 /-! ## 6. The sufficient-side conjecture, its transport, and the PR #528 test corpus -/
 
-/-- **The middle exclusion over the region-syzygy layer (OPEN — this file does not prove it).**
+/-- **The middle exclusion over the region-syzygy layer (refuted in the research note above;
+the counterexample is not Lean formalized).**
 No region-syzygy-realizable profile over `K` sits in the middle band.  Unlike the numeric
 statement PR #528 refuted, `δ₁` here is bound to the minimal syzygy product-degree of the
 regions' vanishing triple.  **Scope**: this quantifies over a potentially strict superset of
 genuine F1 witnesses (no stack data is required), so it is a *sufficient-side conjecture* for
 the genuine F1 residual — see `middleExclusion_transport` — and possibly strictly stronger than
-it.  On this layer it is the SYZ45-shaped geometric obstruction, which SYZ49 identifies with
-the BGK level-set wall. -/
+it. The written counterexample shows that the additional genuine-stack restrictions
+cannot be omitted. This definition and its conditional consequences remain valid. -/
 def RegionMiddleExclusion (K : Type*) [Field K] : Prop :=
   ∀ a b c t k δ₁ : ℕ, RegionSyzygyRealizable K a b c t k δ₁ → ¬ SYZ59.middleBand a b c δ₁
 

@@ -9,6 +9,17 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SYZ33FinalTwoLemmas
 /-!
 # SYZ40 — final assembly of the rate-`1/2` proximity strip theorem
 
+## Research update (2026-09-04; not Lean formalized)
+
+The unrestricted `UniformSylvesterInjective K (16*m) (8*m)` is refuted by the
+smooth-domain construction in
+`docs/kb/astra_grand_smooth_middle_counterexample-2026-09-04.md` for `m ≥ 4` and
+fields containing `μ_{16m}`. The written proof and exact probes are independently
+reviewed; there is no Lean counterexample theorem here. This includes production
+dyadic order. The conditional theorems below remain valid, but the historical
+description of this hypothesis as an open input must not be read as a viable
+unrestricted route to closure. A replacement must retain genuine large-stack data.
+
 This is the **closing document of the SYZ18–SYZ40 arc**.  Its single goal: express the whole
 rate-`1/2` proximity strip theorem as **one theorem depending on exactly one named uniform
 hypothesis**, `UniformSylvesterInjective`, with every input that resists a fully-formal discharge
@@ -149,11 +160,10 @@ holds for **every** rate-`1/2` band degree profile: for all pairwise-coprime ban
 (`k − 1 < m_AB + m_AC − t`, SYZ37), the generalized Sylvester map is injective on the in-budget
 cofactor window (budgets `k − 1 − m_AC`, `k − 1 − m_BC`).
 
-This is the **single substantive open input** of the whole strip theorem.  SYZ39 characterizes it
-arithmetically: per configuration it is a bounded-height resultant non-vanishing (prize-clean by a
-finite computation), and the uniform statement at `n = 2³⁰` is of BGK type
-(additive-cancellation-over-`μ_n`).  The honest `∀`-quantification matches SYZ39's characterization
-exactly. -/
+This was the proposed single substantive input of the strip theorem. The research update
+above refutes the unrestricted quantification as written, even with disjoint smooth-domain
+root sets. SYZ39's per-configuration arithmetic characterization and the conditional
+consequences below remain valid; a genuine-stack restriction is still needed. -/
 def UniformSylvesterInjective (K : Type*) [Field K] (n k : ℕ) : Prop :=
   ∀ (WAB WAC WBC : K[X]) (mAB mAC mBC t : ℕ),
     n = 2 * k → t < mAB → k - 1 < mAB + mAC - t →
