@@ -4,9 +4,10 @@ The [root-domain basis construction](astra_mca_polynomial_basis-2026-09-05.md)
 is now instantiated over the repository's exact production field and
 generator. Seven additional theorems in
 [`astra_mca_production_basis.lean`](../../scripts/probes/astra_mca_production_basis.lean)
-pass local Lean 4.30.0-rc2. **This proves the concrete polynomial basis and scalar projection;
-the indexed MCA witnesses, their probability and the threshold consequence
-still need formal assembly. The universal lower bound remains open.**
+pass local Lean 4.30.0-rc2. **This proves the concrete polynomial basis and scalar projection.**
+The subsequent [production assembly](astra_mca_production_upper-2026-09-05.md)
+now checks the indexed MCA witnesses, probability, and upper-threshold consequence
+locally. **The universal lower bound remains open.**
 
 ## What is instantiated
 
@@ -53,8 +54,9 @@ two coefficient vectors with nonzero denominators and pairwise distinct
 
 This domain uses the powers displayed in the repository's
 [`KKH26.evalCode`](../../ArkLib/Data/CodingTheory/ProximityGap/KKH26WitnessSpread.lean)
-definition. The new proof does not yet put the constructed polynomial
-evaluations into that indexed code or prove its `mcaEvent` statements.
+definition. This module supplies the construction; the
+[production assembly](astra_mca_production_upper-2026-09-05.md) puts its
+evaluations into the indexed RS code and proves the actual `mcaEvent` statements.
 
 ## Checked field-size arithmetic
 
@@ -68,8 +70,8 @@ P < M*2^128.
 The first is the field-size condition in the written four-generator
 projection argument. The second says that M distinct bad scalars would
 exceed probability 2^-128. Those scalars now exist formally. The general
-polynomial same-support lemmas are also checked, but their indexed MCA and
-probability consequences still require assembly.
+polynomial same-support lemmas and their indexed MCA and probability
+consequences are checked in the follow-up production assembly.
 
 `production_moment_curve_arithmetic` additionally checks `3*M<P` and
 `3*M*M<P`, the sufficient bounds used by the implemented univariate

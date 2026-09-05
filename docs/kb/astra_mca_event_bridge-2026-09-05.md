@@ -4,8 +4,9 @@ The [event bridge](../../scripts/probes/astra_mca_event_bridge.lean) checks two
 theorems against the repository's unchanged `ReedSolomon.code` and
 `ProximityGap.mcaEvent` definitions. Both pass local Lean 4.30.0-rc2, without
 warnings or axioms beyond the permitted standard three. **These are general
-bridge theorems. The production support choice, event count, probability,
-and threshold assembly remain incomplete; the universal lower bound is open.**
+bridge theorems. The subsequent [production assembly](astra_mca_production_upper-2026-09-05.md)
+now checks the support choice, event count, probability, and upper threshold
+locally. The universal lower bound remains open.**
 
 ## What the bridge proves
 
@@ -33,7 +34,7 @@ event is assumed as a hypothesis.
 First compile the matching ArkLib event dependencies and auxiliary modules:
 
 ```sh
-bash scripts/lake-locked.sh build ArkLib.Data.CodingTheory.ProximityGap.Errors
+bash scripts/lake-locked.sh build ArkLib.Data.CodingTheory.ProximityGap.KKH26WitnessSpread ArkLib.Data.CodingTheory.ProximityGap.Frontier._PrizeShapePrimeP30
 bash scripts/check-mca-production-basis.sh /tmp/mca-proof-lib
 bash scripts/check-mca-event-bridge.sh /tmp/mca-proof-lib
 ```
@@ -61,8 +62,8 @@ passed both toolchains in
 [run 33989276174](https://github.com/lalalune/ArkLib/actions/runs/33989276174).
 That run predates this event bridge; this addition needs its own CI result.
 
-The next step is to choose production supports of size 715827882, instantiate
-the domain embedding, and apply this bridge to all 1073741828 distinct slot
-scalars. The equivalence to the threshold ledger's `KKH26.evalCode` and the
-probability consequence must also be proved. No threshold or prize closure
-is claimed by these two general theorems.
+The [production assembly](astra_mca_production_upper-2026-09-05.md) now chooses
+supports of size 715827882, instantiates the domain embedding, applies this
+bridge to all 1073741828 distinct slot scalars, and derives the probability
+and upper-threshold consequence. The direct KKH26 adapter has its own CI
+obligation. These two general bridge theorems alone are not a prize solution.

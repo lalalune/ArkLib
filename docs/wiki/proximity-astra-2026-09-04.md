@@ -18,8 +18,11 @@ now gives a written upper-bound argument without a production collision
 scan. Multiplying two smaller-degree generators by X separates all
 absent-core evaluations; a large-field projection produces n+4 actual
 MCA witnesses at radius `357913942/2^30`. This is one Hamming step weaker
-than the existing computational bound. Exact finite controls and production
-arithmetic pass; independent proof review and Lean formalization remain open.
+than the existing computational bound. The
+[production upper-bound assembly](../kb/astra_mca_production_upper-2026-09-05.md)
+now passes local Lean through the actual events, probability, and threshold;
+the direct KKH26 adapter awaits the expanded CI check. Independent review
+and the matching universal lower bound remain open.
 Thirty-one [supporting polynomial theorems](../kb/astra_mca_polynomial_basis-2026-09-05.md)
 now pass local Lean 4.30.0-rc2. They construct the complete polynomial basis
 from a domain of 2^30 distinct 2^30-th roots, including the partition,
@@ -34,9 +37,9 @@ now produce that many distinct finite scalar challenges and establish the
 general polynomial agreement and same-support exclusion lemmas.
 Two [event bridge theorems](../kb/astra_mca_event_bridge-2026-09-05.md)
 now check the transport into ArkLib's actual indexed RS MCA event, with
-explicit domain and support-size conditions. The production event assembly,
-probability and threshold theorem still
-require assembly; these checks do not close the universal floor.
+explicit domain and support-size conditions. Six production-event and four
+probability/code/threshold theorems now complete the local upper-bound
+construction. This does not close the universal floor.
 
 The [single-hole reduction](../kb/astra_mca_single_hole_reduction-2026-09-05.md)
 also identifies a necessary subproblem for the universal bound: controlling

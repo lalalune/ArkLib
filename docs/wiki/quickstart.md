@@ -342,13 +342,17 @@ python3 -m pip install leanblueprint
   certificate, basis, and [residual-row dependency](../kb/astra_mca_residual_rows-2026-09-05.md),
   [evaluation and projection modules](../kb/astra_mca_scalar_projection-2026-09-05.md),
   then checks the concrete power-domain result and its 1073741828 distinct
-  scalar challenges; it does not build all ArkLib modules. The indexed MCA
-  events and probability still require assembly.
+  scalar challenges; it does not build all ArkLib modules. The
+  [production event and threshold assembly](../kb/astra_mca_production_upper-2026-09-05.md)
+  now uses these scalars to prove the upper bound in local Lean.
   For the [actual-event bridge](../kb/astra_mca_event_bridge-2026-09-05.md), build
-  `ArkLib.Data.CodingTheory.ProximityGap.Errors` with `scripts/lake-locked.sh`,
+  `ArkLib.Data.CodingTheory.ProximityGap.KKH26WitnessSpread` and
+  `ArkLib.Data.CodingTheory.ProximityGap.Frontier._PrizeShapePrimeP30`
+  with `scripts/lake-locked.sh`,
   then run `bash scripts/check-mca-event-bridge.sh /tmp/mca-proof-lib`.
   Its optional second argument supplies the compiled ArkLib library path.
-  This bridge is checked on the ArkLib pin; the companion check covers the
+  This checks the bridge, production events, probability/threshold, and KKH26
+  adapter on the ArkLib pin; the companion check covers the
   separate Mathlib-based construction chain.
   Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
   check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run

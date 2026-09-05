@@ -1,7 +1,9 @@
 # Four deletions give an analytic MCA upper bound
 
-**Status:** written proof with exact finite controls; independent review and
-Lean formalization remain open. This gives the production upper bound
+**Status:** the [production upper-bound assembly](astra_mca_production_upper-2026-09-05.md)
+now passes local Lean, including the actual events, probability, and threshold.
+The adapter to the existing KKH26 definition awaits the expanded CI check;
+independent mathematical review remains open. This gives the production upper bound
 `mcaDeltaStar <= 357913942/2^30` without a production collision scan. It is
 one Hamming step **weaker** than the existing
 [computational upper bound](astra_mca_production_count-2026-09-05.md)
@@ -13,8 +15,9 @@ now construct the complete polynomial basis from root-domain data at the
 production dimensions: the balanced partition, interpolation, determinant
 and both deletion pairs. A [concrete wrapper](astra_mca_production_basis-2026-09-05.md)
 now instantiates this basis with the certified modulus, generator and power
-domain. The indexed code bridge, actual MCA witnesses and full threshold
-consequence below are not yet assembled in Lean.
+domain. The indexed code bridge, production MCA witnesses, and threshold
+consequence are now assembled. The general parameterized statement below
+extends beyond the single production instance checked by that assembly.
 
 The useful change is structural: two further deletions permit multiplication
 of each generator by X. Evaluation at different coordinates then gives

@@ -5,8 +5,9 @@ certified production field. `production_scalar_projection` supplies one
 partition, one polynomial basis, and two coefficient vectors whose 1073741828
 slot ratios are finite and pairwise distinct. The evaluation lemmas identify
 these ratios with polynomial agreements and exclude a degree-bounded
-explanation on the same enlarged core. **The indexed-code, `mcaEvent`,
-probability, and threshold assembly is still incomplete. The universal
+explanation on the same enlarged core. The subsequent
+[production assembly](astra_mca_production_upper-2026-09-05.md) checks the
+actual events, probability, and upper threshold locally. **The universal
 lower bound remains open.**
 
 Sources:
@@ -97,9 +98,9 @@ own revision must pass the same checks.
 
 The [general event bridge](astra_mca_event_bridge-2026-09-05.md) now transports
 polynomial supports into the repository's actual indexed RS `mcaEvent`.
-The next assembly must choose supports of the required production size,
-instantiate that bridge on the power domain, and derive its probability and threshold
-consequence. This construction targets the written upper bound
+The subsequent [production assembly](astra_mca_production_upper-2026-09-05.md)
+now chooses those supports, instantiates the bridge, and derives the probability
+and threshold consequence in local Lean. This construction proves the upper bound
 357913942/2^30, one Hamming step weaker than the previously computed upper
 bound. It does not improve that number or prove the matching universal bound.
 

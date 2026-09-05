@@ -14,6 +14,9 @@ on:
       - "scripts/probes/astra_mca_evaluations.lean"
       - "scripts/probes/astra_mca_scalar_projection.lean"
       - "scripts/probes/astra_mca_event_bridge.lean"
+      - "scripts/probes/astra_mca_production_events.lean"
+      - "scripts/probes/astra_mca_production_upper.lean"
+      - "scripts/probes/astra_mca_kkh26_upper.lean"
       - "scripts/probes/astra_mca_production_basis.lean"
       - "scripts/check-mca-production-basis.sh"
       - "scripts/check-mca-event-bridge.sh"
@@ -60,9 +63,12 @@ jobs:
           use-mathlib-cache: false
       - name: Fetch pinned Mathlib dependencies
         run: '"$GITHUB_WORKSPACE/scripts/lake-locked.sh" exe cache get'
-      - name: Build actual MCA event dependencies
+      - name: Build actual MCA event and threshold dependencies
         if: matrix.project == 'arklib'
-        run: '"$GITHUB_WORKSPACE/scripts/lake-locked.sh" build ArkLib.Data.CodingTheory.ProximityGap.Errors'
+        run: >-
+          "$GITHUB_WORKSPACE/scripts/lake-locked.sh" build
+          ArkLib.Data.CodingTheory.ProximityGap.KKH26WitnessSpread
+          ArkLib.Data.CodingTheory.ProximityGap.Frontier._PrizeShapePrimeP30
       - name: Check auxiliary proofs and axiom reports
         shell: bash
         env:
@@ -146,6 +152,14 @@ jobs:
           if os.environ["CHECK_MCA_EVENT"] == "true":
               expected += ["AstraMcaEventBridge." + name for name in (
                   "mca_event_from_polynomial_support", "mca_event_of_core_insert")]
+              expected += ["AstraMcaProductionEvents." + name for name in (
+                  "core_subset_domain", "slot_coordinate_mem_domain", "mem_production_domain_iff",
+                  "production_support_arithmetic", "production_slot_event", "production_many_events")]
+              expected += ["AstraMcaProductionUpper." + name for name in (
+                  "production_code_iff", "production_mca_error_lower",
+                  "production_security_exceeded", "production_delta_star_upper")]
+              expected += ["AstraMcaKkh26Upper." + name for name in (
+                  "production_code_eq_evalCode", "first_prime_rate_half_delta_star_upper")]
           for declaration in expected:
               if declaration not in reported:
                   raise SystemExit("Missing axiom report: " + declaration)
