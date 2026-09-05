@@ -139,6 +139,13 @@ specified 528-profile larger search. The lower-degree extra cut has an
 attractive conditional mixed cost, but properness on the components being
 counted is unproved. There is no improved MCA allowance or Lean theorem yet.
 
+The [third-Hasse source](../kb/astra_third_hasse_source-2026-09-05.md)
+reduces the original total cap to 915 at m=99,S1=30,S2=8,S3=1, with
+guaranteed nullity 1033048571. Seven thousand direct block checks, a separate
+second-order reproduction, and a sanitized run pass. Its cleared cut bound
+is larger, and properness remains unproved; the one-variable minimal-polynomial
+descent does not apply unchanged to the two-variable relation ideal.
+
 The [full second-Hasse containment example](../kb/astra_hasse_containment-2026-09-05.md)
 shows why that qualifier matters: its full second-order kernel is nonzero
 while the matching first-order kernel is empty, but every pullback is

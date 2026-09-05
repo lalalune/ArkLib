@@ -17,6 +17,12 @@ polynomial agreeing at A nodes, when evaluated on its first two Hasse
 derivatives. This is a dimension certificate and a written interpolation
 argument, not a constructed production matrix or a Lean theorem.
 
+The [third-Hasse follow-up](astra_third_hasse_source-2026-09-05.md)
+adds a third divided derivative and gives a positive source with T=915.
+Its cleared cut has a larger degree bound, and the one-extra-variable
+properness criterion does not automatically extend to its relation ideal.
+It therefore supplies another source, not a new MCA bound.
+
 The corresponding order-one certificate at the same m=80,S1=24 fails for
 every total cap T. The earlier negative order-two search covered m<=24;
 these sources lie outside that family. Neither comparison proves that an

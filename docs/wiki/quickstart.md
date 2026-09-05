@@ -487,6 +487,12 @@ python3 -m pip install leanblueprint
   4500 sparse-block comparisons, the earlier exclusion, and the bounded
   larger search. Properness of the resulting extra cut is still unproved;
   these sources do not yet improve the prize bound.
+  The [third-Hasse source](../kb/astra_third_hasse_source-2026-09-05.md)
+  has total cap 915 and positive nullity 1033048571, but a larger cleared
+  cut bound and an unresolved properness condition. Run
+  `python3 scripts/probes/astra_third_hasse_check.py --sanitize` for 7000
+  direct block comparisons, shifted profiles, production coefficient sums,
+  and the independent second-Hasse calibration.
   The [full second-Hasse containment example](../kb/astra_hasse_containment-2026-09-05.md)
   has a nonzero complete kernel, an empty matching first-order kernel, and
   no proper pullback cut. Its uniform dimension margin is nonpositive;
