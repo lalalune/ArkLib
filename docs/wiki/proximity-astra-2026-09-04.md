@@ -187,6 +187,13 @@ the T=1042 or T=1031 source. This degree hypothesis is not known in general.
 Three finite full-kernel controls and extension-field rank checks pass;
 independent review, Lean integration, and general properness remain open.
 
+The [contact-loss tail argument](../kb/astra_contact_loss_tail-2026-09-05.md)
+extends the earlier first-order R-cap-nine margin exclusion to all
+multiplicities and excludes all corresponding root-safe second-order
+dimension certificates. It also shows that higher derivatives without R1
+reduce to ordinary multiplicity interpolation. These are restrictions on
+the method; actual kernels and the production properness problem remain open.
+
 The [coordinate and jet-repair follow-up](../kb/astra_acceleration_chart-2026-09-05.md)
 allows up to w-2 zero direction entries without changing coordinates.
 It also checks that low acceleration degree is not automatic: three

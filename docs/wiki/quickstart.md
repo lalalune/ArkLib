@@ -518,6 +518,11 @@ python3 -m pip install leanblueprint
   `python3 scripts/probes/astra_root_safe_filtration_check.py`; the note also
   gives the compile/run commands for its independent C++ endpoint search.
   This does not exclude actual kernels or the untrimmed second-order route.
+  The [contact-loss tail argument](../kb/astra_contact_loss_tail-2026-09-05.md)
+  extends the low-R first-order exclusion to all multiplicities, using the
+  existing finite audit plus an analytic bound. Run
+  `python3 scripts/probes/astra_contact_loss_tail_check.py` for its local
+  kernel, Hasse coefficient, and integer-rounding controls.
   The [acceleration-extension criterion](../kb/astra_acceleration_extension-2026-09-05.md)
   proves properness under a relative field-degree condition, covering rational
   and quadratic acceleration at the binding actual degree flag. Run

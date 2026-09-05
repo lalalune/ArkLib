@@ -236,3 +236,10 @@ shapes. Node correlations could still yield actual kernels despite every
 tested margin being nonpositive. The next direct properness argument must
 use information beyond this root-safe coefficient extraction certificate;
 the untrimmed second-order approach is unaffected by the exclusion.
+
+The [contact-loss tail argument](astra_contact_loss_tail-2026-09-05.md)
+now covers all larger multiplicities analytically. Combined with this
+finite audit, it excludes positive first-order uniform margins with R cap
+at most nine for every multiplicity, cutoff D<=m*A, and total cap. The
+corresponding root-safe second-order exclusion is likewise unbounded in
+multiplicity. Actual kernels and untrimmed properness remain open.
