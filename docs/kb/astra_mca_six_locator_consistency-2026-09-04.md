@@ -132,3 +132,9 @@ a uniform production-field theorem here.
 A next proof would need to exclude these actual production-domain locator
 identities, or bound the scalar yield after imposing the remaining six-pencil
 interpolation constraints. The source results reviewed above do neither.
+
+The subsequent [cyclic-shift and cover analysis](astra_mca_cyclotomic_locator_constraints-2026-09-05.md)
+shows that a common multiplicative power lift can have order at most two.
+It also supplies an actual-prime length-16 example and explains why inversion,
+the elementary elliptic-cover genus inequality, and the prime-field point count
+do not give a production exclusion.

@@ -224,3 +224,10 @@ line components nor counts only isolated components of V_t. At production,
 the still-unproved assertion is that the gamma projection of these
 715827884-fold incident vertices has size at most 1073741824 for every
 received pair. The curve incidence bounds above do not supply that assertion.
+
+The [ordinary-MDS obstruction](astra_mca_mds_rank_obstruction-2026-09-05.md)
+shows that quotient rank two and all ordinary MDS generalized Hamming weights
+are insufficient: a length-64 MDS code over the production field can have
+84 distinct finite bad scalars at threshold 44, all from isolated vertices.
+The code is not asserted to be Reed--Solomon. Any universal proof along this
+route must use additional structure beyond those rank and distance data.

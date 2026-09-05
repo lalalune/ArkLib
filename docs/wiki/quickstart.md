@@ -356,7 +356,12 @@ python3 -m pip install leanblueprint
   bounds. Their polynomial realizability and scalar counts remain open.
   The [locator consistency identities](../kb/astra_mca_six_locator_consistency-2026-09-04.md)
   force a three-dimensional polynomial span and a constant private-locator
-  relation. For one concrete remaining pattern, the
+  relation. The [cyclotomic locator constraints](../kb/astra_mca_cyclotomic_locator_constraints-2026-09-05.md)
+  rule out common power lifts of order at least four for the concrete
+  ten-point-defect pattern; reciprocity and the basic elliptic-cover bound
+  do not exclude it. Run `python3 scripts/probes/astra_mca_cyclotomic_locator_check.py`
+  for the exact bounded identities and production degree arithmetic.
+  For one concrete remaining pattern, the
   [birationality argument](../kb/astra_mca_six_locator_birationality-2026-09-04.md)
   proves that its locator map would be birational; the genus bound still has
   positive slack and does not exclude that pattern.
@@ -368,6 +373,12 @@ python3 -m pip install leanblueprint
   The [decoding-curve incidence bound](../kb/astra_mca_decoding_curve_incidence-2026-09-04.md)
   quantifies what a separately constructed curve carrier would suffice to
   prove. The existence of such a carrier for arbitrary MCA events is open.
+  The [ordinary-MDS obstruction](../kb/astra_mca_mds_rank_obstruction-2026-09-05.md)
+  proves that rank two and ordinary MDS generalized Hamming weights alone
+  cannot provide the desired cap: a length-64 MDS code can have 84 isolated
+  threshold-44 MCA vertices over the production field. This is not an RS
+  realization. Run `python3 scripts/probes/astra_mca_mds_rank_obstruction.py`
+  for its support, matching, and specialization-degree checks.
   The [native-count workflow](../../.github/workflows/proximity-native-count.yml)
   runs the separately pinned, bounded-tested native source on a standard
   public-repository Linux runner. It preserves computation receipts; it does
