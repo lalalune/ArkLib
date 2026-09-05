@@ -226,3 +226,11 @@ show that a positive source margin alone does not exclude a universal
 regular factor or force a multiple selected tail intersection. Their
 positive second-order source does supply a proper cut, so they do not
 refute the proposed production properness statement.
+
+The [root-safe filtration audit](astra_root_safe_filtration-2026-09-05.md)
+shows that highest-S coefficient extraction cannot improve the uniform
+existence certificate over its valid first-order slices. An exact bounded
+calculation excludes positive lower-R certificates for all m<=500, R caps
+below ten, all D<=m*A, and all total caps. This rules out that trimmed
+extraction route in the stated class, not direct properness of the
+untrimmed production sources or actual-kernel existence.

@@ -164,6 +164,13 @@ independent 4-by-5 Hermite reconstructions, including at the companion
 characteristic. The separate positive second-order source escapes this
 factor in every control; production surface properness remains open.
 
+The [root-safe filtration](../kb/astra_root_safe_filtration-2026-09-05.md)
+reduces every positive trimmed second-order certificate to a positive
+first-order coefficient-slice certificate. An exact bounded calculation
+excludes that lower-R route for multiplicities through 500 and R caps below
+ten, covering every D<=m*A and unbounded total degree. Actual kernels can
+still exist, and the untrimmed second-order properness question stays open.
+
 The [fixed-word differential carrier](../kb/astra_scalar_differential_carrier-2026-09-05.md)
 now supplies an actual curve and degree bound for the scalar companion
 profile. Its written argument gives at most 12546010856 degree-at-most-131071

@@ -53776,3 +53776,23 @@ factor in every control. These examples refute the proposed first-order
 factor-exclusion and tail-multiplicity shortcuts; they do not refute
 production second-Hasse properness, realize the binding flag, or improve
 the prize allowance. Independent review and Lean formalization are open.
+
+---
+
+### Root-safe highest-coefficient extraction cannot improve its slice certificate (2026-09-05)
+
+The [coefficient-filtration argument](../../../../docs/kb/astra_root_safe_filtration-2026-09-05.md)
+proves that a positive uniform margin for a root-safe trimmed second-Hasse
+source forces a positive margin for a valid first-order coefficient slice.
+An exact bounded production calculation excludes all such first-order
+margins at 1<=m<=500 and R cap at most nine, with every D<=m*A and every
+total cap T covered. Consequently this class of trimmed extraction
+certificates cannot force the desired lower-R proper cut on the binding
+factor. The rank inequality has 28 direct local controls, while the endpoint
+coverage algorithm agrees with direct enumeration on 342 small controls.
+
+This excludes a dimension-certificate route, not actual global kernels:
+dependencies between node constraints can still create interpolants.
+Multiplicities above 500, other supports, and direct properness of the
+untrimmed production sources remain open. No prize allowance is improved;
+independent mathematical review and Lean integration are outstanding.

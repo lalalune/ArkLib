@@ -506,6 +506,12 @@ python3 -m pip install leanblueprint
   `python3 scripts/probes/astra_positive_kernel_factor_check.py` for four
   full-kernel and independent Hermite checks, plus proper second-order
   cut witnesses. These finite controls do not settle production properness.
+  The [root-safe filtration audit](../kb/astra_root_safe_filtration-2026-09-05.md)
+  excludes a bounded class of lower-R extraction certificates, covering all
+  weighted and total cutoffs at m<=500. Run
+  `python3 scripts/probes/astra_root_safe_filtration_check.py`; the note also
+  gives the compile/run commands for its independent C++ endpoint search.
+  This does not exclude actual kernels or the untrimmed second-order route.
   The [carrier counting bounds](../kb/astra_carrier_dimension_bound-2026-09-05.md)
   quantify what a small carrier in coefficient space would imply for scalar
   lists and, separately, selected MCA witnesses. No sufficient universal
