@@ -142,10 +142,9 @@ theorem augmented_root_degree (S H : Finset K) (hHS : H ⊆ S)
   classical
   have h := multiplicity_degree_bound S W (fun x => if x ∈ H then 2 else 1) hW (by
     intro x hx
-    change (X - C x) ^ (if x ∈ H then 2 else 1) ∣ W
-    split_ifs with hxH
-    · exact hH x hxH
-    · simpa using hS x hx)
+    by_cases hxH : x ∈ H
+    · simpa only [if_pos hxH] using hH x hxH
+    · simpa only [if_neg hxH, pow_one] using hS x hx)
   have heq : (∑ x ∈ S, if x ∈ H then 2 else 1) = S.card + H.card := by
     calc
       _ = ∑ x ∈ S, (1 + if x ∈ H then 1 else 0) := by
