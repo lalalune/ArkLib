@@ -149,12 +149,51 @@ def production():
             "previous_written_bound": 12546010856, "MCA_bound_proved": False}
 
 
+def grand_predecessor_gate():
+    """Audit the bound size and the linear-YR uniform-margin class.
+
+    Negative surplus does not prove that an individual word's kernel is zero.
+    The note gives the general calculation; this grid checks its block sums.
+    """
+    cases = 0
+    for b in range(3, 25):
+        N, w, A = 6*b-3, 3*b-2, 4*b-1
+        for m in range(1, 31):
+            D = m*A
+            C = sum(D-w*i-(w-1)*j for i, j in ((0, 0), (1, 0), (0, 1)))
+            L = sum(min(min(h, r)+1, m-r)
+                    for h in (0, 1) for r in range(m)
+                    if r+(w-1)*h < D)
+            assert C == 3*m*A-2*w+1
+            assert L == (2 if m == 1 else 3*m-2)
+            margin = (8-6*b if m == 1 else 6*b-1-6*m*(b-1))
+            assert C-N*L == margin < 0
+            cases += 1
+    b = 178956971
+    n, w = 6*b-2, 3*b-2
+    minimum_nonlinear_bound = 2*(2*w+1)
+    assert n == 2**30 and minimum_nonlinear_bound == 2*n-2 > n
+    # For every m>=2 the margin decreases; m=2 is the best member.
+    assert 8-6*b == -1073741818
+    assert 11-6*b == -1073741815
+    return {"n": n, "value_budget": n,
+            "smallest_nonlinear_total_degree_allowance": minimum_nonlinear_bound,
+            "linear_YR_margin_m1": 8-6*b,
+            "best_linear_YR_margin_m_at_least_2": 11-6*b,
+            "block_sum_grid_cases": cases,
+            "full_linear_YR_space_positive_margin": False,
+            "all_individual_word_kernels_zero_proved": False,
+            "flat_factor_case_excluded": False,
+            "universal_value_bound_proved": False}
+
+
 def main():
     print(json.dumps({"status": "PASS_SCALAR_TAIL_SPLIT_CONTROLS",
                       "power_curves": power_curve_controls(),
                       "boundaries": boundary_controls(),
                       "truncated_exponential": exponential_controls(),
                       "production": production(),
+                      "grand_predecessor_gate": grand_predecessor_gate(),
                       "independent_mathematical_review": False,
                       "Lean_formalization": False, "prize_solved": False}, indent=2))
 

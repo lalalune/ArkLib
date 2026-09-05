@@ -50,8 +50,10 @@ also identifies a necessary subproblem for the universal bound: controlling
 the distinct extrapolated values of a punctured RS list. Rational collinearity
 of its joint cores and a rank-three error Gram matrix do not supply that cap.
 Its event equivalence, exact value count, and necessary production budget now
-pass local Lean against the actual MCA definition. This verifies the reduction;
-the value bound itself is still open.
+pass local Lean and the ArkLib job in
+[run 33991061321](https://github.com/lalalune/ArkLib/actions/runs/33991061321)
+against the actual MCA definition. This verifies the reduction; the value
+bound itself is still open.
 An exact [monomial-minor certificate](../kb/astra_monomial_minor_norm-2026-09-05.md)
 excludes every monomial seed on mu16 over the production prime and classifies
 its exceptional characteristics. The complex Fourier nonvanishing theorem

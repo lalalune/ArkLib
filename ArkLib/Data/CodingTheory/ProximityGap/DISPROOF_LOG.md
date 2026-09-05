@@ -53880,3 +53880,23 @@ prime. The general sufficient norm bound fails at production length, so
 neither this small-domain exclusion nor the finite-field failures settle
 the universal single-hole value bound. Independent review and Lean
 formalization remain open; no prize threshold is changed.
+
+---
+
+### The scalar tail allowance does not reach the grand value budget (2026-09-05)
+
+The [grand-parameter audit](../../../../docs/kb/astra_scalar_tail_split-2026-09-05.md)
+checks the written scalar differential bound at the production single-hole
+predecessor. Its aggregate allowance at the smallest nonlinear degree is
+`B(2)=2n-2>n`, and it increases thereafter. This is a limitation of the bound,
+not evidence that the actual list exceeds n.
+
+For the full degree-one weighted interpolation space with `D=mA`, the exact
+uniform surplus is `8-6b` at m=1 and `6b-1-6m(b-1)` at m>=2, where
+`N=6b-3`, `w=3b-2`, and `A=4b-1`. Both are negative for every b>=3. Thus
+this full space has no positive uniform dimension certificate at any
+multiplicity. Differently chosen source spaces, dependencies specific to a
+received word, separate flat-factor control, and direct value counting are
+not excluded. The checker verifies the formulas by block sums on 660 pairs
+and evaluates the production arithmetic; the general calculation is written,
+not Lean-formalized. The universal lower bound remains open.

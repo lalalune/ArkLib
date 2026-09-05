@@ -198,6 +198,53 @@ The existing exact interleaving projection therefore transfers this written
 bound to every positive arity, including eight. The sharper scalar estimate
 still supplies no same-radius MCA bound.
 
+## Why this aggregate bound does not close the grand predecessor
+
+At the [single-hole production predecessor](astra_mca_single_hole_reduction-2026-09-05.md),
+write n=6b-2=2^30 and w=3b-2, with b=178956971. The required value budget is n.
+The aggregate allowance in (1) is already too large at the smallest nonlinear
+total degree:
+
+```text
+B(2)=2*(2w+1)=2n-2=2147483646 > n.
+```
+
+B(d) increases for d>=2. Thus a certificate giving only the total degree d0
+of an arbitrary differential relation cannot use (1) to reach that budget
+when d0>=2. This is a limitation of the allowance, not a lower bound on the
+actual list size. Separate control of the flat factors, or a sharper count
+of values rather than polynomials, could still improve it.
+
+The linear case cannot be obtained by the uniform positive-dimension argument
+for this interpolation space, at any multiplicity. On the punctured domain
+put N=6b-3, A=4b-1, D=mA, and restrict to total Y,R degree at most one:
+
+```text
+Q=A0(X)+B0(X)*Y+C0(X)*R.
+```
+
+The coefficient dimension is C=3mA-2w+1. In the local rank calculation there
+are only h=0 and h=1 blocks. The h=0 blocks contribute m. For m=1 the h=1
+block contributes one; for m>=2 its ranks are 1, then m-2 copies of 2, then
+1. Consequently the exact single-node rank is L=2 for m=1 and L=3m-2
+otherwise. The uniform dimension surplus is therefore
+
+```text
+C-NL = 8-6b                         when m=1,
+C-NL = 6b-1-6m(b-1) <= 11-6b        when m>=2.
+```
+
+Both are negative for every b>=3. This calculation concerns the full
+degree-one weighted space just specified; it does not exclude differently
+chosen coefficient spaces. Nor does it show that all individual received
+words have zero interpolation kernel: the combined node conditions may have
+dependencies not captured by the bound N*L.
+
+The checker verifies the block sums and both closed forms on 660 parameter
+pairs and computes the exact production values. The all-multiplicity
+exclusion is the elementary calculation above, not an extrapolation from
+the grid. This audit is not Lean-formalized.
+
 ## Checks and limitations
 
 Run `python3 scripts/probes/astra_scalar_tail_split_check.py`.

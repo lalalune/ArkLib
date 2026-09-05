@@ -185,13 +185,17 @@ The final arithmetic uses `(n+1)/P > 2^-128` at the certified prime. Thus an
 over-budget value set would refute that proposed security bound; no such
 value set is constructed here.
 
-All eight named reports pass local Lean 4.30.0-rc2 with only `propext`,
-`Classical.choice`, and `Quot.sound`, and no diagnostics. The module is
+All eight named reports pass local Lean 4.30.0-rc2 and the ArkLib CI job with
+only `propext`, `Classical.choice`, and `Quot.sound`, and no diagnostics.
+Both jobs succeeded in
+[run 33991061321](https://github.com/lalalune/ArkLib/actions/runs/33991061321)
+at `c3a2020ad47cdc97d88f7a679e79c99b93511b6b`. The module is
 included in the ArkLib-only stage of
 [`check-mca-event-bridge.sh`](../../scripts/check-mca-event-bridge.sh) and
 the [CI axiom audit](../../.github/workflows/proximity-strip-proof.yml).
-That expanded CI check is pending for this revision. The companion job does
-not check these ArkLib-specific theorems. Reproduction uses the same
+The ArkLib audit accepted all 118 required reports, including these eight;
+the companion audit accepted its separate 96 reports and does not check
+these ArkLib-specific theorems. Reproduction uses the same
 dependency build and helper commands as the
 [production upper-bound assembly](astra_mca_production_upper-2026-09-05.md).
 
