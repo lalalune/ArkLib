@@ -156,6 +156,14 @@ binding-cell budget. A seven-profile derivative-trimming test does not force
 the missing degree separation. Surface properness, independent proof review,
 Lean integration, and the full phase recurrence remain open.
 
+The [positive-margin kernel controls](../kb/astra_positive_kernel_factor-2026-09-05.md)
+give a complete first-order kernel of dimension one despite a strictly
+positive uniform margin. Its universal regular factor has a genuine bad
+seed and simple selected tails. Four full-matrix calculations agree with
+independent 4-by-5 Hermite reconstructions, including at the companion
+characteristic. The separate positive second-order source escapes this
+factor in every control; production surface properness remains open.
+
 The [fixed-word differential carrier](../kb/astra_scalar_differential_carrier-2026-09-05.md)
 now supplies an actual curve and degree bound for the scalar companion
 profile. Its written argument gives at most 12546010856 degree-at-most-131071

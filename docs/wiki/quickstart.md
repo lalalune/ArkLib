@@ -500,6 +500,12 @@ python3 -m pip install leanblueprint
   for the conditional binding-cell budgets and seven bounded derivative
   source tests. It does not prove surface properness or improve the verified
   prize bound.
+  The [positive-margin kernel controls](../kb/astra_positive_kernel_factor-2026-09-05.md)
+  show that a strictly positive first-order margin can coexist with a
+  universal regular factor and simple selected tails. Run
+  `python3 scripts/probes/astra_positive_kernel_factor_check.py` for four
+  full-kernel and independent Hermite checks, plus proper second-order
+  cut witnesses. These finite controls do not settle production properness.
   The [carrier counting bounds](../kb/astra_carrier_dimension_bound-2026-09-05.md)
   quantify what a small carrier in coefficient space would imply for scalar
   lists and, separately, selected MCA witnesses. No sufficient universal

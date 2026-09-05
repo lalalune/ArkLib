@@ -220,3 +220,9 @@ finding a nonzero Q does not prove this. The positive dimension surplus and
 the source-to-factor relationship remain possible additional information.
 The new split removes the need to prove properness on every first-tail
 component, but does not discharge surface properness itself.
+
+The [positive-margin first-order controls](astra_positive_kernel_factor-2026-09-05.md)
+show that a positive source margin alone does not exclude a universal
+regular factor or force a multiple selected tail intersection. Their
+positive second-order source does supply a proper cut, so they do not
+refute the proposed production properness statement.

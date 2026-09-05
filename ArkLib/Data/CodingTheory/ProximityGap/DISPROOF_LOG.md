@@ -53755,3 +53755,24 @@ properness for the strictly positive production certificates. A high-Z variant
 also shows cancellation between a factor and its raw differential relation;
 that variant does not have the original first-order kernel provenance.
 The prize remains open.
+
+---
+
+### A positive first-order source margin does not remove universal factors (2026-09-05)
+
+The [positive-margin kernel controls](../../../../docs/kb/astra_positive_kernel_factor-2026-09-05.md)
+have 61 source columns, local rank six at each of ten nodes, and full global
+rank 60. Thus a strictly positive uniform margin coexists with a
+one-dimensional complete kernel and a universal positive-R factor. The
+received words are independent modulo the quadratic code; the complete
+nearby family is a genuine singleton MCA-bad seed. All selected factor
+contacts are positive, but the first two selected tails meet simply.
+
+Four exact finite controls include the companion characteristic. Independent
+4-by-5 Hermite reconstruction agrees with the complete contact matrix.
+F17 has an extra source content factor, explicitly retained in the check.
+A separate positive second-Hasse source has a proper pullback on the same
+factor in every control. These examples refute the proposed first-order
+factor-exclusion and tail-multiplicity shortcuts; they do not refute
+production second-Hasse properness, realize the binding flag, or improve
+the prize allowance. Independent review and Lean formalization are open.

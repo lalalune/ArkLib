@@ -13,6 +13,12 @@ flag, or improve the companion numerical allowance. The written arguments
 below have exact finite controls; independent review and Lean formalization
 remain outstanding.
 
+The [positive-margin follow-up](astra_positive_kernel_factor-2026-09-05.md)
+adds a strictly positive uniform source dimension certificate in four exact
+finite controls. The complete first-order kernel still has a universal
+regular factor and a simple selected tail intersection. A separate positive
+second-order source does escape that factor in those controls.
+
 This continues the [C2 local countermodel](astra_c2_geometry_contact_obstruction-2026-09-04.md)
 and the [far-word kernel analysis](astra_far_word_kernel-2026-09-05.md). The
 former attained the binding flag without full-kernel provenance. The present
