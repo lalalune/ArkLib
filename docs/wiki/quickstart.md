@@ -512,6 +512,12 @@ python3 -m pip install leanblueprint
   `python3 scripts/probes/astra_root_safe_filtration_check.py`; the note also
   gives the compile/run commands for its independent C++ endpoint search.
   This does not exclude actual kernels or the untrimmed second-order route.
+  The [acceleration-extension criterion](../kb/astra_acceleration_extension-2026-09-05.md)
+  proves properness under a relative field-degree condition, covering rational
+  and quadratic acceleration at the binding actual degree flag. Run
+  `python3 scripts/probes/astra_acceleration_extension_check.py` for exact
+  normalization, finite extension ranks, and three full-kernel controls.
+  The needed production field-degree hypothesis and Lean proof remain open.
   The [carrier counting bounds](../kb/astra_carrier_dimension_bound-2026-09-05.md)
   quantify what a small carrier in coefficient space would imply for scalar
   lists and, separately, selected MCA witnesses. No sufficient universal

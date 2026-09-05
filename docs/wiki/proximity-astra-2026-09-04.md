@@ -171,6 +171,15 @@ excludes that lower-R route for multiplicities through 500 and R caps below
 ten, covering every D<=m*A and unbounded total degree. Actual kernels can
 still exist, and the untrimmed second-order properness question stays open.
 
+The [acceleration-extension criterion](../kb/astra_acceleration_extension-2026-09-05.md)
+gives a sufficient condition for properness of an untrimmed source. After
+normalizing the received direction, a parameter-independent primitive
+equation cannot divide its full kernel. A field-degree argument then handles
+binding factors whose acceleration has algebraic degree at most two, using
+the T=1042 or T=1031 source. This degree hypothesis is not known in general.
+Three finite full-kernel controls and extension-field rank checks pass;
+independent review, Lean integration, and general properness remain open.
+
 The [fixed-word differential carrier](../kb/astra_scalar_differential_carrier-2026-09-05.md)
 now supplies an actual curve and degree bound for the scalar companion
 profile. Its written argument gives at most 12546010856 degree-at-most-131071

@@ -234,3 +234,10 @@ calculation excludes positive lower-R certificates for all m<=500, R caps
 below ten, all D<=m*A, and all total caps. This rules out that trimmed
 extraction route in the stated class, not direct properness of the
 untrimmed production sources or actual-kernel existence.
+
+The [acceleration-extension criterion](astra_acceleration_extension-2026-09-05.md)
+now gives a sufficient condition for that direct properness. In normalized
+coordinates, rational or quadratic algebraic acceleration at the binding
+actual degree flag yields a proper cut from the T=1042 or T=1031 source.
+The necessary field-degree hypothesis is not known for general factors;
+this does not close the full phase bound or supply a new prize score.
