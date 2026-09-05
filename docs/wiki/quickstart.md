@@ -308,6 +308,15 @@ python3 -m pip install leanblueprint
   excludes the degree-six seed over F65537 and in characteristic zero.
   Its reproduction command checks all 378378 original coefficient matrices
   independently under undefined-behavior sanitization.
+  Use `python3 scripts/probes/astra_mca_paircover_conversion.py` for a
+  positive control on different evaluation domains, with 266 independent
+  no-joint parity certificates; it does not supply the production seed.
+  The [production-field mu16 check](../kb/astra_mca_paircover_production-2026-09-04.md)
+  has `python3 scripts/probes/astra_mca_paircover_production.py`.
+  The [four-coset obstruction](../kb/astra_mca_paircover_four_cosets-2026-09-04.md)
+  excludes its entire architecture in every admissible characteristic;
+  use `python3 scripts/probes/astra_mca_paircover_four_cosets.py` for the
+  small-domain rank checks in the production prime.
   These results are not Lean formalized and establish no improved prize score.
 
 ## Manual Timing Helper

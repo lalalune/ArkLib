@@ -17265,3 +17265,29 @@ The production pair-cover existence requirement remains open, and no new
 unsafe radius or prize solution is certified. These results are not Lean
 formalized. Details: `docs/kb/astra_mca_paircover_target-2026-09-04.md` and
 `docs/kb/astra_mca_paircover_search-2026-09-04.md`.
+
+## [astra-mca-four-cosets] a characteristic-independent degree obstruction excludes recursive balanced full covers (2026-09-04)
+
+If three pair regions each contain a distinct whole quarter-domain coset
+of mu_(4m), and the fourth coset is split arbitrarily among them, their
+minimum syzygy product degree is exactly 2m. Writing the region polynomials
+as (X^m-alpha)a, (X^m-beta)b, (X^m-gamma)c separates degrees below m from
+degrees at least m. Any lower-degree relation then forces abc to divide
+a polynomial of degree less than m, although abc=X^m-delta. Rank-nullity
+gives attainment at 2m. The proof holds in every admissible characteristic.
+
+This excludes the recursively balanced production partition at the requested
+degree cap n/2-2, but leaves other partitions open. Four exact small-domain
+matrix checks in the production prime agree with the proof. Separately,
+the exhaustive degree-six mu16 check is also empty in that prime across
+all 378378 partitions, with 411 sampled independent original-matrix checks.
+None of these computations enumerates the production domain of size 2^30.
+
+A positive control verifies the conditional pair-cover conversion on four
+different evaluation domains: all 266 displayed scalar witnesses pass
+independent no-joint parity checks. Those domains are not cosets of mu_n,
+so this is no production counterexample. Written proofs have independent
+review; none of these new results is Lean formalized.
+Details: `docs/kb/astra_mca_paircover_four_cosets-2026-09-04.md`,
+`docs/kb/astra_mca_paircover_production-2026-09-04.md`, and
+`docs/kb/astra_mca_paircover_target-2026-09-04.md`.

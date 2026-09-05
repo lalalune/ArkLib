@@ -119,3 +119,47 @@ Independent Gaussian elimination gives rank five for every original matrix.
 Reduction of nonzero minors also excludes this exact mu16 construction in
 characteristic zero. Neither result excludes the target triple for the
 production field and domain; that existence question remains open.
+
+The [same exhaustive search in the production prime](astra_mca_paircover_production-2026-09-04.md)
+also finds no degree-six mu16 seed. Separately, the
+[four-coset obstruction](astra_mca_paircover_four_cosets-2026-09-04.md)
+rules out all partitions assigning three whole quarter-domain cosets to
+the three pair regions, however the fourth coset is split. Its minimum
+syzygy product degree is exactly n/2 in every admissible characteristic.
+This includes a recursively balanced production partition, but does not
+cover arbitrary partitions.
+
+## Positive control on different evaluation domains
+
+The polynomial hypotheses can hold on other domains. This supplies a check
+of the conversion without assuming a seed exists on the production subgroup.
+Let h be even and at least six, and suppose the field contains a primitive
+hth root of unity and has at least `3h` elements. Choose distinct nonzero hth powers
+`tA,tB,tC`. Set
+
+```text
+n=3h-2,    k=n/2,
+f_A=0,    f_B=X^h-tA,
+f_C=alpha*(X^h-tB),    alpha=(tA-tC)/(tB-tC).
+```
+
+Here alpha is neither zero nor one, and
+`f_B-f_C=(1-alpha)*(X^h-tC)`. Take h-1 points from each of the tA and tB
+fibres and all h points from the tC fibre. These are disjoint nonzero sets;
+exactly two codewords agree at each point, with region sizes h-1,h-1,h.
+Their degrees are h, and `h<=k-2` follows from h>=6. Also
+`s=2h-1` and `s-1>=k`. Thus every hypothesis of the conversion holds and
+it gives n+1 genuine bad scalars on this domain.
+
+Run `python3 scripts/probes/astra_mca_paircover_conversion.py`. It checks
+the prime 2013265921 by trial division and uses h=6,12,24,48, giving
+n=16,34,70,142. Each cell checks that 1,2^h,3^h are distinct and the field
+is larger than n^4. The resulting 17,35,71,143 distinct scalars all pass
+support agreement and independent Vandermonde dual-parity checks of the
+no-joint clause: **266 certificates in total**.
+
+The probe explicitly checks that these domains are not multiplicative
+cosets of mu_n. They do not settle the production dyadic-domain problem.
+This positive control is not a novelty claim about arbitrary-domain
+Reed--Solomon counterexamples, and neither it nor the general conversion
+has been formalized in Lean.
