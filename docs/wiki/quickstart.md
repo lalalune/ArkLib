@@ -430,10 +430,27 @@ python3 -m pip install leanblueprint
   value count remains open. Run
   `python3 scripts/probes/astra_mca_locator_pencils_check.py` for all nine
   constructed same-support MCA witnesses and the exhaustive cubic census.
+  The [reduced exact-error eliminant](../kb/astra_mca_exact_error_eliminant-2026-09-05.md)
+  gives one algebra point per decoded polynomial and a minimal polynomial
+  counting distinct values. It removes padding and nonreduced-scheme
+  multiplicities; its production degree bound remains unproved. Run
+  `python3 scripts/probes/astra_mca_exact_error_eliminant_check.py` for the
+  independent polynomial census and finite factor-algebra controls.
   The [channelwise contact theorem](../kb/astra_kernel_channel_hermite-2026-09-05.md)
   sharpens a companion quotient estimate but still does not exclude the
   binding factor. Run `python3 scripts/probes/astra_kernel_channel_hermite_check.py`
   for the small contact matrices, sharp examples, and fixed arithmetic rows.
+  The [far-word obstruction](../kb/astra_far_word_kernel-2026-09-05.md)
+  strengthens that limitation to a line independent modulo the code in the
+  actual companion field. Its large quotient subspace still lacks the
+  selected-family and source-divisor hypotheses. Run
+  `python3 scripts/probes/astra_far_word_kernel_check.py` for the exact
+  support arithmetic and independent contact/Hermite controls.
+  The [September 5 capacity-preprint audit](../kb/astra_capacity_finite_gates-2026-09-05.md)
+  records why the external theorem's explicit constants and list bound do
+  not certify this finite target. Run
+  `python3 scripts/probes/astra_capacity_finite_gates_check.py` for the
+  exact uniform parameter obstruction; this does not verify the external proof.
   The [native-count workflow](../../.github/workflows/proximity-native-count.yml)
   runs the separately pinned, bounded-tested native source on a standard
   public-repository Linux runner. It preserves computation receipts; it does

@@ -132,6 +132,12 @@ condition and supplies no universal source divisor. A useful further
 improvement must exploit those additional hypotheses, not just reduce the
 numerical estimate for arbitrary received words.
 
+The subsequent [far-word construction](astra_far_word_kernel-2026-09-05.md)
+also rules out repairing that comparison using farness and quotient rank two
+alone: both conditions hold while the quotient contains 10121888390
+independent polynomials at retained order 166. The selected high-agreement
+family and full source-divisor relationship remain additional information.
+
 ## Reproduction and scope
 
 Run

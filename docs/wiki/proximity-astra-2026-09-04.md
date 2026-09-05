@@ -41,6 +41,24 @@ The [sharper contact estimate](../kb/astra_kernel_channel_hermite-2026-09-05.md)
 also remains too weak to exclude the binding companion factor. These are
 written proofs and exact finite checks, not new Lean proofs or prize closure.
 
+A [rank-two far-line construction](../kb/astra_far_word_kernel-2026-09-05.md)
+shows that farness does not repair the quotient-dimension comparison by
+itself: the actual companion field still permits a contact subspace of
+dimension 10121888390. It has no high-agreement family, identifying a
+hypothesis the next estimate must use. A separate
+[finite audit of the September 5 capacity preprint](../kb/astra_capacity_finite_gates-2026-09-05.md)
+finds that its published parameter construction cannot fit our field or
+length, and its stated list bound does not meet the numerical prize budget.
+The external asymptotic result and its derivative method retain their own
+scope; this audit supplies no prize solution.
+
+For the single-hole branch, the
+[reduced exact-error algebra](../kb/astra_mca_exact_error_eliminant-2026-09-05.md)
+removes padded locators and extra algebraic multiplicities. Its value
+operator has a squarefree minimal polynomial whose degree is exactly the
+number of distinct decoded values. Proving that degree at most n for every
+received word remains the unresolved quantitative step.
+
 ## Revisions and environment
 
 * Original clone: `/Users/nubs/Git/arklib`, clean `main` at

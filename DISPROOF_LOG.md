@@ -17507,3 +17507,49 @@ above the source nullity lower bound 228451639. All 18 direct contact-matrix
 checks, 12 sharp examples, and two fixed arithmetic comparisons pass;
 no factor exclusion or score increase follows. See
 `docs/kb/astra_kernel_channel_hermite-2026-09-05.md` and its linked checker.
+
+## [astra-far-word-kernel] farness and quotient rank two still permit a large auxiliary kernel (2026-09-05)
+
+On the actual companion domain and field, u0=1/x and u1=1/x^2 are independent
+modulo the degree-at-most-131071 RS code. Every affine-line word has at least
+131071 errors, but Phi=X^2*Y-X-Z has exact contact order one at every node.
+Powers of Phi and allowed X/Z shifts give independent quotient subspaces of
+dimensions 10121888390 and 30981249640 at retained orders 166 and 132. Both
+exceed the source nullity lower bound 228451639. Thus farness, contacts, and
+support caps alone cannot supply the small quotient upper bound needed by
+that argument. There are no high-agreement line members in this construction;
+the selected-family and universal-source-divisor conditions remain essential.
+The checker verifies all power-support terms, finite local expansions, and
+three exact order-two kernel/Hermite controls. See
+`docs/kb/astra_far_word_kernel-2026-09-05.md`.
+
+## [astra-capacity-finite-gates] external capacity theorem does not supply this numerical certificate (2026-09-05)
+
+The September 5 revision of ECCC TR26-164 is external work by Brakensiek,
+Chen, Putterman, Zhang, and Zheng. An independently reviewed arithmetic audit
+of its explicit parameter construction gives eta<2^-60 and derivative order
+d>2^180 for every admissible theta, whereas the production prime is below
+2^159. Its padding also requires more guaranteed agreement than the original
+length can supply. The published list bound does not establish the target
+integer cap 2^30. This limits the available finite certificate and does not
+refute the external asymptotic capacity result. The exact polynomial identity,
+integer gates, source digest, and scope are recorded in
+`docs/kb/astra_capacity_finite_gates-2026-09-05.md` and its linked checker.
+
+## [astra-mca-exact-error-eliminant] factor algebra removes padding and scheme multiplicity (2026-09-05)
+
+The monic factorization Lambda*H=P_D has a reduced coordinate algebra, as
+shown explicitly by idempotents selecting the distinct domain roots. Linear
+remainder constraints and inversion of Res(Lambda,Q), where
+Lambda*V-R=Q*P_D, retain exactly one point per decoded polynomial across
+all allowable error degrees. The value multiplication operator's minimal
+polynomial is squarefree and counts precisely the distinct extrapolated
+values. Its degree bound at production remains unproved.
+
+This avoids a nonreduced presentation obtained from low coefficients of
+Res(P_D,Lambda+Z); exact-error saturation alone does not remove that scheme's
+nilpotents. In the independent F17 control, the actual A=5 list has norm and
+minimal degrees 3/3, while the separate A=4 algebra control has 23/15,
+demonstrating value collisions. All 83521 candidate polynomials, 64 factor
+Jacobians/root selectors, padding removal, and the zero-error endpoint pass.
+See `docs/kb/astra_mca_exact_error_eliminant-2026-09-05.md`.
