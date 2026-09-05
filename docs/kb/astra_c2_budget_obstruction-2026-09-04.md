@@ -116,6 +116,14 @@ of base points, boundary behavior, and the global subtraction theorem are
 not established here. A larger correction must use more than this elementary
 base locus.
 
+The [regularity-cube audit](astra_tail_regularity_cube-2026-09-05.md)
+identifies the exact H^3 factor in every raw tail from order two onward.
+Removing it gives a different valid regular-divisor representative, but
+its R-degree bound is worse than the existing reduced bound; the binding
+first-tail/rational cost increases. A binding-flag geometric example has
+exactly this order three at both production indices. Full-kernel
+provenance and other possible boundary corrections remain open.
+
 ## Reproduction and proof status
 
 ```sh

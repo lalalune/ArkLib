@@ -53839,3 +53839,25 @@ the extension criterion. Its scalar root-count inequality can fail by one
 at w-1 zeros, as an exact family of primitive equations demonstrates.
 The general high-degree case, production factor, independent review and
 Lean integration remain open. No prize allowance is improved.
+
+---
+
+### A fixed regularity cube does not grow with the production tail index (2026-09-05)
+
+The [regularity-cube audit](../../../../docs/kb/astra_tail_regularity_cube-2026-09-05.md)
+derives N_d=H^3*M_d for d>=2 directly from the contact-tail recurrence.
+Modulo H, M_d is a signed odd double factorial times G^(d-1)*H_R^(d-2).
+An irreducible surface at the binding actual degree flag has a regular
+selected polynomial solution and exactly order three at every component
+of its H boundary, including at d=131072 and d=131073. Thus degree and
+regularity alone do not force a larger removable H power.
+
+The primitive representative loses the R-degree reduction in the current
+C2 cut and raises the binding first-tail/rational cost by 2926707573042415.
+The reduced ambient polynomial need not be divisible even by H, as three
+exact finite controls show; dividing in the surface ring does not justify
+subtracting its ambient support degrees. A separate arithmetic grant of
+simultaneous cube removal still leaves the budget over target. These
+results do not exclude corrections using full-kernel provenance, stronger
+support information, or other boundary components. Independent review,
+Lean integration and the prize theorem remain open.

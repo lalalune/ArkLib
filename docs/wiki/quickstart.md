@@ -523,6 +523,11 @@ python3 -m pip install leanblueprint
   and exhibits positive full kernels with degree-six acceleration. Run
   `python3 scripts/probes/astra_acceleration_chart_check.py` for complete
   finite kernels, irreducibility certificates, and the repair boundary.
+  The [regularity-cube audit](../kb/astra_tail_regularity_cube-2026-09-05.md)
+  checks the exact H^3 factor in raw tails, its primitive recurrence,
+  production-index residues, and the support-cost tradeoff. Run
+  `python3 scripts/probes/astra_tail_regularity_cube_check.py`.
+  Removing the cube by this representative does not improve the bound.
   The [carrier counting bounds](../kb/astra_carrier_dimension_bound-2026-09-05.md)
   quantify what a small carrier in coefficient space would imply for scalar
   lists and, separately, selected MCA witnesses. No sufficient universal

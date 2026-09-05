@@ -187,6 +187,14 @@ positive full first-order kernels have irreducible universal factors of
 acceleration degree six and relative degree one, with regular bad seeds.
 The examples are finite and do not realize the binding production flag.
 
+The [regularity-cube audit](../kb/astra_tail_regularity_cube-2026-09-05.md)
+proves an exact H^3 factor in raw tails and tests its removal from the
+counting argument. The resulting support bound has worse R degree and
+increases the binding cost. A binding-degree surface has exactly order
+three at the excluded regularity locus at both production tail indices;
+it does not supply full interpolation-kernel provenance. No improved
+prize bound follows from this correction.
+
 The [fixed-word differential carrier](../kb/astra_scalar_differential_carrier-2026-09-05.md)
 now supplies an actual curve and degree bound for the scalar companion
 profile. Its written argument gives at most 12546010856 degree-at-most-131071
