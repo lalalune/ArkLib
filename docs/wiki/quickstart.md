@@ -540,6 +540,12 @@ python3 -m pip install leanblueprint
   direct contact matrices, exact Taylor reconstruction, exceptional factor
   cases, and the production count. Independent proof review and complete
   Lean formalization remain outstanding; this does not bound MCA.
+  The [scalar next-derivative split](../kb/astra_scalar_tail_split-2026-09-05.md)
+  improves the written bound to 4812927256 with the stronger condition
+  char K>D. Run `python3 scripts/probes/astra_scalar_tail_split_check.py`
+  for proper/flat factor controls, the characteristic-boundary counterexample,
+  and exact production arithmetic. The general proof remains unreviewed and
+  unformalized, and supplies no MCA bound.
   The [explicit scalar kernel](../kb/astra_scalar_kernel_witness-2026-09-05.md)
   retains an actual finite source beyond Johnson, a complete list census,
   and four axiom-free closed Lean predicates. Run

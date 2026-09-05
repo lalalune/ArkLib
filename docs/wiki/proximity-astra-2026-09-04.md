@@ -207,6 +207,15 @@ Independent mathematical review and Lean formalization are outstanding.
 The MCA bound, the companion ProtocolClaim, and the sharp thresholds remain
 open; a fixed-word list bound does not settle them at the same radius.
 
+The [scalar next-derivative split](../kb/astra_scalar_tail_split-2026-09-05.md)
+improves that written list bound to 4812927256. A proper tail cuts out finitely
+many points; an identically zero tail yields coefficient curves of total
+degree at most the source degree when the characteristic exceeds D. The
+companion satisfies this stronger condition. Exact power-curve controls over
+three fields and a Frobenius counterexample to dropping the condition pass.
+The general geometric argument is not independently reviewed or formalized,
+and the MCA/prize inequality remains open.
+
 The [explicit scalar-kernel certificate](../kb/astra_scalar_kernel_witness-2026-09-05.md)
 adds a complete construction check beyond Johnson on 13 nodes over F17.
 The actual 300-column map has rank 295; a retained nonzero source passes

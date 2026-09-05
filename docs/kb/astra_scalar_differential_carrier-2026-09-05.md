@@ -20,6 +20,12 @@ argument with finite controls, not a Lean-verified result or an independently
 reviewed prize submission.** It does not bound MCA at the same radius, solve
 the companion ProtocolClaim, or determine either grand-challenge threshold.
 
+The subsequent [next-derivative split](astra_scalar_tail_split-2026-09-05.md)
+improves the written scalar bound to 4812927256 under the stronger hypothesis
+char K>D, which the companion parameters satisfy. That improvement has the
+same unreviewed/unformalized status; this note preserves the original argument
+with its weaker characteristic hypothesis.
+
 ## A fixed-word interpolation space
 
 Let x_1,...,x_n be distinct nodes over K, let v be any received word, and
