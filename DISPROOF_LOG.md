@@ -17398,3 +17398,23 @@ conditions, obtaining exactly the two values 0 and 13. The general
 reduction is an elementary written proof, not a new scalar-count bound
 or Lean theorem. See `docs/kb/astra_mca_single_hole_reduction-2026-09-05.md`
 and `scripts/probes/astra_mca_single_hole_check.py`.
+
+## [astra-mca-incidence-feasibility] common-domain counting alone cannot exclude six pencils (2026-09-05)
+
+The necessary absence-set constraints have sharp integer threshold b=4.
+Two disjoint triple flats, each of weight two, and a cyclic matrix of nine
+cross-pair weights give six absence sets of size 2b on exactly 6b-2 points
+for every b>=4, including the odd production parameter. A counting identity
+and explicit fixtures give exact minima 6,5,4,5,5,8,8 across the seven
+classified long-line types. These set systems are not polynomial witnesses.
+
+An actual realization of the two-triple production pattern would require
+two linear relations among private locators, both with the same degree-four
+remaining domain factor. Its full locator map would be birational, and
+the two private ratios would jointly generate K(X), excluding any common
+nontrivial rational right factor. The elementary genus bound still has
+positive slack 715827877. No actual realization or uniform exclusion is
+established. All 24 arithmetic checks pass; the general conclusions are
+independently reviewed written proofs, not Lean theorems. See
+`docs/kb/astra_mca_incidence_feasibility-2026-09-05.md` and
+`scripts/probes/astra_mca_incidence_feasibility_check.py`.

@@ -354,6 +354,13 @@ python3 -m pip install leanblueprint
   [incidence classification](../kb/astra_mca_six_pencil_types-2026-09-04.md)
   identifies seven remaining geometric types and stronger necessary overlap
   bounds. Their polynomial realizability and scalar counts remain open.
+  The [sharp incidence thresholds](../kb/astra_mca_incidence_feasibility-2026-09-05.md)
+  give common-domain set systems for every b>=4, so those counting constraints
+  alone cannot exclude production. Actual two-triple polynomial realizations
+  would have to satisfy two compatible degree-four-defect identities with
+  no common rational right factor. Run
+  `python3 scripts/probes/astra_mca_incidence_feasibility_check.py` for the
+  seven minimal fixtures and exact construction arithmetic.
   The [locator consistency identities](../kb/astra_mca_six_locator_consistency-2026-09-04.md)
   force a three-dimensional polynomial span and a constant private-locator
   relation. The [cyclotomic locator constraints](../kb/astra_mca_cyclotomic_locator_constraints-2026-09-05.md)

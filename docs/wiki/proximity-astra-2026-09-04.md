@@ -21,6 +21,10 @@ An independently checked [six-square countermodel](../kb/astra_mca_six_square_co
 rules out extending the degree-two cover argument using square-resultant
 conditions alone. Its common-domain requirement fails, so the actual
 six-pencil MCA question remains open.
+The [incidence feasibility result](../kb/astra_mca_incidence_feasibility-2026-09-05.md)
+supplies common-domain absence set systems at the production parameters;
+their polynomial realization still requires two compatible private-locator
+identities. Counting those set memberships alone cannot finish the exclusion.
 
 ## Revisions and environment
 

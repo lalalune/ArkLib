@@ -143,3 +143,11 @@ simultaneous interpolation kernel to have rational rank at least two. The
 exact determinant/locator identities and almost-perfect residual pairings
 must also hold. No field-valued realization, interpolation rank certificate,
 or set of over-budget scalars is supplied here.
+
+The subsequent [sharp incidence thresholds](astra_mca_incidence_feasibility-2026-09-05.md)
+remove the congruence restriction for this one-triple set-system construction:
+rounded cyclic cross weights work for every integer b>=6. Two disjoint
+triples already give valid common-domain set systems for every b>=4,
+including production. The note gives the exact least feasible b for all
+seven types and derives necessary private-locator compatibility conditions.
+These are incidence constructions, not polynomial or MCA realizations.
