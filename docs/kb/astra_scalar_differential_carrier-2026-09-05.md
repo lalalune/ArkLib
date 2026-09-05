@@ -265,3 +265,10 @@ demonstrates why Taylor reconstruction needs w<char K. These controls do
 not generate the 30-billion-column production interpolation kernel or
 mechanize the geometric degree argument. Independent mathematical review
 and a complete Lean formalization are still outstanding.
+
+The subsequent [explicit kernel witness](astra_scalar_kernel_witness-2026-09-05.md)
+constructs a nonzero source on 13 nodes over F17 at a threshold strictly
+beyond Johnson, independently expands every contact equation, and recovers
+all three members of the complete quadratic list. Its four closed finite
+Lean predicates are axiom-free; they do not formalize the general argument
+or the production coefficient space above.

@@ -484,6 +484,12 @@ python3 -m pip install leanblueprint
   direct contact matrices, exact Taylor reconstruction, exceptional factor
   cases, and the production count. Independent proof review and complete
   Lean formalization remain outstanding; this does not bound MCA.
+  The [explicit scalar kernel](../kb/astra_scalar_kernel_witness-2026-09-05.md)
+  retains an actual finite source beyond Johnson, a complete list census,
+  and four axiom-free closed Lean predicates. Run
+  `python3 scripts/probes/astra_scalar_kernel_witness_check.py` for the full
+  matrix construction, independent expansion, reconstruction, and certificate
+  data check. The note gives the separate core-only Lean command.
   The [large-field interleaving transfer](../kb/astra_interleaved_projection-2026-09-05.md)
   preserves scalar list budgets, and separately linear-observable image
   budgets, when `binomial(B+1,2)<=q`. Both fixed profiles pass the arithmetic

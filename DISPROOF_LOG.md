@@ -17682,3 +17682,22 @@ pass. The proof still needs independent mathematical review and complete
 Lean formalization. This is not an MCA bound, sharp threshold, or completed
 companion ProtocolClaim. See
 `docs/kb/astra_scalar_differential_carrier-2026-09-05.md`.
+
+## [astra-scalar-explicit-kernel] complete finite construction beyond Johnson (2026-09-05)
+
+At F17,n=13,w=2,A=5, the strict comparison A^2<n*w places the threshold
+beyond Johnson. The fixed m=4,D=20,R-cap-two interpolation matrix has
+300 columns, rank 295, and nullity five. Its R-cap-zero and R-cap-one
+subspaces have zero kernel in this same instance. A retained 249-term
+source is independently expanded at every node, and the full census of
+4913 quadratics yields exactly 0, X^2, and 7+15X+12X^2. All three are
+regular for Q_R and their nine rational Taylor coefficient identities pass
+as polynomial identities.
+
+The same source data and complete finite list are checked by four closed
+Lean theorems, all reporting no axioms under Lean 4.30.0-rc2. They verify
+the explicit coefficient, support/contact predicates, census, and numerical
+parameters. The matrix rank and reconstruction checks remain separate
+Python results. This strengthens the finite construction evidence without
+formalizing the general carrier theorem, bounding MCA, or solving the prize.
+See `docs/kb/astra_scalar_kernel_witness-2026-09-05.md`.

@@ -127,6 +127,14 @@ Independent mathematical review and Lean formalization are outstanding.
 The MCA bound, the companion ProtocolClaim, and the sharp thresholds remain
 open; a fixed-word list bound does not settle them at the same radius.
 
+The [explicit scalar-kernel certificate](../kb/astra_scalar_kernel_witness-2026-09-05.md)
+adds a complete construction check beyond Johnson on 13 nodes over F17.
+The actual 300-column map has rank 295; a retained nonzero source passes
+all 13 independent contact expansions and reconstructs every member of an
+exhaustive 4913-polynomial census. Four closed finite predicates also pass
+the Lean kernel with no axioms. The general production carrier theorem
+and MCA bound remain outside that finite certificate's scope.
+
 ## Revisions and environment
 
 * Original clone: `/Users/nubs/Git/arklib`, clean `main` at
