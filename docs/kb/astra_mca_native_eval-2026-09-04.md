@@ -3,8 +3,8 @@
 The native runner implements the reviewed
 [compact two-generator evaluator](astra_mca_twogen_lift_eval-2026-09-04.md).
 Its bounded acceptance checks pass. This note records the implementation and
-verification scope. Two initial production attempts stopped on the memory
-floor before completing a partition; neither gives a production count or a
+verification scope. Three initial production attempts stopped on resource
+guards before completing a partition; none gives a production count or a
 Lean proof.
 
 The source is
@@ -173,3 +173,12 @@ a 576 MiB cap. Both exited with code 3 when available pages fell below the
 runtime floor. Neither completed its first partition. They are resource
 failures, not negative results about distinctness, and contain no complete
 production certificate. The receipts preserve the exact output and its hashes.
+
+The third attempt used the independently reviewed cooperative-pause source
+`6b2069e47e698fa96100881eb81175e6acdd8d60d5e0b24a19682817ffa117a5`
+at commit `fce9602c830f49d6c1021632ca01269afa72ae4d`, again with sixteen
+partitions and a 576 MiB cap. After a safe preflight it paused at 87,605,248
+available bytes. About 5.73 seconds into that pause, macOS reported non-NORMAL
+memory pressure; the runner exited with code 3 before any partition completed.
+The same receipt file includes this output and the bounded acceptance of the
+pause version. No production scan is left running by these attempts.
