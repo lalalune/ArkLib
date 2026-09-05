@@ -6,6 +6,7 @@ on:
     paths:
       - "scripts/probes/astra_companion_strip_projection.lean"
       - "scripts/probes/astra_companion_6804_ordinary_gates.lean"
+      - "scripts/probes/astra_c2_budget_obstruction.lean"
       - ".github/workflows/proximity-strip-proof.yml"
   workflow_dispatch:
 
@@ -48,13 +49,13 @@ jobs:
           use-mathlib-cache: false
       - name: Fetch pinned Mathlib dependencies
         run: '"$GITHUB_WORKSPACE/scripts/lake-locked.sh" exe cache get'
-      - name: Check strip projection, 68.04 gates, and axiom reports
+      - name: Check auxiliary proofs and axiom reports
         shell: bash
         run: |
           set -euo pipefail
           lean --version
           : > "$RUNNER_TEMP/strip-proof.log"
-          for proof in astra_companion_strip_projection astra_companion_6804_ordinary_gates; do
+          for proof in astra_companion_strip_projection astra_companion_6804_ordinary_gates astra_c2_budget_obstruction; do
             python3 "$GITHUB_WORKSPACE/scripts/forbidden_tokens.py" "$GITHUB_WORKSPACE/scripts/probes/$proof.lean"
             lake env lean "$GITHUB_WORKSPACE/scripts/probes/$proof.lean" 2>&1 | tee -a "$RUNNER_TEMP/strip-proof.log"
           done
@@ -77,6 +78,8 @@ jobs:
               "padded_identity_budget", "hybrid_identity_budget", "mixed_characteristic",
               "product_characteristic", "flag_characteristic", "rational_coordinate",
               "padded_coordinate", "weighted_cap_characteristic")]
+          expected += ["AstraC2BudgetObstruction." + name for name in (
+              "exact_values", "scalar_caps_do_not_imply_six_percent")]
           for declaration in expected:
               if declaration not in reported:
                   raise SystemExit("Missing axiom report: " + declaration)

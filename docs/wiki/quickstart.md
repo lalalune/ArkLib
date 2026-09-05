@@ -239,12 +239,12 @@ python3 -m pip install leanblueprint
 - [`../../.github/workflows/docs-integrity.yml`](../../.github/workflows/docs-integrity.yml)
   checks local markdown links and the `CLAUDE.md` symlink.
 - [`../../.github/workflows/proximity-strip-proof.yml`](../../.github/workflows/proximity-strip-proof.yml)
-  checks the standalone Mathlib contact-strip projection and the Std
-  arithmetic gates for the proposed 68.04 row on the
-  `codex/proximity-astra-20260904` research branch when either source or the workflow
+  checks the standalone Mathlib contact-strip projection, the Std
+  arithmetic gates for the proposed 68.04 row, and the finite C2 scalar-budget
+  obstruction on the `codex/proximity-astra-20260904` research branch when a proof source or the workflow
   changes. Its two jobs use this repository's pinned dependencies (Lean
   4.30.0-rc2) and the official companion's `032154395c51fd6f77715a7f42d9a987ab9fb48a`
-  pin (Lean 4.32.2), respectively. Each checks all twelve
+  pin (Lean 4.32.2), respectively. Each checks all fourteen
   named theorem reports against the repository's axiom allowlist, and rejects
   missing reports, compiler warnings, errors, or forbidden source tokens. It runs on a standard
   public-repository runner without artifact or cache uploads. This focused
@@ -254,7 +254,10 @@ python3 -m pip install leanblueprint
   arithmetic audit, and remaining proof obligations. The
   [factor-partition follow-up](../kb/proximity-astra-factor-partition-2026-09-04.md)
   documents the optional `--check-partition` and `--check-dense-source` audit
-  modes and their bounded negative results.
+  modes and their bounded negative results. The
+  [C2 budget audit](../kb/astra_c2_budget_obstruction-2026-09-04.md) separates a
+  removable rounding from the need for new geometric correlations; its scalar
+  countermodel is not a polynomial counterexample.
 
 ## Manual Timing Helper
 
