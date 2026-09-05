@@ -17062,3 +17062,21 @@ The irreducibility and transversality arguments received independent review;
 the finite polynomial/recurrence probe passes at the production prime.
 The general argument is not Lean formalized.
 Details: `docs/kb/astra_c2_geometry_contact_obstruction-2026-09-04.md`.
+
+## [astra-colon-hermite] retained contacts alone leave a large quotient kernel (2026-09-04)
+
+The existing exact contact-colon identity, combined with a filtration by
+global Y degree, gives a new graded Hermite upper bound on a divisible
+interpolation kernel. At raw flag `(10,37,2317)`, using its degree data and
+assuming the favorable extra condition of factor contact order zero at every
+node, the m166 T quotient bound is `110165530464248`; the available source
+nullity lower bound is only `228451639`. All 52 fixed-source comparisons fail.
+An actual zero-word quotient-contact subspace of dimension `10123425550`
+shows that support and contact constraints alone allow a much larger space.
+
+This is a scoped failure, not a universal-divisor example or a no-go theorem
+for data-dependent rank arguments. The zero words are not far, and a larger
+actual factor contact degree or a stronger actual-kernel dimension bound can
+change the comparison. The general filtration proof is not Lean formalized;
+24 direct finite-field matrices validate the probe's transcription, with a
+separate 27-case root check. Details: `docs/kb/astra_colon_2026-09-04.md`.

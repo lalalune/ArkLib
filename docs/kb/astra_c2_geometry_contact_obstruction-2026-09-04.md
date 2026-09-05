@@ -201,6 +201,13 @@ by a large actual selected family, is established here. The precise open
 step is a global deficit of this size for the admissible large family;
 the current local multiplicity argument cannot provide it uniformly.
 
+The [colon and Hermite follow-up](astra_colon_2026-09-04.md) begins to retain
+the interpolation constraints on a quotient by the common factor. It proves
+a graded kernel upper bound, but that estimate still exceeds the available
+nullity lower bound by several orders of magnitude at this flag. The remaining
+comparison must use more information about the actual source kernel or the
+admissible large family.
+
 ## Reproduction
 
 ```sh

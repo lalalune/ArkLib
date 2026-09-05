@@ -267,6 +267,10 @@ python3 -m pip install leanblueprint
   to reproduce that search and the four full envelopes, or
   `--sanitize --phase-case least_old_point_charge` to check the search and
   improved envelope with undefined-behavior checks.
+  The [geometric contact audit](../kb/astra_c2_geometry_contact_obstruction-2026-09-04.md)
+  and [colon/Hermite audit](../kb/astra_colon_2026-09-04.md) document subsequent
+  arguments and their exact Python probes. Those general mathematical
+  arguments have independent review but are not part of the Lean proof suite.
 
 ## Manual Timing Helper
 
