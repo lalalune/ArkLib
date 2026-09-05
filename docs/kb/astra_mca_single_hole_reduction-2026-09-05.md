@@ -8,8 +8,11 @@ of a punctured RS list. None of the joint cores covers the omitted point,
 so the full-cover rational-collinearity theorem does not settle this family.
 
 This is an exact reduction with the actual same-support no-joint condition.
-It gives no new scalar-count bound or counterexample, and is not
-Lean-formalized.
+The [Lean module](../../scripts/probes/astra_mca_single_hole.lean) now proves
+the event equivalence, its exact value count, and the necessary production
+budget against ArkLib's unchanged definitions. It gives no new scalar-count
+bound or counterexample. The maximal-core classification and Gram calculation
+below remain written arguments.
 
 ## Exact event equivalence
 
@@ -160,6 +163,37 @@ consumes a punctured-list budget. The production punctured parameters are
 beyond that Johnson regime. The additional content here is the exact MCA
 equivalence, evaluation-image target, maximal-core classification, and
 rank-three identity for this single-hole subfamily.
+
+## Lean verification of the exact event and necessary budget
+
+`AstraMcaSingleHole.mca_event_iff` proves (1) for every injective finite
+evaluation domain and every integer threshold t with k+1<=t, using
+`ReedSolomon.code` and the original `mcaEvent`. The relation to the NNReal
+radius is explicit: `(1-delta)*n=t`. The received word's value at a is
+discarded; the theorem quantifies over arbitrary values on every other node.
+
+`bad_values_card_eq` identifies the actual finite bad-scalar count with the
+value-set cardinality. This counts distinct values, not polynomials or
+supports. `value_count_le_epsMCA` puts that count over the field size below
+the repository's actual worst-case MCA error.
+
+`production_single_hole_iff` specializes the equivalence to degree at most
+536870911, punctured agreement at least 715827883, and radius
+357913940/1073741824. `production_value_budget_of_security` then proves that
+an MCA error bound of 2^-128 at that radius would imply (2) for every a and v.
+The final arithmetic uses `(n+1)/P > 2^-128` at the certified prime. Thus an
+over-budget value set would refute that proposed security bound; no such
+value set is constructed here.
+
+All eight named reports pass local Lean 4.30.0-rc2 with only `propext`,
+`Classical.choice`, and `Quot.sound`, and no diagnostics. The module is
+included in the ArkLib-only stage of
+[`check-mca-event-bridge.sh`](../../scripts/check-mca-event-bridge.sh) and
+the [CI axiom audit](../../.github/workflows/proximity-strip-proof.yml).
+That expanded CI check is pending for this revision. The companion job does
+not check these ArkLib-specific theorems. Reproduction uses the same
+dependency build and helper commands as the
+[production upper-bound assembly](astra_mca_production_upper-2026-09-05.md).
 
 ## A bounded witness check
 

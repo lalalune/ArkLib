@@ -17,6 +17,7 @@ on:
       - "scripts/probes/astra_mca_production_events.lean"
       - "scripts/probes/astra_mca_production_upper.lean"
       - "scripts/probes/astra_mca_kkh26_upper.lean"
+      - "scripts/probes/astra_mca_single_hole.lean"
       - "scripts/probes/astra_mca_production_basis.lean"
       - "scripts/check-mca-production-basis.sh"
       - "scripts/check-mca-event-bridge.sh"
@@ -160,6 +161,11 @@ jobs:
                   "production_security_exceeded", "production_delta_star_upper")]
               expected += ["AstraMcaKkh26Upper." + name for name in (
                   "production_code_eq_evalCode", "first_prime_rate_half_delta_star_upper")]
+              expected += ["AstraMcaSingleHole." + name for name in (
+                  "codeword_iff_natDegree", "zero_of_indexed_roots",
+                  "hole_direction_no_explanation", "mca_event_iff", "bad_values_card_eq",
+                  "value_count_le_epsMCA", "production_single_hole_iff",
+                  "production_value_budget_of_security")]
           for declaration in expected:
               if declaration not in reported:
                   raise SystemExit("Missing axiom report: " + declaration)

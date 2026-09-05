@@ -358,6 +358,10 @@ python3 -m pip install leanblueprint
   `450cb330ef2101b0daed1e41b597ad361f96a140` in
   [run 33990217749](https://github.com/lalalune/ArkLib/actions/runs/33990217749).
   The matching universal lower bound remains open.
+  The event helper also checks the
+  [single-hole equivalence](../kb/astra_mca_single_hole_reduction-2026-09-05.md)
+  and the necessary value budget at the production predecessor. These use
+  the ArkLib pin; they do not prove that budget for arbitrary received words.
   Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
   check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run
   `python3 scripts/probes/astra_mca_two_generator_probe.py` for the complete
