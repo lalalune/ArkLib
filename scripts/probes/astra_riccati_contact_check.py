@@ -22,9 +22,9 @@ def derivative(f, p):
     return trim(i*f[i] % p for i in range(1, len(f)))
 
 
-def kernel(nodes, values, p, w, A, m):
+def kernel(nodes, values, p, w, A, m, pairs=((0, 0), (1, 0), (2, 0), (0, 1))):
     cap = m*A
-    basis = [(a, i, j) for i, j in ((0, 0), (1, 0), (2, 0), (0, 1))
+    basis = [(a, i, j) for i, j in pairs
              for a in range(max(0, cap-w*i-(w-1)*j))]
     pivots, nulls = {}, []
 
@@ -62,11 +62,11 @@ def kernel(nodes, values, p, w, A, m):
         else:
             assert combination
             coefficients = {(i, j): [0]*max(1, cap-w*i-(w-1)*j)
-                            for i, j in ((0, 0), (1, 0), (2, 0), (0, 1))}
+                            for i, j in pairs}
             for index, coefficient in combination.items():
                 a, i, j = basis[index]
                 coefficients[i, j][a] = coefficient
-            nulls.append(tuple(trim(coefficients[key]) for key in ((0, 0), (1, 0), (2, 0), (0, 1))))
+            nulls.append(tuple(trim(coefficients[key]) for key in pairs))
     return len(basis), len(pivots), nulls
 
 

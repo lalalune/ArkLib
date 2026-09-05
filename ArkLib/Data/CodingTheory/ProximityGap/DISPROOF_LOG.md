@@ -53947,3 +53947,32 @@ all with d_1=0, so the result does not assert universal kernel triviality.
 Equations with YR, R^2, or different interpolation conditions are not
 excluded. The written general Riccati solution-count argument is not
 Lean-formalized, and no prize threshold is improved.
+
+
+---
+
+### Full quadratic contact is zero for three decoded candidates (2026-09-05)
+
+The [quadratic contact obstruction](../../../../docs/kb/astra_quadratic_contact_obstruction-2026-09-05.md)
+extends the Riccati no-go to Q=a+bY+cY^2+dR+eYR+fR^2 under the same
+production weighted cap and contact conditions, for every positive order m.
+Local divisibilities force f=0. They force e=0 except at m=3, where
+W=d+g e has a simple root at every node and a double root at every agreement
+with a decoded candidate g. Its forced degree N+A exceeds its cap, so W=0.
+Two distinct decoded candidates force e=d=0. The remaining contact conditions
+and source degree caps imply a+b g+c g^2=0 for every candidate. Three distinct
+candidates therefore force a=b=c=0 as well.
+
+Fifteen new Lean reports pass locally with only standard axioms, including
+the final theorem from actual agreements, without assuming candidate solution
+identities. The final theorem takes the six explicit coefficient contact
+conditions; it does not use an unproved dimension or interpolation-existence
+hypothesis. Both CI pins are configured to require all fifteen reports.
+
+Exact complete contact maps are injective at orders 1 through 4 on F101 with
+21 nodes and on the actual production prime with 33 nodes. These are small
+domain controls. For the zero word, -Z' Y^2+Z YR gives a nonzero source at
+order three, independently checked against 231 contact conditions, so the
+multiple-candidate hypothesis is essential. Higher-degree sources and other
+contact constructions remain open. No prize threshold or arbitrary-list
+allowance is improved by this result.

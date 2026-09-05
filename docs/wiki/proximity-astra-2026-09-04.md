@@ -82,7 +82,13 @@ passing both pins in
 verify that its derivative coefficient is forced to zero at every
 positive contact multiplicity under the production weighted-degree cap.
 A 61-column order-16 kernel provides an exact boundary control where a
-derivative term does survive. Generalized equations with YR or R^2 remain
+derivative term does survive. The later
+[full quadratic obstruction](../kb/astra_quadratic_contact_obstruction-2026-09-05.md)
+eliminates every derivative-containing term when there are two decoded
+candidates, and the entire source when there are three. Fifteen local Lean
+reports include the exceptional order-three double-root argument and the
+extraction of solution identities from actual agreements. Higher-degree
+equations and different contact models remain
 outside this obstruction; no universal lower bound is supplied.
 An exact [monomial-minor certificate](../kb/astra_monomial_minor_norm-2026-09-05.md)
 excludes every monomial seed on mu16 over the production prime and classifies

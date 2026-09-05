@@ -12,7 +12,10 @@ arithmetic are now checked in
 stronger than a negative dimension surplus for a particular source basis.
 It does not exclude equations containing YR or R^2, a different interpolation
 construction, or a Riccati relation obtained by another argument. The
-universal MCA lower bound remains open.
+universal MCA lower bound remains open. The later
+[full quadratic obstruction](astra_quadratic_contact_obstruction-2026-09-05.md)
+handles YR and R^2 in the same contact model when decoded candidates are
+supplied; it is a separate theorem with the additional hypotheses stated there.
 
 ## Why the Riccati shape was worth testing
 

@@ -20,6 +20,7 @@ on:
       - "scripts/probes/astra_mca_single_hole.lean"
       - "scripts/probes/astra_mca_production_basis.lean"
       - "scripts/probes/astra_riccati_contact_obstruction.lean"
+      - "scripts/probes/astra_quadratic_contact_obstruction.lean"
       - "scripts/check-mca-production-basis.sh"
       - "scripts/check-mca-event-bridge.sh"
       - "ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PrizeShapePrimeP30.lean"
@@ -156,6 +157,15 @@ jobs:
               "global_derivative_divisibility", "forced_divisor_degree",
               "production_degree_gap", "production_derivative_zero",
               "quadratic_coefficients_zero_of_three", "production_riccati_zero_of_three")]
+          expected += ["AstraQuadraticContactObstruction." + name for name in (
+              "quadratic_contact_expansion", "local_square_divisibility",
+              "multiplicity_degree_bound", "production_square_zero",
+              "local_cross_divisibility", "production_cross_zero_except_three",
+              "augmented_root_degree", "production_order_three_relation",
+              "production_order_three_zero", "production_derivative_coefficients_zero",
+              "production_quadratic_zero_of_three", "local_algebraic_divisibility",
+              "specialized_degree_lt", "production_algebraic_solution",
+              "production_quadratic_contact_zero")]
           if os.environ["CHECK_MCA_EVENT"] == "true":
               expected += ["AstraMcaEventBridge." + name for name in (
                   "mca_event_from_polynomial_support", "mca_event_of_core_insert")]

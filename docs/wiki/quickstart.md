@@ -389,6 +389,12 @@ python3 -m pip install leanblueprint
   this specific shape; it leaves equations containing YR or R^2 open.
   Both pins passed at `4b72b913f05999c078ce0071d41d390464e7a6da` in
   [run 33995562671](https://github.com/lalalune/ArkLib/actions/runs/33995562671).
+  The [full quadratic extension](../kb/astra_quadratic_contact_obstruction-2026-09-05.md)
+  adds fifteen statements to the same helper, including YR and R^2. Its final
+  theorem proves zero source space when three decoded candidates satisfy the
+  production agreements. Run `python3 scripts/probes/astra_quadratic_contact_check.py`
+  for complete quadratic contact maps on two smaller domains and the necessary
+  order-three exception. Neither obstruction proves a prize list bound.
   Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
   check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run
   `python3 scripts/probes/astra_mca_two_generator_probe.py` for the complete
