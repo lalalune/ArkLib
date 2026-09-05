@@ -17243,3 +17243,25 @@ and nonuniform contacts remain unresolved. Two independent mathematical
 reviews and 72 exact substitution/inversion cases pass. The argument is not
 Lean formalized and changes no numerical score.
 Details: `docs/kb/astra_profile_boundary_2026-09-04.md`.
+
+## [astra-mca-paircover-mu16] the balanced degree-six seed is absent over F65537 and in characteristic zero (2026-09-04)
+
+A triple of degree-at-most-k-2 codewords with exactly two agreeing at every
+nonzero domain point, and pair-region sizes ((n-1)/3,(n-1)/3,(n+2)/3), would
+give n+1 distinct genuine MCA-bad scalars at agreement (2n+1)/3. The received
+pair changes at one existing coordinate; polynomial uniqueness on each
+shortened core verifies the no-joint clause. This is a conditional construction,
+not evidence that the required triple exists.
+
+At n=16,k=8 over F65537, an exhaustive search of 378378 normalized partitions
+finds no degree-six syzygy for region sizes 5,5,6. Independent Gaussian
+elimination gives rank five for every original 7-by-5 coefficient matrix;
+root-polynomial checks and undefined-behavior sanitization pass. Reduction
+from Z[zeta_16] to F65537 shows a nonzero characteristic-zero minor for every
+partition, also ruling out this exact seed in characteristic zero. This
+argument makes no inference about another positive characteristic or a
+larger domain. Power lifting would retain the unequal 5:5:6 proportions.
+The production pair-cover existence requirement remains open, and no new
+unsafe radius or prize solution is certified. These results are not Lean
+formalized. Details: `docs/kb/astra_mca_paircover_target-2026-09-04.md` and
+`docs/kb/astra_mca_paircover_search-2026-09-04.md`.

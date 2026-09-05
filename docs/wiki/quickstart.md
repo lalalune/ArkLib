@@ -301,6 +301,13 @@ python3 -m pip install leanblueprint
   gives exact weight windows and a received-line factorization criterion;
   run `python3 scripts/probes/astra_profile_boundary.py` for the arithmetic
   and 72 polynomial substitution/inversion checks.
+  The [balanced pair-cover criterion](../kb/astra_mca_paircover_target-2026-09-04.md)
+  gives a conditional over-budget MCA construction, but its required
+  polynomial triple remains unconstructed. The
+  [exhaustive mu16 search](../kb/astra_mca_paircover_search-2026-09-04.md)
+  excludes the degree-six seed over F65537 and in characteristic zero.
+  Its reproduction command checks all 378378 original coefficient matrices
+  independently under undefined-behavior sanitization.
   These results are not Lean formalized and establish no improved prize score.
 
 ## Manual Timing Helper
