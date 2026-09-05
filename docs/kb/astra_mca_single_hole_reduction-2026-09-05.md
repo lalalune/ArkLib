@@ -154,8 +154,13 @@ The [moment-rigidity argument](astra_mca_moment_rigidity-2026-09-05.md)
 now gives a written bound of three on that entire list when the punctured
 received polynomial has degree at most 715827883, and constructs a word
 attaining three distinct values. Its determinant proof uses many simultaneous
-root-sum equations at the actual prime. Higher received degrees remain open;
-this restricted result is not Lean-formalized or independently reviewed.
+root-sum equations at the actual prime. A subsequent
+[multiplicity argument](astra_mca_split_root_rigidity-2026-09-05.md)
+extends the bound of three to the fully split sublist at every received
+degree, and to each fibre with a fixed outside-domain factor. It supplies
+sharp sublist bounds of three, one or two depending on the degree range.
+Controlling the number of different outside factors remains open. These
+written results are not Lean-formalized or independently reviewed.
 The [exact locator formulation](astra_mca_single_hole_locator-2026-09-05.md)
 expresses the value image as a ratio of two linear functionals on locators
 that divide the punctured domain polynomial. It also proves that removing

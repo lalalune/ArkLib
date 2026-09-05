@@ -367,7 +367,14 @@ python3 -m pip install leanblueprint
   exhaustive small moment fibres, exact determinant checks, three-member
   constructions, and all 28 production arithmetic gates. The general bound
   for received polynomials of degree at most 715827883 is a written proof;
-  it is not Lean-formalized and leaves higher received degrees open.
+  it is not Lean-formalized and leaves the unrestricted higher degrees open.
+  Run `python3 scripts/probes/astra_mca_split_root_rigidity_check.py` for the
+  [root-multiplicity extension](../kb/astra_mca_split_root_rigidity-2026-09-05.md):
+  840 exact interval gates cover all production received degrees, and full
+  split-polynomial censuses and sharp constructions check the predicted
+  sublist bounds. The written proof bounds each fixed outside-factor fibre
+  by three, including arbitrary repeated roots in the domain. It does not
+  bound the number of different outside factors or the whole list.
   Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
   check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run
   `python3 scripts/probes/astra_mca_two_generator_probe.py` for the complete

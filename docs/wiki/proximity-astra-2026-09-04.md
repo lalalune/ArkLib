@@ -59,7 +59,13 @@ now proves a restricted written bound of three candidates whenever the
 punctured received polynomial has degree at most 715827883. Simultaneous
 root-sum equations force agreement-set differences to be constant on four
 cosets at the actual production prime. A three-member construction attains
-the bound. Higher received degrees, independent review, and Lean
+the bound. The subsequent
+[multiplicity extension](../kb/astra_mca_split_root_rigidity-2026-09-05.md)
+handles every received degree for the fully split sublist, with sharp bounds
+of three, one or two across the degree ranges. It also bounds every fibre
+with a fixed outside-domain factor by three. Its 840 production interval
+gates, complete small split-polynomial censuses, and construction checks
+pass. The number of different outside factors, independent review, and Lean
 formalization remain open; this does not prove the universal lower bound.
 An exact [monomial-minor certificate](../kb/astra_monomial_minor_norm-2026-09-05.md)
 excludes every monomial seed on mu16 over the production prime and classifies

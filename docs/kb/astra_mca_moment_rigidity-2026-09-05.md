@@ -9,8 +9,12 @@ case of the [single-hole value problem](astra_mca_single_hole_reduction-2026-09-
 This is a written proof with exact finite controls and production arithmetic,
 not a Lean-verified or independently reviewed result. It does not cover
 arbitrary received words: interpolation degrees 715827884 through 1073741822
-remain outside the argument. It supplies no universal MCA lower bound or
-grand-prize solution.
+remain outside this entire-list argument. The subsequent
+[root-multiplicity extension](astra_mca_split_root_rigidity-2026-09-05.md)
+bounds the fully split sublist at every received degree and, more generally,
+each fibre with a fixed outside-domain factor. The number of different
+outside factors is still uncontrolled. Neither argument supplies a universal
+MCA lower bound or grand-prize solution.
 
 ## Parameters and statement
 
@@ -230,5 +234,8 @@ The unrestricted received polynomial can have degree as large as n-2.
 For degree greater than A, V-f may have additional roots outside its chosen
 agreement set or a nonconstant residual factor. Its top coefficients then
 no longer give equality of the root sums of those agreement sets alone.
-That is the specific missing step for extending this argument. No such
-extension, independent mathematical review, or Lean formalization is claimed.
+The [subsequent extension](astra_mca_split_root_rigidity-2026-09-05.md)
+handles every higher degree when all roots remain in the domain, allowing
+arbitrary multiplicities, and bounds each fixed outside-factor fibre. It
+does not bound variation between different outside factors. The entire-list
+extension, independent mathematical review, and Lean formalization remain open.
