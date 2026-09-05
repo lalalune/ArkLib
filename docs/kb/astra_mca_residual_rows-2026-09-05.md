@@ -55,8 +55,10 @@ The [auxiliary workflow](../../.github/workflows/proximity-strip-proof.yml)
 checks both supported toolchains and requires every named report to use only
 the permitted standard axioms, with no compiler warnings or errors.
 
-The next obligations are to express these rows as the actual received-word
-minus codeword evaluations, choose a projection giving distinct scalar
-challenges, and prove the same-support MCA event and probability statements.
+The [evaluation and scalar-projection extension](astra_mca_scalar_projection-2026-09-05.md)
+now expresses these rows as received-word minus polynomial evaluations,
+chooses a projection giving distinct scalar challenges, and proves the
+general polynomial support lemmas. The indexed MCA event and probability
+statements remain to be assembled.
 Even completion of that upper-bound construction would leave the matching
 universal lower bound open. The strongest computed upper bound is unchanged.

@@ -340,9 +340,10 @@ python3 -m pip install leanblueprint
   is checked by `bash scripts/check-mca-production-basis.sh /tmp/mca-proof-lib`
   from a matching Lake environment. This compiles the existing prime/root
   certificate, basis, and [residual-row dependency](../kb/astra_mca_residual_rows-2026-09-05.md),
+  [evaluation and projection modules](../kb/astra_mca_scalar_projection-2026-09-05.md),
   then checks the concrete power-domain result and its 1073741828 distinct
-  residual directions; it does not build all ArkLib modules. These directions
-  still need to be connected to scalar challenges and actual MCA events.
+  scalar challenges; it does not build all ArkLib modules. The indexed MCA
+  events and probability still require assembly.
   Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
   check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run
   `python3 scripts/probes/astra_mca_two_generator_probe.py` for the complete

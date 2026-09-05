@@ -11,6 +11,8 @@ on:
       - "scripts/probes/astra_exact_list_projection.lean"
       - "scripts/probes/astra_mca_polynomial_basis.lean"
       - "scripts/probes/astra_mca_residual_rows.lean"
+      - "scripts/probes/astra_mca_evaluations.lean"
+      - "scripts/probes/astra_mca_scalar_projection.lean"
       - "scripts/probes/astra_mca_production_basis.lean"
       - "scripts/check-mca-production-basis.sh"
       - "ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PrizeShapePrimeP30.lean"
@@ -118,9 +120,18 @@ jobs:
               "row_lift_ne_zero", "row_lift_same_coordinate", "determinant_nonzero_off_domain",
               "basis_values_not_all_zero", "slot_count", "base_row_nonzero",
               "slot_row_nonzero", "row_lift_determinant_zero", "slot_rows_projectively_distinct")]
+          expected += ["AstraMcaEvaluations." + name for name in (
+              "row_dot_add", "row_dot_smul", "combine_eval", "combine_degree", "core_card",
+              "owner_polynomial_degree", "core_agrees", "slot_discrepancy", "received_affine",
+              "slot_cancellation", "slot_outside_core", "no_explanation_on_core_insert",
+              "core_insert_witness")]
+          expected += ["AstraMcaScalarProjection." + name for name in (
+              "row_polynomial_degree", "row_polynomial_ne_zero", "row_polynomial_eval",
+              "exists_common_nonroot", "exists_nonzero_denominators", "exists_injective_ratios")]
           expected += ["AstraMcaProductionBasis." + name for name in (
               "power_domain_card", "power_domain_roots", "production_deleted_basis",
-              "production_residual_rows", "production_projection_arithmetic")]
+              "production_residual_rows", "production_projection_arithmetic",
+              "production_moment_curve_arithmetic", "production_scalar_projection")]
           for declaration in expected:
               if declaration not in reported:
                   raise SystemExit("Missing axiom report: " + declaration)

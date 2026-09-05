@@ -2,10 +2,10 @@
 
 The [root-domain basis construction](astra_mca_polynomial_basis-2026-09-05.md)
 is now instantiated over the repository's exact production field and
-generator. Five additional theorems in
+generator. Seven additional theorems in
 [`astra_mca_production_basis.lean`](../../scripts/probes/astra_mca_production_basis.lean)
-pass local Lean 4.30.0-rc2. **This proves the concrete polynomial basis;
-the actual MCA witnesses, their probability and the threshold consequence
+pass local Lean 4.30.0-rc2. **This proves the concrete polynomial basis and scalar projection;
+the indexed MCA witnesses, their probability and the threshold consequence
 still need formal assembly. The universal lower bound remains open.**
 
 ## What is instantiated
@@ -47,8 +47,9 @@ the locator of A union B union S.
 
 `production_residual_rows` further supplies exactly 1073741828 nonzero,
 pairwise projectively distinct [residual rows](astra_mca_residual_rows-2026-09-05.md)
-from that same constructed basis. This does not yet produce the distinct
-scalar challenges needed for MCA events.
+from that same constructed basis. `production_scalar_projection` now supplies
+two coefficient vectors with nonzero denominators and pairwise distinct
+[scalar challenges](astra_mca_scalar_projection-2026-09-05.md).
 
 This domain uses the powers displayed in the repository's
 [`KKH26.evalCode`](../../ArkLib/Data/CodingTheory/ProximityGap/KKH26WitnessSpread.lean)
@@ -66,8 +67,13 @@ P < M*2^128.
 
 The first is the field-size condition in the written four-generator
 projection argument. The second says that M distinct bad scalars would
-exceed probability 2^-128. Producing those scalars and verifying the
-same-support no-joint-explanation clause remain separate proof steps.
+exceed probability 2^-128. Those scalars now exist formally. The general
+polynomial same-support lemmas are also checked, but their indexed MCA and
+probability consequences still require assembly.
+
+`production_moment_curve_arithmetic` additionally checks `3*M<P` and
+`3*M*M<P`, the sufficient bounds used by the implemented univariate
+root-avoidance projection.
 
 ## Reproduction and provenance
 
@@ -80,13 +86,14 @@ bash /absolute/path/to/arklib/scripts/check-mca-production-basis.sh /tmp/mca-pro
 ```
 
 The [helper](../../scripts/check-mca-production-basis.sh) compiles the
-unaltered production certificate, polynomial basis, and residual-row module
+unaltered production certificate, polynomial basis, residual-row, evaluation, and projection modules
 into the supplied directory, then checks the concrete instantiation using those exact compiled
 dependencies. It runs individual Lean compilations, without a full ArkLib
 build. Use a separate output directory for each toolchain.
 
-The local audit checks 48 named axiom reports: 31 polynomial construction
-theorems, three existing certificate theorems, nine residual-row theorems, and five instantiation
+The local audit checks 69 named axiom reports: 31 polynomial construction
+theorems, three existing certificate theorems, nine residual-row theorems,
+13 evaluation/support theorems, six projection theorems, and seven instantiation
 theorems. All use only the permitted standard axioms, with no compiler
 warnings or placeholder proofs. The expanded
 [auxiliary CI](../../.github/workflows/proximity-strip-proof.yml) runs this
@@ -102,8 +109,11 @@ The first production revision `6ec208d51f7751c80a31d3e7a4e4569b5abb3bce`
 passed Lean 4.30 but failed Lean 4.32.2 in
 [run 33988276658](https://github.com/lalalune/ArkLib/actions/runs/33988276658):
 the latter required explicit conversion from a strict inequality to interval
-membership in `power_domain_card`. The current source uses `Set.mem_Iio.mpr`
-explicitly; the new revision must be checked on both pins.
+membership in `power_domain_card`. The source now uses `Set.mem_Iio.mpr`
+explicitly. This repair and the residual-row addition passed both pins at
+`f5f60954060c9f0ec8645e2b7d01f582279b9c7e` in
+[run 33988862034](https://github.com/lalalune/ArkLib/actions/runs/33988862034).
+The new scalar-projection revision requires its own CI result.
 
 The strongest previously computed numerical upper bound is unchanged.
 No exact threshold, improved companion score, matching universal bound,

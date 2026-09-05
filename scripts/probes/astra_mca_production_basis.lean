@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 
-import scripts.probes.astra_mca_residual_rows
+import scripts.probes.astra_mca_scalar_projection
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PrizeShapePrimeP30
 
 /-!
@@ -20,7 +20,7 @@ set_option autoImplicit false
 
 namespace AstraMcaProductionBasis
 
-open AstraMcaPolynomialBasis AstraMcaResidualRows
+open AstraMcaPolynomialBasis AstraMcaResidualRows AstraMcaEvaluations AstraMcaScalarProjection
 open ArkLib.ProximityGap.PrizeShapePrimeP30
 
 section PowerDomain
@@ -91,6 +91,44 @@ theorem production_projection_arithmetic :
   rw [Nat.choose_two_right]
   decide
 
+/-- The certified field also satisfies the simpler ordered-pair moment-curve budgets. -/
+theorem production_moment_curve_arithmetic :
+    3 * 1073741828 < P ∧ 3 * (1073741828 * 1073741828) < P := by
+  decide
+
+/-- The same production construction admits n+4 distinct finite scalar challenges. -/
+theorem production_scalar_projection :
+    ∃ A B S I : Finset (ZMod P), ∃ basis : PairRegionBasis A B S 536870910,
+    ∃ u0 u1 : Fin 4 → ZMod P,
+      A ∪ B ∪ S ∪ I = productionDomain ∧
+      Disjoint (A ∪ B ∪ S) I ∧ Disjoint A B ∧ Disjoint A S ∧ Disjoint B S ∧
+      A.card = 357913939 ∧ B.card = 357913939 ∧ S.card = 357913942 ∧ I.card = 4 ∧
+      (slotSet A B S I).card = 1073741828 ∧
+      (∀ j ∈ slotSet A B S I, rowDot (slotRow basis j) u1 ≠ 0) ∧
+      Function.Injective (fun j : slotSet A B S I =>
+        -rowDot (slotRow basis j.val) u0 / rowDot (slotRow basis j.val) u1) := by
+  classical
+  obtain ⟨A, B, S, I, basis, hcover, hI, hAB, hAS, hBS, hA, hB, hS, hIc,
+      hcount, hrow, hproj⟩ := production_residual_rows
+  let J := ↥(slotSet A B S I)
+  have hJ : Fintype.card J = 1073741828 := by
+    simpa only [J, Fintype.card_coe] using hcount
+  have hdenom : 3 * Fintype.card J < Fintype.card (ZMod P) := by
+    rw [hJ, ZMod.card]
+    exact production_moment_curve_arithmetic.1
+  have hpairs : 3 * Fintype.card (OffDiag J) < Fintype.card (ZMod P) := by
+    calc
+      _ ≤ 3 * Fintype.card (J × J) := Nat.mul_le_mul_left 3 (Fintype.card_subtype_le _)
+      _ = 3 * (1073741828 * 1073741828) := by rw [Fintype.card_prod, hJ]
+      _ < Fintype.card (ZMod P) := by
+        rw [ZMod.card]
+        exact production_moment_curve_arithmetic.2
+  obtain ⟨u0, u1, hu1, hinj⟩ := exists_injective_ratios
+    (fun j : J => slotRow basis j.val) (fun j => hrow j.val j.property)
+    (fun i j c h => Subtype.ext (hproj i.val i.property j.val j.property c h)) hdenom hpairs
+  exact ⟨A, B, S, I, basis, u0, u1, hcover, hI, hAB, hAS, hBS, hA, hB, hS, hIc,
+    hcount, fun j hj => hu1 ⟨j, hj⟩, hinj⟩
+
 end AstraMcaProductionBasis
 
 #print axioms AstraMcaProductionBasis.power_domain_card
@@ -98,3 +136,5 @@ end AstraMcaProductionBasis
 #print axioms AstraMcaProductionBasis.production_deleted_basis
 #print axioms AstraMcaProductionBasis.production_residual_rows
 #print axioms AstraMcaProductionBasis.production_projection_arithmetic
+#print axioms AstraMcaProductionBasis.production_moment_curve_arithmetic
+#print axioms AstraMcaProductionBasis.production_scalar_projection
