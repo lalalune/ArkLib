@@ -6,7 +6,8 @@ derivative R, including YR and R^2. At the production profile, if a received
 word has three distinct decoded candidates, every source with the specified
 contact conditions and weighted degree cap is zero, at every positive
 contact order. Fifteen statements, including the complete implication from
-actual agreements, pass local Lean 4.30.0-rc2 with only standard axioms.
+actual agreements, pass local Lean 4.30.0-rc2 and both CI pins with only
+standard axioms.
 
 This excludes a particular interpolation construction. It does not exclude
 higher-degree sources, other contact conditions, or equations obtained by
@@ -130,10 +131,17 @@ differential equation theorem is imported.
 ## Verification and finite controls
 
 All fifteen named reports in the new module passed local Lean 4.30.0-rc2
-without diagnostics, using only propext, Classical.choice and Quot.sound.
+and both CI pins without diagnostics, using only propext, Classical.choice
+and Quot.sound.
 The production build helper and the
 [two-pin CI audit](../../.github/workflows/proximity-strip-proof.yml) include
-the module and require every report. The new CI run is pending at this revision.
+the module and require every report. Both jobs passed in
+[run 33997478724](https://github.com/lalalune/ArkLib/actions/runs/33997478724)
+at `738598a9ea823c1cd45c314bfc3e8d203c3a057a`: the ArkLib job used Lean
+4.30.0-rc2 and accepted all 141 required axiom reports, while the companion
+job used Lean 4.32.2 and accepted all 119. Both totals include these fifteen
+new statements. The counts retain the separate status of the earlier
+upper-bound construction and do not certify a universal lower bound.
 
 Run:
 

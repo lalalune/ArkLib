@@ -395,6 +395,8 @@ python3 -m pip install leanblueprint
   production agreements. Run `python3 scripts/probes/astra_quadratic_contact_check.py`
   for complete quadratic contact maps on two smaller domains and the necessary
   order-three exception. Neither obstruction proves a prize list bound.
+  Both pins passed at `738598a9ea823c1cd45c314bfc3e8d203c3a057a` in
+  [run 33997478724](https://github.com/lalalune/ArkLib/actions/runs/33997478724).
   Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
   check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run
   `python3 scripts/probes/astra_mca_two_generator_probe.py` for the complete

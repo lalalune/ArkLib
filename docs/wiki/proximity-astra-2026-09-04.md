@@ -85,8 +85,10 @@ A 61-column order-16 kernel provides an exact boundary control where a
 derivative term does survive. The later
 [full quadratic obstruction](../kb/astra_quadratic_contact_obstruction-2026-09-05.md)
 eliminates every derivative-containing term when there are two decoded
-candidates, and the entire source when there are three. Fifteen local Lean
-reports include the exceptional order-three double-root argument and the
+candidates, and the entire source when there are three. Fifteen Lean reports,
+passing both pins in
+[run 33997478724](https://github.com/lalalune/ArkLib/actions/runs/33997478724),
+include the exceptional order-three double-root argument and the
 extraction of solution identities from actual agreements. Higher-degree
 equations and different contact models remain
 outside this obstruction; no universal lower bound is supplied.

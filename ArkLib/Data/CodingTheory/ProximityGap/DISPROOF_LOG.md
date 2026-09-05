@@ -53963,7 +53963,9 @@ Two distinct decoded candidates force e=d=0. The remaining contact conditions
 and source degree caps imply a+b g+c g^2=0 for every candidate. Three distinct
 candidates therefore force a=b=c=0 as well.
 
-Fifteen new Lean reports pass locally with only standard axioms, including
+Fifteen new Lean reports pass locally and on both pins in
+[run 33997478724](https://github.com/lalalune/ArkLib/actions/runs/33997478724)
+with only standard axioms, including
 the final theorem from actual agreements, without assuming candidate solution
 identities. The final theorem takes the six explicit coefficient contact
 conditions; it does not use an unproved dimension or interpolation-existence
