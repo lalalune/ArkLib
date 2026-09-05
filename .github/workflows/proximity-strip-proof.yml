@@ -37,7 +37,25 @@ jobs:
         run: |
           set -euo pipefail
           lean --version
-          lake env lean scripts/probes/astra_companion_strip_projection.lean | tee "$RUNNER_TEMP/strip-proof.log"
-          if rg 'sorryAx|error:' "$RUNNER_TEMP/strip-proof.log"; then
-            exit 1
-          fi
+          python3 scripts/forbidden_tokens.py scripts/probes/astra_companion_strip_projection.lean
+          lake env lean scripts/probes/astra_companion_strip_projection.lean 2>&1 | tee "$RUNNER_TEMP/strip-proof.log"
+          python3 - "$RUNNER_TEMP/strip-proof.log" <<'PY'
+          import re
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, "scripts")
+          from axiom_audit import ALLOWED, DEP_RE, NODEP_RE
+          output = Path(sys.argv[1]).read_text()
+          if re.search(r"sorryAx|error:|warning:", output):
+              raise SystemExit("Unexpected Lean diagnostic in strip proof")
+          reported = {m[1]: {a.strip() for a in m[2].split(",") if a.strip()}
+                      for m in DEP_RE.finditer(output)}
+          reported.update({m[1]: set() for m in NODEP_RE.finditer(output)})
+          for name in ("index_card", "mem_low_of_strip_zero", "strip_range_finrank_le", "exists_low_subspace"):
+              declaration = "AstraCompanionStripProjection." + name
+              if declaration not in reported:
+                  raise SystemExit("Missing axiom report: " + declaration)
+              if reported[declaration] - ALLOWED:
+                  raise SystemExit("Forbidden axioms: " + declaration)
+              print("Allowed axioms:", declaration, sorted(reported[declaration]))
+          PY

@@ -41,9 +41,14 @@ theorem axiom reports use only `propext`, `Classical.choice`, and `Quot.sound`.
 adds the Mathlib polynomial projection and rank argument. It constructs a
 dependent finite index with exactly this cardinality, shows that vanishing
 strip coefficients leave the lower box, and uses rank-nullity to bound the
-dimension lost. **This file is awaiting its first CI compilation at this
-commit.** The focused workflow reports compilation and the theorem axioms;
-it does not build ArkLib or certify a prize claim.
+dimension lost. Its first compilation passed in
+[run 33932666190](https://github.com/lalalune/ArkLib/actions/runs/33932666190)
+with Lean 4.30.0-rc2 and all four theorem reports containing only `propext`,
+`Classical.choice`, and `Quot.sound`. That run emitted two linter warnings,
+now corrected, and exposed a missing `rg` command in the output check. The
+workflow now uses Python to enforce the complete axiom allowlist, report
+presence, and absence of warnings. A subsequent clean run is still pending
+for that stricter gate. The job does not build ArkLib or certify a prize claim.
 
 The projection-to-selector integration, identity between the fast arithmetic
 and the formal sum, concrete source tables, retuned ordinary-factor gates,
@@ -55,8 +60,9 @@ and final companion assembly remain separate proof obligations.
 compares the fast cumulative-row formula against a direct channel sum in
 40,095 small boxes, and against the difference of two independently counted
 whole boxes in 160 large cases. All passed. The optimized C++ implementation
-also matched 1,542 sampled cases. Three optimized phase replays matched the
-following exact values; sanitizer verification is pending at this commit.
+also matched 1,542 sampled cases. All three phase replays below passed both
+optimized and undefined-behavior-sanitized builds. The four older default
+phase regressions also retained their exact outputs.
 
 All rows use the 68.04 error cell 80791 and include the fixed tail count
 `73789382345390` and scalar list count `5529601254`. The capacity is

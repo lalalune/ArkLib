@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Exact contact-strip arithmetic and optional retuned phase experiments.
 
-This is not a polynomial rank proof or a ProtocolClaim. The matching Std Lean
-file proves the channel interval/indexing lemmas, not this whole computation.
+This is not a ProtocolClaim. Separate Lean files prove the channel indexing
+and polynomial rank bound. Their connection to this fast arithmetic, the
+source selector, and a final protocol certificate remains unproved.
 """
 from __future__ import annotations
 
@@ -96,8 +97,9 @@ def main() -> None:
     parser.add_argument("--sanitize", action="store_true")
     args = parser.parse_args()
     result, samples = checks()
-    result["status"] = "EXACT_STRIP_ARITHMETIC_ONLY_POLYNOMIAL_RANK_BRIDGE_UNPROVED"
+    result["status"] = "EXACT_STRIP_ARITHMETIC_ONLY_SELECTOR_AND_PROTOCOL_INTEGRATION_UNPROVED"
     result["lean_certificate"] = "scripts/probes/astra_companion_band_strip.lean"
+    result["polynomial_rank_certificate"] = "scripts/probes/astra_companion_strip_projection.lean"
     if args.check_cpp or args.check_phases or args.sanitize:
         compiler = shutil.which("clang++") or shutil.which("g++")
         if not compiler:

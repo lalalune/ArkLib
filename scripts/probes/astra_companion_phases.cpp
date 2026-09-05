@@ -19,7 +19,8 @@
 // separately. Options precede sources and may appear in any order, once each.
 // --actual-contact uses the source's actual weighted degree in the thin band.
 // --clipped-band additionally charges each boundary channel its exact width.
-// These two alternative research rules require new polynomial rank bridges.
+// A separate exact-strip projection/rank lemma is Lean checked. Connecting
+// these research rules to the repeated quotient selector remains unproved.
 // The default four-source receipts remain unchanged. Additional sources use
 // the same strict-slope recursion; they do not certify a Lean soundness theorem.
 // Signed 128-bit arithmetic is intentional: a negative nullity must not be
