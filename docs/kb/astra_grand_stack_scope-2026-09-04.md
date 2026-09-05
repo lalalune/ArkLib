@@ -191,3 +191,10 @@ not enumerate all degree-`<8m` polynomials. The large-field and
 production-size conclusions in that span follow from the proof, not from
 sampling. Whether this same received word has a fourth codeword elsewhere
 in the Reed--Solomon code remains unresolved by this bounded attempt.
+
+The [actual MCA conversion](astra_mca_lift_three_core-2026-09-04.md) shortens
+the triple region by one and constructs a nontrivial received pair on the
+same smooth domain. It verifies the no-joint clause with exact dual parity
+certificates and proves the best possible count for its specified three-core
+conversion. That count remains below the target; the full event set is not
+computed.

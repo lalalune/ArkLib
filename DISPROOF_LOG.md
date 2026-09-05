@@ -17175,3 +17175,71 @@ also needs the actual support and distinct-scalar provenance. Neither a
 corrected rank bound nor a prize/event counterexample is asserted. The source
 audit received independent review; the new argument is not Lean formalized.
 Details: `docs/kb/astra_grand_stack_scope-2026-09-04.md`.
+
+## [astra-mca-three-core] actual bad-event witnesses meet their conversion ceiling below the target (2026-09-04)
+
+Shortening the middle-band triple region by one gives local codewords F_i
+of degree at most k-2. On their three cores set `(u0,u1)=(F_i,X*F_i)`;
+an extra mismatching coordinate supplies a cancellation scalar and a genuine
+MCA witness. Polynomial uniqueness on each core excludes a joint explanation.
+Unused coordinates can provide three distinct additional scalars each.
+The construction certifies 54, 108, and 222 scalars at lengths 64, 128,
+and 256, respectively. All 546 explicit witnesses across five field/domain
+cells pass an independent Vandermonde dual-parity check of the no-joint clause.
+
+Every compatible local triple on these same cores is a global base plus
+a common linear multiplier times the displayed triple. Thus the specified
+core-plus-one-coordinate conversion has the matching ceiling
+`n-t+2*|E|`, even for arbitrary compatible received pairs. At the repository's
+production field and n=2^30, a written construction gives 939524094 scalars,
+below both the strip budget n-1 and the exact prize budget n. This does not
+bound the full MCA event set: unrelated codewords/supports remain possible.
+Admitting the next syzygy generator by shortening T further loses at least m
+total core memberships, so it cannot retain this one-extra-point architecture.
+Details: `docs/kb/astra_mca_lift_three_core-2026-09-04.md`.
+
+## [astra-family-weighted-secants] shared contact orders give a global inequality but no count improvement (2026-09-04)
+
+If two selected polynomials share nodes with total contact order greater
+than the actual contact weight c(F), substitution of their affine pencil
+annihilates F identically. Regularity places the secant on their actual
+geometric component. On a non-plane irreducible component of joint YR
+degree at most Y, at most Y seed-nonvertical contained lines pass through
+each regular point. The no-large-pencil cap then yields
+`2*sum_i nu_i*choose(d_i,2) <= c*L*(L-1) + max(0,sum_i nu_i-c)*L*Y*e`.
+The non-plane and field-embedding hypotheses are explicit; support flags
+alone do not establish them.
+
+The uniform order-34 profile still satisfies this inequality for arbitrarily
+large aggregate family sizes: its limiting weighted pair term is about
+4265682.07, below cmin=6160327. Ordinary triple incidence and the earlier
+repair/derivative conditions also pass. This is not a constructed selected
+family, nor a general impossibility theorem for incidence methods. The
+written geometric proof received independent review; exact arithmetic and
+nine sharp line-count examples pass. No Lean or score closure is claimed.
+Details: `docs/kb/astra_family_incidence_secants-2026-09-04.md`.
+
+## [astra-profile-boundary] uniform high contact forces a graph factor for low-degree received lines (2026-09-04)
+
+At exact binding weight cmin=6160327, the joint-YR-degree-47 leading part
+is `a(Z)*Y^37*R^10`. This gives contact order at most 37 at every node.
+Combined with full-source universal-factor repair, it requires at least
+166496 positive-contact nodes and at least 47572 nodes of order at least 34.
+These sharpened counts require actual weight equal to cmin, not merely its
+usual lower bound. Uniform order 34 still passes.
+
+More structurally, if all node contacts have order at least m0 and a received
+line is represented by U0(X)+Z*U1(X) of degree at most d, then
+`(y-r)*d+delta < n*(m0-r)` forces `Y-U` to divide F under the stated support
+and degree-range hypotheses. Expanding `F(X,U,U_X+T,Z)` bounds each T
+coefficient's degree below its forced node-root multiplicity. This excludes
+an irreducible positive-R factor. At uniform order 34 it rules out d<=170039
+at cmin and d<=168895 at excess weight 42330. The cap-nine repair already
+excludes that uniform profile at excess weight 42331 and above.
+
+RS inversion preserves contacts but still leaves an overlapping high-degree
+window, so it does not close the remaining case. Higher-degree received lines
+and nonuniform contacts remain unresolved. Two independent mathematical
+reviews and 72 exact substitution/inversion cases pass. The argument is not
+Lean formalized and changes no numerical score.
+Details: `docs/kb/astra_profile_boundary_2026-09-04.md`.

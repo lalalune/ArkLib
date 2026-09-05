@@ -114,3 +114,8 @@ Reproduce: `python3 scripts/probes/astra_incidence_derivative_repair.py`.
 The probe checks the local derivative identity on 384 finite cases and the
 displayed exact integer thresholds. The general inequalities rest on the
 written proof above, rather than finite testing.
+
+The [weighted secant follow-up](astra_family_incidence_secants-2026-09-04.md)
+does supply a bridge from shared node contacts to lines on a non-plane
+geometric component. Its resulting pair-incidence inequality still admits
+the surviving uniform order-34 arithmetic profile.

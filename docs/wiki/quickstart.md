@@ -291,6 +291,16 @@ python3 -m pip install leanblueprint
   audits the remaining witness data and rules out a fourth sufficiently
   close codeword inside the known three-codeword affine span; run
   `python3 scripts/probes/astra_grand_stack_affine_span.py`.
+  The [three-core MCA conversion](../kb/astra_mca_lift_three_core-2026-09-04.md)
+  supplies actual bad-event witnesses and no-joint parity certificates on
+  unchanged smooth domains; use `python3 scripts/probes/astra_mca_lift_three_core.py`.
+  The [weighted secant bound](../kb/astra_family_incidence_secants-2026-09-04.md)
+  links shared contacts to contained lines under an explicit non-plane
+  component hypothesis; use `python3 scripts/probes/astra_family_incidence_secants.py`.
+  The [profile-boundary analysis](../kb/astra_profile_boundary_2026-09-04.md)
+  gives exact weight windows and a received-line factorization criterion;
+  run `python3 scripts/probes/astra_profile_boundary.py` for the arithmetic
+  and 72 polynomial substitution/inversion checks.
   These results are not Lean formalized and establish no improved prize score.
 
 ## Manual Timing Helper
