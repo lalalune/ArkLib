@@ -374,7 +374,12 @@ python3 -m pip install leanblueprint
   proves that four saturated points force a degree-two cover when b=2 and
   gives a sharp three-point example without that cover. Run
   `python3 scripts/probes/astra_mca_low_degree_saturation_check.py` for 930
-  projective checks. This theorem does not extend to production degree here.
+  projective checks. A [six-square countermodel](../kb/astra_mca_six_square_countermodel-2026-09-05.md)
+  shows that the square conditions alone do not force a cover at b=3:
+  all eighteen scalar values are distinct, but the locator union needs 33
+  points instead of the required 16. Run
+  `python3 scripts/probes/astra_mca_six_square_countermodel_check.py` for the
+  exact polynomial certificate. It is not an actual MCA counterexample.
   The [decoding-curve incidence bound](../kb/astra_mca_decoding_curve_incidence-2026-09-04.md)
   quantifies what a separately constructed curve carrier would suffice to
   prove. The existence of such a carrier for arbitrary MCA events is open.
@@ -384,6 +389,12 @@ python3 -m pip install leanblueprint
   threshold-44 MCA vertices over the production field. This is not an RS
   realization. Run `python3 scripts/probes/astra_mca_mds_rank_obstruction.py`
   for its support, matching, and specialization-degree checks.
+  The [single-hole reduction](../kb/astra_mca_single_hole_reduction-2026-09-05.md)
+  identifies an exact MCA subfamily with the extrapolated-value image of a
+  punctured RS list. Its large joint cores are rationally collinear but omit
+  one domain point, so the full-cover obstruction does not apply. Run
+  `python3 scripts/probes/astra_mca_single_hole_check.py` for its complete
+  F17 control; the universal production value-image bound remains open.
   The [native-count workflow](../../.github/workflows/proximity-native-count.yml)
   runs the separately pinned, bounded-tested native source on a standard
   public-repository Linux runner. It preserves computation receipts; it does

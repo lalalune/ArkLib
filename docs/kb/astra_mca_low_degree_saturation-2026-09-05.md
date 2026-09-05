@@ -23,7 +23,7 @@ For fixed `[S:T]`, put `V_(S,T)=T*C-S*B`. It never vanishes at a geometric
 X-point. A slot is a root x of Wi, together with the unique parameter for
 which `V_(S,T)(x)` is proportional to ci. The resultant proof identifies its
 multiplicity at a parameter with the number of these slots. Call ci
-**saturated** when its `2b` slots give b distinct finite parameters, each
+**saturated** when its `2b` slots give b distinct finite K-rational parameters, each
 with exactly two slots. Equivalently its resultant is a nonzero constant
 times `Fi^2`, where Fi is a split squarefree degree-b form and `Fi(1,0)!=0`.
 
@@ -216,7 +216,10 @@ slot products, polynomial gcds, and exact coefficient-matrix ranks. They
 include the sharp three-point example, a five-point covering example,
 and the one-point degree-three control.
 
-The remaining question is whether at least five saturated locators at
-odd production degree, together with the common-domain and incidence
-conditions, force an obstruction. Neither the low-degree theorem nor
-the degree-three control answers it.
+The subsequent [six-square degree-three countermodel](astra_mca_six_square_countermodel-2026-09-05.md)
+shows that even six saturated locators at odd degree can have a birational
+locator map. Its eighteen scalar parameters are distinct over F_(11^12),
+but its locator union needs 33 domain points rather than the required 16.
+Thus the degree-two rigidity theorem cannot extend by square-resultant
+conditions alone. The remaining production question must use the actual
+common-domain and incidence conditions; neither result supplies its bound.

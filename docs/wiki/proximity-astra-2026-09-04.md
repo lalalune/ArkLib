@@ -13,6 +13,15 @@ construction. Together with the written bridge this sharpens its threshold
 upper bound to `357913941/2^30`. The matching universal lower bound is open;
 this is a computational result, not a newly Lean-verified threshold theorem.
 
+The [single-hole reduction](../kb/astra_mca_single_hole_reduction-2026-09-05.md)
+also identifies a necessary subproblem for the universal bound: controlling
+the distinct extrapolated values of a punctured RS list. Rational collinearity
+of its joint cores and a rank-three error Gram matrix do not supply that cap.
+An independently checked [six-square countermodel](../kb/astra_mca_six_square_countermodel-2026-09-05.md)
+rules out extending the degree-two cover argument using square-resultant
+conditions alone. Its common-domain requirement fails, so the actual
+six-pencil MCA question remains open.
+
 ## Revisions and environment
 
 * Original clone: `/Users/nubs/Git/arklib`, clean `main` at

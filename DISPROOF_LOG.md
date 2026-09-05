@@ -17359,3 +17359,42 @@ nonzero subgroup in F17 the double sum is zero while the shifted sum is
 below P^(1/4); unknown conjectural constants and the separate MCA incidence
 input remain unresolved. This is a scope correction and elementary
 identity, not a new Paley theorem. See `docs/kb/astra_paley_scope-2026-09-04.md`.
+
+## [astra-mca-six-squares] six square resultants do not force a common cover (2026-09-05)
+
+Explicit degree-three polynomial rows over F11 give six squarefree
+degree-six locators whose fixed-degree Sylvester resultants are nonzero
+scalar multiples of squarefree cubic squares. All six cubic factors are
+pairwise coprime. Over F_(11^12), the six locators therefore provide
+eighteen distinct finite scalar parameters, each with two distinct slots.
+The rows are fiberwise independent, and a nonzero quadratic-product
+coefficient minor excludes a conic image. Balanced degree divisibility
+then makes the locator map birational. Thus even six saturated locators
+at odd degree do not imply a common nontrivial cover.
+
+This is not a six-pencil MCA realization: the squarefree locator union
+has degree 33, whereas the actual b=3 architecture requires a domain of
+size 16. The missing common-domain hypothesis is essential. The exact
+polynomial checker recomputes the identities and splitting degrees; a
+separate implementation also verified all 72 projective Sylvester values.
+No production counterexample or Lean theorem is claimed. See
+`docs/kb/astra_mca_six_square_countermodel-2026-09-05.md` and
+`scripts/probes/astra_mca_six_square_countermodel_check.py`.
+
+## [astra-mca-single-hole] rationally collinear cores need a coverage hypothesis (2026-09-05)
+
+For a received pair whose direction is supported at one evaluation point
+a, the exact MCA-bad scalar set equals the values f(a) of the punctured
+RS list with one fewer required agreement. Every sufficiently large
+maximal joint core is the agreement set of (f,0), all such pairs are
+rationally collinear, and their union omits a. The full-cover collapse
+therefore supplies no cap for this subfamily. Its smooth half-rate error
+Gram matrix has rank at most three, but the required production
+extrapolated-value bound remains unproved.
+
+An exhaustive F17 control checks all 83,521 degree-less-than-four
+polynomials and independently evaluates 629 same-support scalar/rank
+conditions, obtaining exactly the two values 0 and 13. The general
+reduction is an elementary written proof, not a new scalar-count bound
+or Lean theorem. See `docs/kb/astra_mca_single_hole_reduction-2026-09-05.md`
+and `scripts/probes/astra_mca_single_hole_check.py`.
