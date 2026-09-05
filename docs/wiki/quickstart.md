@@ -287,6 +287,10 @@ python3 -m pip install leanblueprint
   refutes `RegionMiddleExclusion`, an overly strong sufficient conjecture,
   with a field-uniform written proof and an actual three-codeword construction.
   Use `python3 scripts/probes/astra_grand_smooth_middle_counterexample.py`.
+  Its [genuine-stack follow-up](../kb/astra_grand_stack_scope-2026-09-04.md)
+  audits the remaining witness data and rules out a fourth sufficiently
+  close codeword inside the known three-codeword affine span; run
+  `python3 scripts/probes/astra_grand_stack_affine_span.py`.
   These results are not Lean formalized and establish no improved prize score.
 
 ## Manual Timing Helper

@@ -9,6 +9,19 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._G87McaEventSyndromeBridge
 /-!
 # SYZ43 — is `RealizabilityCore` auto-instantiated by an actual over-budget stack?
 
+## Research update (2026-09-04; not Lean formalized)
+
+The `hrank` premise of `realizabilityCore_of_mcaEvent_witnesses` quantifies over
+every annihilating family, including the zero family. It therefore forces
+`Ucard ≤ k` and is impossible when `Ucard > k`. The proof discards the bridge's
+block-independence property as `_hblock`; that restriction is absent from the
+premise. See `docs/kb/astra_grand_stack_scope-2026-09-04.md` for the independently
+reviewed argument and the further support/scalar provenance needed by a corrected
+target. The conditional theorem is valid, but its current hypothesis is stronger
+than a rank statement about the actual bridge. No corrected rank bound is claimed.
+The unrestricted `uniformSylvester` input discussed historically below is also
+refuted by the smooth-domain construction linked from `_SYZ40FinalAssembly.lean`.
+
 SYZ42 refactored the strip's `realizability` obligation into `RealizabilityCore`, whose six fields
 split as **one analytic field** (generation `span synFunctionals = ceiling` + its value
 `finrank ceiling = 2(Ucard − k)`, together the old `union_span_rank`) and **five existence-residue
@@ -118,15 +131,16 @@ def realizabilityCore_of_overBudget_stack
 
 Here the bridge functionals are *not* supplied by the caller — they are constructed inside from the
 `mcaEvent` witnesses via G87's `exists_bridge_functionals`.  The only caller obligation beyond the
-bad-scalar witnesses is the analytic rank residual `hrank`, now quantified over the produced bridge
-family (the honest "realizability" residual). -/
+bad-scalar witnesses is `hrank`. As currently quantified it covers all annihilating
+families, including zero; the research update explains why this is too strong. -/
 
 /-- **Auto-instantiation from `mcaEvent`-bad witnesses (existence residue discharged).**  For a
 non-codeword stack with `r` bad scalars each carrying a threshold-`t` agreement witness (exactly the
 data `mcaEvent_witness` extracts from `r` firings of the ABF26 `mcaEvent`), the bridge functionals
 are built internally and the five existence-residue fields of `RealizabilityCore` are filled.  The
-sole surviving hypothesis `hrank` is the SYZ22(iii) union-rank lower bound on the bridge family —
-the isolated realizability residual, provably **not** `uniformSylvester`. -/
+remaining hypothesis `hrank` is a sufficient rank assumption, distinct from `uniformSylvester`.
+It is overstrong as written: the zero family forces `Ucard ≤ k`. A corrected target must
+retain the actual bridge's support/scalar provenance; that bound is not established here. -/
 theorem realizabilityCore_of_mcaEvent_witnesses
     (C : Submodule F (ι → F)) {n k Ucard r t : ℕ}
     (hn : Fintype.card ι = n) (hk : finrank F C = k)

@@ -211,6 +211,12 @@ It establishes neither a four-or-more spread stack nor an over-budget MCA
 family. It provides no bound on the number of bad scalars and no conclusion
 about the largest prize radius.
 
+The [genuine-stack follow-up](astra_grand_stack_scope-2026-09-04.md) proves
+that no additional codeword in these three codewords' affine span reaches
+the required agreement. It also identifies the missing MCA witness data and
+the zero-family obstruction in the current SYZ43 rank premise. Codewords
+outside that span remain unresolved.
+
 ## 5. Reproduction and large-field discipline
 
 Run:

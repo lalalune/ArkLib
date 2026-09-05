@@ -17155,3 +17155,23 @@ large-stack bridge. The general counterexample is independently reviewed but
 not Lean formalized. Conditional theorems using the refuted predicate remain
 logically valid; the predicate cannot serve as an unconditional proof input.
 Details: `docs/kb/astra_grand_smooth_middle_counterexample-2026-09-04.md`.
+
+## [astra-grand-stack-scope] the known affine span and unrestricted bridge rank do not close the stack gap (2026-09-04)
+
+For the smooth-middle construction's canonical received word, any additional
+codeword in the affine span of the displayed three agrees at no more than
+`5n/8`, strictly below the required `2n/3` threshold. The proof separates the
+three coefficient-plane edges from their complement and allows accidental
+cofactor roots. All 169338 exhaustive coefficient-pair checks pass, together
+with fixed large-field samples. A fourth codeword outside this affine span
+remains open; even a four-element list would need additional MCA witness data.
+
+The current `SYZ43.realizabilityCore_of_mcaEvent_witnesses` rank premise
+quantifies over every annihilating family. The zero family qualifies, giving
+`0=2*(Ucard-k)` and therefore `Ucard<=k`. This is an impossible sufficient
+assumption in the intended `Ucard>k` regime, not an invalid proved implication.
+The bridge's returned block independence is discarded, and the rank target
+also needs the actual support and distinct-scalar provenance. Neither a
+corrected rank bound nor a prize/event counterexample is asserted. The source
+audit received independent review; the new argument is not Lean formalized.
+Details: `docs/kb/astra_grand_stack_scope-2026-09-04.md`.
