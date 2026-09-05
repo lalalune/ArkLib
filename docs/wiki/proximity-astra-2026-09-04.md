@@ -20,9 +20,10 @@ absent-core evaluations; a large-field projection produces n+4 actual
 MCA witnesses at radius `357913942/2^30`. This is one Hamming step weaker
 than the existing computational bound. Exact finite controls and production
 arithmetic pass; independent proof review and Lean formalization remain open.
-Nine [supporting polynomial theorems](../kb/astra_mca_polynomial_basis-2026-09-05.md)
-now pass local Lean 4.30.0-rc2, including fixed-anchor selection and its
-quantitative root bound. The complete production construction and threshold
+Eighteen [supporting polynomial theorems](../kb/astra_mca_polynomial_basis-2026-09-05.md)
+now pass local Lean 4.30.0-rc2, including fixed-anchor selection, its
+quantitative root bound, and preservation of roots, relations and determinants
+under selected point deletions. The complete production construction and threshold
 theorem still require assembly; these checks do not close the universal floor.
 
 The [single-hole reduction](../kb/astra_mca_single_hole_reduction-2026-09-05.md)

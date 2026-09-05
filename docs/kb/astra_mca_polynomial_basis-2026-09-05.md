@@ -1,10 +1,11 @@
 # Lean-checked algebra and anchor selection for the MCA basis
 
-Nine supporting theorems for the
+Eighteen supporting theorems for the
 [four-deletion construction](astra_mca_four_delete-2026-09-05.md) now pass
 local Lean 4.30.0-rc2 with the repository's exact Mathlib pin. They verify
 the initial determinant algebra, cofactor independence, fixed-anchor
-selection, and division identities. **The complete production construction
+selection, and preservation of roots, relations and determinants under
+selected point deletions. **The complete production construction
 and threshold theorem are not yet formalized.** The production upper bound
 remains a written result; the matching universal lower bound remains open.
 
@@ -12,7 +13,7 @@ The source is
 [`astra_mca_polynomial_basis.lean`](../../scripts/probes/astra_mca_polynomial_basis.lean).
 It imports only the needed polynomial and ring-tactic modules. The existing
 [two-version auxiliary workflow](../../.github/workflows/proximity-strip-proof.yml)
-now includes all nine declarations and checks their explicit axiom reports.
+now includes all eighteen declarations and checks their explicit axiom reports.
 
 ## What the formal statements establish
 
@@ -70,8 +71,8 @@ still requires the domain, nonzero-row and degree hypotheses to be wired.
 ## Remaining assembly
 
 The Lean file does not yet construct H with its prescribed values, instantiate
-the initial degree and pair-region data, or package two consecutive deletions
-with their preserved roots and simple determinant. The four evaluation
+the initial degree and pair-region data, or apply two consecutive deletion
+pairs to that initial data. The four evaluation
 functionals, finite-field ratio selection, actual same-support MCA witnesses,
 probability bound and threshold ledger also remain to be connected to this
 source. Existing repository lemmas already cover parts of that later chain,
@@ -85,13 +86,59 @@ This formalization establishes supporting algebra for an upper-bound
 construction. It supplies no universal lower bound, new companion score,
 or grand-prize solution.
 
+## Preservation under selected point deletions
+
+`simple_locator_derivative` proves that the derivative of
+`c*product_{y in S}(X-y)` is nonzero at every x in S when c is nonzero.
+The proof factors out X-x and evaluates the derivative as a product of
+nonzero differences. It works over every field, without a characteristic
+assumption or a squarefreeness hypothesis hidden in the statement.
+
+`cofactor_row_nonzero` then checks the step used to select an anchor:
+at a point where both F components or both G components vanish, the W
+row cannot also vanish if the determinant has a simple root there.
+Otherwise all four F/G values would vanish, forcing the determinant's
+derivative to vanish.
+
+The defined operation is
+
+```text
+deleteAt(W0,W1,P0,P1,x)
+  = (W1(x)*P0 - W0(x)*P1) / (X-x).
+```
+
+It uses polynomial division by a monic linear factor.
+`killed_combination_roots` proves exact divisibility for the F, G and W
+components at a valid pair-region point. `delete_at_preserves` proves
+the divided relation `F'=G'+L*W'` and every other F/G root;
+`delete_at_degree` bounds the new degree by D-1. The underlying lemmas
+`remove_root_preserves_eval` and `remove_root_preserves_relation` also
+handle zero polynomial components.
+
+For selected xi and eta, let
+`s=W0(xi)*W1(eta)-W1(xi)*W0(eta)`. The theorem
+`two_anchor_deleted_determinant` proves
+
+```text
+(X-xi)*(X-eta)*(F'_0*G'_1-F'_1*G'_0)
+  = s*(F0*G1-F1*G0),
+F'_0*G'_1-F'_1*G'_0 != 0,
+```
+
+given s nonzero, the original determinant nonzero, and the selected F/G
+root conditions. `deleted_locator_formula` cancels the two linear factors
+and identifies the new determinant as `s*c` times the locator of
+`(S.erase xi).erase eta`, when xi and eta are distinct members of S.
+Thus the individual identities needed to repeat a deletion are checked.
+The production initialization and two applications remain separate work.
+
 ## Local reproduction
 
 The checked environment is Lean 4.30.0-rc2 and Mathlib commit
 `5450b53e5ddc75d46418fabb605edbf36bd0beb6`, matching the repository manifest.
 The official macOS Lean archive was verified against release SHA-256
 `6a23d26241fd78bcc3d1c24be97341bfe3f4635f2e6feabcbb5863035290ab1b`.
-A separate Mathlib checkout hosts the selected 1380-module cache; the full
+A separate Mathlib checkout hosts the selected polynomial module cache; the full
 ArkLib build was not run. This keeps iteration independent of the cold
 ArkLib frontier cache.
 
@@ -101,7 +148,7 @@ From a matching Mathlib environment, run:
 lake env lean /absolute/path/to/arklib/scripts/probes/astra_mca_polynomial_basis.lean
 ```
 
-The local audit requires all nine named reports, rejects compiler errors,
+The local audit requires all eighteen named reports, rejects compiler errors,
 warnings and `sorryAx`, and permits only `propext`, `Classical.choice`, and
 `Quot.sound`. The arithmetic theorem uses no axioms. Cross-version CI status
 is recorded separately once its run completes.

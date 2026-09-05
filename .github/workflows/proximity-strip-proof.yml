@@ -94,6 +94,10 @@ jobs:
               "initial_determinant", "change_basis_determinant", "divided_determinant",
               "cofactor_pair_independent", "exists_separated_at_anchor",
               "many_separated_at_anchor", "remove_root_exact", "remove_root_degree",
+              "simple_locator_derivative", "cofactor_row_nonzero",
+              "remove_root_preserves_eval", "remove_root_preserves_relation",
+              "killed_combination_roots", "delete_at_degree", "delete_at_preserves",
+              "two_anchor_deleted_determinant", "deleted_locator_formula",
               "production_anchor_margins")]
           for declaration in expected:
               if declaration not in reported:

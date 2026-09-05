@@ -6,13 +6,15 @@ Authors: ArkLib Contributors
 
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Algebra.Polynomial.Eval.SMul
+import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Tactic.Ring
 
 /-!
 # Polynomial algebra for the four-deletion MCA construction
 
 The initial determinant identity, constant changes of basis, cofactor
-independence, fixed-anchor selection and root division are formalized here.
+independence, fixed-anchor selection, and preservation of roots, relations
+and determinants under two selected point deletions are formalized here.
 See docs/kb/astra_mca_polynomial_basis-2026-09-05.md for their place in the
 construction and the remaining assembly. No threshold theorem or complete
 production construction is asserted by this file.
@@ -198,6 +200,187 @@ theorem remove_root_degree (p : F[X]) (xi : F) (D : ℕ) (hdegree : p.natDegree 
 
 end PolynomialAnchors
 
+section Deletion
+
+variable {F : Type*} [Field F] [DecidableEq F]
+
+open scoped BigOperators
+
+/-- A scaled locator of distinct points has a simple root at every listed point. -/
+theorem simple_locator_derivative (S : Finset F) (c x : F)
+    (hc : c ≠ 0) (hx : x ∈ S) :
+    (C c * ∏ y ∈ S, (X - C y)).derivative.eval x ≠ 0 := by
+  have hfactor := Finset.mul_prod_erase S (fun y : F => (X - C y : F[X])) hx
+  rw [← hfactor]
+  have hp : (∏ y ∈ S.erase x, (x - y)) ≠ 0 := Finset.prod_ne_zero_iff.mpr
+    (fun y hy => sub_ne_zero.mpr (Finset.mem_erase.mp hy).1.symm)
+  simpa [Polynomial.derivative_mul, Polynomial.eval_prod] using mul_ne_zero hc hp
+
+omit [DecidableEq F] in
+/-- A simple determinant root prevents the difference-cofactor row from vanishing. -/
+theorem cofactor_row_nonzero (f₀ f₁ g₀ g₁ w₀ w₁ L : F[X]) (x : F)
+    (hrel₀ : f₀ = g₀ + L * w₀) (hrel₁ : f₁ = g₁ + L * w₁)
+    (hroot : (f₀.eval x = 0 ∧ f₁.eval x = 0) ∨
+      (g₀.eval x = 0 ∧ g₁.eval x = 0))
+    (hsimple : (f₀ * g₁ - f₁ * g₀).derivative.eval x ≠ 0) :
+    w₀.eval x ≠ 0 ∨ w₁.eval x ≠ 0 := by
+  by_contra h
+  simp only [not_or, not_not] at h
+  have heq₀ : f₀.eval x = g₀.eval x := by simp [hrel₀, h.1]
+  have heq₁ : f₁.eval x = g₁.eval x := by simp [hrel₁, h.2]
+  have hz : f₀.eval x = 0 ∧ f₁.eval x = 0 ∧
+      g₀.eval x = 0 ∧ g₁.eval x = 0 := by
+    rcases hroot with ⟨hf₀, hf₁⟩ | ⟨hg₀, hg₁⟩
+    · exact ⟨hf₀, hf₁, heq₀.symm.trans hf₀, heq₁.symm.trans hf₁⟩
+    · exact ⟨heq₀.trans hg₀, heq₁.trans hg₁, hg₀, hg₁⟩
+  apply hsimple
+  simp [Polynomial.derivative_sub, Polynomial.derivative_mul,
+    hz.1, hz.2.1, hz.2.2.1, hz.2.2.2]
+
+omit [DecidableEq F] in
+/-- Exact division preserves every other root. -/
+theorem remove_root_preserves_eval (p : F[X]) (xi x : F)
+    (hxi : p.eval xi = 0) (hx : p.eval x = 0) (hne : x ≠ xi) :
+    (p /ₘ (X - C xi)).eval x = 0 := by
+  have h := congrArg (Polynomial.eval x) (remove_root_exact p xi hxi)
+  simp only [Polynomial.eval_mul, Polynomial.eval_sub, Polynomial.eval_X,
+    Polynomial.eval_C, hx] at h
+  exact (mul_eq_zero.mp h).resolve_left (sub_ne_zero.mpr hne)
+
+omit [DecidableEq F] in
+/-- Dividing a common root preserves the polynomial difference-cofactor identity. -/
+theorem remove_root_preserves_relation (f g w L : F[X]) (xi : F)
+    (hrel : f = g + L * w)
+    (hf : f.eval xi = 0) (hg : g.eval xi = 0) (hw : w.eval xi = 0) :
+    f /ₘ (X - C xi) = g /ₘ (X - C xi) + L * (w /ₘ (X - C xi)) := by
+  apply mul_left_cancel₀ (Polynomial.X_sub_C_ne_zero xi)
+  rw [mul_add, remove_root_exact f xi hf, remove_root_exact g xi hg,
+    ← mul_assoc, mul_comm (X - C xi) L, mul_assoc, remove_root_exact w xi hw]
+  exact hrel
+
+omit [DecidableEq F] in
+/-- Killing the cofactor row at a pair-region point kills both polynomial components. -/
+theorem killed_combination_roots (f₀ f₁ g₀ g₁ w₀ w₁ L : F[X]) (x : F)
+    (hrel₀ : f₀ = g₀ + L * w₀) (hrel₁ : f₁ = g₁ + L * w₁)
+    (hroot : (f₀.eval x = 0 ∧ f₁.eval x = 0) ∨
+      (g₀.eval x = 0 ∧ g₁.eval x = 0)) :
+    (w₁.eval x • f₀ + (-w₀.eval x) • f₁).eval x = 0 ∧
+    (w₁.eval x • g₀ + (-w₀.eval x) • g₁).eval x = 0 ∧
+    (w₁.eval x • w₀ + (-w₀.eval x) • w₁).eval x = 0 := by
+  have hw : (w₁.eval x • w₀ + (-w₀.eval x) • w₁).eval x = 0 := by simp; ring
+  have heq : w₁.eval x • f₀ + (-w₀.eval x) • f₁ =
+      (w₁.eval x • g₀ + (-w₀.eval x) • g₁) +
+        L * (w₁.eval x • w₀ + (-w₀.eval x) • w₁) := by
+    simp only [Polynomial.smul_eq_C_mul]
+    rw [hrel₀, hrel₁]
+    ring
+  have hev : (w₁.eval x • f₀ + (-w₀.eval x) • f₁).eval x =
+      (w₁.eval x • g₀ + (-w₀.eval x) • g₁).eval x := by
+    rw [heq]
+    simp only [Polynomial.eval_add, Polynomial.eval_mul, hw, mul_zero, add_zero]
+  rcases hroot with ⟨hf₀, hf₁⟩ | ⟨hg₀, hg₁⟩
+  · have hf : (w₁.eval x • f₀ + (-w₀.eval x) • f₁).eval x = 0 := by simp [hf₀, hf₁]
+    exact ⟨hf, hev.symm.trans hf, hw⟩
+  · have hg : (w₁.eval x • g₀ + (-w₀.eval x) • g₁).eval x = 0 := by simp [hg₀, hg₁]
+    exact ⟨hev.trans hg, hg, hw⟩
+
+/-- Kill the cofactor row at x, then divide out that point from one component. -/
+noncomputable def deleteAt (w₀ w₁ p₀ p₁ : F[X]) (x : F) : F[X] :=
+  (w₁.eval x • p₀ + (-w₀.eval x) • p₁) /ₘ (X - C x)
+
+omit [DecidableEq F] in
+/-- Every component loses one degree bound in the deletion operation. -/
+theorem delete_at_degree (w₀ w₁ p₀ p₁ : F[X]) (x : F) (D : ℕ)
+    (hp₀ : p₀.natDegree ≤ D) (hp₁ : p₁.natDegree ≤ D) :
+    (deleteAt w₀ w₁ p₀ p₁ x).natDegree ≤ D - 1 := by
+  apply remove_root_degree
+  exact (Polynomial.natDegree_add_le _ _).trans (max_le
+    ((Polynomial.natDegree_smul_le _ _).trans hp₀)
+    ((Polynomial.natDegree_smul_le _ _).trans hp₁))
+
+omit [DecidableEq F] in
+/-- A deleted column preserves its difference-cofactor relation and all other component roots. -/
+theorem delete_at_preserves (f₀ f₁ g₀ g₁ w₀ w₁ L : F[X]) (x : F)
+    (hrel₀ : f₀ = g₀ + L * w₀) (hrel₁ : f₁ = g₁ + L * w₁)
+    (hroot : (f₀.eval x = 0 ∧ f₁.eval x = 0) ∨
+      (g₀.eval x = 0 ∧ g₁.eval x = 0)) :
+    deleteAt w₀ w₁ f₀ f₁ x =
+      deleteAt w₀ w₁ g₀ g₁ x + L * deleteAt w₀ w₁ w₀ w₁ x ∧
+    (∀ y : F, y ≠ x → f₀.eval y = 0 → f₁.eval y = 0 →
+      (deleteAt w₀ w₁ f₀ f₁ x).eval y = 0) ∧
+    (∀ y : F, y ≠ x → g₀.eval y = 0 → g₁.eval y = 0 →
+      (deleteAt w₀ w₁ g₀ g₁ x).eval y = 0) := by
+  obtain ⟨hf, hg, hw⟩ := killed_combination_roots f₀ f₁ g₀ g₁ w₀ w₁ L x hrel₀ hrel₁ hroot
+  have hcomb : w₁.eval x • f₀ + (-w₀.eval x) • f₁ =
+      (w₁.eval x • g₀ + (-w₀.eval x) • g₁) +
+        L * (w₁.eval x • w₀ + (-w₀.eval x) • w₁) := by
+    simp only [Polynomial.smul_eq_C_mul]
+    rw [hrel₀, hrel₁]
+    ring
+  refine ⟨remove_root_preserves_relation _ _ _ L x hcomb hf hg hw, ?_, ?_⟩
+  · intro y hy hy₀ hy₁
+    exact remove_root_preserves_eval _ x y hf (by simp [hy₀, hy₁]) hy
+  · intro y hy hy₀ hy₁
+    exact remove_root_preserves_eval _ x y hg (by simp [hy₀, hy₁]) hy
+
+omit [DecidableEq F] in
+/-- Two selected deletions have the exact determinant formula and retain a nonzero determinant. -/
+theorem two_anchor_deleted_determinant (f₀ f₁ g₀ g₁ w₀ w₁ L : F[X]) (xi eta : F)
+    (hrel₀ : f₀ = g₀ + L * w₀) (hrel₁ : f₁ = g₁ + L * w₁)
+    (hxi : f₀.eval xi = 0 ∧ f₁.eval xi = 0)
+    (heta : g₀.eval eta = 0 ∧ g₁.eval eta = 0)
+    (hsep : w₀.eval xi * w₁.eval eta - w₁.eval xi * w₀.eval eta ≠ 0)
+    (hdet : f₀ * g₁ - f₁ * g₀ ≠ 0) :
+    let d := deleteAt w₀ w₁ f₀ f₁ xi * deleteAt w₀ w₁ g₀ g₁ eta -
+      deleteAt w₀ w₁ f₀ f₁ eta * deleteAt w₀ w₁ g₀ g₁ xi
+    (X - C xi) * (X - C eta) * d =
+      C (w₀.eval xi * w₁.eval eta - w₁.eval xi * w₀.eval eta) * (f₀ * g₁ - f₁ * g₀) ∧
+    d ≠ 0 := by
+  obtain ⟨hfξ, hgξ, _⟩ := killed_combination_roots f₀ f₁ g₀ g₁ w₀ w₁ L xi
+    hrel₀ hrel₁ (Or.inl hxi)
+  obtain ⟨hfη, hgη, _⟩ := killed_combination_roots f₀ f₁ g₀ g₁ w₀ w₁ L eta
+    hrel₀ hrel₁ (Or.inr heta)
+  have h := divided_determinant f₀ f₁ g₀ g₁
+    (C (w₁.eval xi)) (C (-w₀.eval xi)) (C (w₁.eval eta)) (C (-w₀.eval eta))
+    (X - C xi) (X - C eta)
+    (deleteAt w₀ w₁ f₀ f₁ xi) (deleteAt w₀ w₁ f₀ f₁ eta)
+    (deleteAt w₀ w₁ g₀ g₁ xi) (deleteAt w₀ w₁ g₀ g₁ eta)
+    (by simpa [deleteAt, Polynomial.smul_eq_C_mul] using (remove_root_exact _ xi hfξ).symm)
+    (by simpa [deleteAt, Polynomial.smul_eq_C_mul] using (remove_root_exact _ xi hgξ).symm)
+    (by simpa [deleteAt, Polynomial.smul_eq_C_mul] using (remove_root_exact _ eta hfη).symm)
+    (by simpa [deleteAt, Polynomial.smul_eq_C_mul] using (remove_root_exact _ eta hgη).symm)
+  have hcoeff : C (w₁.eval xi) * C (-w₀.eval eta) - C (-w₀.eval xi) * C (w₁.eval eta) =
+      C (w₀.eval xi * w₁.eval eta - w₁.eval xi * w₀.eval eta) := by
+    simp only [map_sub, map_mul, map_neg]
+    ring
+  rw [hcoeff] at h
+  refine ⟨h, ?_⟩
+  intro hz
+  rw [hz, mul_zero] at h
+  exact mul_ne_zero (Polynomial.C_ne_zero.mpr hsep) hdet h.symm
+
+/-- The determinant after two distinct point deletions is the scaled remaining locator. -/
+theorem deleted_locator_formula (S : Finset F) (xi eta c s : F) (d : F[X])
+    (hxi : xi ∈ S) (heta : eta ∈ S) (hne : eta ≠ xi)
+    (hdet : (X - C xi) * (X - C eta) * d =
+      C s * (C c * ∏ y ∈ S, (X - C y))) :
+    d = C (s * c) * ∏ y ∈ (S.erase xi).erase eta, (X - C y) := by
+  have he : eta ∈ S.erase xi := Finset.mem_erase.mpr ⟨hne, heta⟩
+  have hfactor : (∏ y ∈ S, (X - C y : F[X])) =
+      (X - C xi) * (X - C eta) * ∏ y ∈ (S.erase xi).erase eta, (X - C y) := by
+    calc
+      _ = (X - C xi) * ∏ y ∈ S.erase xi, (X - C y) :=
+        (Finset.mul_prod_erase S (fun y : F => (X - C y : F[X])) hxi).symm
+      _ = _ := by
+        rw [← Finset.mul_prod_erase (S.erase xi) (fun y : F => (X - C y : F[X])) he]
+        ring
+  apply mul_left_cancel₀ (mul_ne_zero (Polynomial.X_sub_C_ne_zero xi) (Polynomial.X_sub_C_ne_zero eta))
+  calc
+    _ = C s * (C c * ∏ y ∈ S, (X - C y)) := hdet
+    _ = _ := by rw [hfactor]; simp only [map_mul]; ring
+
+end Deletion
+
 /-- The two production deletion steps have the same root-count margin. -/
 theorem production_anchor_margins :
     357913941 - (536870912 - 357913942) = 178956971 ∧
@@ -213,4 +396,13 @@ end AstraMcaPolynomialBasis
 #print axioms AstraMcaPolynomialBasis.many_separated_at_anchor
 #print axioms AstraMcaPolynomialBasis.remove_root_exact
 #print axioms AstraMcaPolynomialBasis.remove_root_degree
+#print axioms AstraMcaPolynomialBasis.simple_locator_derivative
+#print axioms AstraMcaPolynomialBasis.cofactor_row_nonzero
+#print axioms AstraMcaPolynomialBasis.remove_root_preserves_eval
+#print axioms AstraMcaPolynomialBasis.remove_root_preserves_relation
+#print axioms AstraMcaPolynomialBasis.killed_combination_roots
+#print axioms AstraMcaPolynomialBasis.delete_at_degree
+#print axioms AstraMcaPolynomialBasis.delete_at_preserves
+#print axioms AstraMcaPolynomialBasis.two_anchor_deleted_determinant
+#print axioms AstraMcaPolynomialBasis.deleted_locator_formula
 #print axioms AstraMcaPolynomialBasis.production_anchor_margins
