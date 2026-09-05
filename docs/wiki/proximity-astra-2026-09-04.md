@@ -115,6 +115,18 @@ The earlier first-derivative source at m=166 is reproduced as a calibration;
 it is outside this search. The exclusion does not prove that production
 interpolants are nonexistent or rule out other interpolation shapes.
 
+The [fixed-word differential carrier](../kb/astra_scalar_differential_carrier-2026-09-05.md)
+now supplies an actual curve and degree bound for the scalar companion
+profile. Its written argument gives at most 12546010856 degree-at-most-131071
+polynomials with 181353 agreements on 262144 nodes over characteristic
+2130706433, uniformly over received words. This is below the F_(p^6) list
+budget, and the same cap transfers to every positive interleaving arity.
+Thirty-six direct local matrices, exact reconstruction of a complete small
+list, singular/independent-R controls, and all production arithmetic pass.
+Independent mathematical review and Lean formalization are outstanding.
+The MCA bound, the companion ProtocolClaim, and the sharp thresholds remain
+open; a fixed-word list bound does not settle them at the same radius.
+
 ## Revisions and environment
 
 * Original clone: `/Users/nubs/Git/arklib`, clean `main` at

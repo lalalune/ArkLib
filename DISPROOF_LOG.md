@@ -17657,3 +17657,28 @@ This excludes the specified dimension certificates, not actual interpolation
 kernels, larger multiplicities, arbitrary derivative shapes, or the desired
 prize claim. The profile digest and exact replay are documented in
 `docs/kb/astra_hasse_production-2026-09-05.md`.
+
+## [astra-scalar-differential-carrier] a fixed-word curve meets the companion list budget (2026-09-05)
+
+For scalar decoding the received word is fixed, so interpolation needs no
+varying line parameter. At n=262144,w=131071,A=181353, the coefficient
+space with m=99,R cap 30 and weighted cap D=17953947 has 30638265433
+coefficients and single-node contact rank 116870. Its positive nullity lower
+bound 1496153 supplies a nonzero relation Q(X,f,f')=0 for every candidate.
+
+Over K(X), regular irreducible factors define curves. Truncated differential
+Taylor reconstruction maps them to polynomial coefficient space, with degree
+at most d*((2w-3)*(d-1)+1). The characteristic is larger than w and d.
+The scalar carrier-incidence bound, plus separate accounting for F_R=0 and
+singular projection points, gives the written uniform list bound 12546010856.
+This is below floor((2130706433^6)/2^128)=274980728111395087, and the
+large-field projection gate preserves the same cap for every positive
+interleaving arity at error radius 80791/262144.
+
+Thirty-six direct local matrices, nine cleared differential identities on
+a conic containing a complete three-member F17 list, twelve formal Taylor
+coefficient identities, exceptional-factor cases, and production arithmetic
+pass. The proof still needs independent mathematical review and complete
+Lean formalization. This is not an MCA bound, sharp threshold, or completed
+companion ProtocolClaim. See
+`docs/kb/astra_scalar_differential_carrier-2026-09-05.md`.

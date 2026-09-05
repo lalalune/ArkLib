@@ -172,3 +172,10 @@ surface over F7, and an actual F17 MCA plane with three selected bad scalars.
 The MCA check uses the full agreement support and independently tests whether
 the two received words have joint codeword explanations there. The geometric
 induction above is not inferred from these finite examples.
+
+The subsequent [fixed-word differential construction](astra_scalar_differential_carrier-2026-09-05.md)
+uses the r=1 scalar case to bound the complete list at the companion profile.
+It supplies a curve carrier through a rational Taylor map, accounts separately
+for singular solutions, and gives a written list bound below the numerical
+budget. Independent proof review and Lean formalization are pending. It does
+not supply the missing MCA carrier or the grand production rank bound.

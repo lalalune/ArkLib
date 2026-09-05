@@ -4,8 +4,11 @@ A large-field separation argument transfers a **uniform scalar list bound B**
 to the same bound for every positive interleaving arity, at the same radius,
 provided `binomial(B+1,2)<=q`. Both fixed field/budget profiles used in this
 campaign satisfy this condition. This removes an interleaving loss from that
-conditional implication; **the scalar bound remains unproved**. The argument
-does not identify the MCA bad set with a decoding list.
+conditional implication; the transfer itself supplies no scalar bound.
+The subsequent [fixed-word differential carrier note](astra_scalar_differential_carrier-2026-09-05.md)
+gives a written scalar estimate at the companion radius 80791/262144,
+with independent review and Lean formalization still outstanding. Neither
+argument identifies the MCA bad set with a decoding list.
 
 This note gives an elementary written proof and reproducible finite checks,
 not a Lean theorem or a novelty claim. The general interleaving literature is

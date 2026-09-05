@@ -477,6 +477,13 @@ python3 -m pip install leanblueprint
   lists and, separately, selected MCA witnesses. No sufficient universal
   carrier is known. Run `python3 scripts/probes/astra_carrier_dimension_check.py`
   for finite scalar lists, an actual MCA plane, and exact production budgets.
+  The [fixed-word differential carrier](../kb/astra_scalar_differential_carrier-2026-09-05.md)
+  constructs a curve for the scalar companion profile and gives a written
+  uniform bound of 12546010856, below its list budget. Run
+  `python3 scripts/probes/astra_scalar_differential_carrier_check.py` for
+  direct contact matrices, exact Taylor reconstruction, exceptional factor
+  cases, and the production count. Independent proof review and complete
+  Lean formalization remain outstanding; this does not bound MCA.
   The [large-field interleaving transfer](../kb/astra_interleaved_projection-2026-09-05.md)
   preserves scalar list budgets, and separately linear-observable image
   budgets, when `binomial(B+1,2)<=q`. Both fixed profiles pass the arithmetic
