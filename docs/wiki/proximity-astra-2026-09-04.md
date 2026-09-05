@@ -32,7 +32,10 @@ exactly 1073741828 of them from the same constructed basis. The
 [evaluation and scalar-projection proofs](../kb/astra_mca_scalar_projection-2026-09-05.md)
 now produce that many distinct finite scalar challenges and establish the
 general polynomial agreement and same-support exclusion lemmas.
-The indexed code bridge, MCA witnesses and threshold theorem still
+Two [event bridge theorems](../kb/astra_mca_event_bridge-2026-09-05.md)
+now check the transport into ArkLib's actual indexed RS MCA event, with
+explicit domain and support-size conditions. The production event assembly,
+probability and threshold theorem still
 require assembly; these checks do not close the universal floor.
 
 The [single-hole reduction](../kb/astra_mca_single_hole_reduction-2026-09-05.md)

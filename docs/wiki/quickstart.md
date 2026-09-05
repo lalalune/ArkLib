@@ -344,6 +344,12 @@ python3 -m pip install leanblueprint
   then checks the concrete power-domain result and its 1073741828 distinct
   scalar challenges; it does not build all ArkLib modules. The indexed MCA
   events and probability still require assembly.
+  For the [actual-event bridge](../kb/astra_mca_event_bridge-2026-09-05.md), build
+  `ArkLib.Data.CodingTheory.ProximityGap.Errors` with `scripts/lake-locked.sh`,
+  then run `bash scripts/check-mca-event-bridge.sh /tmp/mca-proof-lib`.
+  Its optional second argument supplies the compiled ArkLib library path.
+  This bridge is checked on the ArkLib pin; the companion check covers the
+  separate Mathlib-based construction chain.
   Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
   check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run
   `python3 scripts/probes/astra_mca_two_generator_probe.py` for the complete

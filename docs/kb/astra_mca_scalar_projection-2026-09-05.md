@@ -95,9 +95,14 @@ passed both supported pins in
 That run does not cover these new evaluation and projection proofs; their
 own revision must pass the same checks.
 
+The [general event bridge](astra_mca_event_bridge-2026-09-05.md) now transports
+polynomial supports into the repository's actual indexed RS `mcaEvent`.
 The next assembly must choose supports of the required production size,
-transport evaluation points to the indexed power-domain code, prove the
-repository's actual `mcaEvent`, and derive its probability and threshold
+instantiate that bridge on the power domain, and derive its probability and threshold
 consequence. This construction targets the written upper bound
 357913942/2^30, one Hamming step weaker than the previously computed upper
 bound. It does not improve that number or prove the matching universal bound.
+
+The complete 69-report chain passed both pins at
+`59f6cee640546b7185656fa370353c0c182ea5ae` in
+[run 33989276174](https://github.com/lalalune/ArkLib/actions/runs/33989276174).

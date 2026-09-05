@@ -13,8 +13,10 @@ on:
       - "scripts/probes/astra_mca_residual_rows.lean"
       - "scripts/probes/astra_mca_evaluations.lean"
       - "scripts/probes/astra_mca_scalar_projection.lean"
+      - "scripts/probes/astra_mca_event_bridge.lean"
       - "scripts/probes/astra_mca_production_basis.lean"
       - "scripts/check-mca-production-basis.sh"
+      - "scripts/check-mca-event-bridge.sh"
       - "ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PrizeShapePrimeP30.lean"
       - ".github/workflows/proximity-strip-proof.yml"
   workflow_dispatch:
@@ -58,8 +60,13 @@ jobs:
           use-mathlib-cache: false
       - name: Fetch pinned Mathlib dependencies
         run: '"$GITHUB_WORKSPACE/scripts/lake-locked.sh" exe cache get'
+      - name: Build actual MCA event dependencies
+        if: matrix.project == 'arklib'
+        run: '"$GITHUB_WORKSPACE/scripts/lake-locked.sh" build ArkLib.Data.CodingTheory.ProximityGap.Errors'
       - name: Check auxiliary proofs and axiom reports
         shell: bash
+        env:
+          CHECK_MCA_EVENT: ${{ matrix.project == 'arklib' }}
         run: |
           set -euo pipefail
           lean --version
@@ -70,6 +77,10 @@ jobs:
           done
           bash "$GITHUB_WORKSPACE/scripts/check-mca-production-basis.sh" \
             "$RUNNER_TEMP/proximity-aux-lib" 2>&1 | tee -a "$RUNNER_TEMP/strip-proof.log"
+          if [ "$CHECK_MCA_EVENT" = "true" ]; then
+            bash "$GITHUB_WORKSPACE/scripts/check-mca-event-bridge.sh" \
+              "$RUNNER_TEMP/proximity-aux-lib" 2>&1 | tee -a "$RUNNER_TEMP/strip-proof.log"
+          fi
           python3 - "$RUNNER_TEMP/strip-proof.log" <<'PY'
           import os
           import re
@@ -132,6 +143,9 @@ jobs:
               "power_domain_card", "power_domain_roots", "production_deleted_basis",
               "production_residual_rows", "production_projection_arithmetic",
               "production_moment_curve_arithmetic", "production_scalar_projection")]
+          if os.environ["CHECK_MCA_EVENT"] == "true":
+              expected += ["AstraMcaEventBridge." + name for name in (
+                  "mca_event_from_polynomial_support", "mca_event_of_core_insert")]
           for declaration in expected:
               if declaration not in reported:
                   raise SystemExit("Missing axiom report: " + declaration)
