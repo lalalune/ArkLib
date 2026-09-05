@@ -6,6 +6,8 @@
 // clang++ -O3 -std=c++17 scripts/probes/astra_companion_source_limit.cpp -o /tmp/astra-source-limit
 // /tmp/astra-source-limit 10 37 2320
 // Optional fourth argument caps m (150..100000, default 100000).
+// Alternatively, --dense-local checks every m=8000..11000 and every S in
+// floor(.298*m)-2 .. floor(.320*m)+2, retaining the same L optimization.
 // See docs/kb/proximity-astra-contact-strip-2026-09-04.md.
 
 #define main phase_evaluator_main
@@ -27,20 +29,24 @@ int integer_argument(const char* value) {
 
 int main(int argc, char** argv) try {
   if (argc != 4 && argc != 5)
-    throw std::invalid_argument("usage: source-limit r v z [max_multiplicity]");
+    throw std::invalid_argument("usage: source-limit r v z [max_multiplicity|--dense-local]");
   int r = integer_argument(argv[1]), v = integer_argument(argv[2]);
   int z = integer_argument(argv[3]);
-  int max_m = argc == 5 ? integer_argument(argv[4]) : 100000;
+  bool dense_local = argc == 5 && std::string(argv[4]) == "--dense-local";
+  int min_m = dense_local ? 8000 : 150;
+  int max_m = dense_local ? 11000 : argc == 5 ? integer_argument(argv[4]) : 100000;
   if (r < 1 || r > root_r || v < 0 || v > root_y-r || z < 0 || z > root_total-r-v
       || max_m < 150 || max_m > 100000)
     throw std::invalid_argument("point or multiplicity outside the bounded research range");
   int t = r+v+z, y = r+v, tested = 0;
   std::vector<std::array<Integer,6>> passed;
-  for (int m = 150; m <= max_m; m += m < 600 ? 5 : m < 1500 ? 20 : m < 12000 ? 100 : 1000) {
+  for (int m = min_m; m <= max_m;
+       m += dense_local ? 1 : m < 600 ? 5 : m < 1500 ? 20 : m < 12000 ? 100 : 1000) {
     std::int64_t d = std::int64_t(m)*(n-errors);
     int sy = int((d-1)/w);
-    for (int s = std::max(root_r, m*305/1000-2); s <= m*311/1000+2;
-         s += std::max(1, m/6000)) {
+    for (int s = std::max(root_r, m*(dense_local ? 298 : 305)/1000-2);
+         s <= m*(dense_local ? 320 : 311)/1000+2;
+         s += dense_local ? 1 : std::max(1, m/6000)) {
       if (d+s > std::int64_t(w)*(sy+1)) continue;
       int low = std::max({root_total, m+s, sy+1});
       int high = int(std::min({std::int64_t(20000000),
@@ -102,6 +108,8 @@ int main(int argc, char** argv) try {
   std::sort(passed.begin(),passed.end());
   std::cout << "{\n  \"status\": \"BOUNDED_NUMERICAL_SOURCE_SEARCH_NO_PROTOCOL_PROOF\",\n"
       << "  \"point\": [" << r << ',' << v << ',' << z << "],\n"
+      << "  \"grid\": \"" << (dense_local ? "dense-local" : "coarse") << "\",\n"
+      << "  \"min_multiplicity\": " << min_m << ",\n"
       << "  \"max_multiplicity\": " << max_m << ",\n"
       << "  \"tested_shapes\": " << tested << ",\n"
       << "  \"passing_shapes\": " << passed.size() << ",\n  \"best_sources\": [\n";

@@ -2,7 +2,7 @@
 """Reproduce the refined 49-source 68.04 candidate, which still fails.
 
 The separate Lean strip projection is checked, but the source selector,
-finite phase table, retuned ordinary gates, and ProtocolClaim are unproved.
+finite phase table, retuned polynomial integration, and ProtocolClaim are unproved.
 """
 from __future__ import annotations
 

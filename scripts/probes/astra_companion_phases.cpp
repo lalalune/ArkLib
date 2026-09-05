@@ -408,6 +408,11 @@ int main(int argc, char** argv) try {
     for (Integer coefficient:source.potential) std::cout<<" "<<decimal(coefficient);
     std::cout<<"\n";
   }
+  // Compile-time hooks for separate research envelope experiments. A visitor
+  // that lowers cap must supply its own counting argument and validation.
+#ifdef ASTRA_PHASE_SETUP
+  ASTRA_PHASE_SETUP(sources);
+#endif
   std::vector<std::vector<Integer>> zero(slope_cap+1,
       std::vector<Integer>(y_cap+1,-1));
   zero[0][0]=0; // With positive-slope factors, no nonempty r=0 partition exists.
@@ -457,6 +462,9 @@ int main(int argc, char** argv) try {
   std::array<Integer,max_phases> best_costs{};
   std::array<std::uint64_t,max_phases> source_winners{};
   for (int r=1;r<=slope_cap;++r) {
+#ifdef ASTRA_PHASE_SLOPE_BEGIN
+    ASTRA_PHASE_SLOPE_BEGIN(r);
+#endif
     for (int v=0;r+v<=y_cap;++v) {
       Integer correlated_cost=correlated(r,v);
       std::vector<Line> lines;
@@ -498,6 +506,9 @@ int main(int argc, char** argv) try {
           }
           costs[phase]=cap;
         }
+#ifdef ASTRA_PHASE_CAP_VISIT
+        ASTRA_PHASE_CAP_VISIT(r,v,z,cap);
+#endif
         if (winner>=0) ++source_winners[winner];
         if (closure) for (int phase=0;phase<phase_count;++phase) {
           Integer charge=evaluate(sources[phase].potential,r,v,z);

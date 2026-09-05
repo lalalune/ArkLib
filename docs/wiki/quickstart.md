@@ -251,7 +251,10 @@ python3 -m pip install leanblueprint
   check is not a full ArkLib build or a companion `ProtocolClaim` check. See
   the [contact-strip research note](../kb/proximity-astra-contact-strip-2026-09-04.md)
   for local reproduction, the bounded source-limit search and its independent
-  arithmetic audit, and remaining proof obligations.
+  arithmetic audit, and remaining proof obligations. The
+  [factor-partition follow-up](../kb/proximity-astra-factor-partition-2026-09-04.md)
+  documents the optional `--check-partition` and `--check-dense-source` audit
+  modes and their bounded negative results.
 
 ## Manual Timing Helper
 

@@ -16982,3 +16982,29 @@ Formal kernel:
 Executable certificate:
 `scripts/probes/g206_weighted_kernel_injective_nogo.py`.
 CORE remains OPEN / ON-BGK.
+
+## [astra-6804-fixed-pool-partition] the 49-source partition refinement retains an over-budget singleton (2026-09-04)
+
+Scope: a bounded numerical method check for the companion's proposed 68.04
+row, not a refutation of the prize or of arbitrary source choices.
+
+For the source pool in `scripts/probes/astra_companion_limit_audit.py`, taking
+the cheapest routeable source charge separately for each factor and then
+recomputing factor partitions in `r <= 12, v <= 48, z <= 3000` leaves the
+global allowance unchanged. At abstract raw flag `(10,37,2317)`, the ordinary
+singleton allowance is `283403712362442072`; all six routeable sources cost
+more. With the correlated complement, tails, and scalar list, the allowance is
+`292206259561713467`, exceeding capacity `274980728111395087` by
+`17225531450318380`.
+
+The refinement improves 125,020 intermediate cells but cannot remove this
+surviving singleton allowance. Optimized and UBSan replays agree; 1,000 random
+max-plus interval convolutions match direct enumeration. No polynomial
+realizing this flag and saturating the allowance is asserted. A denser local
+627,767-shape source search at `(10,37,2310)` also returns no charge smaller
+than that point's ordinary allowance; the search is not exhaustive over all
+possible sources or geometric arguments.
+
+Executable checks: `scripts/probes/astra_companion_atom_audit.py`.
+Details: `docs/kb/proximity-astra-factor-partition-2026-09-04.md`.
+The prize and the production CORE remain open.

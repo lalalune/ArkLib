@@ -56,8 +56,26 @@ file check, not a full ArkLib build, an import of the packed companion proof,
 or a new protocol certificate.
 
 The projection-to-selector integration, identity between the fast arithmetic
-and the formal sum, concrete source tables, retuned ordinary-factor gates,
+and the formal sum, concrete source tables, retuned polynomial integration,
 and final companion assembly remain separate proof obligations.
+
+## Arithmetic gates at 68.04
+
+[`astra_companion_6804_ordinary_gates.lean`](../../scripts/probes/astra_companion_6804_ordinary_gates.lean)
+checks the ordinary-factor arithmetic at error cell 80791, with 181353
+agreements, gap 50282, and support caps `(T,Y,R)=(6919,136,30)`. It supplies
+universal padded and hybrid identity inequalities using nonnegative slack
+polynomials, together with the mixed-characteristic, product, coordinate,
+and weighted-cap gates. The earlier ordinary certificate covered 80781 and
+does not establish these retuned inequalities.
+
+[Run 33934610465](https://github.com/lalalune/ArkLib/actions/runs/33934610465)
+passed on both pinned toolchains at commit
+`e2f63aa1d22c3b2b39b460ffefb608a89824fe07`. Each job checked the four strip
+reports and all eight new arithmetic reports, with no warnings or forbidden
+axioms. The arithmetic file imports only Std. These are proofs of the
+displayed definitions and inequalities; identifying them with the consumers
+in the packed companion and proving the final protocol remain separate work.
 
 ## Reproducible numerical checks
 
@@ -133,6 +151,12 @@ and charges in Python. The search returns no prize score. The final candidate
 still exceeds capacity by 6.26%; integrating the strip theorem cannot by
 itself fix this failed numerical inequality.
 
+The [factor-partition follow-up](proximity-astra-factor-partition-2026-09-04.md)
+then minimizes each atom over the available source charges and enumerates
+factor partitions inside a bounded rectangle. It improves intermediate cells
+but leaves the maximum unchanged. A dense local source search also fails to
+improve the ordinary singleton allowance at a nearby flag.
+
 ## Reproduction
 
 ```sh
@@ -155,5 +179,5 @@ forbidden-token precheck with its nine existing allowlisted residual axioms,
 then exited 127 because `lake` is unavailable locally. Documentation integrity
 and staged whitespace checks passed separately. The focused CI results above
 do not replace that full repository gate. A final remote fetch at
-2026-09-05 00:36 UTC found the same main, research, and official companion
+2026-09-05 01:03 UTC found the same main, research, and official companion
 heads recorded above.
