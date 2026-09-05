@@ -20,6 +20,10 @@ For each evaluation point x define the affine hyperplane
 Hx: w(x)=u0(x)+gamma*u1(x).
 ```
 
+All incidence counts are coordinate-indexed: equal hyperplanes, if they occur,
+are counted once for each defining coordinate. For k>=2 the Hx are distinct;
+at k=1 repetitions are possible and this convention is necessary.
+
 A threshold-t MCA witness supplies a point lying on at least t of these
 hyperplanes. Its chosen support must also fail `pairJointAgreesOn`, exactly as
 in [Errors.lean](../../ArkLib/Data/CodingTheory/ProximityGap/Errors.lean).
@@ -163,3 +167,60 @@ union would simply reintroduce the uncontrolled isolated-point count. The
 attribution problem recorded in
 [_SYZ29YieldLawD4Gluing.lean](../../ArkLib/Data/CodingTheory/ProximityGap/Frontier/_SYZ29YieldLawD4Gluing.lean)
 remains open; this note does not discharge the universal predecessor census.
+
+## An exact vertex criterion for the actual MCA event
+
+There is an intrinsic description that requires no auxiliary carrier. For a
+field-rational decoding point p=(gamma,w), take its full agreement set
+
+```text
+A(p)={x in Omega : w(x)=u0(x)+gamma*u1(x)}.
+```
+
+If an MCA witness originally uses S, then S is a subset of A(p). A joint pair
+on A(p) would restrict to a joint pair on S, contradicting that witness.
+Thus enlarging to the full agreement set preserves the no-joint clause.
+Conversely, if |A(p)|>=t and A(p) has no joint pair, A(p) itself is a valid
+MCA witness support.
+
+Let V_A be the evaluation matrix with rows
+`(1,x,...,x^(k-1))` for x in A=A(p). Since |A|>=t>=k, its rank is k. The
+known decoding gives
+
+```text
+u0|A + gamma*u1|A in column_space(V_A).
+```
+
+Joint agreement on A is equivalent to both received restrictions belonging to
+this column space. In the presence of the displayed relation this is
+equivalent simply to `u1|A in column_space(V_A)`. Therefore
+
+```text
+no joint pair on A
+  iff rank([V_A | u1|A])=k+1.
+```
+
+All hyperplanes incident with p are exactly the Hx indexed by A(p). Their
+coefficient matrix in the unknowns (c0,...,c{k-1},gamma) is
+`[V_A | -u1|A]`, which has the same rank. They already have p as a solution,
+so rank k+1 is equivalent to their intersection consisting of p alone.
+If the rank is k instead, their intersection is an affine line.
+
+Consequently, the threshold-t MCA-bad scalars are exactly the gamma
+coordinates of field-rational **arrangement vertices incident with at least
+t hyperplanes**, where vertex means that all incident hyperplanes intersect
+in that single point. This is an equivalence with the actual same-support
+no-joint event, not merely with ordinary decoding.
+
+Different vertices can have the same gamma, so the universal predecessor
+target is a bound on the size of their gamma projection. Bounding the total
+number of vertices by n would be a stronger sufficient statement, not an
+equivalent reformulation of the desired scalar count.
+
+An arrangement vertex can still lie on a line component of V_t: some incident
+hyperplanes may contain that line while an additional incident hyperplane
+cuts it at the vertex. Thus the exact criterion neither discards vertices on
+line components nor counts only isolated components of V_t. At production,
+the still-unproved assertion is that the gamma projection of these
+715827884-fold incident vertices has size at most 1073741824 for every
+received pair. The curve incidence bounds above do not supply that assertion.

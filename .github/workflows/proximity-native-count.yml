@@ -1,0 +1,126 @@
+name: Proximity native count
+
+on:
+  push:
+    branches: ["codex/proximity-astra-20260904"]
+    paths:
+      - ".github/workflows/proximity-native-count.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: proximity-native-count-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  count:
+    if: github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    env:
+      EXPECTED_SOURCE_SHA256: 6b2069e47e698fa96100881eb81175e6acdd8d60d5e0b24a19682817ffa117a5
+    steps:
+      - uses: actions/checkout@v7
+      - name: Verify source and run bounded independent acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/proximity-count-receipts"
+          python3 - <<'PY'
+          import hashlib, os
+          from pathlib import Path
+          source = Path('scripts/probes/astra_mca_native_eval.cpp')
+          actual = hashlib.sha256(source.read_bytes()).hexdigest()
+          if actual != os.environ['EXPECTED_SOURCE_SHA256']:
+              raise SystemExit('Source changed: review and update the workflow pin before scanning')
+          print('Reviewed native source:', actual)
+          PY
+          python3 scripts/probes/astra_mca_native_eval_check.py > "$RUNNER_TEMP/proximity-count-receipts/acceptance.jsonl"
+          cat "$RUNNER_TEMP/proximity-count-receipts/acceptance.jsonl"
+      - name: Count the production construction with resource guards
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -u - <<'PY'
+          import datetime, hashlib, json, os, platform, subprocess, time
+          from pathlib import Path
+
+          root = Path(os.environ['RUNNER_TEMP']) / 'proximity-count-receipts'
+          acceptance = json.loads((root / 'acceptance.jsonl').read_text().splitlines()[-1])
+          binary = Path(acceptance['binary'])
+          digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+          source = Path('scripts/probes/astra_mca_native_eval.cpp')
+          assert digest(source) == acceptance['source_sha256'] == os.environ['EXPECTED_SOURCE_SHA256']
+          assert digest(binary) == acceptance['binary_sha256']
+          assert acceptance['status'] == 'PASS_BOUNDED_NATIVE_ACCEPTANCE_NOT_PRODUCTION_SCAN'
+          assert acceptance['compiled_from_current_source_by_this_run']
+          command = [str(binary), '--scan', '1073741824', '4', '8193']
+          metadata = {
+              'head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+              'source_sha256': digest(source), 'binary_sha256': digest(binary),
+              'command': command, 'platform': platform.platform(),
+              'started_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'scope': 'native_finite_computation_not_Lean_proof',
+          }
+          (root / 'metadata.json').write_text(json.dumps(metadata, indent=2) + '\n')
+          print(json.dumps(metadata), flush=True)
+          start = time.monotonic()
+          timed_out = False
+          with (root / 'stdout.jsonl').open('w') as out, (root / 'stderr.txt').open('w') as err:
+              child = subprocess.Popen(command, stdout=out, stderr=err)
+              while True:
+                  try:
+                      code = child.wait(timeout=30)
+                      break
+                  except subprocess.TimeoutExpired:
+                      elapsed = time.monotonic() - start
+                      print(json.dumps({'phase': 'process_live', 'pid': child.pid,
+                                        'elapsed_seconds': round(elapsed, 1),
+                                        'complete_count_available': False}), flush=True)
+                      if elapsed >= 7200:
+                          timed_out = True
+                          child.terminate()
+                          try:
+                              code = child.wait(timeout=10)
+                          except subprocess.TimeoutExpired:
+                              child.kill()
+                              code = child.wait()
+                          break
+          result = dict(metadata, exit_code=code, timed_out=timed_out,
+                        finished_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                        stdout_sha256=digest(root / 'stdout.jsonl'),
+                        stderr_sha256=digest(root / 'stderr.txt'),
+                        status='INCOMPLETE_NO_MATHEMATICAL_VERDICT')
+          (root / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
+          print((root / 'stdout.jsonl').read_text(), end='')
+          print((root / 'stderr.txt').read_text(), end='')
+          if code != 0 or timed_out:
+              raise SystemExit('Production scan incomplete; see preserved receipts')
+          rows = [json.loads(line) for line in (root / 'stdout.jsonl').read_text().splitlines() if line.strip()]
+          final = rows[-1]
+          n = 1073741824
+          assert final['mode'] == 'exact_fingerprint_scan' and final['n'] == n
+          assert final['slots'] == n + 2 and final['array_bytes'] == 8 * (n + 2)
+          bound, poles = final['finite_event_count_lower_bound'], final['chart_pole_slots']
+          assert isinstance(bound, int) and isinstance(poles, int) and 0 <= bound <= n + 2 - poles
+          assert final['length_plus_one_met'] == final['production_budget_exceeded'] == (bound >= n + 1)
+          assert final['scope'] == 'native_finite_computation_not_Lean_proof'
+          result.update(status='COMPLETE_NATIVE_COUNT_NOT_PRIZE_CLOSURE', count_receipt=final)
+          (root / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
+          with Path(os.environ['GITHUB_STEP_SUMMARY']).open('a') as summary:
+              summary.write('Native production construction count completed.\n\n')
+              summary.write(f'- Distinct finite-value lower bound: {bound}\n')
+              summary.write(f'- Required for this construction: {n + 1}\n')
+              summary.write(f'- Requirement met: {bound >= n + 1}\n\n')
+              summary.write('This is a finite computation, not a Lean proof or a solution of the prize.\n')
+          PY
+      - name: Preserve computation receipts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: proximity-native-count-${{ github.sha }}
+          path: ${{ runner.temp }}/proximity-count-receipts/
+          retention-days: 7
+          if-no-files-found: error

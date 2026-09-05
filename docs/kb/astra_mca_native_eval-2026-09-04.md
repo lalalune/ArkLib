@@ -182,3 +182,20 @@ available bytes. About 5.73 seconds into that pause, macOS reported non-NORMAL
 memory pressure; the runner exited with code 3 before any partition completed.
 The same receipt file includes this output and the bounded acceptance of the
 pause version. No production scan is left running by these attempts.
+
+## A separate hosted run
+
+The [native-count workflow](../../.github/workflows/proximity-native-count.yml)
+uses a standard `ubuntu-24.04` GitHub-hosted runner for this public repository.
+It first checks the reviewed source hash and reruns the bounded independent
+acceptance on Linux. It then invokes `--scan 1073741824 4 8193`: the array needs
+8 GiB plus sixteen bytes, and the existing 4 GiB reserve remains mandatory.
+The workflow does not change the mathematical evaluator or its resource gates.
+
+The workflow runs on a push changing that workflow file on the research branch,
+or on a manual dispatch. It refuses to scan when its source pin is stale.
+Small artifacts retain the acceptance, source and binary hashes, exact command,
+exit status, raw output, and output hashes. The child deadline is two hours.
+An unsuccessful or incomplete run cannot be reported as a completed count;
+a successful lower-bound computation remains separate from Lean verification
+and from a universal predecessor bound. No hosted result is asserted here.

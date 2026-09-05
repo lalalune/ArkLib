@@ -341,9 +341,18 @@ python3 -m pip install leanblueprint
   rules out full-cover constructions with at most five sufficiently large
   joint cores. It records necessary conditions for six cores and for four
   unequal cores; it does not prove the universal predecessor bound.
+  The [six-pencil flat constraints](../kb/astra_mca_six_pencil_flats-2026-09-04.md)
+  exclude one explicit quadrilateral construction, while the
+  [incidence classification](../kb/astra_mca_six_pencil_types-2026-09-04.md)
+  identifies seven remaining geometric types and stronger necessary overlap
+  bounds. Their polynomial realizability and scalar counts remain open.
   The [decoding-curve incidence bound](../kb/astra_mca_decoding_curve_incidence-2026-09-04.md)
   quantifies what a separately constructed curve carrier would suffice to
   prove. The existence of such a carrier for arbitrary MCA events is open.
+  The [native-count workflow](../../.github/workflows/proximity-native-count.yml)
+  runs the separately pinned, bounded-tested native source on a standard
+  public-repository Linux runner. It preserves computation receipts; it does
+  not run Lean or certify the universal prize theorem.
   The [anchor filter](../kb/astra_mca_anchor_multiplicity-2026-09-04.md)
   rules out pure power lifts as a general way to guarantee enough directions.
   The [Paley scope audit](../kb/astra_paley_scope-2026-09-04.md) distinguishes

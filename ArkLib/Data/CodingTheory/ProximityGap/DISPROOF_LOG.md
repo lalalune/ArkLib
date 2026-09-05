@@ -53725,3 +53725,12 @@ requirements, and necessary four-unequal-core escape are in
 This is not Lean-formalized. It excludes the stated counterexample architecture;
 it does not bound every received pair or all decoding codewords, and does not
 close the universal predecessor-radius bound or the prize.
+
+The [six-pencil continuation](../../../../docs/kb/astra_mca_six_pencil_flats-2026-09-04.md)
+uses determinant saturation to force complete absence-line flats. An explicit
+four-region/common-core quadrilateral architecture has at most twelve residual
+directions. The [incidence classification](../../../../docs/kb/astra_mca_six_pencil_types-2026-09-04.md)
+also excludes saturated constructions with any pair's absence intersection
+larger than `b-2`, where `b=h+1`. Seven line-incidence types and an explicit
+one-triple feasible weight pattern remain; no general six-pencil exclusion is
+claimed. These are independently reviewed written arguments, not Lean proofs.
