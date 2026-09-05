@@ -2,7 +2,7 @@
 
 The [root-domain basis construction](astra_mca_polynomial_basis-2026-09-05.md)
 is now instantiated over the repository's exact production field and
-generator. Four additional theorems in
+generator. Five additional theorems in
 [`astra_mca_production_basis.lean`](../../scripts/probes/astra_mca_production_basis.lean)
 pass local Lean 4.30.0-rc2. **This proves the concrete polynomial basis;
 the actual MCA witnesses, their probability and the threshold consequence
@@ -45,6 +45,11 @@ polynomials vanish on A, the G polynomials vanish on B, and corresponding
 F/G components agree on S. Their determinant is a nonzero scalar times
 the locator of A union B union S.
 
+`production_residual_rows` further supplies exactly 1073741828 nonzero,
+pairwise projectively distinct [residual rows](astra_mca_residual_rows-2026-09-05.md)
+from that same constructed basis. This does not yet produce the distinct
+scalar challenges needed for MCA events.
+
 This domain uses the powers displayed in the repository's
 [`KKH26.evalCode`](../../ArkLib/Data/CodingTheory/ProximityGap/KKH26WitnessSpread.lean)
 definition. The new proof does not yet put the constructed polynomial
@@ -75,13 +80,13 @@ bash /absolute/path/to/arklib/scripts/check-mca-production-basis.sh /tmp/mca-pro
 ```
 
 The [helper](../../scripts/check-mca-production-basis.sh) compiles the
-unaltered production certificate and polynomial basis into the supplied
-directory, then checks the concrete instantiation using those exact compiled
+unaltered production certificate, polynomial basis, and residual-row module
+into the supplied directory, then checks the concrete instantiation using those exact compiled
 dependencies. It runs individual Lean compilations, without a full ArkLib
 build. Use a separate output directory for each toolchain.
 
-The local audit checks 38 named axiom reports: 31 polynomial construction
-theorems, three existing certificate theorems, and four new instantiation
+The local audit checks 48 named axiom reports: 31 polynomial construction
+theorems, three existing certificate theorems, nine residual-row theorems, and five instantiation
 theorems. All use only the permitted standard axioms, with no compiler
 warnings or placeholder proofs. The expanded
 [auxiliary CI](../../.github/workflows/proximity-strip-proof.yml) runs this
@@ -92,6 +97,13 @@ The previous construction revision `8c22713deaa91a0a100e04e8275d11765f4437a4`
 passed both versions in
 [run 33987947699](https://github.com/lalalune/ArkLib/actions/runs/33987947699).
 That earlier run does not cover this concrete instantiation.
+
+The first production revision `6ec208d51f7751c80a31d3e7a4e4569b5abb3bce`
+passed Lean 4.30 but failed Lean 4.32.2 in
+[run 33988276658](https://github.com/lalalune/ArkLib/actions/runs/33988276658):
+the latter required explicit conversion from a strict inequality to interval
+membership in `power_domain_card`. The current source uses `Set.mem_Iio.mpr`
+explicitly; the new revision must be checked on both pins.
 
 The strongest previously computed numerical upper bound is unchanged.
 No exact threshold, improved companion score, matching universal bound,

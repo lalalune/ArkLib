@@ -10,6 +10,7 @@ on:
       - "scripts/probes/astra_companion_t_kernel_gates.lean"
       - "scripts/probes/astra_exact_list_projection.lean"
       - "scripts/probes/astra_mca_polynomial_basis.lean"
+      - "scripts/probes/astra_mca_residual_rows.lean"
       - "scripts/probes/astra_mca_production_basis.lean"
       - "scripts/check-mca-production-basis.sh"
       - "ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PrizeShapePrimeP30.lean"
@@ -113,9 +114,13 @@ jobs:
               "production_anchor_margins")]
           expected += ["ArkLib.ProximityGap.PrizeShapePrimeP30." + name for name in (
               "prime_P", "orderOf_g", "exists_orderOf_two_pow_30")]
+          expected += ["AstraMcaResidualRows." + name for name in (
+              "row_lift_ne_zero", "row_lift_same_coordinate", "determinant_nonzero_off_domain",
+              "basis_values_not_all_zero", "slot_count", "base_row_nonzero",
+              "slot_row_nonzero", "row_lift_determinant_zero", "slot_rows_projectively_distinct")]
           expected += ["AstraMcaProductionBasis." + name for name in (
               "power_domain_card", "power_domain_roots", "production_deleted_basis",
-              "production_projection_arithmetic")]
+              "production_residual_rows", "production_projection_arithmetic")]
           for declaration in expected:
               if declaration not in reported:
                   raise SystemExit("Missing axiom report: " + declaration)
