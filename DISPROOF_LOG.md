@@ -17323,3 +17323,39 @@ bridge and deletion proof are independently reviewed but not Lean
 formalized; no production unsafe radius or prize solution is claimed.
 Details: `docs/kb/astra_mca_two_generator_bridge-2026-09-04.md` and
 `docs/kb/astra_mca_two_generator_probe-2026-09-04.md`.
+
+## [astra-mca-anchor-and-chart] balanced bases do not guarantee distinct cancellation directions (2026-09-04)
+
+If the two deleted anchors have old projective multiplicities M_xi and
+M_eta, the new n+2 slots contain two collision classes of those sizes.
+Thus their distinct count is at most n+4-M_xi-M_eta. At least one anchor
+must have a globally unique old direction to reach n+1. Pure power lifts
+of degree d>=2 force both multiplicities to be at least d and cannot
+reach that target. This excludes a general lifting guarantee, not the
+specific asymmetric recursive production partition.
+
+The compact recursive formula is checked against dense polynomials on
+mu16, mu64, and mu256. Exact cross-ratio checks exclude a Mobius transform
+of an odd monomial as its ordinary-slot description on those domains.
+At production size, the fourth quarter is itself an injective Mobius
+image and all four private directions are outside it. This gives 268435460
+distinct finite witnesses, still below 1073741825. Cross-quarter collision
+control remains open. See `docs/kb/astra_mca_anchor_multiplicity-2026-09-04.md`
+and `docs/kb/astra_mca_twogen_lift_eval-2026-09-04.md`.
+
+## [astra-paley-scope] additive BGK power saving does not prove the classical Paley conjecture (2026-09-04)
+
+The classical conjecture concerns double sums of a multiplicative
+character over arbitrary large sets. The in-tree BGK predicates concern
+additive exponential sums over multiplicative subgroups. Misleading
+comments identifying the former with an already-proven power saving
+were corrected without changing any noncomment Lean source bytes.
+
+A valid specialization uses two subgroup cosets and a character trivial
+on the subgroup; the double sum is n times a shifted single character
+sum. The character-triviality condition cannot be dropped: for the full
+nonzero subgroup in F17 the double sum is zero while the shifted sum is
+-1. All 384 finite shift identities pass. The production subgroup lies
+below P^(1/4); unknown conjectural constants and the separate MCA incidence
+input remain unresolved. This is a scope correction and elementary
+identity, not a new Paley theorem. See `docs/kb/astra_paley_scope-2026-09-04.md`.

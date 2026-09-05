@@ -326,6 +326,18 @@ python3 -m pip install leanblueprint
   irregular mu16 receipt, and
   `python3 scripts/probes/astra_mca_two_generator_delete_probe.py` for the
   three deletion cells with agreement and no-joint parity checks.
+  The [compact production evaluator](../kb/astra_mca_twogen_lift_eval-2026-09-04.md)
+  uses fourteen rational summands per ordinary point; run
+  `python3 scripts/probes/astra_mca_twogen_lift_eval.py` for dense small-domain
+  comparisons and the constant-size production checks. Its partial count
+  268435460 is below the 1073741825 required; the full collision count is open.
+  The [anchor filter](../kb/astra_mca_anchor_multiplicity-2026-09-04.md)
+  rules out pure power lifts as a general way to guarantee enough directions.
+  The [Paley scope audit](../kb/astra_paley_scope-2026-09-04.md) distinguishes
+  classical Paley conjectures from proven additive subgroup bounds and records
+  a valid shifted-character specialization. Run
+  `python3 scripts/probes/astra_paley_transfer.py` for its finite identities
+  and exact production size gates.
   These results are not Lean formalized and establish no improved prize score.
 
 ## Manual Timing Helper

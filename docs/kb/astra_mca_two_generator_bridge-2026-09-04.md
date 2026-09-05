@@ -6,6 +6,12 @@ domain. It does **not** prove the required number of distinct cancellation
 directions at production length. A separately checked length-16 example
 has 18 actual MCA witnesses over the production prime.
 
+The [compact evaluator](astra_mca_twogen_lift_eval-2026-09-04.md) now gives
+explicit formulas for the production deletion and a partial count of
+268435460 distinct finite witnesses. The full required count remains open.
+The [anchor multiplicity filter](astra_mca_anchor_multiplicity-2026-09-04.md)
+explains why a balanced basis alone does not guarantee enough directions.
+
 ## The support-level bridge
 
 Let Omega contain n distinct field elements. Let the code consist of

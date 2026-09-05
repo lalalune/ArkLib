@@ -7,90 +7,54 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BGKSOTAInsufficiency
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodSpectralFrame
 
 /-!
-# wf-B7 (#444): the EXACT prize ⇆ BGK reduction directions — corrected naming
+# wf-B7 (#444): subgroup power saving and the near-square-root analytic target
 
-## What this lane settles
+## Scope correction (2026-09-04)
 
-Lane B7 ("settle prize ⇔ BGK rigorously") asks for the precise logical relationship between
+The declarations below compare three bounds for the ADDITIVE subgroup period
+`eta_b = sum_{x in G} psi(b*x)`. Their historical names contain "prize", but their
+conclusions are analytic inequalities, not a proof of the full Proximity Prize.
 
-* the **prize floor**   `M(n) = max_{b≠0}‖η_b‖ ≤ C·√(n·log(q/n))`   (`NearRamanujanSqrtLog ψ G C`,
-  cancellation exponent `δ = 1/2 − o(1)`, with a *bounded* `√log(q/n)` slack), and
-* the **BGK / Paley character-sum bounds** `‖η_b‖ ≤ C·n^{1−δ}` (`BGKBound C ψ G δ`).
+These statements must not be identified with the classical Paley graph conjecture:
 
-A prior pass (`_wf8B7_W3_BGK_Equivalence`) proved a clean real-analysis equivalence between
-`NearRamanujanSqrtLog` and `BGKBound _ _ _ (1/2)`, and *named the equivalent object the
-"Paley-Graph Conjecture"*. **That naming is incorrect**, and the error matters for "what exactly is
-open". This file fixes it with the literature-correct dictionary and the exact reduction directions.
+* **Classical Paley graph conjecture:** for each epsilon > 0 there are
+  delta(epsilon) > 0 and p0(epsilon) such that, for primes p > p0 and sets A,B
+  of size > p^epsilon, a nontrivial MULTIPLICATIVE character satisfies
+  `|sum_{a in A,b in B} chi(a+b)| <= p^(-delta) * |A| * |B|`.
+  This is the still-open double-character-sum conjecture, stated in
+  Kim--Yip--Yoo, arXiv:2309.09124v4, Conjecture 2.12 and Section 2.4:
+  https://arxiv.org/html/2309.09124v4#S2.SS4 .
+* **Proven BGK subgroup power saving:** a sufficiently large multiplicative
+  subgroup of a prime field has a power saving for its ADDITIVE exponential
+  sums. This does not prove the preceding conjecture for arbitrary A,B.
+* **Square-root analytic bound:** `BGKBound C psi G (1/2)`, namely
+  `|eta_b| <= C * sqrt(n)`. An arbitrary C should not be confused with the
+  exact graph-theoretic Ramanujan constant `2*sqrt(n-1)`.
+* **The in-tree near-square-root target:** `NearRamanujanSqrtLog psi G C`,
+  namely `|eta_b| <= C*sqrt(n*log(q/n))`.
 
-## The correction (literature-verified, WebFetch'd)
+The proofs below establish only these comparisons:
 
-The named conjectures are NOT the same statement:
+  square-root bound => near-square-root target, when log(q/n) >= 1;
+  near-square-root target => square-root bound with a sqrt(Lambda) loss,
+    when log(q/n) <= Lambda;
+  a fixed power-saving exponent less than 1/2 yields an upper-bound formula
+    asymptotically larger than the target when the logarithmic factor is bounded.
 
-* **Paley Graph Conjecture (PGC)** — for any fixed `ε > 0` there is a fixed `δ = δ(ε) > 0` with
-  `‖η_b‖ ≤ n^{1−δ}` (`= BGKBound 1 ψ G δ` for *some* `δ > 0` depending only on the relative size).
-  This is a *power saving by an unspecified, possibly tiny, fixed exponent*.
-* **Bourgain–Glibichuk–Konyagin (BGK 2006) — PROVEN**: for `|H| ≥ p^γ` there is `δ(γ) > 0` with
-  `‖η_b‖ ≤ n^{1−δ}`. So **BGK already PROVES the PGC** in the power-saving sense (`δ ≈ 0.011` after
-  di Benedetto). The PGC, in its `n^{1−δ}`-for-some-`δ>0` form, is *not the open content of the
-  prize* — it is essentially known for thin subgroups.
-* **Ramanujan / square-root cancellation** — `‖η_b‖ ≤ C·√n` (exponent `δ = 1/2`,
-  `= BGKBound C ψ G (1/2)`). This is the STRONGEST possible bound up to the constant and is
-  **strictly stronger than the PGC** (any `δ < 1/2` power saving is weaker). For `Cay(F_q, μ_n)`
-  this is the open *Ramanujan/BGK-sharp* question.
-* **The prize floor** — `‖η_b‖ ≤ C·√(n·log(q/n))`. This is **WEAKER than Ramanujan `√n`** by the
-  bounded factor `√log(q/n)` (at prize scale `q/n = 2^128`, `√log = √(128 ln 2) ≈ 9.4`; for
-  `q ≈ n^β`, `√((β−1) ln n) ≈ 8–9`).
+The last assertion is insufficiency of that numerical upper-bound formula;
+it is not a logical non-implication theorem between the classical conjecture
+and the full prize. The literal value `diBenedettoDelta` is an imported
+arithmetic constant here, not a proof that a cited estimate applies to the
+production subgroup. In particular the production n=2^30 is below p^(1/4).
 
-So the precise sandwich on the *cancellation exponent* `δ` is
+The separate `_PrizeFloorOfBGK.lean` explicitly requires an independent
+above-Johnson MCA incidence hypothesis and proves its threshold conclusion
+from that hypothesis. No theorem below supplies that incidence bound.
+See `docs/kb/astra_paley_scope-2026-09-04.md` for the exact character-sum
+specialization, production parameters, and the remaining transfer gap.
 
-      proven BGK (δ≈0.011)  <  prize floor (δ=1/2−o(1))  ≤  Ramanujan (δ=1/2).
-       = PGC, already known      = the open prize             = strictly stronger
-
-The prize is therefore **NOT** the Paley Graph Conjecture (that is weaker and proven). It is the
-exponent-`1/2`/near-Ramanujan bound *up to a bounded `√log` slack* — i.e. the open
-**BGK-sharp / Ramanujan-for-`Cay(F_q,μ_n)`** problem, which is what the in-tree
-`GaussPeriodSpectralFrame` comment already records ("the graph is provably NOT Ramanujan; the
-needed bound carries a `√log` factor").
-
-## The two PROVEN reduction directions (exact, axiom-clean)
-
-* `ramanujan_implies_prize` (**Ramanujan ⟹ prize**, the EASY direction): `BGKBound C ψ G (1/2)`
-  (`‖η_b‖ ≤ C√n`) implies the prize floor `NearRamanujanSqrtLog ψ G C`, because `√n ≤ √(n·L)`
-  whenever the index logarithm `L = log(q/n) ≥ 1` (always at prize scale). So **a Ramanujan bound
-  is sufficient for the prize** — with room to spare (the `√L` factor is free).
-
-* `prize_implies_ramanujan_up_to_sqrtlog` (**prize ⟹ Ramanujan-with-`√L`-loss**, the direction
-  that is NOT free): the prize floor implies `BGKBound (C·√Λ) ψ G (1/2)` only after *absorbing the
-  bounded `√L` slack into the constant* (`L ≤ Λ`). Thus the prize does **not** imply the clean
-  exponent-`1/2` bound at the same constant — it implies it only up to the `√Λ`-inflated constant.
-  This is the precise sense in which the prize is *strictly between* the proven BGK exponent and the
-  clean Ramanujan bound, and why the equivalence in the prior pass is constant-lossy (honest, but
-  the loss is the whole point of the naming correction).
-
-* `prize_strictly_beyond_proven_BGK` (composition with the in-tree SOTA insufficiency): the prize's
-  exponent `1/2` is strictly beyond `diBenedettoDelta = 0.011`, so the prize is NOT a corollary of
-  the proven BGK/PGC power saving. This is the load-bearing "is the prize at least as hard as the
-  open BGK improvement?" answer: **YES** — closing the prize closes near-Ramanujan-up-to-`√log` for
-  `Cay(F_q,μ_n)`, which is strictly beyond all proven character-sum technology (`δ < 1/2`).
-
-## Verdict (B7, corrected)
-
-* **Direction (i) — does prize ⟹ a new BGK improvement, and is it at least as hard?** YES. The
-  prize forces cancellation exponent `1/2 − o(1)`, strictly beyond the proven `0.011`. The prize is
-  at least as hard as pushing the BGK exponent from `0.011` to `1/2 − o(1)` for thin `μ_n` (a recognized
-  open problem). It is NOT as hard as full clean Ramanujan `√n` (the prize has a free `√log` slack).
-
-* **Direction (ii) — does a known BGK/Paley conjecture IMPLY the prize?** The *Paley Graph
-  Conjecture* (`n^{1−δ}`, some `δ>0`) does **NOT** suffice — any fixed `δ < 1/2` lands strictly above
-  the prize floor for large `n` (the in-tree `bgk_value_exceeds_prizeTarget_eventually`). The
-  *Ramanujan bound* `√n` **DOES** suffice (`ramanujan_implies_prize`), with the `√log` to spare.
-
-So the prize is **strictly stronger than the PGC and strictly weaker than (or, up to a bounded
-constant, equivalent to) the Ramanujan/BGK-sharp bound** for `Cay(F_q, μ_n)`. The "what exactly is
-open" answer: the open content is the **near-Ramanujan-up-to-`√log` cancellation exponent `1/2`**
-for the thin dyadic Gauss period — NOT the (already-proven-as-power-saving) Paley Graph Conjecture.
-
-Issue #444, lane wf-B7 (corrected). Axiom-clean (`propext, Classical.choice, Quot.sound`).
+Issue #444. This correction changes comments only; declarations and proofs
+are preserved.
 -/
 
 set_option autoImplicit false
@@ -107,13 +71,11 @@ namespace ProximityGap.Frontier.WF9B7
 
 variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 
-/-! ## Direction A — the Ramanujan bound `√n` SUFFICES for the prize (the easy, lossless half) -/
+/-! ## Direction A: square-root cancellation implies the analytic target -/
 
-/-- **Ramanujan ⟹ prize** (lossless). If the index logarithm `L = log(q/n) ≥ 1` (always at prize
-scale, `q ≥ e·n`), then the exponent-`1/2` Ramanujan bound `BGKBound C ψ G (1/2)`
-(`‖η_b‖ ≤ C·n^{1/2} = C·√n`) implies the prize floor `NearRamanujanSqrtLog ψ G C`
-(`‖η_b‖ ≤ C·√(n·L)`) at the SAME constant `C`. The `√L ≥ 1` slack is free: a Ramanujan bound is
-*more than enough* for the prize. -/
+/-- A square-root additive-period bound implies the near-square-root analytic target,
+with the same constant, if the index logarithm is at least one. The historical
+name `ramanujan_implies_prize` does not assert a full MCA incidence theorem. -/
 theorem ramanujan_implies_prize {ψ : AddChar F ℂ} {G : Finset F} {C : ℝ}
     (hC : 0 ≤ C)
     (hindex : 1 ≤ Real.log ((Fintype.card F : ℝ) / G.card))
@@ -135,14 +97,11 @@ theorem ramanujan_implies_prize {ψ : AddChar F ℂ} {G : Finset F} {C : ℝ}
     _ = C * Real.sqrt n := by rw [hpow]
     _ ≤ C * Real.sqrt (n * L) := mul_le_mul_of_nonneg_left hmono hC
 
-/-! ## Direction B — the prize implies Ramanujan ONLY up to the bounded `√L` constant loss -/
+/-! ## Direction B: recover a square-root bound with the logarithmic constant loss -/
 
-/-- **Prize ⟹ Ramanujan-with-`√Λ`-loss** (NOT lossless). The prize floor
-`NearRamanujanSqrtLog ψ G C` implies the exponent-`1/2` bound `BGKBound (C·√Λ) ψ G (1/2)` only
-after absorbing the bounded index slack `L ≤ Λ` into the constant. The constant is INFLATED by
-`√Λ` (`≈ 9` at prize scale): the prize does NOT deliver the clean Ramanujan bound at constant `C`.
-This pins the exact gap — the prize is the near-Ramanujan bound *up to a bounded `√log` factor*,
-not the clean Ramanujan bound. -/
+/-- The near-square-root analytic target implies a square-root additive-period bound
+with constant multiplied by `sqrt(Lambda)` when the index logarithm is at most Lambda.
+This compares analytic predicates, not the full prize and a classical Paley conjecture. -/
 theorem prize_implies_ramanujan_up_to_sqrtlog {ψ : AddChar F ℂ} {G : Finset F} {C Λ : ℝ}
     (hC : 0 ≤ C) (hΛ : 0 ≤ Λ)
     (hindex : Real.log ((Fintype.card F : ℝ) / G.card) ≤ Λ)
@@ -163,21 +122,12 @@ theorem prize_implies_ramanujan_up_to_sqrtlog {ψ : AddChar F ℂ} {G : Finset F
     _ ≤ C * Real.sqrt (n * Λ) := mul_le_mul_of_nonneg_left hmono hC
     _ = (C * Real.sqrt Λ) * n ^ ((1 : ℝ) - 1 / 2) := by rw [hsplit, hpow]; ring
 
-/-! ## Direction C — the prize is STRICTLY beyond every PROVEN BGK/PGC exponent -/
+/-! ## Direction C: the imported power-saving upper-bound formula is too large -/
 
-/-- **The Paley Graph Conjecture / proven BGK power saving does NOT imply the prize.**
-
-For ANY proven cancellation exponent `δ < 1/2` (in particular `diBenedettoDelta = 0.011`, the BGK
-SOTA, which *proves* the PGC's `n^{1−δ}` power saving), the *guaranteed* value `C·n^{1−δ}` strictly
-exceeds the prize target `C'·√(n·L)` for all large `n`. Hence:
-
-* the prize is **at least as hard as** improving the BGK exponent from `0.011` to `1/2 − o(1)`
-  (a recognized open problem for thin `μ_n`), answering direction (i): YES;
-* the (proven) Paley Graph Conjecture power saving is **insufficient** for the prize, answering
-  direction (ii): the PGC does NOT imply the prize; only the strictly-stronger Ramanujan bound does.
-
-`diBenedetto_lt_prize` records `0.011 < 1/2`; the eventual-domination is the in-tree
-`bgk_value_exceeds_prizeTarget_eventually`. -/
+/-- The imported exponent is below one half, and its numerical upper-bound formula
+asymptotically exceeds the near-square-root target at fixed logarithmic factor.
+This theorem neither proves classical Paley pseudorandomness nor establishes a
+logical non-implication from that conjecture to MCA incidence. -/
 theorem prize_strictly_beyond_proven_BGK :
     diBenedettoDelta < (1 / 2 : ℝ) ∧
     (∀ {C C' L : ℝ}, 0 < C → 0 ≤ C' → 0 ≤ L →
@@ -190,19 +140,10 @@ theorem prize_strictly_beyond_proven_BGK :
 
 /-! ## The packaged verdict -/
 
-/-- **B7 corrected verdict (the precise sandwich).** Bundles the three directions:
-
-1. (`ramanujan_implies_prize`) Ramanujan `√n` ⟹ prize, LOSSLESS (same constant `C`); the `√L`
-   slack is free. So the clean exponent-`1/2` bound is *sufficient with room to spare*.
-2. (`prize_implies_ramanujan_up_to_sqrtlog`) prize ⟹ Ramanujan only at the `√Λ`-INFLATED constant;
-   the prize is near-Ramanujan *up to the bounded `√log` factor*, not clean Ramanujan.
-3. (`prize_strictly_beyond_proven_BGK`) the prize exponent `1/2` is STRICTLY beyond the proven BGK
-   `0.011`, so the (proven) Paley-Graph power saving does NOT imply the prize.
-
-Reading: prize is strictly STRONGER than the (proven) PGC power saving, and equivalent — up to a
-bounded `√log` constant — to the open Ramanujan/BGK-sharp bound for `Cay(F_q, μ_n)`. The prize is
-NOT "the Paley Graph Conjecture"; it is the near-Ramanujan-up-to-`√log` exponent-`1/2` cancellation
-for the thin dyadic Gauss period. -/
+/-- Package the analytic comparisons: square-root cancellation implies the
+near-square-root target; the reverse direction incurs a square-root logarithmic
+constant loss; and the imported numerical exponent is below one half.
+No classical Paley graph conjecture or full prize theorem is asserted. -/
 theorem b7_corrected_verdict {ψ : AddChar F ℂ} {G : Finset F} {C Λ : ℝ}
     (hC : 0 ≤ C) (hΛ : 0 ≤ Λ)
     (hlo : 1 ≤ Real.log ((Fintype.card F : ℝ) / G.card))
