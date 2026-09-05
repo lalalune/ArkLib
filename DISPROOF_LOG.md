@@ -17553,3 +17553,59 @@ minimal degrees 3/3, while the separate A=4 algebra control has 23/15,
 demonstrating value collisions. All 83521 candidate polynomials, 64 factor
 Jacobians/root selectors, padding removal, and the zero-error endpoint pass.
 See `docs/kb/astra_mca_exact_error_eliminant-2026-09-05.md`.
+
+## [astra-mca-value-operator] a cyclotomic label does not determine decoded values (2026-09-05)
+
+In the reduced exact-error algebra, the error-root product T satisfies
+T^n=1. It does not follow that value multiplication M belongs to K[T].
+On the actual production domain, disjoint antipodal error sets of the same
+even size give exact decoded witnesses with the same T and distinct values.
+The complete F17 control has three distinct values and constant T=8.
+Rotations move the omitted point, and reciprocal symmetry need not preserve
+the received word even modulo the code. These exact obstructions refute the
+specified operator shortcuts, not the desired degree-n value bound. See
+`docs/kb/astra_mca_value_operator-2026-09-05.md` and its passing checker.
+
+## [astra-interleaved-projection] an exact budget transfer at large field size (2026-09-05)
+
+For a linear code over F_q, a uniform scalar list budget B transfers to the
+same budget at every positive interleaving arity if choose(B+1,2)<=q.
+The pair-collision kernels are proper subspaces sharing zero, so one linear
+projection separates B+1 candidates and preserves each agreement support.
+The diagonal embedding proves the reverse implication. The same argument
+works for images under a fixed linear observable, without turning image
+counts into full-list counts. Both fixed production field/budget profiles
+pass this numerical gate. The missing scalar bounds are still missing.
+Prime-field, F4, equality-gate, small-field failure, and observable controls
+pass; no new complete Lean theorem is claimed. See
+`docs/kb/astra_interleaved_projection-2026-09-05.md`.
+
+## [astra-hasse-order-two] exact finite interpolation gain with a production failure (2026-09-05)
+
+The order-two Hasse local map decomposes into finite homogeneous blocks,
+giving an exact rank computation in the companion characteristic and its
+extensions. At n=64,w=15,m=8,T=16, a fixed order-two box certifies a
+nonzero interpolant at A=34; all order-one slope caps in this fixed budget
+first pass at A=35. This lies inside the Johnson regime. The same small
+order-two box has negative production nullity lower bound -187628967.
+Thirty-six independent direct local matrices and all fixed arithmetic
+comparisons pass. This improves a finite interpolation certificate, not a
+decoded-list bound or the companion score. See
+`docs/kb/astra_hasse_order_two-2026-09-05.md`.
+
+## [astra-selected-family-constraint] exact Jacobi divisor and conditional rigidity (2026-09-05)
+
+For a regular selected solution f of F(X,f,f',gamma)=0, every nonzero
+fixed-seed polynomial Jacobi deformation g satisfies the exact divisibility
+product_(i agreeing)(X-x_i)^nu_i | (F_R|f)*g. Degree comparison forces
+the selected contact sum at most c+1. Above that sum the fixed-seed
+Jacobi space is zero and the full polynomial deformation space has
+dimension at most one. The specified actual-weight 33/57 profile needs
+at least 7320 high-contact agreement nodes; neither the profile nor its
+gate is automatic. Thirty-two contact expansions, six exact Jacobi
+matrices, and adjacent arithmetic boundary controls pass.
+
+Universal source divisibility does not automatically supply a polynomial
+deformation or turn this local rigidity into a bound on isolated solutions.
+The moving allowance and total excess 17138836560697490 remain unchanged.
+See `docs/kb/astra_selected_family_constraint-2026-09-05.md`.

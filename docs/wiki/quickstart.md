@@ -446,11 +446,32 @@ python3 -m pip install leanblueprint
   selected-family and source-divisor hypotheses. Run
   `python3 scripts/probes/astra_far_word_kernel_check.py` for the exact
   support arithmetic and independent contact/Hermite controls.
+  The [selected-graph Jacobi divisor](../kb/astra_selected_family_constraint-2026-09-05.md)
+  uses an actual high-agreement regular solution to obtain a deformation
+  constraint. Its rigidity gate does not count isolated solutions. Run
+  `python3 scripts/probes/astra_selected_family_constraint_check.py` for
+  the contact expansions, Jacobi matrices, and exact profile boundary.
   The [September 5 capacity-preprint audit](../kb/astra_capacity_finite_gates-2026-09-05.md)
   records why the external theorem's explicit constants and list bound do
   not certify this finite target. Run
   `python3 scripts/probes/astra_capacity_finite_gates_check.py` for the
   exact uniform parameter obstruction; this does not verify the external proof.
+  The [Hasse order-two rank formula](../kb/astra_hasse_order_two-2026-09-05.md)
+  gives a better fixed finite interpolation certificate inside the Johnson
+  regime, with a failing production control. Run
+  `python3 scripts/probes/astra_hasse_order_two_check.py` for its independent
+  local matrices and exact threshold comparison.
+  The [large-field interleaving transfer](../kb/astra_interleaved_projection-2026-09-05.md)
+  preserves scalar list budgets, and separately linear-observable image
+  budgets, when `binomial(B+1,2)<=q`. Both fixed profiles pass the arithmetic
+  gate; their needed scalar bounds remain open. Run
+  `python3 scripts/probes/astra_interleaved_projection_check.py` for the
+  field-size gates, separation controls, and small exact list maxima.
+  The [root-product operator obstruction](../kb/astra_mca_value_operator-2026-09-05.md)
+  shows that exact error-root products do not determine decoded values,
+  including on the production domain. Run
+  `python3 scripts/probes/astra_mca_value_operator_check.py` for the complete
+  bounded list and symmetry checks.
   The [native-count workflow](../../.github/workflows/proximity-native-count.yml)
   runs the separately pinned, bounded-tested native source on a standard
   public-repository Linux runner. It preserves computation receipts; it does

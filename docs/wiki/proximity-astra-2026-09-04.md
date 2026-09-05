@@ -59,6 +59,37 @@ operator has a squarefree minimal polynomial whose degree is exactly the
 number of distinct decoded values. Proving that degree at most n for every
 received word remains the unresolved quantitative step.
 
+The [large-field projection argument](../kb/astra_interleaved_projection-2026-09-05.md)
+now preserves an exact scalar list budget B under every positive interleaving
+arity when `binomial(B+1,2)<=q`. Both fixed field/budget profiles pass that
+gate. It also preserves a uniform bound on linear-observable images, such
+as omitted-point values, at the image level. This is a useful conditional
+transfer, not a proof of either underlying scalar bound. The elementary
+proof was independently reviewed and the finite projection/list controls pass;
+the full new theorem has not been Lean-checked.
+
+The [order-two Hasse calculation](../kb/astra_hasse_order_two-2026-09-05.md)
+provides an exact local-rank formula and a strict finite interpolation gain
+at length 64: the stated order-two box passes at 34 agreements, while all
+order-one slope caps with the fixed multiplicity and total cap first pass at
+35. This example is inside the Johnson regime. The same small box fails
+at companion production size, and supplies no decoded-list bound.
+
+An [exact root-product obstruction](../kb/astra_mca_value_operator-2026-09-05.md)
+also rules out identifying the decoded-value operator with a function of the
+error-root product. Actual production-domain witnesses have equal exact
+error products and distinct extrapolated values; the F17 control has three
+values while its product operator is scalar. A successful degree bound must
+use more than that cyclotomic identity.
+
+The [selected-graph Jacobi constraint](../kb/astra_selected_family_constraint-2026-09-05.md)
+adds an exact divisor: every nonzero fixed-seed polynomial deformation g
+forces the agreement contact locator to divide `(F_R|f)*g`. Thus contact
+sum greater than c+1 forces fixed-seed rigidity. In the stated 33/57
+profile this needs at least 7320 high-contact agreement nodes. That gate is
+not automatic, and rigidity does not count isolated solutions or reduce
+the companion budget excess.
+
 ## Revisions and environment
 
 * Original clone: `/Users/nubs/Git/arklib`, clean `main` at
@@ -66,7 +97,8 @@ received word remains the unresolved quantitative step.
 * Research worktree: `/Users/nubs/Git/arklib-proximity-astra`, local branch
   `codex/proximity-astra-20260904`, based on research commit
   `54007b004040a9cd0964dcb0a2413e86bc60ae8d`.
-* Both source branch heads were checked against the remote on 4 September.
+* Both source branch heads were rechecked against the remote on 5 September
+  and remain at the revisions above.
 * This Codex session's local metadata identifies `gpt-6-astra`, effort `ultra`.
 * On the user's explicit follow-up authorization, the initial research was
   committed and pushed as `335b4a0e1`. Reviewed remote contribution
