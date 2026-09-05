@@ -54,6 +54,13 @@ pass local Lean and the ArkLib job in
 [run 33991061321](https://github.com/lalalune/ArkLib/actions/runs/33991061321)
 against the actual MCA definition. This verifies the reduction; the value
 bound itself is still open.
+The [moment-rigidity argument](../kb/astra_mca_moment_rigidity-2026-09-05.md)
+now proves a restricted written bound of three candidates whenever the
+punctured received polynomial has degree at most 715827883. Simultaneous
+root-sum equations force agreement-set differences to be constant on four
+cosets at the actual production prime. A three-member construction attains
+the bound. Higher received degrees, independent review, and Lean
+formalization remain open; this does not prove the universal lower bound.
 An exact [monomial-minor certificate](../kb/astra_monomial_minor_norm-2026-09-05.md)
 excludes every monomial seed on mu16 over the production prime and classifies
 its exceptional characteristics. The complex Fourier nonvanishing theorem

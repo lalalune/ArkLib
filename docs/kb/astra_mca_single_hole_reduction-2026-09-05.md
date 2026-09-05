@@ -150,6 +150,12 @@ every a and every punctured received word v:
 ```
 
 A cap on the entire list L(v) would suffice but is stronger than (2).
+The [moment-rigidity argument](astra_mca_moment_rigidity-2026-09-05.md)
+now gives a written bound of three on that entire list when the punctured
+received polynomial has degree at most 715827883, and constructs a word
+attaining three distinct values. Its determinant proof uses many simultaneous
+root-sum equations at the actual prime. Higher received degrees remain open;
+this restricted result is not Lean-formalized or independently reviewed.
 The [exact locator formulation](astra_mca_single_hole_locator-2026-09-05.md)
 expresses the value image as a ratio of two linear functionals on locators
 that divide the punctured domain polynomial. It also proves that removing

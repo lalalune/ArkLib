@@ -168,6 +168,11 @@ degree R+s = b+s = 447392427 < k=536870912.
 
 This constructs three values, not an exhaustive production list. It does
 not assert that other locators for the constructed word lie in this pencil.
+For the special received word V=R*U_1*U_2, the subsequent
+[moment-rigidity proof](astra_mca_moment_rigidity-2026-09-05.md) does classify
+the full production list: it has exactly three members. That written result
+uses the received polynomial's degree bound and does not cover the arbitrary
+choices of received values on G permitted in the construction above.
 
 ## Excluding an order-sixteen cubic power-lift pattern
 

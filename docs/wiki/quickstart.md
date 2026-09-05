@@ -362,6 +362,12 @@ python3 -m pip install leanblueprint
   [single-hole equivalence](../kb/astra_mca_single_hole_reduction-2026-09-05.md)
   and the necessary value budget at the production predecessor. These use
   the ArkLib pin; they do not prove that budget for arbitrary received words.
+  Run `python3 scripts/probes/astra_mca_moment_rigidity_check.py` for the
+  [moment-rigidity controls](../kb/astra_mca_moment_rigidity-2026-09-05.md):
+  exhaustive small moment fibres, exact determinant checks, three-member
+  constructions, and all 28 production arithmetic gates. The general bound
+  for received polynomials of degree at most 715827883 is a written proof;
+  it is not Lean-formalized and leaves higher received degrees open.
   Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
   check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run
   `python3 scripts/probes/astra_mca_two_generator_probe.py` for the complete
