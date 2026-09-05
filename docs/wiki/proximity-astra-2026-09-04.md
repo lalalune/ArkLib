@@ -13,6 +13,14 @@ construction. Together with the written bridge this sharpens its threshold
 upper bound to `357913941/2^30`. The matching universal lower bound is open;
 this is a computational result, not a newly Lean-verified threshold theorem.
 
+The [four-deletion construction](../kb/astra_mca_four_delete-2026-09-05.md)
+now gives a written upper-bound argument without a production collision
+scan. Multiplying two smaller-degree generators by X separates all
+absent-core evaluations; a large-field projection produces n+4 actual
+MCA witnesses at radius `357913942/2^30`. This is one Hamming step weaker
+than the existing computational bound. Exact finite controls and production
+arithmetic pass; independent proof review and Lean formalization remain open.
+
 The [single-hole reduction](../kb/astra_mca_single_hole_reduction-2026-09-05.md)
 also identifies a necessary subproblem for the universal bound: controlling
 the distinct extrapolated values of a punctured RS list. Rational collinearity

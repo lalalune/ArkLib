@@ -323,6 +323,12 @@ python3 -m pip install leanblueprint
   [hosted production count](../kb/astra_mca_production_count-2026-09-05.md)
   establishes the required n+1 finite directions and a computational upper
   bound; the universal matching lower bound remains open.
+  The [four-deletion argument](../kb/astra_mca_four_delete-2026-09-05.md)
+  gives a scan-free written upper bound one Hamming step weaker, using
+  projectively distinct evaluations and a finite-field projection. Run
+  `python3 scripts/probes/astra_mca_four_delete_check.py` for its dense
+  finite witnesses, no-joint parity checks, and production arithmetic.
+  Independent proof review and Lean formalization remain open.
   Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
   check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run
   `python3 scripts/probes/astra_mca_two_generator_probe.py` for the complete

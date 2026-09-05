@@ -6,9 +6,14 @@ domain. It does **not** prove the required number of distinct cancellation
 directions at production length. A separately checked length-16 example
 has 18 actual MCA witnesses over the production prime.
 
-The [compact evaluator](astra_mca_twogen_lift_eval-2026-09-04.md) now gives
-explicit formulas for the production deletion and a partial count of
-268435460 distinct finite witnesses. The full required count remains open.
+The [compact evaluator](astra_mca_twogen_lift_eval-2026-09-04.md) gives
+explicit formulas for the production deletion. Its original partial count
+268435460 was superseded by the completed
+[hosted production count](astra_mca_production_count-2026-09-05.md) of at
+least 1073741825 distinct finite witnesses. An analytic collision proof
+and a Lean theorem for that bound remain open. The
+[four-deletion construction](astra_mca_four_delete-2026-09-05.md) avoids
+the scan at the cost of one additional Hamming error.
 The [anchor multiplicity filter](astra_mca_anchor_multiplicity-2026-09-04.md)
 explains why a balanced basis alone does not guarantee enough directions.
 

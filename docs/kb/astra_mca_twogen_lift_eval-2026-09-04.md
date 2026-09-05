@@ -4,8 +4,12 @@ The recursive balanced partition and its two-point deletion can be evaluated
 at `n=2^30` using fourteen rational summands per ordinary coordinate. The first
 deleted pair, exponents `0,1`, is admissible in the actual production field.
 Its four private directions are distinct and avoid the entire fourth-quarter
-image. These exact checks support the construction at production size, but
-**injectivity across all quarters remains unproved and unenumerated**.
+image. These exact checks support the construction at production size.
+The subsequent [hosted count](astra_mca_production_count-2026-09-05.md)
+enumerated the required directions and certified at least n+1 distinct
+finite witnesses. An analytic proof of that count and a Lean theorem
+remain open. The [four-deletion argument](astra_mca_four_delete-2026-09-05.md)
+avoids the collision enumeration at a radius one Hamming step weaker.
 
 The [two-generator bridge](astra_mca_two_generator_bridge-2026-09-04.md) proves the
 conversion from distinct residual directions into actual MCA witnesses; the
