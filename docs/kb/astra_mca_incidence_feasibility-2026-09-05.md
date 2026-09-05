@@ -173,6 +173,14 @@ private triples cannot have a common `X^2` or `X^4` power invariance. Either
 private ratio individually may still factor in this way; only the shared
 factor is excluded.
 
+The [private cubic normal form](astra_mca_private_cubic_surface-2026-09-05.md)
+uses this common one-dimensional span to write its generator as `D*R` and
+derive a depressed cubic identity. It forces a substantial but nonempty
+production degree range for R. A separate characteristic-zero elliptic
+example shows why bounded-degree coefficients alone do not bound the
+solution degree; the actual cyclotomic and saturation constraints remain
+essential.
+
 The elementary genus test also remains compatible. At production `b=2 mod3`,
 the flat-point branch contribution for the birational map is at least
 

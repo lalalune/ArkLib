@@ -17437,3 +17437,26 @@ relaxed values. This is a refutation of a relaxation-based shortcut, not an
 MCA counterexample. The general proof is written and not Lean-formalized.
 See `docs/kb/astra_mca_single_hole_locator-2026-09-05.md` and
 `scripts/probes/astra_mca_single_hole_locator_check.py`.
+
+## [astra-mca-private-cubic] quadratic coefficients do not bound section degree (2026-09-05)
+
+For a realized two-disjoint-triple configuration, the common locator-span
+generator is D*R. Centering the two private cubics gives R^2 | F^3-G^3.
+For m=2b-2>6 the difference is nonzero, and degree comparison forces
+ceil((m-4)/2)<=deg R<=m-2. Production therefore still permits
+178956968<=deg R<=357913938. Its two split cubics have nonzero linear
+coefficients because the production field's cube map is bijective.
+
+Separately, an explicit characteristic-zero cubic relation with coprime
+quadratic cofactors defines a smooth non-isotrivial elliptic family.
+Exact reductions at 11 and 17 certify a non-torsion section and a non-torsion
+difference from its quadratic conjugate. Standard cited elliptic-height
+theory then supplies primitive solutions of unbounded degree; no nonzero
+multiple descends through that particular quadratic base map. Thus the
+coefficient-degree argument alone cannot bound solutions. The family does
+not certify the prescribed private degrees, root splitting, full-map
+birationality, saturation, or cyclotomic product. The symbolic and finite
+checks pass, but the external height theorem and general normal-form proof
+are not Lean-formalized. See
+`docs/kb/astra_mca_private_cubic_surface-2026-09-05.md` and
+`scripts/probes/astra_mca_private_cubic_surface_check.py`.

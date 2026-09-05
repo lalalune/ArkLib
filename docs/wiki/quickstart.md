@@ -361,6 +361,13 @@ python3 -m pip install leanblueprint
   no common rational right factor. Run
   `python3 scripts/probes/astra_mca_incidence_feasibility_check.py` for the
   seven minimal fixtures and exact construction arithmetic.
+  The [private cubic normal form](../kb/astra_mca_private_cubic_surface-2026-09-05.md)
+  derives additional divisibilities and a nonempty production degree interval.
+  Its separate elliptic example rules out bounding solution degree from
+  coefficient degree alone. Run
+  `python3 scripts/probes/astra_mca_private_cubic_surface_check.py` for exact
+  identities and finite-order checks; the height argument cites standard
+  external theorems and does not establish the prize bound.
   The [locator consistency identities](../kb/astra_mca_six_locator_consistency-2026-09-04.md)
   force a three-dimensional polynomial span and a constant private-locator
   relation. The [cyclotomic locator constraints](../kb/astra_mca_cyclotomic_locator_constraints-2026-09-05.md)
