@@ -142,7 +142,7 @@ theorem augmented_root_degree (S H : Finset K) (hHS : H ⊆ S)
   classical
   have h := multiplicity_degree_bound S W (fun x => if x ∈ H then 2 else 1) hW (by
     intro x hx
-    dsimp only
+    change (X - C x) ^ (if x ∈ H then 2 else 1) ∣ W
     split_ifs with hxH
     · exact hH x hxH
     · simpa using hS x hx)
@@ -350,7 +350,9 @@ theorem production_algebraic_solution (S H : Finset K) (hHS : H ⊆ S)
     · rw [← hagree x hx]
       exact X_sub_C_dvd_sub_C_eval
     · exact hc.constant x (hHS hx)
-    · simpa [C_mul] using hc.r x (hHS hx)
+    · have hC : C (2 * v x) = 2 * C (v x) := by
+        rw [two_mul, map_add, two_mul]
+      simpa only [mul_zero, zero_add, hC] using hc.r x (hHS hx)
     · simpa using hc.rr x (hHS hx)
   have hlow := multiplicity_degree_bound H (a + b * f + c * f ^ 2) (fun _ => m) hW hlocal
   simp only [Finset.sum_const, smul_eq_mul] at hlow
