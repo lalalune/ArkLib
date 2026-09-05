@@ -245,6 +245,13 @@ pairs and computes the exact production values. The all-multiplicity
 exclusion is the elementary calculation above, not an extrapolation from
 the grid. This audit is not Lean-formalized.
 
+The subsequent [Riccati contact obstruction](astra_riccati_contact_obstruction-2026-09-05.md)
+is stronger for the shape a_0(X)+a_1(X)Y+a_2(X)Y^2+d_1(X)R. Its derivative
+coefficient must vanish at production for every multiplicity, regardless
+of source-space restrictions or received-word-specific rank dependencies.
+The local divisibility and production degree argument are Lean-checked.
+This does not cover YR or R^2 terms, or a different interpolation method.
+
 ## Checks and limitations
 
 Run `python3 scripts/probes/astra_scalar_tail_split_check.py`.

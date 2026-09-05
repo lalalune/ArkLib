@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Compile the production construction and its direct proof dependencies.
+# Compile the production construction, dependencies, and Mathlib-only obstruction checks.
 # Run from a Lake project with the matching pinned Mathlib imports cached.
 set -euo pipefail
 
@@ -14,8 +14,9 @@ rows_module="scripts/probes/astra_mca_residual_rows"
 evaluations_module="scripts/probes/astra_mca_evaluations"
 projection_module="scripts/probes/astra_mca_scalar_projection"
 production_module="scripts/probes/astra_mca_production_basis"
+riccati_module="scripts/probes/astra_riccati_contact_obstruction"
 
-for module in "$prime_module" "$basis_module" "$rows_module" "$evaluations_module" "$projection_module" "$production_module"; do
+for module in "$prime_module" "$basis_module" "$rows_module" "$evaluations_module" "$projection_module" "$production_module" "$riccati_module"; do
   python3 "$repo_root/scripts/forbidden_tokens.py" "$repo_root/$module.lean"
 done
 
@@ -23,7 +24,7 @@ mkdir -p "$mca_build_root/$(dirname "$prime_module")" "$mca_build_root/$(dirname
 lake env lean --root="$repo_root" -o "$mca_build_root/$prime_module.olean" "$repo_root/$prime_module.lean"
 lake env lean --root="$repo_root" -o "$mca_build_root/$basis_module.olean" "$repo_root/$basis_module.lean"
 
-lake env python3 - "$mca_build_root" "$repo_root" "$rows_module" "$evaluations_module" "$projection_module" "$production_module" <<'PY'
+lake env python3 - "$mca_build_root" "$repo_root" "$rows_module" "$evaluations_module" "$projection_module" "$production_module" "$riccati_module" <<'PY'
 import os
 import subprocess
 import sys

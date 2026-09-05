@@ -19,6 +19,7 @@ on:
       - "scripts/probes/astra_mca_kkh26_upper.lean"
       - "scripts/probes/astra_mca_single_hole.lean"
       - "scripts/probes/astra_mca_production_basis.lean"
+      - "scripts/probes/astra_riccati_contact_obstruction.lean"
       - "scripts/check-mca-production-basis.sh"
       - "scripts/check-mca-event-bridge.sh"
       - "ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PrizeShapePrimeP30.lean"
@@ -150,6 +151,11 @@ jobs:
               "power_domain_card", "power_domain_roots", "production_deleted_basis",
               "production_residual_rows", "production_projection_arithmetic",
               "production_moment_curve_arithmetic", "production_scalar_projection")]
+          expected += ["AstraRiccatiContactObstruction." + name for name in (
+              "riccati_contact_expansion", "local_derivative_divisibility",
+              "global_derivative_divisibility", "forced_divisor_degree",
+              "production_degree_gap", "production_derivative_zero",
+              "quadratic_coefficients_zero_of_three", "production_riccati_zero_of_three")]
           if os.environ["CHECK_MCA_EVENT"] == "true":
               expected += ["AstraMcaEventBridge." + name for name in (
                   "mca_event_from_polynomial_support", "mca_event_of_core_insert")]

@@ -75,6 +75,13 @@ the polynomial construction is written and checked at small orders.
 Separately, a complete 930930-pair affine-line census bounds the entire
 degree-twelve list at order 16 over P by one, including a variable extra
 root. Neither result bounds the number of production outside-factor fibres.
+The [Riccati contact obstruction](../kb/astra_riccati_contact_obstruction-2026-09-05.md)
+tests a route to counting the whole scalar list directly. Eight local Lean
+reports verify that its derivative coefficient is forced to zero at every
+positive contact multiplicity under the production weighted-degree cap.
+A 61-column order-16 kernel provides an exact boundary control where a
+derivative term does survive. Generalized equations with YR or R^2 remain
+outside this obstruction; no universal lower bound is supplied.
 An exact [monomial-minor certificate](../kb/astra_monomial_minor_norm-2026-09-05.md)
 excludes every monomial seed on mu16 over the production prime and classifies
 its exceptional characteristics. The complex Fourier nonvanishing theorem

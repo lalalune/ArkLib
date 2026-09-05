@@ -381,6 +381,12 @@ python3 -m pip install leanblueprint
   four fields, and a production construction of two candidates with coprime
   outside factors. The latter's eight possible-domain-root checks pass;
   this is not an over-budget example or a bound on all production factors.
+  The construction helper also checks eight
+  [Riccati contact obstruction lemmas](../kb/astra_riccati_contact_obstruction-2026-09-05.md)
+  on both pins. Run `python3 scripts/probes/astra_riccati_contact_check.py`
+  for its exact boundary kernels and degree controls. The Lean result forces
+  the derivative coefficient to zero for every production contact order in
+  this specific shape; it leaves equations containing YR or R^2 open.
   Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
   check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run
   `python3 scripts/probes/astra_mca_two_generator_probe.py` for the complete

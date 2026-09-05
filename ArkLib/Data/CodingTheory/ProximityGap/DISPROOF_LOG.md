@@ -53921,3 +53921,27 @@ nonconstant outside divisor. It does not refute a bound on the number of
 different fibres: the construction supplies only two candidates. The
 production argument is written, not Lean-formalized or independently
 reviewed, and the universal lower bound remains open.
+
+---
+
+### Riccati contact forces the derivative coefficient to zero at every multiplicity (2026-09-05)
+
+The [Riccati contact audit](../../../../docs/kb/astra_riccati_contact_obstruction-2026-09-05.md)
+extracts the pure-R and pure-z conditions for
+Q=a_0(X)+a_1(X)Y+a_2(X)Y^2+d_1(X)R. They force the domain locator to power
+max(1,m-1) to divide d_1. At N=1073741823, w=536870911 and A=715827883,
+this has strictly larger degree than the permitted mA-w for every m>0.
+Eight local Lean reports, with only the standard allowed axioms, verify
+the expansion, local/global divisibility, exact degree gap, d_1=0 and the
+zero-source conclusion when three distinct polynomial solutions are supplied.
+
+Unlike a negative dimension surplus, this excludes a derivative term in
+every source of this four-term shape satisfying these contacts and degree
+cap, even with word-specific dependencies or arbitrary subspace choices.
+At the boundary b=3 the 61-column order-16 contact map has rank 60 and a
+kernel with d_1 equal to the degree-15 domain locator; the strict production
+gap is essential. A b=4 control retains ten algebraic kernel dimensions,
+all with d_1=0, so the result does not assert universal kernel triviality.
+Equations with YR, R^2, or different interpolation conditions are not
+excluded. The written general Riccati solution-count argument is not
+Lean-formalized, and no prize threshold is improved.
