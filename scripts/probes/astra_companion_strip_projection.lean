@@ -84,7 +84,8 @@ theorem mem_low_of_strip_zero (D delta w T Y S : ℕ)
       ⟨⟨d 3, hz⟩, ⟨d 0-(D-delta-w*d 1-(w-1)*d 2), hx⟩⟩⟩⟩
   have he : exponent D delta w c = d := by
     ext i
-    fin_cases i <;> (simp [exponent, c]; omega)
+    fin_cases i <;> simp [exponent, c]
+    omega
   have hc := congrFun hzero c
   have hcoeff : MvPolynomial.coeff d P = 0 := by
     simpa only [stripMap_apply, he, Pi.zero_apply] using hc
