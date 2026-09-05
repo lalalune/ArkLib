@@ -1,19 +1,62 @@
-# Lean-checked algebra and anchor selection for the MCA basis
+# Lean-checked construction of the MCA polynomial basis
 
-Twenty-two supporting theorems for the
+Thirty-one supporting theorems for the
 [four-deletion construction](astra_mca_four_delete-2026-09-05.md) now pass
 local Lean 4.30.0-rc2 with the repository's exact Mathlib pin. They verify
-the initial determinant algebra, cofactor independence, fixed-anchor
-selection, and two consecutive deletion pairs preserving the complete
-polynomial basis data. **The complete production construction
-and threshold theorem are not yet formalized.** The production upper bound
-remains a written result; the matching universal lower bound remains open.
+the complete polynomial basis construction from a root domain: fourth-root
+parameters, the balanced quarter partition, interpolation, the determinant,
+and two consecutive deletion pairs. **The MCA witnesses and threshold
+theorem are not yet formalized for this construction.** The production
+upper bound remains a written result; the matching universal lower bound
+remains open.
 
 The source is
 [`astra_mca_polynomial_basis.lean`](../../scripts/probes/astra_mca_polynomial_basis.lean).
 It imports only the needed polynomial and ring-tactic modules. The existing
 [two-version auxiliary workflow](../../.github/workflows/proximity-strip-proof.yml)
-now includes all twenty-two declarations and checks their explicit axiom reports.
+now includes all thirty-one declarations and checks their explicit axiom reports.
+
+## The assembled root-domain theorem
+
+`production_deleted_basis_from_roots` has exactly these mathematical
+inputs: a field F, a finite set Omega with 1073741824 elements, and
+`x^1073741824=1` at every point of Omega. It proves existence of A, B, S
+and I with
+
+```text
+A union B union S union I = Omega,
+A, B, S pairwise disjoint; I disjoint from their union,
+card A=card B=357913939,
+card S=357913942, card I=4,
+PairRegionBasis A B S 536870910.
+```
+
+The last line contains four constructed polynomials with the required
+roots and pair agreements, degree at most `k-2`, and determinant equal
+to a nonzero scalar times the locator of A union B union S. This is the
+polynomial input needed for the later four-generator MCA argument.
+The field may be finite or infinite; only Omega is required to be finite.
+
+`exists_fourth_root_parameters` constructs i and j from the domain.
+If all its points satisfied `x^(2m)=1`, a root bound would give at most
+2m points, contradicting its size 4m. A point outside that smaller root
+set supplies `i=x^m`, with `i*i=-1`, and `j=(1-i)^(-1)`.
+
+`exists_balanced_quarter_partition` proves that the four fibers of
+`x -> x^m`, at `1,i,-1,-i`, each contain m points. The fibers are
+disjoint, each has at most m points, and they cover all 4m points.
+For `m=3q+1`, splitting the fourth fiber into q, q and q+1 points gives
+the initial A, B, S sizes `m+q,m+q,m+q+1`. Production uses
+`m=268435456` and `q=89478485`.
+
+`interpolate_power_fiber` constructs the required H by Lagrange
+interpolation. Its assigned fourth-fiber values are i, j*j and zero.
+The checked coefficient identities imply `2*j*j=i`, so j*j supplies
+the prescribed i/2 value directly. `initial_basis_from_interpolant`
+checks the displayed polynomial formulas, all pair agreements, degree
+bounds and determinant; `initial_basis_of_quarter_partition` supplies
+H automatically. The existing deletion assembly then constructs I and
+the reduced basis.
 
 ## What the formal statements establish
 
@@ -157,16 +200,17 @@ Output: A' subset A, B' subset B,
         PairRegionBasis A' B' S 536870910.
 ```
 
-This is a kernel-checked transformation of supplied initial data. The
-existence of that initial production basis is still not proved by the
-file, and this implication is not a production threshold theorem.
+This theorem is a transformation of supplied initial data. The newer
+`production_deleted_basis_from_roots` also constructs those initial data
+from the domain hypotheses, using the interpolation and partition results.
+Neither statement is a production threshold theorem.
 
 ## Remaining assembly
 
-The Lean file does not yet construct H with its prescribed values or
-instantiate the initial degree and pair-region data. Given those data,
-the deletion theorem now supplies both consecutive deletion pairs.
-The four evaluation functionals, finite-field ratio selection, actual
+The root-domain theorem still needs to be instantiated with the existing
+production field and root certificate, including the representation of
+the evaluation domain in the actual Reed-Solomon code. The four evaluation
+functionals, finite-field ratio selection, actual
 same-support MCA witnesses, probability bound and threshold ledger also
 remain to be connected. Existing repository lemmas cover parts of that
 later chain, including
@@ -195,10 +239,18 @@ From a matching Mathlib environment, run:
 lake env lean /absolute/path/to/arklib/scripts/probes/astra_mca_polynomial_basis.lean
 ```
 
-The local audit requires all twenty-two named reports, rejects compiler errors,
+The local audit requires all thirty-one named reports, rejects compiler errors,
 warnings and `sorryAx`, and permits only `propext`, `Classical.choice`, and
 `Quot.sound`. The arithmetic theorem uses no axioms. Cross-version CI status
 is recorded separately once its run completes. The earlier eighteen-theorem
 revision `8a8f40fc812039d22151922f15c087cd5d1e5ea8` passed both versions in
 [run 33986904416](https://github.com/lalalune/ArkLib/actions/runs/33986904416);
-that run does not verify the four subsequent assembly theorems.
+that run does not verify subsequent assembly theorems.
+
+The twenty-two-theorem revision `3c7470b6ae268279832bffc310bcefb90f4c188a`
+compiled in both jobs, but the companion job of
+[run 33987181911](https://github.com/lalalune/ArkLib/actions/runs/33987181911)
+failed the warning audit because Mathlib renamed a locator-degree lemma.
+The current source calculates that degree directly by induction, preserving
+the strict warning check. A later CI run is needed to verify that repair
+and the nine new construction theorems on the companion pin.

@@ -330,8 +330,8 @@ python3 -m pip install leanblueprint
   finite witnesses, no-joint parity checks, and production arithmetic.
   Independent proof review and Lean formalization remain open.
   Its [supporting polynomial algebra](../kb/astra_mca_polynomial_basis-2026-09-05.md)
-  now checks twenty-two theorems locally against the exact Mathlib pin,
-  including two successive deletions preserving the complete basis data. Run
+  now checks thirty-one theorems locally against the exact Mathlib pin,
+  constructing the complete polynomial basis from the root-domain hypotheses. Run
   `lake env lean scripts/probes/astra_mca_polynomial_basis.lean` from an
   environment with those imports cached; a matching standalone Mathlib
   checkout can use the absolute proof path. The full threshold assembly

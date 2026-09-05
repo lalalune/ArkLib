@@ -20,11 +20,12 @@ absent-core evaluations; a large-field projection produces n+4 actual
 MCA witnesses at radius `357913942/2^30`. This is one Hamming step weaker
 than the existing computational bound. Exact finite controls and production
 arithmetic pass; independent proof review and Lean formalization remain open.
-Twenty-two [supporting polynomial theorems](../kb/astra_mca_polynomial_basis-2026-09-05.md)
-now pass local Lean 4.30.0-rc2, including fixed-anchor selection, its
-quantitative root bound, and two consecutive deletion pairs preserving the
-complete basis data. The initial production basis and threshold
-theorem still require assembly; these checks do not close the universal floor.
+Thirty-one [supporting polynomial theorems](../kb/astra_mca_polynomial_basis-2026-09-05.md)
+now pass local Lean 4.30.0-rc2. They construct the complete polynomial basis
+from a domain of 2^30 distinct 2^30-th roots, including the partition,
+interpolation and both deletion pairs. The actual code-domain instantiation,
+MCA witnesses and threshold theorem still require assembly; these checks
+do not close the universal floor.
 
 The [single-hole reduction](../kb/astra_mca_single_hole_reduction-2026-09-05.md)
 also identifies a necessary subproblem for the universal bound: controlling

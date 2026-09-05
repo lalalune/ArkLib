@@ -7,14 +7,16 @@ Authors: ArkLib Contributors
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.LinearAlgebra.Lagrange
 import Mathlib.Tactic.Ring
 
 /-!
 # Polynomial algebra for the four-deletion MCA construction
 
-The initial determinant identity, constant changes of basis, cofactor
-independence, fixed-anchor selection, and two successive deletion pairs
-preserving the complete polynomial basis data are formalized here.
+The full polynomial basis construction from root-domain data is formalized
+here: fourth-root parameters, a balanced quarter partition, interpolation,
+the initial determinant, and two successive deletion pairs preserving the
+complete polynomial basis data.
 See docs/kb/astra_mca_polynomial_basis-2026-09-05.md for their place in the
 construction and the remaining assembly. No threshold theorem or complete
 production construction is asserted by this file.
@@ -205,6 +207,19 @@ section Deletion
 variable {F : Type*} [Field F] [DecidableEq F]
 
 open scoped BigOperators
+
+/-- A version-independent degree calculation for the finite locator. -/
+private theorem locator_degree (S : Finset F) :
+    (∏ x ∈ S, (X - C x : F[X])).natDegree = S.card := by
+  induction S using Finset.induction_on with
+  | empty => simp
+  | @insert x S hx ih =>
+    have hne : (∏ y ∈ S, (X - C y : F[X])) ≠ 0 :=
+      (Polynomial.monic_prod_X_sub_C id S).ne_zero
+    rw [Finset.prod_insert hx,
+      Polynomial.natDegree_mul (Polynomial.X_sub_C_ne_zero x) hne,
+      Polynomial.natDegree_X_sub_C, ih, Finset.card_insert_of_notMem hx]
+    omega
 
 /-- A scaled locator of distinct points has a simple root at every listed point. -/
 theorem simple_locator_derivative (S : Finset F) (c x : F)
@@ -412,7 +427,7 @@ theorem cofactor_of_agreement (f g : F[X]) (S : Finset F) (D : ℕ)
     rw [hexact]
     ring
   · rw [Polynomial.natDegree_divByMonic _ hmonic]
-    have hL : L.natDegree = S.card := Polynomial.natDegree_finset_prod_X_sub_C_eq_card S id
+    have hL : L.natDegree = S.card := locator_degree S
     rw [hL]
     exact Nat.sub_le_sub_right ((Polynomial.natDegree_sub_le _ _).trans (max_le hf hg)) S.card
 
@@ -569,6 +584,439 @@ theorem production_basis_after_four_deletions (A B S : Finset F)
 
 end BasisAssembly
 
+section InitialBasis
+
+variable {F : Type*} [Field F] [DecidableEq F]
+
+open scoped BigOperators
+
+omit [DecidableEq F] in
+/-- The inverse of 1-i has the two identities needed for the fourth-quarter values. -/
+theorem initial_coefficient_relations (i j : F) (hi : i * i = -1) (hj : j * (1 - i) = 1) :
+    j * (1 + i) = i ∧ 2 * j = 1 + i := by
+  have hfactor : i * (1 - i) = 1 + i := by
+    calc
+      _ = i - i * i := by ring
+      _ = _ := by rw [hi]; ring
+  have hplus : j * (1 + i) = i := by
+    calc
+      _ = j * (i * (1 - i)) := by rw [hfactor]
+      _ = i * (j * (1 - i)) := by ring
+      _ = i := by rw [hj, mul_one]
+  refine ⟨hplus, ?_⟩
+  calc
+    _ = j * (1 - i) + j * (1 + i) := by ring
+    _ = 1 + i := by rw [hj, hplus]
+
+/-- A domain consisting of n distinct n-th roots has locator X^n-1. -/
+theorem locator_eq_X_pow_sub_one (Ω : Finset F) (n : ℕ) (hn : 0 < n)
+    (hcard : Ω.card = n) (hroots : ∀ x ∈ Ω, x ^ n = 1) :
+    (∏ x ∈ Ω, (X - C x)) = (X : F[X]) ^ n - 1 := by
+  let p : F[X] := X ^ n - 1
+  have hpdeg : p.natDegree = n := by
+    change (X ^ n - 1 : F[X]).natDegree = n
+    simpa only [map_one] using (Polynomial.natDegree_X_pow_sub_C (n := n) (r := (1 : F)))
+  obtain ⟨w, hw, _⟩ := cofactor_of_agreement p 0 Ω n
+    (fun x hx => by simp [p, hroots x hx]) hpdeg.le (by simp)
+  have hdiv : (∏ x ∈ Ω, (X - C x)) ∣ p := ⟨w, by simpa using hw⟩
+  have hpmonic : p.Monic := by
+    simpa only [p, map_one] using (Polynomial.monic_X_pow_sub_C (1 : F) (Nat.ne_of_gt hn))
+  have hdegree : p.natDegree ≤ (∏ x ∈ Ω, (X - C x : F[X])).natDegree := by
+    simp only [hpdeg, locator_degree, hcard, le_refl]
+  have heq := Polynomial.eq_of_monic_of_dvd_of_natDegree_le
+    (Polynomial.monic_prod_X_sub_C id Ω) hpmonic hdiv hdegree
+  exact heq.symm
+
+private theorem power_fiber_card_le (Q : Finset F) (m : ℕ) (a : F)
+    (hm : 0 < m) (hQ : ∀ x ∈ Q, x ^ m = a) : Q.card ≤ m := by
+  let p : F[X] := X ^ m - C a
+  have hpne : p ≠ 0 := Polynomial.X_pow_sub_C_ne_zero hm a
+  calc
+    _ ≤ p.roots.toFinset.card := Finset.card_le_card (by
+      intro x hx
+      exact Multiset.mem_toFinset.mpr ((Polynomial.mem_roots hpne).mpr (by simp [p, hQ x hx])))
+    _ ≤ p.roots.card := Multiset.toFinset_card_le _
+    _ ≤ p.natDegree := Polynomial.card_roots' p
+    _ = m := Polynomial.natDegree_X_pow_sub_C
+
+/-- Values on any finite subset of a power fiber admit an interpolant of degree at most m. -/
+theorem interpolate_power_fiber (Q : Finset F) (m : ℕ) (a : F) (values : F → F)
+    (hm : 0 < m) (hQ : ∀ x ∈ Q, x ^ m = a) :
+    ∃ H : F[X], H.natDegree ≤ m ∧ ∀ x ∈ Q, H.eval x = values x := by
+  have hcard := power_fiber_card_le Q m a hm hQ
+  let H := Lagrange.interpolate Q id values
+  have hid : Set.InjOn (id : F → F) Q := fun _ _ _ _ h => h
+  refine ⟨H, ?_, ?_⟩
+  · exact (Polynomial.natDegree_le_of_degree_le (Lagrange.degree_interpolate_le values hid)).trans
+      ((Nat.sub_le _ _).trans hcard)
+  · intro x hx
+    exact Lagrange.eval_interpolate_at_node values hid hx
+
+/-- The explicit interpolated formulas supply the initial polynomial basis. -/
+theorem initial_basis_from_interpolant (A B S : Finset F) (m : ℕ) (i j : F) (H : F[X])
+    (hm : 0 < m) (hi : i * i = -1) (hj : j * (1 - i) = 1)
+    (hH : H.natDegree ≤ m) (hcard : (A ∪ B ∪ S).card = 4 * m)
+    (hA : ∀ x ∈ A, x ^ m = 1 ∨ (x ^ m = -i ∧ H.eval x = i))
+    (hB : ∀ x ∈ B, x ^ m = i ∨ (x ^ m = -i ∧ 2 * H.eval x = i))
+    (hS : ∀ x ∈ S, x ^ m = -1 ∨ (x ^ m = -i ∧ H.eval x = 0)) :
+    Nonempty (PairRegionBasis A B S (2 * m)) := by
+  obtain ⟨hplus, htwo⟩ := initial_coefficient_relations i j hi hj
+  let T : F[X] := X ^ m
+  let f₀ : F[X] := (T - 1) * (C j * (T - C i) + C (1 + i) * H)
+  let f₁ : F[X] := (T - 1) * C (1 + i) * (T + C i)
+  let g₀ : F[X] := -(T - C i) * (C j * (1 - T) - C 2 * H)
+  let g₁ : F[X] := C 2 * (T - C i) * (T + C i)
+  have hT : T.natDegree ≤ m := Polynomial.natDegree_X_pow_le m
+  have hsub (a : F) : (T - C a).natDegree ≤ m :=
+    (Polynomial.natDegree_sub_le _ _).trans (max_le hT (by simp))
+  have hadd (a : F) : (T + C a).natDegree ≤ m :=
+    (Polynomial.natDegree_add_le _ _).trans (max_le hT (by simp))
+  have hone : (T - 1).natDegree ≤ m := by simpa only [map_one] using hsub 1
+  have hrev : (1 - T).natDegree ≤ m :=
+    (Polynomial.natDegree_sub_le _ _).trans (max_le (by simp) hT)
+  have hcmul (a : F) (p : F[X]) (hp : p.natDegree ≤ m) : (C a * p).natDegree ≤ m := by
+    exact (Polynomial.natDegree_mul_le).trans (by simpa only [Polynomial.natDegree_C, zero_add] using hp)
+  have hmul (p q : F[X]) (hp : p.natDegree ≤ m) (hq : q.natDegree ≤ m) :
+      (p * q).natDegree ≤ 2 * m := Polynomial.natDegree_mul_le.trans (by omega)
+  have hfinner : (C j * (T - C i) + C (1 + i) * H).natDegree ≤ m :=
+    (Polynomial.natDegree_add_le _ _).trans (max_le (hcmul j _ (hsub i)) (hcmul (1 + i) H hH))
+  have hginner : (C j * (1 - T) - C 2 * H).natDegree ≤ m :=
+    (Polynomial.natDegree_sub_le _ _).trans (max_le (hcmul j _ hrev) (hcmul 2 H hH))
+  have hfdegree : f₀.natDegree ≤ 2 * m := hmul _ _ hone hfinner
+  have hfdegree₁ : f₁.natDegree ≤ 2 * m :=
+    hmul _ _ (by simpa only [mul_comm (T - 1)] using hcmul (1 + i) _ hone) (hadd i)
+  have hgdegree : g₀.natDegree ≤ 2 * m :=
+    hmul _ _ (by simpa only [Polynomial.natDegree_neg] using hsub i) hginner
+  have hgdegree₁ : g₁.natDegree ≤ 2 * m := hmul _ _ (hcmul 2 _ (hsub i)) (hadd i)
+  have hip : C i * C i = (-1 : F[X]) := by
+    simpa only [map_mul, map_neg, map_one] using congrArg (C : F → F[X]) hi
+  have hjp : C j * (1 - C i) = (1 : F[X]) := by
+    simpa only [map_mul, map_sub, map_one] using congrArg (C : F → F[X]) hj
+  have hdet : f₀ * g₁ - f₁ * g₀ = T ^ 4 - 1 := by
+    simpa only [f₀, f₁, g₀, g₁, map_add, map_one, map_ofNat] using
+      initial_determinant T H (C i) (C j) hip hjp
+  have hi4 : i ^ 4 = 1 := by
+    calc
+      _ = (i * i) * (i * i) := by ring
+      _ = 1 := by rw [hi]; ring
+  have hneg4 : (-i) ^ 4 = 1 := by
+    calc
+      _ = i ^ 4 := by ring
+      _ = 1 := hi4
+  have hvalues (t : F) (ht : t = 1 ∨ t = i ∨ t = -1 ∨ t = -i) : t ^ 4 = 1 := by
+    rcases ht with rfl | rfl | rfl | rfl
+    · norm_num
+    · exact hi4
+    · norm_num
+    · exact hneg4
+  have hroots (x : F) (hx : x ∈ A ∪ B ∪ S) : x ^ (4 * m) = 1 := by
+    rw [Nat.mul_comm 4 m, pow_mul]
+    apply hvalues
+    rcases Finset.mem_union.mp hx with hx | hx
+    · rcases Finset.mem_union.mp hx with hx | hx
+      · rcases hA x hx with h | ⟨h, _⟩
+        · exact Or.inl h
+        · exact Or.inr (Or.inr (Or.inr h))
+      · rcases hB x hx with h | ⟨h, _⟩
+        · exact Or.inr (Or.inl h)
+        · exact Or.inr (Or.inr (Or.inr h))
+    · rcases hS x hx with h | ⟨h, _⟩
+      · exact Or.inr (Or.inr (Or.inl h))
+      · exact Or.inr (Or.inr (Or.inr h))
+  have hlocator := locator_eq_X_pow_sub_one (A ∪ B ∪ S) (4 * m) (by omega) hcard hroots
+  have hfquarter : ((-i) - 1) * (j * ((-i) - i) + (1 + i) * i) = 0 := by
+    calc
+      _ = ((-i) - 1) * (((1 + i) - 2 * j) * i) := by ring
+      _ = 0 := by rw [htwo, sub_self, zero_mul, mul_zero]
+  have hgquarter (h : F) (hh : 2 * h = i) :
+      -((-i) - i) * (j * (1 - (-i)) - 2 * h) = 0 := by
+    have hhj : j * (1 - (-i)) = i := by simpa only [sub_neg_eq_add] using hplus
+    rw [hhj, hh, sub_self, mul_zero]
+  refine ⟨{
+    f₀ := f₀, f₁ := f₁, g₀ := g₀, g₁ := g₁, scale := 1
+    scale_ne_zero := one_ne_zero
+    f_roots := ?_, g_roots := ?_, agrees := ?_
+    degree_f₀ := hfdegree, degree_f₁ := hfdegree₁
+    degree_g₀ := hgdegree, degree_g₁ := hgdegree₁
+    determinant := ?_ }⟩
+  · intro x hx
+    rcases hA x hx with hv | ⟨hv, hh⟩
+    · simp [f₀, f₁, T, hv]
+    · constructor
+      · simpa [f₀, T, hv, hh] using hfquarter
+      · simp [f₁, T, hv]
+  · intro x hx
+    rcases hB x hx with hv | ⟨hv, hh⟩
+    · simp [g₀, g₁, T, hv]
+    · constructor
+      · simpa only [g₀, T, Polynomial.eval_mul, Polynomial.eval_neg, Polynomial.eval_sub,
+          Polynomial.eval_pow, Polynomial.eval_X, Polynomial.eval_C, Polynomial.eval_one, hv]
+          using hgquarter (H.eval x) hh
+      · simp [g₁, T, hv]
+  · intro x hx
+    rcases hS x hx with hv | ⟨hv, hh⟩
+    · constructor
+      · simp [f₀, g₀, T, hv]
+        ring
+      · simp only [f₁, g₁, T, Polynomial.eval_mul, Polynomial.eval_sub, Polynomial.eval_add,
+          Polynomial.eval_pow, Polynomial.eval_X, Polynomial.eval_C, Polynomial.eval_one, hv]
+        ring
+    · constructor
+      · simp [f₀, g₀, T, hv, hh]
+        ring
+      · simp [f₁, g₁, T, hv]
+  · rw [hdet, hlocator]
+    simp only [T, ← pow_mul, Nat.mul_comm m 4, map_one, one_mul]
+
+/-- A prescribed partition among the four power fibers admits the explicit initial basis. -/
+theorem initial_basis_of_quarter_partition (A B S : Finset F) (m : ℕ) (i j : F)
+    (hm : 0 < m) (hi : i * i = -1) (hj : j * (1 - i) = 1)
+    (hAB : Disjoint A B) (hAS : Disjoint A S) (hBS : Disjoint B S)
+    (hcard : (A ∪ B ∪ S).card = 4 * m)
+    (hA : ∀ x ∈ A, x ^ m = 1 ∨ x ^ m = -i)
+    (hB : ∀ x ∈ B, x ^ m = i ∨ x ^ m = -i)
+    (hS : ∀ x ∈ S, x ^ m = -1 ∨ x ^ m = -i) :
+    Nonempty (PairRegionBasis A B S (2 * m)) := by
+  let Q := (A ∪ B ∪ S).filter fun x => x ^ m = -i
+  let values : F → F := fun x => if x ∈ A then i else if x ∈ B then j * j else 0
+  obtain ⟨H, hH, hvalues⟩ := interpolate_power_fiber Q m (-i) values hm
+    (fun x hx => (Finset.mem_filter.mp hx).2)
+  obtain ⟨hplus, htwo⟩ := initial_coefficient_relations i j hi hj
+  have hhalf : 2 * (j * j) = i := by
+    calc
+      _ = (2 * j) * j := by ring
+      _ = (1 + i) * j := by rw [htwo]
+      _ = i := by rw [mul_comm]; exact hplus
+  apply initial_basis_from_interpolant A B S m i j H hm hi hj hH hcard
+  · intro x hx
+    rcases hA x hx with hv | hv
+    · exact Or.inl hv
+    · refine Or.inr ⟨hv, ?_⟩
+      have hxQ : x ∈ Q := Finset.mem_filter.mpr
+        ⟨Finset.mem_union_left S (Finset.mem_union_left B hx), hv⟩
+      rw [hvalues x hxQ]
+      simp only [values, if_pos hx]
+  · intro x hx
+    rcases hB x hx with hv | hv
+    · exact Or.inl hv
+    · refine Or.inr ⟨hv, ?_⟩
+      have hxQ : x ∈ Q := Finset.mem_filter.mpr
+        ⟨Finset.mem_union_left S (Finset.mem_union_right A hx), hv⟩
+      have hxA : x ∉ A := fun h => Finset.disjoint_left.mp hAB h hx
+      rw [hvalues x hxQ]
+      simpa only [values, if_neg hxA, if_pos hx] using hhalf
+  · intro x hx
+    rcases hS x hx with hv | hv
+    · exact Or.inl hv
+    · refine Or.inr ⟨hv, ?_⟩
+      have hxQ : x ∈ Q := Finset.mem_filter.mpr ⟨Finset.mem_union_right (A ∪ B) hx, hv⟩
+      have hxA : x ∉ A := fun h => Finset.disjoint_left.mp hAS h hx
+      have hxB : x ∉ B := fun h => Finset.disjoint_left.mp hBS h hx
+      rw [hvalues x hxQ]
+      simp only [values, if_neg hxA, if_neg hxB]
+
+/-- A production-sized quarter partition supplies the constructed and four-deleted basis. -/
+theorem production_deleted_basis_of_quarter_partition (A B S : Finset F) (i j : F)
+    (hi : i * i = -1) (hj : j * (1 - i) = 1)
+    (hAB : Disjoint A B) (hAS : Disjoint A S) (hBS : Disjoint B S)
+    (hAcard : A.card = 357913941) (hBcard : B.card = 357913941) (hScard : S.card = 357913942)
+    (hA : ∀ x ∈ A, x ^ 268435456 = 1 ∨ x ^ 268435456 = -i)
+    (hB : ∀ x ∈ B, x ^ 268435456 = i ∨ x ^ 268435456 = -i)
+    (hS : ∀ x ∈ S, x ^ 268435456 = -1 ∨ x ^ 268435456 = -i) :
+    ∃ A' B' : Finset F, A' ⊆ A ∧ B' ⊆ B ∧ A'.card = 357913939 ∧ B'.card = 357913939 ∧
+      Nonempty (PairRegionBasis A' B' S 536870910) := by
+  have hABS : Disjoint (A ∪ B) S := Finset.disjoint_union_left.mpr ⟨hAS, hBS⟩
+  have hcard : (A ∪ B ∪ S).card = 4 * 268435456 := by
+    rw [Finset.card_union_of_disjoint hABS, Finset.card_union_of_disjoint hAB,
+      hAcard, hBcard, hScard]
+  obtain ⟨basis⟩ := initial_basis_of_quarter_partition A B S 268435456 i j
+    (by decide) hi hj hAB hAS hBS hcard hA hB hS
+  exact production_basis_after_four_deletions A B S basis hAB hAS hBS hAcard hBcard hScard
+
+/-- Every full root-of-unity domain has the balanced quarter partition needed by the construction. -/
+theorem exists_balanced_quarter_partition (Ω : Finset F) (m q : ℕ) (i j : F)
+    (hm : 0 < m) (hmq : m = 3 * q + 1) (hi : i * i = -1) (hj : j * (1 - i) = 1)
+    (hcard : Ω.card = 4 * m) (hroots : ∀ x ∈ Ω, x ^ (4 * m) = 1) :
+    ∃ A B S : Finset F, A ∪ B ∪ S = Ω ∧
+      Disjoint A B ∧ Disjoint A S ∧ Disjoint B S ∧
+      A.card = m + q ∧ B.card = m + q ∧ S.card = m + q + 1 ∧
+      (∀ x ∈ A, x ^ m = 1 ∨ x ^ m = -i) ∧
+      (∀ x ∈ B, x ^ m = i ∨ x ^ m = -i) ∧
+      (∀ x ∈ S, x ^ m = -1 ∨ x ^ m = -i) := by
+  have hplus := (initial_coefficient_relations i j hi hj).1
+  have hi1 : i ≠ 1 := by intro h; rw [h] at hj; simp at hj
+  have hin1 : i ≠ -1 := by intro h; rw [h] at hplus; simp at hplus
+  have h1n1 : (1 : F) ≠ -1 := by
+    intro h
+    apply hin1
+    calc
+      i = j * (1 + i) := hplus.symm
+      _ = j * ((-1) + i) := congrArg (fun a : F => j * (a + i)) h
+      _ = j * (-(1 - i)) := by ring
+      _ = -(j * (1 - i)) := by ring
+      _ = -1 := by rw [hj]
+  have h1ni : (1 : F) ≠ -i := by
+    intro h
+    apply hin1
+    calc
+      i = -(-i) := by ring
+      _ = -1 := congrArg Neg.neg h.symm
+  have hini : i ≠ -i := by
+    intro h
+    apply hi1
+    calc
+      i = j * (1 + i) := hplus.symm
+      _ = j * (1 - i) := by rw [sub_eq_add_neg, ← h]
+      _ = 1 := hj
+  have hn1ni : (-1 : F) ≠ -i := fun h => hi1.symm (_root_.neg_injective h)
+  let Q : F → Finset F := fun a => Ω.filter fun x => x ^ m = a
+  have hdisj (a b : F) (hab : a ≠ b) : Disjoint (Q a) (Q b) :=
+    Finset.disjoint_left.mpr (fun _ hx hy => hab
+      ((Finset.mem_filter.mp hx).2.symm.trans (Finset.mem_filter.mp hy).2))
+  have h01 := hdisj 1 i hi1.symm
+  have h02 := hdisj 1 (-1) h1n1
+  have h03 := hdisj 1 (-i) h1ni
+  have h12 := hdisj i (-1) hin1
+  have h13 := hdisj i (-i) hini
+  have h23 := hdisj (-1) (-i) hn1ni
+  have h012 : Disjoint (Q 1 ∪ Q i) (Q (-1)) := Finset.disjoint_union_left.mpr ⟨h02, h12⟩
+  have h0123 : Disjoint (Q 1 ∪ Q i ∪ Q (-1)) (Q (-i)) :=
+    Finset.disjoint_union_left.mpr ⟨Finset.disjoint_union_left.mpr ⟨h03, h13⟩, h23⟩
+  have hΩ : Ω = Q 1 ∪ Q i ∪ Q (-1) ∪ Q (-i) := by
+    ext x
+    constructor
+    · intro hx
+      have hp : (x ^ m) ^ 4 = 1 := by
+        simpa only [← pow_mul, Nat.mul_comm m 4] using hroots x hx
+      have hprod : (x ^ m - 1) * (x ^ m - i) * (x ^ m + 1) * (x ^ m + i) = 0 := by
+        calc
+          _ = ((x ^ m) ^ 2 - 1) * ((x ^ m) ^ 2 - i * i) := by ring
+          _ = (x ^ m) ^ 4 - 1 := by rw [hi]; ring
+          _ = 0 := by rw [hp, sub_self]
+      simp only [mul_eq_zero, sub_eq_zero, add_eq_zero_iff_eq_neg] at hprod
+      simpa only [Finset.mem_union, Q, Finset.mem_filter, hx, true_and] using hprod
+    · intro hx
+      simp only [Finset.mem_union] at hx
+      rcases hx with ((hx | hx) | hx) | hx <;> exact (Finset.mem_filter.mp hx).1
+  have hbound (a : F) : (Q a).card ≤ m := power_fiber_card_le (Q a) m a hm
+    (fun _ hx => (Finset.mem_filter.mp hx).2)
+  have hsum : (Q 1).card + (Q i).card + (Q (-1)).card + (Q (-i)).card = 4 * m := by
+    rw [← hcard, hΩ, Finset.card_union_of_disjoint h0123,
+      Finset.card_union_of_disjoint h012, Finset.card_union_of_disjoint h01]
+  have hcards : (Q 1).card = m ∧ (Q i).card = m ∧ (Q (-1)).card = m ∧ (Q (-i)).card = m := by
+    have h0 := hbound 1
+    have h1 := hbound i
+    have h2 := hbound (-1)
+    have h3 := hbound (-i)
+    omega
+  obtain ⟨U, hU, hUc⟩ := Finset.exists_subset_card_eq
+    (by rw [hcards.2.2.2]; omega : q ≤ (Q (-i)).card)
+  obtain ⟨V, hV, hVc⟩ := Finset.exists_subset_card_eq
+    (by rw [Finset.card_sdiff_of_subset hU, hcards.2.2.2, hUc]; omega : q ≤ (Q (-i) \ U).card)
+  have hVQ : V ⊆ Q (-i) := hV.trans Finset.sdiff_subset
+  have hUV : Disjoint U V := Finset.disjoint_left.mpr
+    (fun _ hx hy => (Finset.mem_sdiff.mp (hV hy)).2 hx)
+  have hUVQ : U ∪ V ⊆ Q (-i) := Finset.union_subset hU hVQ
+  let W := Q (-i) \ (U ∪ V)
+  have hWQ : W ⊆ Q (-i) := Finset.sdiff_subset
+  have hUW : Disjoint U W := Finset.disjoint_left.mpr
+    (fun _ hx hy => (Finset.mem_sdiff.mp hy).2 (Finset.mem_union_left V hx))
+  have hVW : Disjoint V W := Finset.disjoint_left.mpr
+    (fun _ hx hy => (Finset.mem_sdiff.mp hy).2 (Finset.mem_union_right U hx))
+  have hWc : W.card = q + 1 := by
+    rw [Finset.card_sdiff_of_subset hUVQ, Finset.card_union_of_disjoint hUV,
+      hcards.2.2.2, hUc, hVc]
+    omega
+  have hpart : U ∪ V ∪ W = Q (-i) := Finset.union_sdiff_of_subset hUVQ
+  refine ⟨Q 1 ∪ U, Q i ∪ V, Q (-1) ∪ W, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · calc
+      _ = (Q 1 ∪ Q i ∪ Q (-1)) ∪ (U ∪ V ∪ W) := by ac_rfl
+      _ = Ω := by rw [hpart, ← hΩ]
+  · exact Finset.disjoint_union_left.mpr
+      ⟨Finset.disjoint_union_right.mpr ⟨h01, h03.mono_right hVQ⟩,
+       Finset.disjoint_union_right.mpr ⟨h13.symm.mono_left hU, hUV⟩⟩
+  · exact Finset.disjoint_union_left.mpr
+      ⟨Finset.disjoint_union_right.mpr ⟨h02, h03.mono_right hWQ⟩,
+       Finset.disjoint_union_right.mpr ⟨h23.symm.mono_left hU, hUW⟩⟩
+  · exact Finset.disjoint_union_left.mpr
+      ⟨Finset.disjoint_union_right.mpr ⟨h12, h13.mono_right hWQ⟩,
+       Finset.disjoint_union_right.mpr ⟨h23.symm.mono_left hVQ, hVW⟩⟩
+  · rw [Finset.card_union_of_disjoint (h03.mono_right hU), hcards.1, hUc]
+  · rw [Finset.card_union_of_disjoint (h13.mono_right hVQ), hcards.2.1, hVc]
+  · rw [Finset.card_union_of_disjoint (h23.mono_right hWQ), hcards.2.2.1, hWc]
+    omega
+  · intro x hx
+    rcases Finset.mem_union.mp hx with hx | hx
+    · exact Or.inl (Finset.mem_filter.mp hx).2
+    · exact Or.inr (Finset.mem_filter.mp (hU hx)).2
+  · intro x hx
+    rcases Finset.mem_union.mp hx with hx | hx
+    · exact Or.inl (Finset.mem_filter.mp hx).2
+    · exact Or.inr (Finset.mem_filter.mp (hVQ hx)).2
+  · intro x hx
+    rcases Finset.mem_union.mp hx with hx | hx
+    · exact Or.inl (Finset.mem_filter.mp hx).2
+    · exact Or.inr (Finset.mem_filter.mp (hWQ hx)).2
+
+/-- A full root domain supplies a fourth root and its inverse coefficient by root counting. -/
+theorem exists_fourth_root_parameters (Ω : Finset F) (m : ℕ) (hm : 0 < m)
+    (hcard : Ω.card = 4 * m) (hroots : ∀ x ∈ Ω, x ^ (4 * m) = 1) :
+    ∃ i j : F, i * i = -1 ∧ j * (1 - i) = 1 := by
+  have hexists : ∃ a ∈ Ω, a ^ (2 * m) ≠ 1 := by
+    by_contra h
+    have hall : ∀ a ∈ Ω, a ^ (2 * m) = 1 := fun a ha =>
+      Classical.byContradiction (fun hne => h ⟨a, ha, hne⟩)
+    have hbound := power_fiber_card_le Ω (2 * m) 1 (by omega) hall
+    omega
+  obtain ⟨a, haΩ, ha⟩ := hexists
+  let i := a ^ m
+  have hi2 : i * i ≠ 1 := by
+    change a ^ m * a ^ m ≠ 1
+    rw [← pow_two, ← pow_mul, Nat.mul_comm m 2]
+    exact ha
+  have hi4 : i ^ 4 = 1 := by
+    simpa only [i, ← pow_mul, Nat.mul_comm m 4] using hroots a haΩ
+  have hprod : (i * i - 1) * (i * i - (-1)) = 0 := by
+    calc
+      _ = i ^ 4 - 1 := by ring
+      _ = 0 := by rw [hi4, sub_self]
+  have hi : i * i = -1 := sub_eq_zero.mp
+    ((mul_eq_zero.mp hprod).resolve_left (sub_ne_zero.mpr hi2))
+  have hi1 : i ≠ 1 := by
+    intro h
+    apply hi2
+    rw [h, one_mul]
+  exact ⟨i, (1 - i)⁻¹, hi, inv_mul_cancel₀ (sub_ne_zero.mpr hi1.symm)⟩
+
+/-- The production-sized root domain admits the complete constructed basis and four private points. -/
+theorem production_deleted_basis_from_roots (Ω : Finset F)
+    (hcard : Ω.card = 1073741824) (hroots : ∀ x ∈ Ω, x ^ 1073741824 = 1) :
+    ∃ A B S I : Finset F, A ∪ B ∪ S ∪ I = Ω ∧ Disjoint (A ∪ B ∪ S) I ∧
+      Disjoint A B ∧ Disjoint A S ∧ Disjoint B S ∧
+      A.card = 357913939 ∧ B.card = 357913939 ∧ S.card = 357913942 ∧ I.card = 4 ∧
+      Nonempty (PairRegionBasis A B S 536870910) := by
+  obtain ⟨i, j, hi, hj⟩ := exists_fourth_root_parameters Ω 268435456 (by decide) hcard hroots
+  obtain ⟨A, B, S, hcover, hAB, hAS, hBS, hAc, hBc, hSc, hA, hB, hS⟩ :=
+    exists_balanced_quarter_partition Ω 268435456 89478485 i j
+      (by decide) (by decide) hi hj hcard hroots
+  obtain ⟨A', B', hA'A, hB'B, hA'c, hB'c, hfinal⟩ :=
+    production_deleted_basis_of_quarter_partition A B S i j hi hj hAB hAS hBS hAc hBc hSc hA hB hS
+  have hA'B' : Disjoint A' B' := hAB.mono hA'A hB'B
+  have hA'S : Disjoint A' S := hAS.mono_left hA'A
+  have hB'S : Disjoint B' S := hBS.mono_left hB'B
+  have hRΩ : A' ∪ B' ∪ S ⊆ Ω := by
+    rw [← hcover]
+    exact Finset.union_subset_union (Finset.union_subset_union hA'A hB'B) (Finset.Subset.refl S)
+  have hRc : (A' ∪ B' ∪ S).card = 1073741820 := by
+    rw [Finset.card_union_of_disjoint (Finset.disjoint_union_left.mpr ⟨hA'S, hB'S⟩),
+      Finset.card_union_of_disjoint hA'B', hA'c, hB'c, hSc]
+  refine ⟨A', B', S, Ω \ (A' ∪ B' ∪ S), Finset.union_sdiff_of_subset hRΩ,
+    Finset.disjoint_left.mpr (fun _ hx hy => (Finset.mem_sdiff.mp hy).2 hx),
+    hA'B', hA'S, hB'S, hA'c, hB'c, hSc, ?_, hfinal⟩
+  rw [Finset.card_sdiff_of_subset hRΩ, hcard, hRc]
+
+end InitialBasis
+
 /-- The two production deletion steps have the same root-count margin. -/
 theorem production_anchor_margins :
     357913941 - (536870912 - 357913942) = 178956971 ∧
@@ -597,4 +1045,13 @@ end AstraMcaPolynomialBasis
 #print axioms AstraMcaPolynomialBasis.exists_basis_after_deletion
 #print axioms AstraMcaPolynomialBasis.exists_basis_after_two_deletions
 #print axioms AstraMcaPolynomialBasis.production_basis_after_four_deletions
+#print axioms AstraMcaPolynomialBasis.initial_coefficient_relations
+#print axioms AstraMcaPolynomialBasis.locator_eq_X_pow_sub_one
+#print axioms AstraMcaPolynomialBasis.interpolate_power_fiber
+#print axioms AstraMcaPolynomialBasis.initial_basis_from_interpolant
+#print axioms AstraMcaPolynomialBasis.initial_basis_of_quarter_partition
+#print axioms AstraMcaPolynomialBasis.production_deleted_basis_of_quarter_partition
+#print axioms AstraMcaPolynomialBasis.exists_balanced_quarter_partition
+#print axioms AstraMcaPolynomialBasis.exists_fourth_root_parameters
+#print axioms AstraMcaPolynomialBasis.production_deleted_basis_from_roots
 #print axioms AstraMcaPolynomialBasis.production_anchor_margins
