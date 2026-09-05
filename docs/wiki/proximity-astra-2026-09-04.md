@@ -25,6 +25,11 @@ The [single-hole reduction](../kb/astra_mca_single_hole_reduction-2026-09-05.md)
 also identifies a necessary subproblem for the universal bound: controlling
 the distinct extrapolated values of a punctured RS list. Rational collinearity
 of its joint cores and a rank-three error Gram matrix do not supply that cap.
+An exact [monomial-minor certificate](../kb/astra_monomial_minor_norm-2026-09-05.md)
+excludes every monomial seed on mu16 over the production prime and classifies
+its exceptional characteristics. The complex Fourier nonvanishing theorem
+has finite-field exceptions, and its sufficient norm bound fails at the
+production length. Arbitrary received words remain outside this exclusion.
 An independently checked [six-square countermodel](../kb/astra_mca_six_square_countermodel-2026-09-05.md)
 rules out extending the degree-two cover argument using square-resultant
 conditions alone. Its common-domain requirement fails, so the actual

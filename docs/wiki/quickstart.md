@@ -425,7 +425,12 @@ python3 -m pip install leanblueprint
   one domain point, so the full-cover obstruction does not apply. Run
   `python3 scripts/probes/astra_mca_single_hole_check.py` for its complete
   F17 control; the universal production value-image bound remains open.
-  Its [locator formulation](../kb/astra_mca_single_hole_locator-2026-09-05.md)
+  The [monomial-minor certificate](../kb/astra_monomial_minor_norm-2026-09-05.md)
+  excludes monomial seeds only at length sixteen over the production prime;
+  use `python3 scripts/probes/astra_monomial_minor_norm_check.py` for the exact
+  norm census and explicit small-characteristic failures. Its complex
+  nonvanishing argument does not establish a production-length bound.
+  The [single-hole locator formulation](../kb/astra_mca_single_hole_locator-2026-09-05.md)
   shows why the error-locator divisor requirement is essential: removing it
   admits almost every scalar even for a production-domain word. Run
   `python3 scripts/probes/astra_mca_single_hole_locator_check.py` for the

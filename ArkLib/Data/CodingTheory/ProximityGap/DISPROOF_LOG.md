@@ -53861,3 +53861,22 @@ simultaneous cube removal still leaves the budget over target. These
 results do not exclude corrections using full-kernel provenance, stronger
 support information, or other boundary components. Independent review,
 Lean integration and the prize theorem remain open.
+
+---
+
+### Complex Fourier nonvanishing does not transfer without a characteristic gate (2026-09-05)
+
+The [monomial-minor certificate](../../../../docs/kb/astra_monomial_minor_norm-2026-09-05.md)
+specializes known complex full-spark results to the half-rate Fourier row
+set `{0,...,k-1,d}`. At n=16, explicit degree-seven polynomials over F17
+and F97 agree with high monomials at nine nodes, although the complex
+theorem caps such agreement at eight. Thus importing that theorem into
+an arbitrary finite field is invalid.
+
+The exact census of 91,520 cyclotomic coefficient norms classifies all
+exceptional characteristics at n=16; the largest exceptional prime is
+9601. It excludes every monomial seed at that length over the production
+prime. The general sufficient norm bound fails at production length, so
+neither this small-domain exclusion nor the finite-field failures settle
+the universal single-hole value bound. Independent review and Lean
+formalization remain open; no prize threshold is changed.
