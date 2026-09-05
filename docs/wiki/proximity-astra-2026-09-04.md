@@ -26,6 +26,21 @@ supplies common-domain absence set systems at the production parameters;
 their polynomial realization still requires two compatible private-locator
 identities. Counting those set memberships alone cannot finish the exclusion.
 
+The [locator-pencil bound](../kb/astra_mca_locator_pencils-2026-09-05.md)
+now caps each two-dimensional valid locator family at four distinct values,
+with an exact realization converse and a sharp three-value coset construction
+on the production domain. The full family need not lie in one pencil.
+Two bounded cyclotomic censuses exclude a cubic four-member pencil and a
+[degree-five private triple](../kb/astra_mca_defect_one-2026-09-05.md) on
+sixteenth roots. Their large-characteristic extensions use explicit norm
+bounds; neither excludes arbitrary production configurations.
+An [elementary Cartier identity](../kb/astra_mca_cartier-2026-09-05.md)
+gives additional necessary equations and an exact control showing why its
+undeleted-domain cutoff cannot be transferred to a quartic deletion.
+The [sharper contact estimate](../kb/astra_kernel_channel_hermite-2026-09-05.md)
+also remains too weak to exclude the binding companion factor. These are
+written proofs and exact finite checks, not new Lean proofs or prize closure.
+
 ## Revisions and environment
 
 * Original clone: `/Users/nubs/Git/arklib`, clean `main` at

@@ -17460,3 +17460,50 @@ checks pass, but the external height theorem and general normal-form proof
 are not Lean-formalized. See
 `docs/kb/astra_mca_private_cubic_surface-2026-09-05.md` and
 `scripts/probes/astra_mca_private_cubic_surface_check.py`.
+
+## [astra-mca-locator-pencils] exact divisor geometry bounds each pencil, not the whole list (2026-09-05)
+
+Every constant-coefficient two-dimensional space of valid single-hole error
+locators gives at most four distinct extrapolated values. The bound is sharp
+on a general domain, and a converse realizes every admissible disjoint
+private-divisor pencil by genuine MCA witnesses. On the actual production
+subgroup the binomial private subclass has sharp bound three. An exhaustive
+actual-prime scan of 455 cubic divisors and 50,050 disjoint pairs excludes
+four private members on punctured sixteenth roots, hence excludes the stated
+large common power lifts. It does not bound the number of locator pencils
+or resolve the next order-thirty-two cases. All nine finite constructed
+MCA witnesses pass independent same-support rank checks. See
+`docs/kb/astra_mca_locator_pencils-2026-09-05.md` and its linked checker.
+
+## [astra-mca-defect-one] bounded cyclotomic exclusion with a norm extension (2026-09-05)
+
+All 126,126 unordered partitions of punctured sixteenth roots into three
+five-element sets have linearly independent monic root polynomials over the
+production field. A length-four positive control has the expected relation.
+Nonzero coefficient minors have cyclotomic norms at most 400^8, extending
+the exclusion to characteristic zero and primes p>400^8 with p=1 mod16.
+No descent from the actual degree-four-defect production problem to this
+length-sixteen problem is proved. The exact receipt and written norm proof
+are in `docs/kb/astra_mca_defect_one-2026-09-05.md` and its linked checker.
+
+## [astra-mca-cartier] a necessary identity does not preserve the undeleted cutoff (2026-09-05)
+
+For H=AB(A+B), W=A'B-AB', and k=(P-2)/3, an explicit polynomial primitive
+of W*H^k forces its Cartier coefficients to vanish. The undeleted binomial
+comparison is diagonal, but the actual quartic-defect operator has a kernel
+too large to enforce the same origin cutoff. An exact production-prime
+length-sixteen control has W=-8X^3, attaining order m-1. Bounded primitive,
+polynomial, and production-index checks pass; they do not exclude the
+nonlinear production triple. See `docs/kb/astra_mca_cartier-2026-09-05.md`.
+
+## [astra-kernel-channel-hermite] sharp local coefficients still leave the binding factor open (2026-09-05)
+
+The leading coefficient of Y^h R^j has local vanishing order at least
+max(0,m-h-min(h,S-j)). An explicit polynomial attains this lower bound,
+so its local improvement is sharp under the stated degree caps. Summing
+the resulting leading-Y channel widths reduces the surviving fixed
+quotient upper bound from 161783400912266 to 79928722931834. That is still
+above the source nullity lower bound 228451639. All 18 direct contact-matrix
+checks, 12 sharp examples, and two fixed arithmetic comparisons pass;
+no factor exclusion or score increase follows. See
+`docs/kb/astra_kernel_channel_hermite-2026-09-05.md` and its linked checker.

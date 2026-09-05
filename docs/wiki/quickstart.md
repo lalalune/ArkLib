@@ -368,6 +368,15 @@ python3 -m pip install leanblueprint
   `python3 scripts/probes/astra_mca_private_cubic_surface_check.py` for exact
   identities and finite-order checks; the height argument cites standard
   external theorems and does not establish the prize bound.
+  The [one-node-defect census](../kb/astra_mca_defect_one-2026-09-05.md)
+  excludes all 126,126 degree-five triple partitions on punctured sixteenth
+  roots in the production field, with a characteristic-zero and large-prime
+  norm extension. It does not establish the needed production descent.
+  Run `python3 scripts/probes/astra_mca_defect_one_check.py` to reproduce it.
+  The [Cartier calculation](../kb/astra_mca_cartier-2026-09-05.md) supplies
+  necessary equations and a quartic-defect counterexample to transferring
+  the undeleted origin cutoff. Run
+  `python3 scripts/probes/astra_mca_cartier_check.py` for the bounded identities.
   The [locator consistency identities](../kb/astra_mca_six_locator_consistency-2026-09-04.md)
   force a three-dimensional polynomial span and a constant private-locator
   relation. The [cyclotomic locator constraints](../kb/astra_mca_cyclotomic_locator_constraints-2026-09-05.md)
@@ -414,6 +423,17 @@ python3 -m pip install leanblueprint
   admits almost every scalar even for a production-domain word. Run
   `python3 scripts/probes/astra_mca_single_hole_locator_check.py` for the
   independent finite comparison of actual and relaxed values.
+  The [locator-pencil theorem](../kb/astra_mca_locator_pencils-2026-09-05.md)
+  bounds each constant-coefficient pencil by four values and gives an exact
+  realization converse. Its actual-production coset subclass has sharp bound
+  three. A cubic census excludes a specified common power lift; the global
+  value count remains open. Run
+  `python3 scripts/probes/astra_mca_locator_pencils_check.py` for all nine
+  constructed same-support MCA witnesses and the exhaustive cubic census.
+  The [channelwise contact theorem](../kb/astra_kernel_channel_hermite-2026-09-05.md)
+  sharpens a companion quotient estimate but still does not exclude the
+  binding factor. Run `python3 scripts/probes/astra_kernel_channel_hermite_check.py`
+  for the small contact matrices, sharp examples, and fixed arithmetic rows.
   The [native-count workflow](../../.github/workflows/proximity-native-count.yml)
   runs the separately pinned, bounded-tested native source on a standard
   public-repository Linux runner. It preserves computation receipts; it does
