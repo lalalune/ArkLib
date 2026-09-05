@@ -10,6 +10,9 @@ on:
       - "scripts/probes/astra_companion_t_kernel_gates.lean"
       - "scripts/probes/astra_exact_list_projection.lean"
       - "scripts/probes/astra_mca_polynomial_basis.lean"
+      - "scripts/probes/astra_mca_production_basis.lean"
+      - "scripts/check-mca-production-basis.sh"
+      - "ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PrizeShapePrimeP30.lean"
       - ".github/workflows/proximity-strip-proof.yml"
   workflow_dispatch:
 
@@ -58,10 +61,12 @@ jobs:
           set -euo pipefail
           lean --version
           : > "$RUNNER_TEMP/strip-proof.log"
-          for proof in astra_companion_strip_projection astra_companion_6804_ordinary_gates astra_c2_budget_obstruction astra_companion_t_kernel_gates astra_exact_list_projection astra_mca_polynomial_basis; do
+          for proof in astra_companion_strip_projection astra_companion_6804_ordinary_gates astra_c2_budget_obstruction astra_companion_t_kernel_gates astra_exact_list_projection; do
             python3 "$GITHUB_WORKSPACE/scripts/forbidden_tokens.py" "$GITHUB_WORKSPACE/scripts/probes/$proof.lean"
             lake env lean "$GITHUB_WORKSPACE/scripts/probes/$proof.lean" 2>&1 | tee -a "$RUNNER_TEMP/strip-proof.log"
           done
+          bash "$GITHUB_WORKSPACE/scripts/check-mca-production-basis.sh" \
+            "$RUNNER_TEMP/proximity-aux-lib" 2>&1 | tee -a "$RUNNER_TEMP/strip-proof.log"
           python3 - "$RUNNER_TEMP/strip-proof.log" <<'PY'
           import os
           import re
@@ -106,6 +111,11 @@ jobs:
               "exists_balanced_quarter_partition", "exists_fourth_root_parameters",
               "production_deleted_basis_from_roots",
               "production_anchor_margins")]
+          expected += ["ArkLib.ProximityGap.PrizeShapePrimeP30." + name for name in (
+              "prime_P", "orderOf_g", "exists_orderOf_two_pow_30")]
+          expected += ["AstraMcaProductionBasis." + name for name in (
+              "power_domain_card", "power_domain_roots", "production_deleted_basis",
+              "production_projection_arithmetic")]
           for declaration in expected:
               if declaration not in reported:
                   raise SystemExit("Missing axiom report: " + declaration)

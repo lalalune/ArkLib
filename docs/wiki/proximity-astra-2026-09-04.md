@@ -23,9 +23,11 @@ arithmetic pass; independent proof review and Lean formalization remain open.
 Thirty-one [supporting polynomial theorems](../kb/astra_mca_polynomial_basis-2026-09-05.md)
 now pass local Lean 4.30.0-rc2. They construct the complete polynomial basis
 from a domain of 2^30 distinct 2^30-th roots, including the partition,
-interpolation and both deletion pairs. The actual code-domain instantiation,
-MCA witnesses and threshold theorem still require assembly; these checks
-do not close the universal floor.
+interpolation and both deletion pairs. Four further
+[production-field theorems](../kb/astra_mca_production_basis-2026-09-05.md)
+instantiate that basis with the certified modulus, generator and power
+domain. The indexed code bridge, MCA witnesses and threshold theorem still
+require assembly; these checks do not close the universal floor.
 
 The [single-hole reduction](../kb/astra_mca_single_hole_reduction-2026-09-05.md)
 also identifies a necessary subproblem for the universal bound: controlling

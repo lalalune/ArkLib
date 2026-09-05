@@ -336,6 +336,11 @@ python3 -m pip install leanblueprint
   environment with those imports cached; a matching standalone Mathlib
   checkout can use the absolute proof path. The full threshold assembly
   is still open, and the auxiliary workflow audits both supported pins.
+  The [concrete production instantiation](../kb/astra_mca_production_basis-2026-09-05.md)
+  is checked by `bash scripts/check-mca-production-basis.sh /tmp/mca-proof-lib`
+  from a matching Lake environment. This compiles the existing prime/root
+  certificate and basis dependency, then checks the concrete power-domain
+  result; it does not build all ArkLib modules.
   Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
   check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run
   `python3 scripts/probes/astra_mca_two_generator_probe.py` for the complete

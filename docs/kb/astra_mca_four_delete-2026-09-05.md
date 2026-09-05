@@ -11,8 +11,10 @@ prove a matching lower bound, or solve a grand prize challenge.
 Thirty-one [supporting Lean theorems](astra_mca_polynomial_basis-2026-09-05.md)
 now construct the complete polynomial basis from root-domain data at the
 production dimensions: the balanced partition, interpolation, determinant
-and both deletion pairs. The code-domain instantiation, actual MCA witnesses
-and full threshold consequence below are not yet assembled in Lean.
+and both deletion pairs. A [concrete wrapper](astra_mca_production_basis-2026-09-05.md)
+now instantiates this basis with the certified modulus, generator and power
+domain. The indexed code bridge, actual MCA witnesses and full threshold
+consequence below are not yet assembled in Lean.
 
 The useful change is structural: two further deletions permit multiplication
 of each generator by X. Evaluation at different coordinates then gives

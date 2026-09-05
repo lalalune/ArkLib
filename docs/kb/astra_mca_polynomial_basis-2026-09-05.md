@@ -207,10 +207,11 @@ Neither statement is a production threshold theorem.
 
 ## Remaining assembly
 
-The root-domain theorem still needs to be instantiated with the existing
-production field and root certificate, including the representation of
-the evaluation domain in the actual Reed-Solomon code. The four evaluation
-functionals, finite-field ratio selection, actual
+The [concrete instantiation](astra_mca_production_basis-2026-09-05.md) now
+imports the existing production field and generator certificates and
+applies the construction to their power domain. The bridge into the
+indexed Reed-Solomon code, four evaluation functionals, finite-field ratio
+selection, actual
 same-support MCA witnesses, probability bound and threshold ledger also
 remain to be connected. Existing repository lemmas cover parts of that
 later chain, including
@@ -253,4 +254,7 @@ compiled in both jobs, but the companion job of
 failed the warning audit because Mathlib renamed a locator-degree lemma.
 The current source calculates that degree directly by induction, preserving
 the strict warning check. A later CI run is needed to verify that repair
-and the nine new construction theorems on the companion pin.
+and the nine new construction theorems on the companion pin. This repair
+and all thirty-one construction theorems subsequently passed both versions
+at `8c22713deaa91a0a100e04e8275d11765f4437a4` in
+[run 33987947699](https://github.com/lalalune/ArkLib/actions/runs/33987947699).
