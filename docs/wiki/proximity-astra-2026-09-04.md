@@ -65,8 +65,12 @@ arity when `binomial(B+1,2)<=q`. Both fixed field/budget profiles pass that
 gate. It also preserves a uniform bound on linear-observable images, such
 as omitted-point values, at the image level. This is a useful conditional
 transfer, not a proof of either underlying scalar bound. The elementary
-proof was independently reviewed and the finite projection/list controls pass;
-the full new theorem has not been Lean-checked.
+proof was independently reviewed and the finite projection/list controls pass.
+The full-list equivalence and three field-size gates now pass Lean on both
+pinned versions in [CI run 33970050552](https://github.com/lalalune/ArkLib/actions/runs/33970050552),
+with nine clean new axiom reports per job. The linear-observable variant
+remains a written result; no scalar production estimate or MCA bound follows
+from the transfer alone.
 
 The [order-two Hasse calculation](../kb/astra_hasse_order_two-2026-09-05.md)
 provides an exact local-rank formula and a strict finite interpolation gain

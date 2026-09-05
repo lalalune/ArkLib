@@ -253,7 +253,7 @@ def main():
                       "direct_projection_membership_checks": membership_checks,
                       "observable_control_full_list_and_value_maxima": observable_controls,
                       "production_scalar_bound_proved": False,
-                      "lean_verified": False}, indent=2))
+                      "lean_run_performed": False}, indent=2))
 
 
 if __name__ == "__main__":

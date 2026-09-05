@@ -11,10 +11,11 @@ with independent review and Lean formalization still outstanding. Neither
 argument identifies the MCA bad set with a decoding list.
 
 This note gives an elementary written proof and reproducible finite checks.
-A [general Lean candidate](../../scripts/probes/astra_exact_list_projection.lean)
-now states the exact list-budget equivalence at integer agreement thresholds;
-its compiler and axiom checks are pending in the two-version auxiliary-proof
-CI workflow. It is not yet a verified Lean theorem or a novelty claim.
+A [general Lean theorem](../../scripts/probes/astra_exact_list_projection.lean)
+now proves the exact list-budget equivalence at integer agreement thresholds.
+Its compiler and axiom checks passed on both pinned Lean versions. The
+linear-observable variant below remains a written proof with finite controls.
+No novelty claim is made.
 The general interleaving literature is
 reviewed in [ABF26, Definition 2.9 and Lemma 2.10](https://eprint.iacr.org/2026/680).
 The in-tree [product bound](../../ArkLib/Data/CodingTheory/InterleavedListSize.lean)
@@ -183,10 +184,34 @@ A separate repetition-plus-free-coordinate code has full list maxima 3 and
 checking the distinction between full lists and observable images.
 No production list or field is enumerated.
 
-The Lean candidate covers avoidance of at most q proper subspaces, separation
+The Lean file covers avoidance of at most q proper subspaces, separation
 of a finite family using unordered collision pairs, monotonicity of agreement
 under projection, both directions of the budget equivalence, and the three
 field-size gates used here and in the scalar differential-carrier note.
 It imports Mathlib alone and does not claim the scalar production bound or
 an MCA reduction. CI compiles it against both repository pins and audits nine
 explicit axiom reports, in addition to the existing auxiliary checks.
+
+## Lean verification receipt
+
+[CI run 33970050552](https://github.com/lalalune/ArkLib/actions/runs/33970050552)
+passed at source commit `179a266f9d97788136c5770eab3fc256113790cf` on
+Lean 4.30.0-rc2 and official-companion Lean 4.32.2. All nine new reports use
+only `propext`, `Classical.choice`, and `Quot.sound`; neither job reported a
+compiler warning, error, or `sorryAx`. The existing eighteen auxiliary reports
+also passed, for twenty-seven reports per job and fifty-four across the matrix.
+
+The exact statement is `AstraExactListProjection.exact_budget_iff`: for any
+finite field, finite coordinate set, linear code C, positive arity m, and
+natural agreement threshold A and budget B, the uniform scalar and interleaved
+list-budget assertions are equivalent when `choose(B+1,2)<=card(F)`. It counts
+complete finite lists and uses common-coordinate agreement for interleaving.
+The forward implication assumes the uniform scalar bound explicitly. This
+check does not prove the scalar differential-carrier estimate, its algebraic
+geometry, a relative-distance bridge to the ArkLib API, or an MCA theorem.
+
+To reproduce with either pinned Mathlib environment available, run
+`lake env lean scripts/probes/astra_exact_list_projection.lean` from the
+research checkout, or use the absolute proof path when running from the
+companion checkout. The finite Python checker does not invoke Lean; its
+`lean_run_performed` field records that distinction.

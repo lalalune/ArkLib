@@ -241,11 +241,12 @@ python3 -m pip install leanblueprint
 - [`../../.github/workflows/proximity-strip-proof.yml`](../../.github/workflows/proximity-strip-proof.yml)
   checks the standalone Mathlib contact-strip projection, the Std
   arithmetic gates for the proposed 68.04 row, the finite C2 scalar-budget
-  obstruction, and three T-interpolant dimension witnesses on the
+  obstruction, three T-interpolant dimension witnesses, and the general exact
+  scalar-to-interleaved list-budget equivalence on the
   `codex/proximity-astra-20260904` research branch when a proof source or the workflow
   changes. Its two jobs use this repository's pinned dependencies (Lean
   4.30.0-rc2) and the official companion's `032154395c51fd6f77715a7f42d9a987ab9fb48a`
-  pin (Lean 4.32.2), respectively. Each checks all eighteen
+  pin (Lean 4.32.2), respectively. Each checks all twenty-seven
   named theorem reports against the repository's axiom allowlist, and rejects
   missing reports, compiler warnings, errors, or forbidden source tokens. It runs on a standard
   public-repository runner without artifact or cache uploads. This focused
@@ -493,7 +494,10 @@ python3 -m pip install leanblueprint
   The [large-field interleaving transfer](../kb/astra_interleaved_projection-2026-09-05.md)
   preserves scalar list budgets, and separately linear-observable image
   budgets, when `binomial(B+1,2)<=q`. Both fixed profiles pass the arithmetic
-  gate; their needed scalar bounds remain open. Run
+  gate. The full-list equivalence now has a general Lean proof checked on both
+  pinned versions; the observable variant remains a written argument. The
+  companion scalar estimate above still needs independent review and Lean
+  formalization, and the grand scalar bound remains open. Run
   `python3 scripts/probes/astra_interleaved_projection_check.py` for the
   field-size gates, separation controls, and small exact list maxima.
   The [root-product operator obstruction](../kb/astra_mca_value_operator-2026-09-05.md)
