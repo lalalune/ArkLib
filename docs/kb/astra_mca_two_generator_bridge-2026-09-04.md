@@ -251,6 +251,86 @@ directions**. If established, the support-level bridge would exceed
 `floor(P/2^128)=n` at agreement `(2n+1)/3`. It would still not determine
 the largest safe radius requested by the grand challenge.
 
+## Exact threshold consequence of a successful production count
+
+Put `a=(n-1)/3=357913941` and `delta0=a/n`. The construction's
+agreement size is `s=n-a=715827883`. If it supplies at least n+1
+distinct finite bad scalars, then
+
+```text
+epsMCA(C,delta0) >= (n+1)/P > 2^(-128).
+```
+
+The final strict inequality is exact: `P=n*(2^128+192)+1`, so
+`(n+1)*2^128-P=2^128-192*n-1>0`. The production scalar budget is
+`floor(P/2^128)=n`, not n-1.
+
+The ledger defines `mcaDeltaStar` as the supremum of good real radii;
+see [`MCAThresholdLedger.lean`](../../ArkLib/Data/CodingTheory/ProximityGap/MCAThresholdLedger.lean).
+Its `mcaDeltaStar_le_of_bad` therefore gives `mcaDeltaStar<=delta0`,
+not a strict inequality. The supremum itself can be a bad radius.
+This would sharpen the current unconditional ceiling
+`358612991/n` by `699050/n`; no such improved ceiling is claimed
+until the full count is established.
+
+This boundary witness would not refute the conditional floor in
+[`_SYZ46CensusBridge.lean`](../../ArkLib/Data/CodingTheory/ProximityGap/Frontier/_SYZ46CensusBridge.lean).
+Its `StripCensusBound` concerns the preceding lattice point
+`(a-1)/n`, which requires agreement `s+1=715827884`. Its universal
+bad-scalar cap is n-1, sufficient but one smaller than the actual
+allowance n. Our witnesses have only the stated support size s.
+A universal cap n at the predecessor would suffice for the lower
+bound `delta0<=mcaDeltaStar`, by
+[`latticeBoundary_le_mcaDeltaStar_of_predecessor_good`](../../ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PrizeShapeRateHalfBracket.lean).
+That independent universal claim remains open.
+
+If both bounds were proved, the operational supremum would be exactly
+`a/n`, while the largest safe Hamming-lattice radius would be
+`(a-1)/n`. The distinction is formalized by
+[`_OperationalLatticeExactBridge.lean`](../../ArkLib/Data/CodingTheory/ProximityGap/Frontier/_OperationalLatticeExactBridge.lean).
+Even that equality would settle this specified field, domain, rate,
+and error target only; it would not automatically settle every prize
+rate or the separate list-decoding and companion challenges.
+
+### A sufficient predecessor input, and the unresolved attribution step
+
+For a fixed received pair, suppose every threshold-t MCA event can be
+witnessed by a codeword on one of three fixed affine polynomial pencils
+`f_j+gamma*g_j`, with `deg f_j,deg g_j<k`. This assumption alone gives
+a scalar cap `3*(n-t+1)`; no lower bound on the pencils' joint-core
+sizes is needed.
+
+For one pencil let U be the size of its full joint core, where both
+received words equal f and g. Outside that core each residual pair is
+nonzero, so its cancellation sets E_gamma are disjoint as gamma varies.
+A threshold-t witness requires at least t-U outside cancellations.
+It also requires at least one outside cancellation even when U>=t:
+a support contained entirely in the joint core would contradict the
+MCA no-joint clause. Therefore this pencil contributes at most
+
+```text
+floor((n-U)/max(1,t-U)) <= n-t+1
+```
+
+distinct bad scalars, for `1<=t<=n`. Summing over three pencils gives
+the stated cap. At the predecessor `t=s+1`, it is `3*(n-s)=n-1`,
+which clears the production allowance. The missing claim is that
+arbitrary actual witnesses admit such a three-pencil cover, or a
+different argument controlling the events outside those pencils.
+An MCA event supplies a gamma-dependent codeword and explicitly no
+joint explanation on its support; it does not itself supply a fixed
+pencil or joint core. The attribution issue is also recorded in
+[`_SYZ29YieldLawD4Gluing.lean`](../../ArkLib/Data/CodingTheory/ProximityGap/Frontier/_SYZ29YieldLawD4Gluing.lean).
+
+For our constructed received pair, the three displayed pencils all
+have U=s-1. Their own predecessor events need two cancellation slots
+with the same finite scalar. If a full scan establishes at least n+1
+distinct finite scalars among the n+2 slots, there is at most one
+finite duplicate loss in total. Consequently at most one predecessor
+bad scalar can arise through these three particular pencils. Other
+codewords for this same received pair, and every other received pair,
+remain uncontrolled. This is not a universal predecessor proof.
+
 ## Finite verification and literature scope
 
 The separate probe
