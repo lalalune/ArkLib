@@ -246,10 +246,12 @@ repository's production prime, with `m=2^28`. The production field and
 root are certified in
 [`_PrizeShapePrimeP30.lean`](../../ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PrizeShapePrimeP30.lean).
 There is no remaining basis-existence assumption for this construction.
-The unresolved step is obtaining **at least n+1 distinct residual
-directions**. If established, the support-level bridge would exceed
-`floor(P/2^128)=n` at agreement `(2n+1)/3`. It would still not determine
-the largest safe radius requested by the grand challenge.
+The [hosted production count](astra_mca_production_count-2026-09-05.md)
+subsequently established **at least n+1 distinct finite residual directions**
+by deterministic fingerprints. The support-level bridge therefore exceeds
+`floor(P/2^128)=n` at agreement `(2n+1)/3`, as a computational result with this
+written proof. It does not determine the largest safe radius requested by
+the grand challenge and has not been integrated into a Lean theorem.
 
 ## Exact threshold consequence of a successful production count
 
@@ -269,9 +271,9 @@ The ledger defines `mcaDeltaStar` as the supremum of good real radii;
 see [`MCAThresholdLedger.lean`](../../ArkLib/Data/CodingTheory/ProximityGap/MCAThresholdLedger.lean).
 Its `mcaDeltaStar_le_of_bad` therefore gives `mcaDeltaStar<=delta0`,
 not a strict inequality. The supremum itself can be a bad radius.
-This would sharpen the current unconditional ceiling
-`358612991/n` by `699050/n`; no such improved ceiling is claimed
-until the full count is established.
+The completed production count supplies this premise and sharpens the earlier
+ceiling `358612991/n` by `699050/n` at the written/computational level. The
+existing Lean ceiling has not been replaced by a new kernel-checked theorem.
 
 This boundary witness would not refute the conditional floor in
 [`_SYZ46CensusBridge.lean`](../../ArkLib/Data/CodingTheory/ProximityGap/Frontier/_SYZ46CensusBridge.lean).

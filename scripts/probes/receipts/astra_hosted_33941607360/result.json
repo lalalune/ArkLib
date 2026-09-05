@@ -1,0 +1,38 @@
+{
+  "head": "5ec32fa23607ec7a205dc3a17cd0f8cd1c71a402",
+  "source_sha256": "6b2069e47e698fa96100881eb81175e6acdd8d60d5e0b24a19682817ffa117a5",
+  "binary_sha256": "580a01a4e0ed0f9841171be9317ef4531faa487feab32ac7bffa33c85fe14666",
+  "command": [
+    "/tmp/astra-mca-native-6b2069e47e698fa9",
+    "--scan",
+    "1073741824",
+    "4",
+    "8193"
+  ],
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "started_utc": "2026-09-05T03:21:28.797594+00:00",
+  "scope": "native_finite_computation_not_Lean_proof",
+  "exit_code": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-05T03:36:13.895369+00:00",
+  "stdout_sha256": "1e64fdde9fb8b56ada941539ba33b64f6ac351574638146e0be50c9aa7bf5135",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "status": "COMPLETE_NATIVE_COUNT_NOT_PRIZE_CLOSURE",
+  "count_receipt": {
+    "mode": "exact_fingerprint_scan",
+    "n": 1073741824,
+    "slots": 1073741826,
+    "array_bytes": 8589934608,
+    "available_bytes_before": 15586705408,
+    "chart_pole_slots": 0,
+    "distinct_keys": 1073741825,
+    "finite_event_count_lower_bound": 1073741825,
+    "exact_resolution_used": false,
+    "length_plus_one_met": true,
+    "production_budget_exceeded": true,
+    "evaluation_seconds": 785.022,
+    "sort_seconds": 99.9985,
+    "checksum": 9145777630192634331,
+    "scope": "native_finite_computation_not_Lean_proof"
+  }
+}

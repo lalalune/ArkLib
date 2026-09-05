@@ -6,6 +6,13 @@ a companion parameter search with open proof obligations, and a repair to a
 verification wrapper that could falsely report success. Nothing was submitted
 to a prize organizer. Verification status is recorded separately below.
 
+**5 September update:** the full billion-slot
+[production count](../kb/astra_mca_production_count-2026-09-05.md) completed,
+giving at least 1,073,741,825 finite MCA witnesses for the explicit rate-one-half
+construction. Together with the written bridge this sharpens its threshold
+upper bound to `357913941/2^30`. The matching universal lower bound is open;
+this is a computational result, not a newly Lean-verified threshold theorem.
+
 ## Revisions and environment
 
 * Original clone: `/Users/nubs/Git/arklib`, clean `main` at

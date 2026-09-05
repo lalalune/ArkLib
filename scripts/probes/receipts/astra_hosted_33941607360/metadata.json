@@ -1,0 +1,15 @@
+{
+  "head": "5ec32fa23607ec7a205dc3a17cd0f8cd1c71a402",
+  "source_sha256": "6b2069e47e698fa96100881eb81175e6acdd8d60d5e0b24a19682817ffa117a5",
+  "binary_sha256": "580a01a4e0ed0f9841171be9317ef4531faa487feab32ac7bffa33c85fe14666",
+  "command": [
+    "/tmp/astra-mca-native-6b2069e47e698fa9",
+    "--scan",
+    "1073741824",
+    "4",
+    "8193"
+  ],
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "started_utc": "2026-09-05T03:21:28.797594+00:00",
+  "scope": "native_finite_computation_not_Lean_proof"
+}

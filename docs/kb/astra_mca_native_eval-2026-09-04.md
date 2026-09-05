@@ -3,9 +3,11 @@
 The native runner implements the reviewed
 [compact two-generator evaluator](astra_mca_twogen_lift_eval-2026-09-04.md).
 Its bounded acceptance checks pass. This note records the implementation and
-verification scope. Three initial production attempts stopped on resource
-guards before completing a partition; none gives a production count or a
-Lean proof.
+verification scope. Three initial local production attempts stopped on resource
+guards before completing a partition. A subsequent
+[hosted production count](astra_mca_production_count-2026-09-05.md) completed
+with a deterministic lower bound of n+1 finite scalars. It supports a written
+threshold upper bound, but is not a Lean proof or prize closure.
 
 The source is
 [`astra_mca_native_eval.cpp`](../../scripts/probes/astra_mca_native_eval.cpp),
@@ -199,7 +201,10 @@ Small artifacts retain the acceptance, source and binary hashes, exact command,
 exit status, raw output, and output hashes. The child deadline is two hours.
 An unsuccessful or incomplete run cannot be reported as a completed count;
 a successful lower-bound computation remains separate from Lean verification
-and from a universal predecessor bound. No hosted result is asserted here.
+and from a universal predecessor bound. The first hosted run completed with
+n+1 distinct finite fingerprints and zero poles; the
+[production result and retained receipts](astra_mca_production_count-2026-09-05.md)
+record its precise mathematical consequence.
 
 The [resumable driver](astra_mca_resumable_scan-2026-09-04.md) is a separate
 local fallback with verified chunk persistence. Its later source revision does

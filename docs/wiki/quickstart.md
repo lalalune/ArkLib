@@ -318,8 +318,10 @@ python3 -m pip install leanblueprint
   use `python3 scripts/probes/astra_mca_paircover_four_cosets.py` for the
   small-domain rank checks in the production prime.
   The [two-generator bridge](../kb/astra_mca_two_generator_bridge-2026-09-04.md)
-  supplies production-length polynomial bases by two-point deletion; the
-  remaining obligation is the number of distinct cancellation directions.
+  supplies production-length polynomial bases by two-point deletion. The
+  [hosted production count](../kb/astra_mca_production_count-2026-09-05.md)
+  establishes the required n+1 finite directions and a computational upper
+  bound; the universal matching lower bound remains open.
   Its [finite MCA certificates](../kb/astra_mca_two_generator_probe-2026-09-04.md)
   check 18,66,258 scalars on mu16, mu64, mu256, respectively. Run
   `python3 scripts/probes/astra_mca_two_generator_probe.py` for the complete
@@ -329,8 +331,10 @@ python3 -m pip install leanblueprint
   The [compact production evaluator](../kb/astra_mca_twogen_lift_eval-2026-09-04.md)
   uses fourteen rational summands per ordinary point; run
   `python3 scripts/probes/astra_mca_twogen_lift_eval.py` for dense small-domain
-  comparisons and the constant-size production checks. Its partial count
-  268435460 is below the 1073741825 required; the full collision count is open.
+  comparisons and the constant-size production checks. Its original partial
+  count 268435460 was superseded by the completed hosted lower bound 1073741825.
+  Run `python3 scripts/probes/astra_mca_hosted_receipt_check.py` to check the
+  archived receipt hashes and exact field certificate without replaying the scan.
   The [native evaluator](../kb/astra_mca_native_eval-2026-09-04.md) provides
   exact finite-value counting with bounded partition arrays. Run
   `python3 scripts/probes/astra_mca_native_eval_check.py` for independent
@@ -356,6 +360,11 @@ python3 -m pip install leanblueprint
   [birationality argument](../kb/astra_mca_six_locator_birationality-2026-09-04.md)
   proves that its locator map would be birational; the genus bound still has
   positive slack and does not exclude that pattern.
+  The [resultant equations](../kb/astra_mca_six_locator_resultants-2026-09-04.md)
+  identify saturation with a split squarefree square and exclude infinity
+  factors. Run `python3 scripts/probes/astra_mca_six_resultant_check.py` for
+  the bounded identity checks; the necessary equations do not exclude every
+  six-pencil configuration.
   The [decoding-curve incidence bound](../kb/astra_mca_decoding_curve_incidence-2026-09-04.md)
   quantifies what a separately constructed curve carrier would suffice to
   prove. The existence of such a carrier for arbitrary MCA events is open.

@@ -1,0 +1,98 @@
+{
+  "certificate_nodes": {
+    "2": {
+      "method": "trial division"
+    },
+    "3": {
+      "method": "trial division"
+    },
+    "7": {
+      "method": "trial division"
+    },
+    "223": {
+      "method": "trial division"
+    },
+    "479": {
+      "method": "trial division"
+    },
+    "829": {
+      "method": "trial division"
+    },
+    "1571": {
+      "method": "trial division"
+    },
+    "15391": {
+      "method": "trial division"
+    },
+    "26407": {
+      "method": "trial division"
+    },
+    "279991": {
+      "method": "trial division"
+    },
+    "4533259": {
+      "method": "trial division"
+    },
+    "10455338053": {
+      "base": 5,
+      "factorization": {
+        "2": 2,
+        "3": 2,
+        "223": 1,
+        "829": 1,
+        "1571": 1
+      },
+      "method": "full Lucas order certificate",
+      "nonunit_power_residues": {
+        "2": 10455338052,
+        "3": 7391080637,
+        "223": 7407681434,
+        "829": 9364435714,
+        "1571": 2642778702
+      }
+    },
+    "462478642316479903": {
+      "base": 3,
+      "factorization": {
+        "2": 1,
+        "3": 1,
+        "479": 1,
+        "15391": 1,
+        "10455338053": 1
+      },
+      "method": "full Lucas order certificate",
+      "nonunit_power_residues": {
+        "2": 462478642316479902,
+        "3": 459203541132127121,
+        "479": 408848958694347984,
+        "15391": 171246340339791908,
+        "10455338053": 359184994023111800
+      }
+    },
+    "365375409332725729550921208179070755120141565953": {
+      "base": 3,
+      "factorization": {
+        "2": 36,
+        "7": 3,
+        "26407": 1,
+        "279991": 1,
+        "4533259": 1,
+        "462478642316479903": 1
+      },
+      "method": "full Lucas order certificate",
+      "nonunit_power_residues": {
+        "2": 365375409332725729550921208179070755120141565952,
+        "7": 357429520650419893511888755169273247239317633492,
+        "26407": 305254660976644810624144121656547607606758541060,
+        "279991": 258406560742205350931481607718963017647890198338,
+        "4533259": 112025415024486556354304946195078105560507879785,
+        "462478642316479903": 48557416745048192559140052139002241324270489762
+      }
+    }
+  },
+  "generator": 303645430271030343624574566109998498685964493478,
+  "order": 1073741824,
+  "prime": 365375409332725729550921208179070755120141565953,
+  "scope": "Independent integer check of the existing source certificate; not a fresh Lean compilation.",
+  "status": "PASS_EXACT_LUCAS_AND_ROOT_CERTIFICATES"
+}

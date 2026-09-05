@@ -1,0 +1,18 @@
+{
+  "run_id": 33941607360,
+  "run_url": "https://github.com/lalalune/ArkLib/actions/runs/33941607360",
+  "head": "5ec32fa23607ec7a205dc3a17cd0f8cd1c71a402",
+  "native_source": "scripts/probes/astra_mca_native_eval.cpp",
+  "native_source_sha256": "6b2069e47e698fa96100881eb81175e6acdd8d60d5e0b24a19682817ffa117a5",
+  "acceptance_driver": "scripts/probes/astra_mca_native_eval_check.py",
+  "acceptance_driver_sha256": "0813cb58e7cd9062b08e3c03fdaf16d15cecd3bb9b5165bd7947878746e6a61c",
+  "files": {
+    "acceptance.jsonl": "581c1b68957ce73e8dbc801de950a5321065d10d8c441e141f18e5973ac59d2d",
+    "field_certificate.json": "9c3a9bad786ee0dd461674d3dc9e8aaa5852a8235b698b321664dcab8a0ba563",
+    "metadata.json": "98baefdf473dc25be08029c2c3961d8a741374fa6d1142476985c3ed3aa14d51",
+    "result.json": "4b878ca25fa9377f3b9d1d9d92284eeefba02c3007b04c74f26e12cba7dd3b2b",
+    "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout.jsonl": "1e64fdde9fb8b56ada941539ba33b64f6ac351574638146e0be50c9aa7bf5135"
+  },
+  "scope": "Retained hosted execution receipts; not an independent replay or Lean certificate."
+}
