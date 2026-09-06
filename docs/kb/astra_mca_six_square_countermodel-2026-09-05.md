@@ -15,6 +15,13 @@ production-field result or a Lean theorem. The
 [degree-one and degree-two theorem](astra_mca_low_degree_saturation-2026-09-05.md)
 remains intact.
 
+The later [characteristic-43 common-domain example](astra_mca_f43_common_domain_counterexample-2026-09-05.md)
+is a genuine MCA counterexample to the broader intermediate bound at
+even b=4: its whole received line has exactly 23 bad scalars on 22 nodes.
+It has covering degree two. It addresses the domain defect of an abstract
+square model, but does not turn this odd-b countermodel into a production
+construction or remove the production birationality requirement.
+
 ## Exact data and resultant convention
 
 All coefficients below are modulo 11. Homogenize every component of B,C

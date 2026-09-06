@@ -197,3 +197,11 @@ the seven minimal fixtures, both uniform-in-b construction formulas at
 selected boundary and production values, and the production genus arithmetic.
 It performs exact integer arithmetic with a constant number of flat records;
 it does not enumerate the production domain or search for polynomial witnesses.
+
+The [covering-multiplicity theorem](astra_mca_cover_multiplicity-2026-09-05.md)
+now proves production birationality from one saturated pencil, without
+using these patterns' weight-two flats. The two-triple pattern is also
+realized at b=4 on a [genuine 22-node common domain over F43 squared](astra_mca_f43_common_domain_counterexample-2026-09-05.md),
+with all eleven flat weights equal to two and exactly 23 MCA-bad scalars.
+Its covering degree is two, allowed at even b. It is not a production
+field or subgroup realization of the incidence data above.

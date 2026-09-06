@@ -2,6 +2,13 @@
 
 This is a written algebraic converse to the [necessary locator conditions](astra_mca_six_locator_consistency-2026-09-04.md) and [balanced-syzygy conditions](astra_mca_six_locator_birationality-2026-09-04.md). It is not Lean-formalized, a production construction, or an exclusion. It retains the actual common squarefree domain polynomial; the [unconstrained six-square countermodel](astra_mca_six_square_countermodel-2026-09-05.md) does not satisfy its hypotheses. The accompanying standard-library checker verifies bounded controls, not the general theorem.
 
+A later [actual common-domain example](astra_mca_f43_common_domain_counterexample-2026-09-05.md)
+does meet these conditions at b=4 over F43 squared, with exactly 23 bad
+scalars on 22 nodes. It includes a complete census and an independent
+checker. The [covering-multiplicity theorem](astra_mca_cover_multiplicity-2026-09-05.md)
+explains why that degree-two example cannot supply the production
+certificate, whose saturated locator map must be birational.
+
 ## Precise input certificate
 
 Let K be any field, b>=1, n=6b-2, d=3b-2, and let V be the monic polynomial of n distinct K-rational domain nodes Omega. Suppose six distinct monic polynomials W_i satisfy:

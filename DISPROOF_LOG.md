@@ -17871,3 +17871,56 @@ agent reviews accompany the written proofs; no Lean or universal MCA
 closure is claimed. See
 `docs/kb/astra_mca_cyclic_locator_symmetry-2026-09-05.md` and
 `docs/kb/astra_mca_reciprocal_balance-2026-09-05.md`.
+
+## [astra-common-domain-six] a genuine length-22 example has exactly 23 MCA-bad scalars (2026-09-05)
+
+Over F43[i] with i^2=-1, an explicit balanced degree-four frame gives six
+eight-root locators on one squarefree 22-node domain. Adjugate reconstruction
+gives degree-at-most-ten polynomial pairs with exact cores of size fourteen.
+Every pencil is saturated, every pairwise absence intersection has size
+b-2=2, and twenty-three distinct finite scalars have actual sixteen-node
+same-support/no-joint MCA witnesses. Exactly one scalar is shared.
+This refutes the proposed arbitrary-domain intermediate exclusion that
+these conditions force at least two overlaps or an unsaturated pencil.
+
+The full line has exactly those 23 bad scalars. A qualifying degree-ten
+decoder must be even because a sixteen-node support contains at least five
+complete quadratic fibers. Any scalar outside F43 then gives a forbidden
+joint explanation by restriction to its two base-field components. The
+remaining census reduces exactly to 43 scalars and 165 eight-node supports.
+Two separately implemented standard-library checkers agree on all 7095
+cases: zero jointly explainable supports and 24 qualifying scalar/support
+pairs. The line's MCA error is exactly 23/1849 at radius 3/11.
+
+The example is in characteristic 43 on an arbitrary non-cyclotomic domain
+with even b=4. The gcd of all literal integer incidence evaluations is 43,
+so this identical fixture cannot transfer to another prime characteristic.
+It is not a production counterexample or a new production unsafe radius.
+See `docs/kb/astra_mca_f43_common_domain_counterexample-2026-09-05.md` and
+the `astra_mca_f43_common_domain_check.py` and
+`astra_mca_f43_common_domain_census_check.py` probes in `scripts/probes/`.
+
+## [astra-cover-multiplicity] saturation forces a birational production locator map (2026-09-05)
+
+For an actual primitive balanced locator map, its covering degree nu
+divides b and every projective cancellation multiplicity, including
+infinity. Descended balanced syzygy frames differ from the actual frame
+by a constant GL2 matrix. Homogeneous evaluation makes directions constant
+on cover fibers. Squarefree split locators make every such fiber consist
+of exactly nu finite rational domain points; no separability or affine
+chart assumption is omitted.
+
+One multiplicity of two forces nu to divide two. Consequently one saturated
+pencil forces birationality at odd b, including production b=178956971,
+without the earlier weight-two-flat hypothesis. Every over-budget six-pencil
+certificate has at least five saturated pencils, so this covers that whole
+architecture. A nonbirational configuration has nu>=59 and contributes at
+most 36,398,028 scalars through its six selected pencils. Other decodings
+are not bounded by this assertion.
+
+The length-22 example has cover degree exactly two and shows the even-b
+exception is real even for an over-budget union on an actual domain.
+Both written arguments have independent agent audits and exact arithmetic
+controls. They are not Lean-formalized, and the production birational case
+and universal MCA lower bound remain open. See
+`docs/kb/astra_mca_cover_multiplicity-2026-09-05.md`.

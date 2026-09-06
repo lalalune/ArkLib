@@ -8,6 +8,12 @@ genus inequality is compatible with the pattern, so this is not an exclusion
 or a proof of the universal predecessor bound. The argument is not
 Lean-formalized.
 
+The later [covering-multiplicity theorem](astra_mca_cover_multiplicity-2026-09-05.md)
+strengthens this conclusion: the covering degree divides every cancellation
+multiplicity. At production, one saturated pencil forces birationality
+without any flat-weight hypothesis. It still does not exclude the
+birational case or prove the universal MCA bound.
+
 Assume all hypotheses of the
 [locator-consistency note](astra_mca_six_locator_consistency-2026-09-04.md).
 Put `n=6b-2`, `d=3b-2`; each absence locator Wi is monic of degree 2b.

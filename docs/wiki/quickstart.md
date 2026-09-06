@@ -529,6 +529,16 @@ python3 -m pip install leanblueprint
   bounded common domains. The independently reviewed written converse makes
   balanced actual-domain locators sufficient for pair reconstruction; no
   production locator certificate or over-budget scalar set is supplied.
+  A later [common-domain counterexample](../kb/astra_mca_f43_common_domain_counterexample-2026-09-05.md)
+  has exactly 23 bad scalars on 22 nodes over F43 squared. Six saturated
+  pencils meet the sharp pair-gcd bound, and two independent checkers
+  certify the complete field-wide census through 7095 reduced cases.
+  Run `python3 scripts/probes/astra_mca_f43_common_domain_check.py` and
+  `python3 scripts/probes/astra_mca_f43_common_domain_census_check.py`.
+  This is an even-b, arbitrary-domain example, not a production result.
+  The [covering-multiplicity theorem](../kb/astra_mca_cover_multiplicity-2026-09-05.md)
+  proves that a saturated production locator map must be birational;
+  the example's degree-two cover cannot provide that certificate.
   Run `python3 scripts/probes/astra_mca_near_power_locator_exclusion_check.py`
   for the [common-composition exclusion](../kb/astra_mca_near_power_locator_exclusion-2026-09-05.md).
   A written proof excludes simultaneous minimal-remainder factorizations
