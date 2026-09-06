@@ -17730,3 +17730,45 @@ removal patterns. These support written proofs, not a Lean formalization,
 external human peer review, or a completed prize.
 See `docs/kb/astra_mca_five_pencil_amplification-2026-09-05.md` and
 `scripts/probes/astra_mca_five_pencil_amplification_check.py`.
+
+## [astra-selfdual-mds] weighted self-duality does not supply the missing MCA count (2026-09-05)
+
+A weighted-self-dual [128,64] MDS code over the production prime can have
+147 distinct actual MCA-bad scalars at agreement 88. Seven sparse blocks
+give 147 rank-one residual rays in a [64,32] code; a generic doubling with
+its dual preserves the exact same-support no-joint witnesses. Determinant
+degree bounds prove a simultaneous finite-field specialization. The code
+can carry the subgroup weights, but is not asserted to be RS, and no
+numerical length-128 matrix or production-length counterexample is claimed.
+
+The additional first shifted Gram rank-one condition on the whole code
+does recover GRS by a nested-subspace and Vandermonde argument. Actual RS
+witness errors also obey common-kernel Cauchy rank-one and squared-minor
+residue identities. These retain structure missing from self-duality; a
+distinct-scalar counting consequence remains unproved. Independent agent
+reviews checked the written arguments. Exact controls verify support
+matchings, specialization budgets, Krylov reconstruction, shifted matrices,
+and 104 residue equations. See
+`docs/kb/astra_mca_shifted_gram-2026-09-05.md` and
+`scripts/probes/astra_mca_shifted_gram_check.py`.
+
+## [astra-locator-converse] balanced domain locators reconstruct pairs, but saturation still needs overlap control (2026-09-05)
+
+Six actual-domain absence locators of degree 2b, with constant span three,
+total gcd one, and balanced degree-b syzygies, suffice to reconstruct six
+polynomial pairs and their exact cores. A bounded Bezout row exists by a
+dimension argument; the adjugate and derivative identities prove exactness.
+An invertible 3b-by-3b coefficient map certifies the balanced splitting.
+This independently reviewed written converse removes a separate kernel
+existence hypothesis for this restricted architecture. It does not supply
+production locators or reduce every MCA event to six such pencils.
+
+The positive b=2 control has genuine common-domain locators and all six
+pencils saturated, yet their bad-scalar union has only four values. Thus
+even after domain realizability and all six square conditions, overlap
+cannot be omitted from the over-budget certificate. The reproducible probe
+constructs 24 pairs at b=1,2,3,4 and checks 36 MCA witnesses on both exact
+target-size and full agreement supports. These bounded controls are not a
+production construction or a Lean proof. See
+`docs/kb/astra_mca_locator_reconstruction-2026-09-05.md` and
+`scripts/probes/astra_mca_locator_reconstruction_check.py`.

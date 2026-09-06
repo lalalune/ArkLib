@@ -239,3 +239,11 @@ Schur-product parity equation cannot count the triple-owner roots twice.
 The polynomial divisor argument does count those double roots before
 reduction modulo the domain locator. Weighted self-duality alone has not
 recovered that information.
+
+The [shifted-Gram extension](astra_mca_shifted_gram-2026-09-05.md) gives a
+weighted-self-dual length-128 MDS existence example with 147 actual MCA-bad
+scalars at agreement 88. It retains the production prime, but is not an
+RS or production-length counterexample. The same note identifies stronger
+RS Cauchy/residue identities and proves that the first shifted rank-one
+condition, when imposed on the whole self-dual MDS code, recovers GRS.
+Neither result supplies the missing universal scalar-count argument.

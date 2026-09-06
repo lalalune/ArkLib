@@ -517,6 +517,18 @@ python3 -m pip install leanblueprint
   threshold-44 MCA vertices over the production field. This is not an RS
   realization. Run `python3 scripts/probes/astra_mca_mds_rank_obstruction.py`
   for its support, matching, and specialization-degree checks.
+  Run `python3 scripts/probes/astra_mca_shifted_gram_check.py` for the
+  [shifted-Gram identities and self-dual obstruction](../kb/astra_mca_shifted_gram-2026-09-05.md).
+  The written characterization recovers half-rate GRS from the first shifted
+  rank-one form. The Cauchy identities retain RS constraints on actual
+  witness errors; the weighted-self-dual MDS existence example is not an
+  RS counterexample or a production count bound.
+  Run `python3 scripts/probes/astra_mca_locator_reconstruction_check.py` for
+  the [balanced-locator reconstruction](../kb/astra_mca_locator_reconstruction-2026-09-05.md):
+  24 polynomial pairs and 36 same-support MCA witnesses are checked on four
+  bounded common domains. The independently reviewed written converse makes
+  balanced actual-domain locators sufficient for pair reconstruction; no
+  production locator certificate or over-budget scalar set is supplied.
   The [single-hole reduction](../kb/astra_mca_single_hole_reduction-2026-09-05.md)
   identifies an exact MCA subfamily with the extrapolated-value image of a
   punctured RS list. Its large joint cores are rationally collinear but omit

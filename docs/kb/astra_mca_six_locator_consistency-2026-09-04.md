@@ -138,3 +138,11 @@ shows that a common multiplicative power lift can have order at most two.
 It also supplies an actual-prime length-16 example and explains why inversion,
 the elementary elliptic-cover genus inequality, and the prime-field point count
 do not give a production exclusion.
+
+The later [balanced-locator reconstruction](astra_mca_locator_reconstruction-2026-09-05.md)
+proves the converse after imposing the balanced syzygy certificate: genuine
+polynomial pairs and their exact cores can then be reconstructed without
+an additional interpolation-kernel hypothesis. A square coefficient-map
+determinant certifies balance for a particular locator triple. Production
+locator existence and sufficient distinct finite cancellation directions
+remain open.
