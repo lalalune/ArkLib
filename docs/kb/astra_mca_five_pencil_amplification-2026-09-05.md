@@ -20,8 +20,9 @@ retained. That restricted family has at most 1014089502 bad scalars from
 its five pencils, also below the budget. Different core patterns, additional
 pencils, and other decoding polynomials remain outside that result.
 
-Both results have written proofs and exact arithmetic controls. They are
-**not Lean-formalized or independently reviewed**. The prize remains open.
+Both results have written proofs and exact arithmetic controls. An independent
+agent audit found no defect in either claim within its stated scope. They are
+**not Lean-formalized or externally peer-reviewed**. The prize remains open.
 
 ## Polynomial normalization
 
@@ -279,4 +280,30 @@ removal, two newly uncovered coordinates, and three deterministic random
 patterns. Their nullities are 2,1,2,1,1,1. These are independent controls;
 the proof for all production removal patterns is the written rank,
 descent, root-count and incidence argument above. Neither result is yet
-Lean-formalized or independently reviewed.
+Lean-formalized.
+
+### Independent audit
+
+An independent agent reviewed the mathematical argument at source commit
+`ca77ac1069ae7c7f2adef6a803010f454d9f3c32`, including the exact same-support
+MCA definition. It found no correctness defect. This is an agent review,
+not external human peer review or an audit of literature novelty.
+
+Run the separately implemented arithmetic audit with
+
+```bash
+python3 scripts/probes/astra_mca_five_pencil_independent_check.py
+```
+
+The [independent checker](../../scripts/probes/astra_mca_five_pencil_independent_check.py)
+imports no other repository probes. It reconstructs H and the actual base
+agreement sets, verifies the minor and primitive gcd, and checks the five
+production hole values. Its order-16 no-joint check uses augmented
+Vandermonde ranks on each exact witness support. It also checks fifteen
+removal patterns, the recursive Lucas primality certificate, and the domain
+generator order.
+
+The strict descent cutoff is essential. At order 64, the first-four source
+kernel has dimensions 1,2,4,8 at h=0,1,3,7, respectively. At h=8=2s its
+dimension is 11, exceeding the nine polynomial multiples of the seed.
+The proof above uses only h<2s and does not extend across this boundary.

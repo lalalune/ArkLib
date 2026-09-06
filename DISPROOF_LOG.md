@@ -17724,7 +17724,9 @@ adding more pencils, or arbitrary other decoding polynomials.
 
 Four independent dense constructions certify 18,54,198,54 bad scalars;
 six order-64 removal patterns check the full source-matrix kernel against
-the predicted multiplier dimension. These support written proofs, not a
-Lean formalization, independent mathematical review, or a completed prize.
+the predicted multiplier dimension. A subsequent independent agent audit
+found no defect, using separately implemented arithmetic and fifteen
+removal patterns. These support written proofs, not a Lean formalization,
+external human peer review, or a completed prize.
 See `docs/kb/astra_mca_five_pencil_amplification-2026-09-05.md` and
 `scripts/probes/astra_mca_five_pencil_amplification_check.py`.

@@ -396,6 +396,11 @@ python3 -m pip install leanblueprint
   constructions and six removal patterns. The written ceiling 1014089502
   applies only to these five pencils with the specified original agreements
   retained; it is not a universal MCA bound or a Lean theorem.
+  Run `python3 scripts/probes/astra_mca_five_pencil_independent_check.py` for
+  the independent agent's separate arithmetic audit, including fifteen
+  removal patterns, augmented-Vandermonde no-joint tests, the field
+  certificate, and the strict descent cutoff. The written proofs passed
+  that agent review; external peer review remains outstanding.
   The construction helper also checks eight
   [Riccati contact obstruction lemmas](../kb/astra_riccati_contact_obstruction-2026-09-05.md)
   on both pins. Run `python3 scripts/probes/astra_riccati_contact_check.py`

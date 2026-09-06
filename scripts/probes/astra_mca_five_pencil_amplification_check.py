@@ -265,7 +265,9 @@ def main():
                                 + [dense_control(64, 65537)],
               "dense_perturbation_controls": perturbation_controls(),
               "production": production(), "Lean_formalized": False,
-              "independently_reviewed": False, "prize_solved": False}
+              "independent_agent_reviewed": True, "externally_peer_reviewed": False,
+              "audited_mathematical_source_commit": "ca77ac1069ae7c7f2adef6a803010f454d9f3c32",
+              "prize_solved": False}
     print(json.dumps(result, indent=2, sort_keys=True))
 
 
