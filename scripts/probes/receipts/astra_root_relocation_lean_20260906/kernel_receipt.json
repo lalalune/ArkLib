@@ -1,0 +1,72 @@
+{
+  "status": "PASS_HOSTED_KERNEL_AND_AXIOM_CHECK",
+  "run_id": 34042420175,
+  "run_url": "https://github.com/lalalune/ArkLib/actions/runs/34042420175",
+  "checked_commit": "4b216885eeb0974bb3572362796a5ecf327715ad",
+  "pinned_toolchain": "leanprover/lean4:v4.30.0-rc2",
+  "verified_theorems": {
+    "AstraMcaRootRelocation.exists_fresh_directions": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRootRelocation.exists_simultaneous_directions": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRootRelocation.exists_counted_fresh_directions": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRootRelocation.production_greedy_arithmetic": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRootRelocation.mca_event_of_joint_core_extra": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRootRelocation.mca_event_of_reciprocal_extra": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRootRelocation.mca_event_of_good_local": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRootRelocation.disjoint_event_union": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRootRelocation.disjoint_event_card_le_bad_card": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRootRelocation.disjoint_event_probability_lower": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRootRelocation.disjoint_event_epsMCA_lower": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  "source_sha256": {
+    "scripts/probes/astra_mca_root_relocation.lean": "ab648a888e87699abf8ad32dc57a0364ce68116cf76e3092ddfc66976243327b",
+    "scripts/probes/astra_mca_event_bridge.lean": "4e294f65273e23a7ff50b925331c2d1a17993b5ccf2dd5b16bca926f073b356f",
+    "ArkLib/Data/CodingTheory/ProximityGap/MCAWitnessSpread.lean": "cdc98d64e2d233a4de7e3a17b600a31e371967328200a3aa44769ce3705068ce",
+    "lean-toolchain": "ce4c4e3d87434b9663f46de25ce34b48a0cf0d392e0a320a0787b4674a2d7b61",
+    "lake-manifest.json": "83aa1b110b26e46d0c3ceaef2c77c97e4d383d767faf34acb318aac72b0648d0"
+  },
+  "scope": "Eleven generic finite-choice, same-support event, and count/probability bridges. The four-cubic production seed, fibers, received word, and final numerical radius are not instantiated in Lean."
+}

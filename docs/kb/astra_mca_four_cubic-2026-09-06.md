@@ -217,3 +217,14 @@ The [coincidence-module certificate](astra_mca_four_cubic_module-2026-09-06.md)
 shows that retaining the five full triple fibers and the current root/pair
 blocks forces arbitrary pairs of source polynomials to have collinear local
 values. It rules out counting their nonowners as separate ordinary directions.
+
+The eleven generic Lean lemmas passed the complete ArkLib job in
+[CI run 34042420175](https://github.com/lalalune/ArkLib/actions/runs/34042420175),
+at commit `4b216885eeb0974bb3572362796a5ecf327715ad`. The
+[kernel receipt](../../scripts/probes/receipts/astra_root_relocation_lean_20260906/kernel_receipt.json)
+records every axiom report and verifies that the current proof and its selected
+source dependencies match that checked commit. The
+[archive manifest](../../scripts/probes/receipts/astra_root_relocation_lean_20260906/manifest.json)
+binds the retained raw proof log and run metadata. This confirms the reusable
+lemmas, including the conversion from disjoint scalar sets to the original
+worst-case MCA error; it does not instantiate the numerical construction.

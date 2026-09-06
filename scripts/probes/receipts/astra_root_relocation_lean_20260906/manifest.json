@@ -1,0 +1,7 @@
+{
+  "sha256": {
+    "scripts/probes/receipts/astra_root_relocation_lean_20260906/kernel-output.txt": "dd6284c6ecf8005e49983a1f26b4f8b6da9195e8bed0175ff7f5ea85da2973eb",
+    "scripts/probes/receipts/astra_root_relocation_lean_20260906/kernel_receipt.json": "2021732ec044f366970399b94c47d15c0581dbf672dfc8c8ffb8dcc142612e76",
+    "scripts/probes/receipts/astra_root_relocation_lean_20260906/run.json": "ab8c2179c50b413bf3d364ea6785a18a64d02e12e3ebaa7838f74e3047da4584"
+  }
+}

@@ -30,6 +30,13 @@ at `1/3` cannot establish this production target. Historical reductions below
 must be read with their stated hypotheses, rather than as evidence that a
 Paley/BGK result alone completes the present problem.
 
+The eleven supporting Lean lemmas now pass the complete ArkLib CI job in
+[run 34042420175](https://github.com/lalalune/ArkLib/actions/runs/34042420175),
+with retained [kernel provenance](../../scripts/probes/receipts/astra_root_relocation_lean_20260906/kernel_receipt.json).
+Their scope is generic finite choice, the original same-support event, and
+count/probability conversion; the numerical production instantiation remains
+open.
+
 The [exact fifth-cubic exclusion](../kb/astra_mca_fifth_cubic_exclusion-2026-09-06.md)
 closes one particular extension of this construction. Neither this exclusion
 nor the new unsafe bound determines the exact threshold or resolves either
