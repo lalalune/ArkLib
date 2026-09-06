@@ -1,0 +1,12 @@
+{
+  "scope": "Written order16 production construction and exact arithmetic; independent actual-polynomial controls. No full numerical Lean theorem.",
+  "sha256": {
+    "docs/kb/astra_mca_order16-2026-09-06.md": "83e06669a5a807019c3d9d892ae46894cc3e989713b398f0e2fde4fa33edb264",
+    "scripts/probes/astra_mca_order16_check.py": "ae9fa686444fb75d736fd57a085fb6cfe38c6a40c7c58edfe1296278041d9d65",
+    "scripts/probes/astra_mca_order16_certificate.json": "b389b22ad229de72349249985e1b37bd141ed23b2d6edc372a750895eea01662",
+    "scripts/probes/astra_mca_order16_independent_check.py": "22ea41dfe0cd1eb556573d1be262e706b32c9eb5f792f558159d62338401720c",
+    "scripts/probes/receipts/astra_order16_20260906/comparison.json": "befb37ecc48f6ae9021176876ac217d050c985b0040054e9afce75d05a479e9e",
+    "scripts/probes/receipts/astra_order16_20260906/independent.json": "ea6749d73b963fb74fe9d5adf98d93bcd3c92893a62ad9f336b53571f81dff21",
+    "scripts/probes/receipts/astra_order16_20260906/primary.json": "b389b22ad229de72349249985e1b37bd141ed23b2d6edc372a750895eea01662"
+  }
+}

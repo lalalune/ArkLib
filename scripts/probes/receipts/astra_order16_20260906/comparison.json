@@ -1,0 +1,9 @@
+{
+  "status": "PASS_EXACT_CROSS_IMPLEMENTATION_COMPARISON",
+  "primary_output_equals_certificate": true,
+  "independent_seed_equals_primary_seed": true,
+  "lower_supremum_bound": "268435457/1073741824",
+  "unsafe_upper_bound": "313174699/1073741824",
+  "interval_width": "22369621/536870912",
+  "scope": "Lower-side source theorem plus Hamming staircase; upper-side written production construction with exact arithmetic. Not a new kernel check."
+}

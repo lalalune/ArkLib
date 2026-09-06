@@ -1,5 +1,10 @@
 # Four cubic sources improve the production unsafe radius to 5/16+1/n
 
+The later [order-sixteen degree-seven construction](astra_mca_order16-2026-09-06.md)
+improves this upper bound to `313174699/2^30`, approximately 29.1666667%.
+The construction and restricted statements below remain valid; the bracket
+in this note records the earlier checkpoint.
+
 There is a received line for the actual production prime, subgroup of order n=2^30, and Reed–Solomon dimension k=n/2 with at least
 
     n+6 = 1073741830

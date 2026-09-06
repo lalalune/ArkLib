@@ -12,23 +12,25 @@ codes ([ABF26] Definition 4.3), with matching machine-checked bounds.
 
 ## Current production checkpoint (2026-09-06)
 
-The research branch `codex/proximity-astra-20260904` now has a
-[four-cubic construction](../kb/astra_mca_four_cubic-2026-09-06.md) with
-`n+6` distinct MCA-bad scalars on the certified rate-one-half production code,
-at radius `335544321/2^30 = 5/16+1/2^30`. The seed arithmetic and counts have
-exact Python certificates and independently expanded finite controls. The
-complete numerical construction is a written proof; the generic Lean
-fresh-direction and original-event bridges do not yet instantiate its fibers
-and received word.
+The research branch `codex/proximity-astra-20260904` now has an
+[order-sixteen degree-seven construction](../kb/astra_mca_order16-2026-09-06.md)
+with `n+4` distinct MCA-bad scalars on the certified rate-one-half production
+code, at radius `313174699/2^30 = 7/24+1/(3*2^30)`, approximately 29.1666667%.
+It improves the earlier [four-cubic bound](../kb/astra_mca_four_cubic-2026-09-06.md)
+near 31.25%. Exact production-field certificates, independently reconstructed
+seed coefficients, and two independently expanded finite controls pass. The
+numerical production construction is a written proof, not a completed Lean
+theorem.
 
 Together with the existing full-UDR safety theorem and the Hamming staircase,
 the written bracket is
-`268435457/2^30 <= deltaStar <= 335544321/2^30`, of width `1/16`.
+`268435457/2^30 <= deltaStar <= 313174699/2^30`, of width
+`44739242/2^30`, approximately 4.167 percentage points.
 The lower endpoint is a supremum bound, not an assertion of safety at that
-endpoint. In particular, historical proposed universal safety statements
-at `1/3` cannot establish this production target. Historical reductions below
-must be read with their stated hypotheses, rather than as evidence that a
-Paley/BGK result alone completes the present problem.
+endpoint. Historical proposed universal safety statements at `1/3` cannot
+establish this production target. Historical reductions below must be read
+with their stated hypotheses, rather than as evidence that a Paley/BGK result
+alone completes the present problem.
 
 The eleven supporting Lean lemmas now pass the complete ArkLib CI job in
 [run 34042420175](https://github.com/lalalune/ArkLib/actions/runs/34042420175),

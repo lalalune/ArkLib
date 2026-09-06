@@ -54063,3 +54063,16 @@ choosing independent second-coordinate polynomials while retaining this
 construction's full triple fibers and common-root/pair blocks. A ten-by-twelve
 rank certificate and a written power-residue argument force the local source
 pairs onto one affine line. This is specific to those coincidence constraints.
+# 2026-09-06: Fixed order-sixteen source allocation cannot raise every core
+
+The explicit degree-seven order-sixteen sources and carrier `q_i=Xp_i` in
+`docs/kb/astra_mca_order16-2026-09-06.md` admit a stronger production attack at
+`delta=313174699/2^30`, with `n+4` counted original MCA events. An exact local
+dual gives `D+3(C0+C2)<=82s+2deg B` for arbitrary ownership and common-root
+placements within these sources. With `deg B<=s-2` and `D>=n+1`, every core
+cannot exceed `floor((68s-5)/6)=760567124`, attained by the construction.
+The standalone checker `scripts/probes/astra_mca_order16_check.py` verifies
+all local inequalities over the exact seed partition. This excludes only a
+better core-plus-one allocation within the four fixed sources; it neither
+bounds other decoder pencils nor establishes universal MCA safety. The
+production lifting and numerical upper bound are written, not Lean-checked.
