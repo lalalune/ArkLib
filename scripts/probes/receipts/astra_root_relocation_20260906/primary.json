@@ -1,0 +1,183 @@
+{
+  "status": "PASS",
+  "production": {
+    "n": 1073741824,
+    "s": 67108864,
+    "k": 536870912,
+    "agreement_threshold": 718064844,
+    "radius_numerator": 355676980,
+    "exact_joint_cores": [
+      718064843,
+      718064843,
+      718064843,
+      718064843,
+      718064843,
+      718064843
+    ],
+    "common_factor_degree": 67108862,
+    "distinct_finite_MCA_scalars": 1073741832,
+    "margin_over_n": 8,
+    "exceeds_2_power_minus128_numerator": true,
+    "fiber0_states": [
+      [
+        "Z",
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        40265317
+      ],
+      [
+        "C",
+        [
+          5
+        ],
+        13421773
+      ],
+      [
+        "U",
+        [],
+        13421774
+      ]
+    ],
+    "fiber12_states": [
+      [
+        "Z",
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        26843545
+      ],
+      [
+        "C",
+        [
+          0
+        ],
+        13421773
+      ],
+      [
+        "C",
+        [
+          1,
+          3
+        ],
+        13421773
+      ],
+      [
+        "C",
+        [
+          2,
+          4
+        ],
+        13421773
+      ]
+    ],
+    "fiber14_states": [
+      [
+        "C",
+        [
+          0,
+          2,
+          3
+        ],
+        33554432
+      ],
+      [
+        "C",
+        [
+          1,
+          4,
+          5
+        ],
+        33554432
+      ]
+    ]
+  },
+  "fixed_seed_capacity_certificate": {
+    "beta": [
+      6,
+      16,
+      21,
+      6,
+      6,
+      11,
+      16,
+      16,
+      21,
+      21,
+      16,
+      11,
+      6,
+      16,
+      11,
+      16
+    ],
+    "weighted_candidates": [
+      0,
+      1,
+      2,
+      5
+    ],
+    "root_coefficient": 14,
+    "core_weight": 5,
+    "exact_capacity_at_constructed_core": 1073741832,
+    "largest_integer_core_with_capacity_over_n": 718064843,
+    "scope": "This fixed primitive seed family; not a universal MCA upper bound."
+  },
+  "dense_controls": [
+    {
+      "n": 1024,
+      "k": 512,
+      "agreement_threshold": 684,
+      "exact_joint_cores": [
+        683,
+        683,
+        683,
+        683,
+        683,
+        683
+      ],
+      "common_factor_degree": 62,
+      "source_pair_degrees": [
+        510,
+        511
+      ],
+      "distinct_finite_MCA_scalars": 1032,
+      "margin_over_n": 8,
+      "actual_whole_support_and_no_joint_checks": 1032,
+      "status": "PASS"
+    },
+    {
+      "n": 4096,
+      "k": 2048,
+      "agreement_threshold": 2738,
+      "exact_joint_cores": [
+        2737,
+        2737,
+        2737,
+        2737,
+        2737,
+        2737
+      ],
+      "common_factor_degree": 254,
+      "source_pair_degrees": [
+        2046,
+        2047
+      ],
+      "distinct_finite_MCA_scalars": 4112,
+      "margin_over_n": 16,
+      "actual_whole_support_and_no_joint_checks": 4112,
+      "status": "PASS"
+    }
+  ],
+  "scope": "Explicit received-pair existence and actual same-support MCA witnesses; not a universal lower bound or full-list census."
+}

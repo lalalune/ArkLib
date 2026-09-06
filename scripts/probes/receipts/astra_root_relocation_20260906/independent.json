@@ -1,0 +1,387 @@
+{
+  "status": "PASS_INDEPENDENT_RELOCATED_ROOT_MCA_WITNESSES",
+  "base_difference_gcd": [
+    1
+  ],
+  "base_partitions": [
+    [
+      [
+        0
+      ],
+      [
+        1
+      ],
+      [
+        2
+      ],
+      [
+        3
+      ],
+      [
+        4
+      ],
+      [
+        5
+      ]
+    ],
+    [
+      [
+        0,
+        1,
+        2,
+        4
+      ],
+      [
+        3
+      ],
+      [
+        5
+      ]
+    ],
+    [
+      [
+        0,
+        1,
+        2,
+        3,
+        5
+      ],
+      [
+        4
+      ]
+    ],
+    [
+      [
+        0
+      ],
+      [
+        1
+      ],
+      [
+        2,
+        3,
+        4
+      ],
+      [
+        5
+      ]
+    ],
+    [
+      [
+        0
+      ],
+      [
+        1,
+        3,
+        4
+      ],
+      [
+        2
+      ],
+      [
+        5
+      ]
+    ],
+    [
+      [
+        0,
+        5
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        3
+      ],
+      [
+        4
+      ]
+    ],
+    [
+      [
+        0,
+        2,
+        3,
+        4,
+        5
+      ],
+      [
+        1
+      ]
+    ],
+    [
+      [
+        0,
+        1,
+        3,
+        4,
+        5
+      ],
+      [
+        2
+      ]
+    ],
+    [
+      [
+        0,
+        1,
+        2,
+        3,
+        5
+      ],
+      [
+        4
+      ]
+    ],
+    [
+      [
+        0,
+        1,
+        2,
+        4,
+        5
+      ],
+      [
+        3
+      ]
+    ],
+    [
+      [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      [
+        5
+      ]
+    ],
+    [
+      [
+        0
+      ],
+      [
+        1
+      ],
+      [
+        2,
+        3,
+        4,
+        5
+      ]
+    ],
+    [
+      [
+        0
+      ],
+      [
+        1,
+        3
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        5
+      ]
+    ],
+    [
+      [
+        0
+      ],
+      [
+        1,
+        2,
+        5
+      ],
+      [
+        3
+      ],
+      [
+        4
+      ]
+    ],
+    [
+      [
+        0,
+        2,
+        3
+      ],
+      [
+        1,
+        4,
+        5
+      ]
+    ],
+    [
+      [
+        0,
+        1,
+        3,
+        4,
+        5
+      ],
+      [
+        2
+      ]
+    ]
+  ],
+  "production_constructions": [
+    {
+      "n": 1073741824,
+      "s": 67108864,
+      "a": 11184813,
+      "common_roots_fiber0": 33554437,
+      "common_roots_fiber12": 33554425,
+      "B_degree": 67108862,
+      "p_degree_cap": 536870910,
+      "q_degree_cap": 536870911,
+      "exact_joint_core_sizes": [
+        715827883,
+        715827883,
+        715827883,
+        715827883,
+        715827883,
+        715827883
+      ],
+      "full_agreement_threshold": 715827884,
+      "radius_numerator": 357913940,
+      "radius_denominator": 1073741824,
+      "ordinary_distinct_scalars": 984263348,
+      "uncovered_coordinates": 22369614,
+      "fresh_distinct_scalars": 134217684,
+      "certified_distinct_MCA_scalars": 1118481032,
+      "excess_above_security_budget": 44739208,
+      "strict_security_integer_margin": 15223963592408185472088316943808223613959536639
+    },
+    {
+      "n": 1073741824,
+      "s": 67108864,
+      "a": 13421773,
+      "common_roots_fiber0": 40265317,
+      "common_roots_fiber12": 26843545,
+      "B_degree": 67108862,
+      "p_degree_cap": 536870910,
+      "q_degree_cap": 536870911,
+      "exact_joint_core_sizes": [
+        718064843,
+        718064843,
+        718064843,
+        718064843,
+        718064843,
+        718064843
+      ],
+      "full_agreement_threshold": 718064844,
+      "radius_numerator": 355676980,
+      "radius_denominator": 1073741824,
+      "ordinary_distinct_scalars": 993211188,
+      "uncovered_coordinates": 13421774,
+      "fresh_distinct_scalars": 80530644,
+      "certified_distinct_MCA_scalars": 1073741832,
+      "excess_above_security_budget": 8,
+      "strict_security_integer_margin": 2722258935367507707706996859247987261439
+    }
+  ],
+  "dense_controls": [
+    {
+      "n": 1024,
+      "k": 512,
+      "s": 64,
+      "a": 13,
+      "common_polynomial_degree": 62,
+      "actual_common_domain_roots": 62,
+      "p_degrees": [
+        0,
+        510,
+        510,
+        510,
+        510,
+        510
+      ],
+      "q_degree_cap": 511,
+      "exact_joint_cores": [
+        683,
+        683,
+        683,
+        683,
+        683,
+        683
+      ],
+      "event_agreement_threshold": 684,
+      "ordinary_distinct_rays": 948,
+      "greedy_uncovered_coordinates": 14,
+      "new_distinct_rays": 84,
+      "actual_distinct_MCA_witness_scalars": 1032,
+      "dense_source_polynomial_evaluations": 6144,
+      "exact_outside_witness_checks": 1032,
+      "largest_forbidden_value_set": 6157
+    },
+    {
+      "n": 4096,
+      "k": 2048,
+      "s": 256,
+      "a": 51,
+      "common_polynomial_degree": 254,
+      "actual_common_domain_roots": 254,
+      "p_degrees": [
+        0,
+        2046,
+        2046,
+        2046,
+        2046,
+        2046
+      ],
+      "q_degree_cap": 2047,
+      "exact_joint_cores": [
+        2737,
+        2737,
+        2737,
+        2737,
+        2737,
+        2737
+      ],
+      "event_agreement_threshold": 2738,
+      "ordinary_distinct_rays": 3788,
+      "greedy_uncovered_coordinates": 54,
+      "new_distinct_rays": 324,
+      "actual_distinct_MCA_witness_scalars": 4112,
+      "dense_source_polynomial_evaluations": 24576,
+      "exact_outside_witness_checks": 4112,
+      "largest_forbidden_value_set": 24637
+    }
+  ],
+  "direct_global_root_dual": {
+    "candidate_weights": [
+      5,
+      5,
+      5,
+      0,
+      0,
+      5
+    ],
+    "root_weight": 14,
+    "local_capacities": [
+      6,
+      16,
+      21,
+      6,
+      6,
+      11,
+      16,
+      16,
+      21,
+      21,
+      16,
+      11,
+      6,
+      16,
+      11,
+      16
+    ],
+    "local_capacity_sum": 216
+  },
+  "scope": "Written production proof and exact controls; no billion-node enumeration, no full MCA census, no Lean formalization."
+}

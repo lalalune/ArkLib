@@ -1,0 +1,11 @@
+{
+  "scope": "Written production construction with exact seed and integer checks and independent dense finite controls. No production-domain enumeration, no Lean formalization, no exact-threshold claim.",
+  "sha256": {
+    "docs/kb/astra_mca_root_relocation-2026-09-06.md": "168807db92620defdb66f8cd71ac4c54d84c8d50b4877f4a0b538b7f7d7f8254",
+    "scripts/probes/astra_mca_root_relocation_check.py": "24b5882ebc048085b3ba11dd32fb4d3d8a63450bd56645277885be06e58d332c",
+    "scripts/probes/astra_mca_root_relocation_independent_check.py": "9a3c1217b287bbe8a944e2275206fff89fc3b8e95ea577fa8911ca553ef6af8b",
+    "scripts/probes/astra_mca_root_relocation_seed.json": "709a4e63655d3b6c6259ae24d7896b0505f20a7e20929cfdf48b6d8da81bc4cf",
+    "scripts/probes/receipts/astra_root_relocation_20260906/primary.json": "6c1f29f96c92594bebdae81ddd7956abf8b8761f4907f25492fd12b797e0f63e",
+    "scripts/probes/receipts/astra_root_relocation_20260906/independent.json": "7238255dd9caa04522fb21bb5a85b60bf05f3ef536007b88ed0d9742a5648dff"
+  }
+}

@@ -12,13 +12,18 @@ of length 2^30 and P is the existing certified production prime. The proof
 constructs the basis, projects its residual rows, builds the indexed supports,
 proves the actual MCA events, and applies the repository's probability and
 threshold lemmas. **This is an upper bound for one exact production code.
-The matching universal lower bound and the grand prize problems remain open.**
+The exact threshold and the grand prize problems remain open.**
 
 This bound is one Hamming step weaker than the earlier
 [computational bound](astra_mca_production_count-2026-09-05.md)
 357913941/2^30. It does not improve that number. Its advance is a complete
 kernel-checked construction and threshold argument without a billion-point
 enumeration.
+
+The later [common-root relocation construction](astra_mca_root_relocation-2026-09-06.md)
+gives the stronger written bound `355676980/2^30`, with independent exact
+controls. That construction is not yet Lean-formalized; this page records
+the earlier kernel-checked theorem.
 
 ## Exact code and statement
 

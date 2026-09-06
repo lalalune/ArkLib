@@ -10,9 +10,11 @@ Combined with the written
 this supplies a computationally established unsafe radius
 `delta0=357913941/1073741824` for the specified production field, subgroup,
 and rate one half. It gives the upper bound `mcaDeltaStar<=delta0`.
-The matching universal lower bound remains open. This result is not a Lean
-kernel proof, an exact threshold determination, or a solution of either
-grand prize challenge.
+The later [common-root relocation construction](astra_mca_root_relocation-2026-09-06.md)
+improves the unsafe radius to `355676980/1073741824` and refutes the proposed
+safety of this old bound's predecessor. The archived scan and its weaker
+upper bound remain valid. Neither construction determines the exact
+threshold or solves either grand prize challenge.
 
 The [local-repair stability theorem](astra_mca_local_repair_stability-2026-09-06.md)
 bounds what one or two coordinate edits can contribute through these old
