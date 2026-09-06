@@ -209,3 +209,11 @@ python3 scripts/probes/astra_mca_four_cubic_independent_check.py
 ```
 
 The [generic Lean bridges](../../scripts/probes/astra_mca_root_relocation.lean) prove simultaneous fresh-direction selection and the original MCA event from a joint core plus one point. They discharge those reusable steps under explicit hypotheses. The numerical production theorem still requires the seed, fiber, common-factor, received-word, and final counting instantiations.
+
+Two further exact restrictions help distinguish extensions of this example
+from a general solution. The [fifth-cubic exclusion](astra_mca_fifth_cubic_exclusion-2026-09-06.md)
+rules out adjoining one cubic while keeping all five joint cores large.
+The [coincidence-module certificate](astra_mca_four_cubic_module-2026-09-06.md)
+shows that retaining the five full triple fibers and the current root/pair
+blocks forces arbitrary pairs of source polynomials to have collinear local
+values. It rules out counting their nonowners as separate ordinary directions.

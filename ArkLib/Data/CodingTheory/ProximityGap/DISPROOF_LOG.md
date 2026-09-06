@@ -54056,3 +54056,10 @@ Forty exact rational allocation duals bound each remaining candidate's minimum
 normalized core by `43/8`, below the required production core. This excludes
 that particular extension route, not different families, additional scalar
 decoders, or the grand MCA challenge.
+
+The [coincidence-module certificate](../../../../docs/kb/astra_mca_four_cubic_module-2026-09-06.md)
+also rules out creating several ordinary directions at one covered point by
+choosing independent second-coordinate polynomials while retaining this
+construction's full triple fibers and common-root/pair blocks. A ten-by-twelve
+rank certificate and a written power-residue argument force the local source
+pairs onto one affine line. This is specific to those coincidence constraints.

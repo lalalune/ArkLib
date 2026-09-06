@@ -106,9 +106,10 @@ def verify():
         'interpolants': 44,
         'distinct_fifth_sources': 40,
         'checked_rational_duals': 40,
-        'largest_normalized_core_upper_bound': [43, 8],
+        'largest_four_match_normalized_core_upper_bound': [43, 8],
         'production_improvement_required_core': target_core,
-        'production_extension_core_upper_bound': int(maximum_bound * s),
+        'production_four_match_core_upper_bound': int(maximum_bound * s),
+        'production_at_most_three_match_core_upper_bound': (27 * s - 6) // 5,
         'scope': 'Five distinct cubics retaining the displayed four, common carrier q_i=Xp_i, '
                  'nonzero common factor of degree at most n/8-2, all five joint cores large, '
                  'and at least n+1 directions supplied by those sources. '
