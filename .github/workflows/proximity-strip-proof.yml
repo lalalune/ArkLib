@@ -19,6 +19,7 @@ on:
       - "scripts/probes/astra_mca_four_cubic_seed.lean"
       - "scripts/probes/astra_mca_power_fibers.lean"
       - "scripts/probes/astra_mca_received_assembly.lean"
+      - "scripts/probes/astra_mca_scaled_polynomials.lean"
       - "scripts/probes/astra_mca_production_events.lean"
       - "scripts/probes/astra_mca_production_upper.lean"
       - "scripts/probes/astra_mca_kkh26_upper.lean"
@@ -181,15 +182,26 @@ jobs:
               "production_quadratic_contact_zero")]
           if os.environ["CHECK_MCA_EVENT"] == "true":
               expected += [
-                  "scalar_inverse_products",
-                  "raw_pair_factorization",
-                  "pair_factorization",
-                  "pairScalar_ne_zero",
-                  "pair_eval_eq_iff",
-                  "pair_power_eval_eq_iff",
-                  "seed_natDegree",
-                  "seed_normalization",
-                  "no_common_zero",
+                  "AstraMcaScaledPolynomials.locator_natDegree",
+                  "AstraMcaScaledPolynomials.locator_eval_eq_zero_iff",
+                  "AstraMcaScaledPolynomials.scaledP_eval",
+                  "AstraMcaScaledPolynomials.eval_on_fiber",
+                  "AstraMcaScaledPolynomials.local_pair_eq_iff",
+                  "AstraMcaScaledPolynomials.common_zero_iff_mem",
+                  "AstraMcaScaledPolynomials.reciprocal_cancellation",
+                  "AstraMcaScaledPolynomials.scaledP_natDegree_le",
+                  "AstraMcaScaledPolynomials.scaledQ_natDegree_le",
+                  "AstraMcaScaledPolynomials.degree_seven_budget",
+                  "AstraMcaScaledPolynomials.degree_three_budget",
+                  "AstraMcaFourCubicSeed.scalar_inverse_products",
+                  "AstraMcaFourCubicSeed.raw_pair_factorization",
+                  "AstraMcaFourCubicSeed.pair_factorization",
+                  "AstraMcaFourCubicSeed.pairScalar_ne_zero",
+                  "AstraMcaFourCubicSeed.pair_eval_eq_iff",
+                  "AstraMcaFourCubicSeed.pair_power_eval_eq_iff",
+                  "AstraMcaFourCubicSeed.seed_natDegree",
+                  "AstraMcaFourCubicSeed.seed_normalization",
+                  "AstraMcaFourCubicSeed.no_common_zero",
                   "AstraMcaPowerFibers.eightFiberEquiv",
                   "AstraMcaPowerFibers.fiberPoint_injective",
                   "AstraMcaPowerFibers.powerFiber_card",

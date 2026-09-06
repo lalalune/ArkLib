@@ -39,11 +39,15 @@ Their scope is generic finite choice, the original same-support event, and
 count/probability conversion; the numerical production instantiation remains
 open.
 
-Three further proof sources are now wired into the same CI gate: the exact
+Four further proof sources are now wired into the same CI gate: the exact
 order-eight cubic seed, the production domain's eight fibers and allocation
-blocks, and the generic assembly of one received word with an exactly counted
-union of ordinary and fresh MCA events. These sources await a successful
-kernel run; their addition does not by itself close the production theorem.
+blocks, the generic assembly of one received word with an exactly counted
+union of ordinary and fresh MCA events, and the common-root/composition degree
+and evaluation formulas for cubic and degree-seven seeds. These sources await
+a successful kernel run; their addition does not by itself close the
+production theorem. The event-proof script checks the remaining modules after
+a compiler failure and reports all failures together, while retaining a
+failing exit status.
 
 The [exact fifth-cubic exclusion](../kb/astra_mca_fifth_cubic_exclusion-2026-09-06.md)
 closes one particular extension of this construction. Neither this exclusion

@@ -17,6 +17,14 @@ bad-scalar census, an exact threshold, or a solution to either grand challenge.
 The [official MCA challenge](https://proximityprize.org/) asks for the optimal
 threshold, including other specified constant rates and smooth domains.
 
+Related work: [Gao, Yang, Xu, and Kan (2026)](https://arxiv.org/html/2607.10572v1)
+construct MCA lower bounds from list-decoding counterexamples using a common
+agreement set and an additional coordinate. Their Reed–Solomon construction
+permits changing one evaluation point. The present certificate checks a union
+of ordinary and fresh directions on the fixed certified subgroup. The shared
+core-plus-one mechanism has this literature precedent; novelty of the precise
+bound or construction has not been established by a complete literature review.
+
 ## Explicit production-field seed
 
 Use the [certified field and generator](../../ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PrizeShapePrimeP30.lean):

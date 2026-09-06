@@ -71,6 +71,7 @@ def fiberPoint (g : F) (s : ℕ) (j : Fin 8) (t : Fin s) : F :=
 def powerFiber (g : F) (s : ℕ) (j : Fin 8) : Finset F :=
   Finset.univ.image (fiberPoint g s j)
 
+omit [DecidableEq F] in
 theorem fiberPoint_injective (g : F) (s : ℕ) (hg : orderOf g = 8 * s) :
     Function.Injective (fun p : Fin 8 × Fin s => fiberPoint g s p.1 p.2) := by
   intro p q hpq
@@ -80,6 +81,7 @@ theorem fiberPoint_injective (g : F) (s : ℕ) (hg : orderOf g = 8 * s) :
     (Set.mem_Iio.mpr (by rw [hg]; exact (eightFiberIndex s p.1 p.2).isLt))
     (Set.mem_Iio.mpr (by rw [hg]; exact (eightFiberIndex s q.1 q.2).isLt)) hpq
 
+omit [DecidableEq F] in
 theorem fiberPoint_injective_in_fiber (g : F) (s : ℕ)
     (hg : orderOf g = 8 * s) (j : Fin 8) :
     Function.Injective (fiberPoint g s j) := by
@@ -129,6 +131,7 @@ theorem powerFiber_disjoint (g : F) (s : ℕ) (hg : orderOf g = 8 * s)
   have hp : (i, t) = (j, u) := fiberPoint_injective g s hg (ht.trans hu.symm)
   exact hij (congrArg Prod.fst hp)
 
+omit [DecidableEq F] in
 /-- The quotient generator really has order eight, not merely eighth power one. -/
 theorem orderOf_fiber_generator (g : F) (s : ℕ) (hs : 0 < s)
     (hg : orderOf g = 8 * s) : orderOf (g ^ s) = 8 := by
@@ -145,6 +148,7 @@ theorem orderOf_fiber_generator (g : F) (s : ℕ) (hs : 0 < s)
   rw [Nat.mul_comm 8 s] at hlower
   exact Nat.dvd_antisymm hupper ((Nat.mul_dvd_mul_iff_left hs).mp hlower)
 
+omit [DecidableEq F] in
 theorem fiber_generator_powers_injective (g : F) (s : ℕ) (hs : 0 < s)
     (hg : orderOf g = 8 * s) :
     Function.Injective (fun j : Fin 8 => (g ^ s) ^ j.val) := by
@@ -154,6 +158,7 @@ theorem fiber_generator_powers_injective (g : F) (s : ℕ) (hs : 0 < s)
     (Set.mem_Iio.mpr (by rw [orderOf_fiber_generator g s hs hg]; exact i.isLt))
     (Set.mem_Iio.mpr (by rw [orderOf_fiber_generator g s hs hg]; exact j.isLt)) hij
 
+omit [DecidableEq F] in
 theorem fiberPoint_pow (g : F) (s : ℕ) (hg : orderOf g = 8 * s)
     (j : Fin 8) (t : Fin s) : (fiberPoint g s j t) ^ s = (g ^ s) ^ j.val := by
   have hgn : g ^ (8 * s) = 1 := by simpa only [hg] using pow_orderOf_eq_one g
