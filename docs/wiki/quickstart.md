@@ -559,6 +559,22 @@ python3 -m pip install leanblueprint
   have those symmetries. The [Cauchy converse and false positives](../kb/astra_mca_cauchy_normal_form-2026-09-05.md)
   show why rational minors and shifted ranks alone cannot replace RS
   membership; run `python3 scripts/probes/astra_mca_cauchy_normal_form_check.py`.
+  The [higher-product obstruction](../kb/astra_mca_higher_product_lifts-2026-09-06.md)
+  extends this false positive to every separately lifted product order.
+  Run `python3 scripts/probes/astra_mca_higher_product_check.py` for the
+  dense and production sparse controls. Exact multiplication between odd
+  orders is an additional condition, not supplied by per-order identities.
+  The [nested odd-step theorem](../kb/astra_mca_nested_odd_extension-2026-09-06.md)
+  excludes retaining the six old locators when extending the length-22
+  example to b=5, even with moving coefficient points. Run
+  `python3 scripts/probes/astra_mca_nested_odd_extension_check.py` for its
+  exact incidence modules and sharp balanced-map agreement controls.
+  The [local-repair bound](../kb/astra_mca_local_repair_stability-2026-09-06.md)
+  limits one/two-coordinate modifications of the original three pencils.
+  Run `python3 scripts/probes/astra_mca_local_repair_trade_check.py` and
+  `python3 scripts/probes/astra_mca_local_repair_check.py`; the latter checks
+  all threshold supports of 170 bounded local-transfer words. These three
+  results do not supply the missing universal production bound.
   The [single-hole reduction](../kb/astra_mca_single_hole_reduction-2026-09-05.md)
   identifies an exact MCA subfamily with the extrapolated-value image of a
   punctured RS list. Its large joint cores are rationally collinear but omit

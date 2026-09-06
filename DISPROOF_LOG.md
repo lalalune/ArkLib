@@ -17924,3 +17924,79 @@ Both written arguments have independent agent audits and exact arithmetic
 controls. They are not Lean-formalized, and the production birational case
 and universal MCA lower bound remain open. See
 `docs/kb/astra_mca_cover_multiplicity-2026-09-05.md`.
+
+## [astra-higher-products] all separately lifted orders still admit production false positives (2026-09-06)
+
+After the legitimate quadratic product cap, a rank-two image has normal
+form D(F,G)^2 with primitive degree m and deg D<=2ell, ell=k-1-m.
+A coherent q-product lift is exactly L_q(F,G)^q, where deg L_q<=qell
+and L_q(x)=t_x^q. One cubic J suffices for every order: use D^s at
+order 2s and JD^s at order 2s+3. All even-order multiplication identities
+then hold. Every odd-times-odd defect is a multiple of J^2-D^3.
+
+The existing full-support production false positive has
+J=T^(k-6)(1+2T^4)^3. It passes the whole hierarchy, but J^2-D^3 is an
+explicit nonzero multiple of T^n-1. The hierarchy is automatic for every
+quadratic-admissible image when m<=178956970. Existence of a cubic with
+the exact identity J^2=D^3 recovers original RS membership, including
+zero rows and signs; an arbitrary chosen lift of a true RS image can
+still fail that identity. At m>=357913941, degree bounds force it.
+
+Four dense controls, true-RS wrap and alternate-lift controls, a zero-row
+control, sparse production identities, and a separate arithmetic audit
+pass. Independent agent reviews checked the written theorem. No actual
+MCA witness or universal scalar count is obtained. See
+`docs/kb/astra_mca_higher_product_lifts-2026-09-06.md` and
+`scripts/probes/astra_mca_higher_product_check.py`.
+
+## [astra-nested-odd-step] adding roots cannot repair the quadratic example's parity (2026-09-06)
+
+A balanced quadratic six-locator lift at b=2r cannot extend to b'=2r+1
+while retaining every old locator as a divisor, under the stated base
+double-incidence hypotheses. The target coefficient points and extra
+nodes may move freely. Its actual common domain, distinct three-span,
+primitivity, and balance suffice; no target saturation assumption is
+needed. The free module decomposition v=E(psi)+X O(psi) reduces the
+proof to four possible ranks of the odd component. They force either
+five collinear target points, five old locators in a two-dimensional
+space, a common scalar factor, or a syzygy below the balanced degree.
+
+The genuine b=4, n=22 F43 squared example satisfies the hypotheses and
+therefore has no such b=5 extension. A general balanced-map theorem
+also proves that distinct maps of degrees 2b,2c agree at at most
+b+c+min(b,c) geometric points, including infinity. For fixed coefficient
+configuration, a b=4 to b=5 attempt must lose double incidences at at
+least nine old nodes; retaining all 22 requires new b>=14.
+
+Exact finite controls certify the old frame, all-five spans, complete
+linear incidence modules, and sharp three- and four-point agreement
+examples. Independent reviews checked both written proofs, including
+the r=1 and arbitrary monic quadratic cases. No new odd-b MCA example
+or production bound follows. See
+`docs/kb/astra_mca_nested_odd_extension-2026-09-06.md` and
+`scripts/probes/astra_mca_nested_odd_extension_check.py`.
+
+## [astra-local-repair] small coordinate edits cannot fix the old three pencils (2026-09-06)
+
+The production receipt's at-most-one repeated residual direction bounds
+one/two-coordinate modifications of the old three pencils by
+357913943 and 715827882 predecessor directions, respectively. The nine possible
+core-membership transitions give exact trade bounds. In the two-lift
+case, a third old occurrence would be required for the exceptional
+direction, removing the last unit of slack. Arbitrary replacement vectors
+are allowed in this bound; arbitrary new decoders are not excluded.
+
+A decoder outside the three old specializations must omit at least
+178956970 and 178956969 nodes of each old core after one/two edits, by
+polynomial uniqueness on the unedited core. This explicitly limits the
+scope of local stability when supports may depend on the scalar.
+
+A standalone length-16 control over the production prime reconstructs
+the polynomial pairs and checks all 1820 target supports for 170 words,
+covering every transfer to another local pair value at up to two nodes.
+Its 309400 support checks give maxima 0,5,10. Every qualifying decoder
+in those cases is an old-pencil specialization; two private transfers
+attain ten. This is not an exhaustive arbitrary-value edit census or a
+production-domain computation. The independently reviewed written bound
+and finite controls are not Lean-formalized. See
+`docs/kb/astra_mca_local_repair_stability-2026-09-06.md` and its two probes.

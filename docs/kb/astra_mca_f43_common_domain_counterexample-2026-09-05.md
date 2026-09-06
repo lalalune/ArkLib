@@ -6,6 +6,12 @@ This realizes the common-domain conditions missing from the [earlier abstract si
 
 It is a small-characteristic, non-cyclotomic example, not a production-field or production-length counterexample, and not a Lean proof. The covering degree is two, which is compatible with even b=4 and excluded by the companion [covering-multiplicity lemma](astra_mca_cover_multiplicity-2026-09-05.md) at the production odd b.
 
+The [nested-extension obstruction](astra_mca_nested_odd_extension-2026-09-06.md)
+also excludes retaining all six locators and adding roots to reach b=5,
+n=28, even if the six coefficient points move. It needs only the target
+common-domain and balance conditions. Extensions that change the old
+incidences remain outside that obstruction.
+
 ## Exact degree-two frame over F43
 
 All following coefficients are modulo 43 and listed in ascending polynomial degree, component by component:

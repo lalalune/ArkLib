@@ -14,6 +14,13 @@ The matching universal lower bound remains open. This result is not a Lean
 kernel proof, an exact threshold determination, or a solution of either
 grand prize challenge.
 
+The [local-repair stability theorem](astra_mca_local_repair_stability-2026-09-06.md)
+bounds what one or two coordinate edits can contribute through these old
+three pencils at the predecessor radius. It also gives the number of old
+core points that a replacement decoder must omit to escape them. These
+restrictions do not change the unsafe radius or exclude arbitrary new
+decoders with substantially different supports.
+
 ## Retained execution evidence
 
 [GitHub Actions run 33941607360](https://github.com/lalalune/ArkLib/actions/runs/33941607360)

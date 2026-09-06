@@ -6,6 +6,13 @@ two-column witness image, not a full half-rate MDS code, and does not prove
 the universal MCA bound or construct actual over-budget MCA witnesses.
 It audits relaxations of the [shifted-Gram and Cauchy identities](astra_mca_shifted_gram-2026-09-05.md).
 
+The later [higher-product theorem](astra_mca_higher_product_lifts-2026-09-06.md)
+shows that a compatible cubic lift supplies separately admissible products
+of every higher order. This same production false positive passes the
+entire hierarchy, including even-order multiplication laws. Existence of
+an exact odd-times-odd compatibility identity instead recovers actual RS
+membership; deriving the universal MCA count remains a separate task.
+
 ## 1. Polynomial normal form
 
 Let K be a field, Omega={x_1,...,x_n} distinct K-rational nodes, n=2k,

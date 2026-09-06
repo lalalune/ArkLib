@@ -2,6 +2,12 @@
 
 This is a written general lemma about the actual balanced-locator reconstruction. It is not Lean-formalized and does not settle the remaining birational case. Its proof has an independent mathematical audit.
 
+The [nested odd-step theorem](astra_mca_nested_odd_extension-2026-09-06.md)
+addresses a different escape: retaining all old roots while adding new ones
+and moving the coefficient configuration. For a quadratic lift satisfying
+the stated double-incidence assumptions, the next odd step is impossible.
+It does not require that the proposed new map retain the old covering map.
+
 ## Statement
 
 Use an actual common squarefree domain Omega of n=6b-2 finite K-rational nodes, with the six degree-2b monic locators W_i, their primitive three-dimensional span w, and balanced degree-b homogeneous syzygy rows B,C. Write W_i=c_i dot w. Let
