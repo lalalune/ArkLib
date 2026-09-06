@@ -17701,3 +17701,30 @@ parameters. The matrix rank and reconstruction checks remain separate
 Python results. This strengthens the finite construction evidence without
 formalizing the general carrier theorem, bounding MCA, or solving the prize.
 See `docs/kb/astra_scalar_kernel_witness-2026-09-05.md`.
+
+## [astra-five-pencil-amplification] retained cores prevent these five pencils from crossing the budget (2026-09-05)
+
+The five production candidates with coprime outside factors admit an
+explicit polynomial-pencil amplification to 805306374 distinct bad scalars
+at radius 335544321/1073741824. An injective reciprocal map supplies
+805306369 scalars; five hole values are checked separately in the actual
+field. The same-support no-joint condition follows from polynomial
+uniqueness on the retained cores. This certified set remains below the
+security numerator budget of 1073741824 and gives no new unsafe-radius bound.
+
+For arbitrary polynomial changes to these five pencils, retain at least
+715827882 points of each original core. A nonzero 25-by-25 base minor,
+residue-class descent, and the fifth-candidate root surplus force a common
+polynomial pair multiplier. Removal incidence then leaves at least
+238609294 covered zero-residual nodes and at most 44739243 uncovered nodes,
+so these five pencils contribute at most 1014089502 bad scalars. This
+covers all allowed removal locations and supports with multiple extra
+agreements. It does not cover replacing more old agreements with new ones,
+adding more pencils, or arbitrary other decoding polynomials.
+
+Four independent dense constructions certify 18,54,198,54 bad scalars;
+six order-64 removal patterns check the full source-matrix kernel against
+the predicted multiplier dimension. These support written proofs, not a
+Lean formalization, independent mathematical review, or a completed prize.
+See `docs/kb/astra_mca_five_pencil_amplification-2026-09-05.md` and
+`scripts/probes/astra_mca_five_pencil_amplification_check.py`.

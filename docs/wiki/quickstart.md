@@ -388,6 +388,14 @@ python3 -m pip install leanblueprint
   five pairwise coprime outside factors in one production list. The complete
   sixteen-point list has exactly five members; no complete production list
   count or Lean formalization is claimed.
+  Run `python3 scripts/probes/astra_mca_five_pencil_amplification_check.py` for
+  the [five-pencil amplification](../kb/astra_mca_five_pencil_amplification-2026-09-05.md):
+  exact base-field identities and a rank certificate support a written
+  construction of 805306374 distinct production bad scalars at radius
+  `5/16+1/2^30`, below the security budget. Dense controls verify four finite
+  constructions and six removal patterns. The written ceiling 1014089502
+  applies only to these five pencils with the specified original agreements
+  retained; it is not a universal MCA bound or a Lean theorem.
   The construction helper also checks eight
   [Riccati contact obstruction lemmas](../kb/astra_riccati_contact_obstruction-2026-09-05.md)
   on both pins. Run `python3 scripts/probes/astra_riccati_contact_check.py`

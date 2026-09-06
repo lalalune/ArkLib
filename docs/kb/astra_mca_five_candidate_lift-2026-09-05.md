@@ -173,6 +173,13 @@ yield an upper bound on epsMCA. The inequality `5/P < 2^-128` means that
 these five witnesses alone do not exceed the security budget; it does not
 prove that the radius is secure against other inputs or other witnesses.
 
+A subsequent [polynomial-pencil amplification](astra_mca_five_pencil_amplification-2026-09-05.md)
+uses these five candidates to certify 805306374 distinct bad scalars at
+radius `5/16+1/2^30`. This still falls below the security numerator budget
+of 1073741824. A separate written argument bounds all contributions from
+these five pencils by 1014089502 under explicit retained-core assumptions.
+Neither result counts all MCA decodings or improves the unsafe-radius bound.
+
 ## Reproduction and verification limits
 
 Run
