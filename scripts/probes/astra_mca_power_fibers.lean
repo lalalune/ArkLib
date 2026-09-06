@@ -297,7 +297,10 @@ theorem fiberBlocks_three_cover (g : F) (s : ℕ) (a b c : Fin 8 → ℕ)
     rcases Finset.mem_union.mp hx with hx | hx
     · rcases Finset.mem_union.mp hx with hx | hx
       · exact fiberBlocks_subset_domain g s (fun _ => 0) a
-          (fun j => by have h := hsum j; omega) hx
+          (fun j => by
+            change 0 + a j ≤ s
+            have h := hsum j
+            omega) hx
       · exact fiberBlocks_subset_domain g s a b
           (fun j => by have h := hsum j; omega) hx
     · exact fiberBlocks_subset_domain g s (fun j => a j + b j) c
@@ -421,7 +424,7 @@ theorem production_common_roots_two_prefixes :
     · have hempty : fiberBlock g j 0 (productionRootCount j) = ∅ := by
         simp only [productionRootCount, if_neg h45, fiberBlock_zero]
       rw [hempty] at hj
-      exact False.elim (Finset.not_mem_empty x hj)
+      simp at hj
   · intro hx
     rcases Finset.mem_union.mp hx with hx | hx
     · exact Finset.mem_biUnion.mpr ⟨4, Finset.mem_univ _,

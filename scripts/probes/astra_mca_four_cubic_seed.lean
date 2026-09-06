@@ -311,7 +311,6 @@ theorem triple_natDegree (eta : F) (i j k : ℕ) : (triple eta i j k).natDegree 
   unfold triple
   rw [natDegree_mul (mul_ne_zero hi hj) hk, natDegree_mul hi hj]
   simp only [natDegree_X_sub_C]
-  norm_num
 
 /-- Every one of the six pair differences is a nonzero cubic. -/
 theorem pair_natDegree (eta : F) (h : IsPrimitiveRoot eta 8) (p : Pair) :
@@ -405,8 +404,9 @@ theorem no_common_zero (eta : F) (h : IsPrimitiveRoot eta 8) (x : F) :
     rcases h3r with h3r | h3r | h3r
   all_goals
     have he12 := h.pow_inj (by decide) (by decide) (h1r.symm.trans h2r)
+  all_goals
     have he13 := h.pow_inj (by decide) (by decide) (h1r.symm.trans h3r)
-    norm_num at he12 he13
+  all_goals omega
 
 end Seed
 

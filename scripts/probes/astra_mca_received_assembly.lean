@@ -105,8 +105,9 @@ theorem exists_received_word_and_events
       exact hbase_carrier x hx
     · simpa only [hpreserve x hx_outside] using hi
     · intro y hy
-      rcases Finset.mem_insert.mp hy with rfl | hy
-      · exact hcovered_range x hx
+      rcases Finset.mem_insert.mp hy with hxy | hy
+      · rw [hxy]
+        exact hcovered_range x hx
       · exact hcore_range i y hy
     · exact hsize i
   have hfresh_event : ∀ γ ∈ fresh,
@@ -126,8 +127,9 @@ theorem exists_received_word_and_events
     · rw [hpatch x hx]
     · rw [hpatch x hx]
     · intro y hy
-      rcases Finset.mem_insert.mp hy with rfl | hy
-      · exact huncovered_range x hx
+      rcases Finset.mem_insert.mp hy with hxy | hy
+      · rw [hxy]
+        exact huncovered_range x hx
       · exact hcore_range (source x j) y hy
     · exact hsize (source x j)
   obtain ⟨bad, hbad_card, hbad⟩ := disjoint_event_union
