@@ -529,6 +529,17 @@ python3 -m pip install leanblueprint
   bounded common domains. The independently reviewed written converse makes
   balanced actual-domain locators sufficient for pair reconstruction; no
   production locator certificate or over-budget scalar set is supplied.
+  Run `python3 scripts/probes/astra_mca_near_power_locator_exclusion_check.py`
+  for the [common-composition exclusion](../kb/astra_mca_near_power_locator_exclusion-2026-09-05.md).
+  A written proof excludes simultaneous minimal-remainder factorizations
+  at 27 production binary scales; balance excludes the pure quadratic lift.
+  Exact controls check tensor classifications, polynomial divisibility,
+  and all production degree identities. Unstructured locators remain open.
+  The [inversion sharpness control](../kb/astra_mca_inversion_locator_sharpness-2026-09-05.md)
+  shows why the abstract four-point line ceiling cannot be lowered: all
+  16 length-10 transversals reconstruct balanced, birational configurations.
+  Their six pencils give one shared bad direction, and are not over budget.
+  Run `python3 scripts/probes/astra_mca_inversion_locator_sharpness_check.py`.
   The [single-hole reduction](../kb/astra_mca_single_hole_reduction-2026-09-05.md)
   identifies an exact MCA subfamily with the extrapolated-value image of a
   punctured RS list. Its large joint cores are rationally collinear but omit

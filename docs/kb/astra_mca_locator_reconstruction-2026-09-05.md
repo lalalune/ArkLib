@@ -108,3 +108,10 @@ The fields are the certified production prime for b=1,2,4 and F_37 for b=3. Only
 Run `python3 scripts/probes/astra_mca_locator_reconstruction_check.py`. It returns PASS_BALANCED_DOMAIN_LOCATOR_CONVERSE, with coefficient-map ranks 5,11,17,23, reconstructs 24 polynomial pairs, and independently checks 36 same-support/no-joint MCA witnesses. The bounded Bezout dimensions and the general converse are proved above, not by those finite controls.
 
 An independent agent audit verified the converse and the determinant equivalence. Its separate arithmetic reconstructed b=1 over F7 and b=2 over F17 on different domains, checking both adjugate products and 21 exact-support no-joint witnesses across two charts. This is independent agent review, not external human peer review or Lean formalization.
+
+The [common-composition exclusion](astra_mca_near_power_locator_exclusion-2026-09-05.md)
+rules out all 27 production binary scales with a positive proper remainder
+factor, when all six locators have that factorization at the same scale.
+The balanced determinant condition also rules out a pure common quadratic
+composition because production b is odd. These restrict possible input
+certificates; they do not show that every certificate has either shape.

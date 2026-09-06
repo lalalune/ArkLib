@@ -146,3 +146,10 @@ an additional interpolation-kernel hypothesis. A square coefficient-map
 determinant certifies balance for a particular locator triple. Production
 locator existence and sufficient distinct finite cancellation directions
 remain open.
+
+The [common-composition exclusion](astra_mca_near_power_locator_exclusion-2026-09-05.md)
+uses these weaker divisor, span, total-gcd, and pair-gcd constraints to rule
+out six simultaneous minimal-remainder power factorizations at each of
+27 production binary scales. It does not infer such a factorization for
+arbitrary locators. A separate balanced-syzygy argument excludes the pure
+quadratic composition at production.

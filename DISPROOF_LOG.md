@@ -17772,3 +17772,59 @@ target-size and full agreement supports. These bounded controls are not a
 production construction or a Lean proof. See
 `docs/kb/astra_mca_locator_reconstruction-2026-09-05.md` and
 `scripts/probes/astra_mca_locator_reconstruction_check.py`.
+
+## [astra-near-power-locators] common minimal-remainder compositions cannot produce the six-locator certificate (2026-09-05)
+
+Suppose six degree-2b domain divisors have constant span three, total gcd
+one, and pairwise gcd degree at most b, with domain degree 6b-2. They cannot
+all be F_i(psi)Q_i for the same monic degree-ell polynomial psi, with common
+positive degree a of F_i, common degree r of Q_i satisfying 0<r<ell, and
+domain polynomial D(psi). Injective coefficient grouping gives six pure
+tensors in a three-dimensional space. Its elementary rank classification
+reduces to fixed-factor lines or a projective graph. Five members of any
+locator pencil would have lcm degree at least n+2; the graph case instead
+forces six coprime F_i to divide D of degree strictly less than 6a.
+
+At production this excludes all 27 simultaneous power factorizations with
+ell=2^h, h=2,...,28, and the minimal nonzero remainder degree. A separate
+dimension argument gives a syzygy below degree b for a pure quadratic lift,
+contradicting balance because production b is odd. The quadratic part uses
+balance; the other 27 exclusions do not require saturation or square
+resultants. No decomposition theorem puts arbitrary locators in these
+classes, and no universal MCA bound follows.
+
+The characteristic-free written argument has independent agent review.
+The standard-library probe checks all production levels, every 2-by-2
+tensor hyperplane over F2,F3,F5,F7, composition and syzygy controls,
+264 actual-prime length-16 locators, and a genuine five-member length-28
+pencil that fails the required pair-gcd budget. This is not a Lean proof
+or external human peer review. See
+`docs/kb/astra_mca_near_power_locator_exclusion-2026-09-05.md` and
+`scripts/probes/astra_mca_near_power_locator_exclusion_check.py`.
+
+## [astra-inversion-four-line] the structural four-point line ceiling is sharp, but this family has only one shared bad direction (2026-09-05)
+
+For every field containing ten distinct roots of unity, choose a transversal
+of the four inverse pairs outside {1,-1}. Four locators
+(X^2-1)(X-r)(X-r^-1), its transversal locator H, and its reciprocal locator
+give six degree-four cyclotomic divisors with span three, total gcd one,
+pairwise gcd degree at most two, explicit balanced degree-two syzygies, and
+a birational full locator map. Four configured points lie on one line, so
+the structural five-point exclusion cannot uniformly be strengthened to
+four under those assumptions.
+
+This length-10 domain is non-dyadic and is not contained in the production
+prime field. Its common first-four gcd has degree b, failing the stronger
+b-2 bound required for an over-budget saturated configuration. A general
+residual calculation gives only one doubled projective direction, shared
+by the first four pencils, and no doubled direction for the last two.
+After a common pole-free chart change this is one finite bad scalar from
+these pencils. No census of other decodings is asserted.
+
+The independently reviewed written proof and standalone exact checker
+cover all 16 transversals. The checker certifies its field prime by trial
+division, reconstructs 96 polynomial pairs, and checks 128 exact/full
+same-support no-joint conditions. Neither a production MCA witness nor a
+Lean proof is supplied. See
+`docs/kb/astra_mca_inversion_locator_sharpness-2026-09-05.md` and
+`scripts/probes/astra_mca_inversion_locator_sharpness_check.py`.
