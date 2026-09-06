@@ -381,6 +381,13 @@ python3 -m pip install leanblueprint
   four fields, and a production construction of two candidates with coprime
   outside factors. The latter's eight possible-domain-root checks pass;
   this is not an over-budget example or a bound on all production factors.
+  Run `python3 scripts/probes/astra_mca_five_candidate_lift_check.py` for the
+  [five-candidate lift](../kb/astra_mca_five_candidate_lift-2026-09-05.md):
+  a fixed sixteen-point certificate, five complete dense controls, and the
+  written production lifting argument. It gives five distinct values and
+  five pairwise coprime outside factors in one production list. The complete
+  sixteen-point list has exactly five members; no complete production list
+  count or Lean formalization is claimed.
   The construction helper also checks eight
   [Riccati contact obstruction lemmas](../kb/astra_riccati_contact_obstruction-2026-09-05.md)
   on both pins. Run `python3 scripts/probes/astra_riccati_contact_check.py`

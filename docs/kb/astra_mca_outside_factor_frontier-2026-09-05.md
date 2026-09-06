@@ -18,6 +18,14 @@ reviewed. The production example supplies only two candidates and does not
 exceed any proposed prize budget. A bound on the number of distinct outside
 factors in an arbitrary production list remains open.
 
+The subsequent [five-candidate lift](astra_mca_five_candidate_lift-2026-09-05.md)
+now supplies at least five distinct values in one actual production list,
+with five nonconstant pairwise coprime outside factors. Four candidates have
+738197503 punctured agreements and the fifth has 805306367, exceeding the
+required 715827883. Its fixed-degree exact certificate and written lifting
+proof strengthen the existence example; they still do not bound the number
+of fibres or exceed the prize's scalar budget.
+
 ## A production pair with coprime outside factors
 
 Use the [certified prime and generator](../../ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PrizeShapePrimeP30.lean)

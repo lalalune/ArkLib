@@ -285,6 +285,11 @@ nonconstant and coprime. Thus a common outside factor cannot be assumed for
 the whole list. Separately, its complete affine-line census bounds the
 whole list by one for degree-twelve received words on mu_16 over P, including
 a variable extra root. That finite result is not a production-length bound.
+The newer [five-candidate lift](astra_mca_five_candidate_lift-2026-09-05.md)
+gives five distinct values and five nonconstant pairwise coprime outside
+factors in one production list, using a fixed sixteen-point certificate.
+This rules out extending the bound of three to the entire unrestricted
+list. The example still falls far below the desired value budget of n.
 
 ## Verification and the unresolved root-escape case
 

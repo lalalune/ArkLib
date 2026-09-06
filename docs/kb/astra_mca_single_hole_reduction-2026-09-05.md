@@ -161,6 +161,11 @@ degree, and to each fibre with a fixed outside-domain factor. It supplies
 sharp sublist bounds of three, one or two depending on the degree range.
 Controlling the number of different outside factors remains open. These
 written results are not Lean-formalized or independently reviewed.
+The [five-candidate construction](astra_mca_five_candidate_lift-2026-09-05.md)
+provides five distinct values in an actual production list, with five
+pairwise coprime outside factors. Thus the bound of three cannot hold for
+the whole unrestricted list. Its received degree lies outside the earlier
+low-degree theorem, and it does not violate the necessary budget (2).
 The [exact locator formulation](astra_mca_single_hole_locator-2026-09-05.md)
 expresses the value image as a ratio of two linear functionals on locators
 that divide the punctured domain polynomial. It also proves that removing

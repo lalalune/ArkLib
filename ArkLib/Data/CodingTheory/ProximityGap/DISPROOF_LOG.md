@@ -54008,3 +54008,33 @@ finds 13,17,17,18,17,18 directions among eighteen slots. The production-field
 control still has only sixteen nodes. Neither this small-field collision nor
 the basis completeness theorem supplies the unresolved production direction
 count. No numerical threshold improves, and the universal lower bound is open.
+
+---
+
+### A whole-list cap of three fails: five production values (2026-09-05)
+
+The [five-candidate lift](../../../../docs/kb/astra_mca_five_candidate_lift-2026-09-05.md)
+constructs one production punctured word with at least five decoded
+polynomials and five distinct values at the hole. Four candidates have
+738197503 punctured agreements; the fifth has 805306367. All exceed the
+required 715827883. Their outside factors are pairwise coprime, of degrees
+268435456,268435456,268435456,268435456,201326592. Thus the written bound of
+three for one fixed outside-factor fibre cannot extend to the whole list.
+The previous restricted theorem remains valid.
+
+The construction starts from a complete sixteen-point certificate: four
+degree-seven polynomials have ten punctured agreements and a fifth of
+degree five has eleven. The whole base list has exactly five members,
+verified by exhausting all 3003 ten-element supports. Multiplication by
+J_s=1+X+...+X^(s-1), after substituting X^s with s=2^26, adds the s-1 roots
+in the punctured fibre of 1. This gives exactly s*a+s-1 agreements from a
+base agreement count a, with the required production degree caps. Values
+at the hole are multiplied by the same nonzero scalar s.
+
+The exact checker verifies all constant-degree factorizations, root
+censuses and pairwise gcds, then independently builds dense polynomials
+and parity certificates on five small-domain controls. The production
+lifting argument is written, not Lean-formalized or independently reviewed.
+It yields at least five actual MCA-bad scalars at radius 5/16, but
+5/P < 2^-128. This is not an over-budget counterexample, a classification of
+the production list, a new numerical threshold, or a prize solution.
