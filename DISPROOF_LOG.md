@@ -17828,3 +17828,46 @@ same-support no-joint conditions. Neither a production MCA witness nor a
 Lean proof is supplied. See
 `docs/kb/astra_mca_inversion_locator_sharpness-2026-09-05.md` and
 `scripts/probes/astra_mca_inversion_locator_sharpness_check.py`.
+
+## [astra-cauchy-rank-relaxation] even exact first-shift rank one loses the polynomial square factor and signs (2026-09-05)
+
+For a rank-two row array E, the common-kernel Cauchy numerator has rank one
+exactly when it has the polynomial normal form D(F,G)^T(F,G), with F,G
+coprime and deg D+2 max(deg F,deg G)<n. At each node the row multiplier is
+a square root of D(x). If z rows vanish and m=max(deg F,deg G), invertible
+coordinate equivalence to an RS pair holds exactly when z+m<k. Original
+RS membership additionally needs a polynomial square root and matching
+row signs.
+
+At production, t(x)=x^(k-2)+2x^(k+2) and E=(t,x*t) have full support,
+zero weighted Gram form, first shifted Gram rank exactly one, all rational
+minors zero, and every higher rank bound. Their normal scalar polynomial
+D=T^(n-4)+4T^4+4 is squarefree and nonsquare, verified by sparse identities
+and exact modular powers. The actual interpolants exceed degree k-1.
+Thus even this strengthened two-column relaxation does not recover true
+RS witness columns. No actual MCA event or production unsafe radius is
+constructed. The written converse has agent review, six dense controls,
+and compact production checks; it is not Lean-formalized. See
+`docs/kb/astra_mca_cauchy_normal_form-2026-09-05.md` and its probe.
+
+## [astra-locator-space-symmetry] balance excludes order-eight invariance and the inversion family's reciprocal type (2026-09-05)
+
+For n=6b-2 with 8 dividing n, an order-eight scaling invariant, primitive,
+balanced three-dimensional space has eigencharacters 0,b,2b modulo eight.
+Any degree-2b divisor of X^n-1 in it must lie in the two-character plane
+{0,2b}: the other coefficient supports have too few domain roots by exact
+eight-orbit counts and the balanced pair-gcd bound. Such divisors cannot
+span the required three-dimensional space. The n=4 boundary shows why
+the domain, not only the field, must contain those eight-element orbits.
+
+For reciprocal invariance at odd b, equivariance instead forces plus/minus
+dimensions (2,1). This excludes the length-10 inversion family's type
+(1,2) at every dyadic n=6b-2, including production, and also for normalized
+twisted inversion. Four self-reciprocal locators require b>=7 under the
+structural pair-gcd bound, or b>=13 under the saturated bound. These are
+symmetry and threshold restrictions; arbitrary locator spaces need not
+satisfy the symmetry assumptions. Exact finite controls and independent
+agent reviews accompany the written proofs; no Lean or universal MCA
+closure is claimed. See
+`docs/kb/astra_mca_cyclic_locator_symmetry-2026-09-05.md` and
+`docs/kb/astra_mca_reciprocal_balance-2026-09-05.md`.

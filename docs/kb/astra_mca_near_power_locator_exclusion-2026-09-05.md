@@ -128,3 +128,10 @@ birational full locator map. It is a non-dyadic length-10 construction;
 its six reconstructed pencils supply only one common projective bad
 direction. This tests the limits of the structural argument and supplies
 no production counterexample.
+
+Two subsequent exclusions concern invariance of the whole locator space:
+[order-eight scaling](astra_mca_cyclic_locator_symmetry-2026-09-05.md) is
+incompatible with a spanning family of the required domain divisors;
+[reciprocity](astra_mca_reciprocal_balance-2026-09-05.md) forces a specific
+eigenspace type at odd b. Neither argument assumes individual near-power
+factors, and neither establishes symmetry for arbitrary locator spaces.

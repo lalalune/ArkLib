@@ -275,3 +275,11 @@ in section 3. These are independent agent reviews, not external human peer
 review or Lean verification. No assertion is made that the length-128
 existence construction violates every RS-specific identity; the explicit
 length-eight control separates self-duality from the first shifted identity.
+
+The [Cauchy normal form](astra_mca_cauchy_normal_form-2026-09-05.md) now
+identifies exactly what a two-column rank-one relaxation retains. It admits
+an extra polynomial scalar factor D and row-square-root choices. An explicit
+production-field example passes every rational minor and the first shifted
+rank-one test while failing RS membership. This does not contradict the
+whole-code characterization above: its witness image has dimension two,
+not k. The original polynomial membership in E=RZ must still be retained.

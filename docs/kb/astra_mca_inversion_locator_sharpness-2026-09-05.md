@@ -1,5 +1,9 @@
 # Four points on a locator line remain possible: a cyclotomic inversion family
 
+The later [reciprocal-balance obstruction](astra_mca_reciprocal_balance-2026-09-05.md)
+proves that this particular symmetry type cannot extend to a dyadic
+n=6b-2. The allowed reciprocal symmetry type remains open.
+
 This is a general-field written sharpness construction for the abstract six-locator assumptions. It disproves a uniform strengthening from “no five locators lie on one line” to “no four lie on one line,” even after imposing actual cyclotomic divisibility, full cover, pairwise gcd degree at most b, balanced syzygies, and a birational locator map. It is a **non-dyadic length-10 example with b=2**, not an example at the production parameters, and supplies no MCA budget violation. The production prime is 3 modulo 5, so it does not even contain mu_10.
 
 This uses only the structural pairwise gcd bound at most b. The existing [incidence-feasibility](astra_mca_incidence_feasibility-2026-09-05.md) four-point-line lower threshold b>=8 additionally assumes the saturation-strengthened bound at most b-2. Our common first-four gcd has degree b=2 and fails that stronger assumption, so there is no contradiction. The calculation below confirms that the example is not saturated or over budget.

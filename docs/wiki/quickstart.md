@@ -540,6 +540,15 @@ python3 -m pip install leanblueprint
   16 length-10 transversals reconstruct balanced, birational configurations.
   Their six pencils give one shared bad direction, and are not over budget.
   Run `python3 scripts/probes/astra_mca_inversion_locator_sharpness_check.py`.
+  The [order-eight invariant-space exclusion](../kb/astra_mca_cyclic_locator_symmetry-2026-09-05.md)
+  and [reciprocal symmetry obstruction](../kb/astra_mca_reciprocal_balance-2026-09-05.md)
+  use equivariance of the balanced coefficient map. Run the corresponding
+  `astra_mca_cyclic_locator_symmetry_check.py` and
+  `astra_mca_reciprocal_balance_check.py` probes in `scripts/probes/`.
+  These exclude specified symmetries, without proving arbitrary spaces
+  have those symmetries. The [Cauchy converse and false positives](../kb/astra_mca_cauchy_normal_form-2026-09-05.md)
+  show why rational minors and shifted ranks alone cannot replace RS
+  membership; run `python3 scripts/probes/astra_mca_cauchy_normal_form_check.py`.
   The [single-hole reduction](../kb/astra_mca_single_hole_reduction-2026-09-05.md)
   identifies an exact MCA subfamily with the extrapolated-value image of a
   punctured RS list. Its large joint cores are rationally collinear but omit
