@@ -1,5 +1,9 @@
 # Production two-generator count and its threshold consequence
 
+The later [four-cubic construction](astra_mca_four_cubic-2026-09-06.md)
+improves the written unsafe-radius bound to `335544321/2^30 = 5/16+1/2^30`.
+This page retains its earlier, weaker result and its original verification scope.
+
 The full production scan completed on 5 September 2026. It found
 **1,073,741,825 distinct finite fingerprints** among 1,073,741,826 slots, with
 no chart poles. This is a deterministic lower bound on the number of finite

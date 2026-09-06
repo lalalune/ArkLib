@@ -840,3 +840,24 @@ axiom audit is allowed; it does not itself establish which axioms a theorem uses
 To exercise this process boundary without installing Lean, run
 `python3 scripts/probes/astra_pg_iterate_exit_check.py`. This regression check
 does not verify any mathematical theorem.
+
+## Proximity research auxiliary proofs
+
+The research branch's `Proximity auxiliary proofs` workflow runs
+[`check-mca-event-bridge.sh`](../../scripts/check-mca-event-bridge.sh) after the
+production-basis dependencies. It also checks the generic root-relocation
+fresh-direction and same-support counting bridges, including each theorem's
+axiom report. The complete four-cubic production radius is still a written
+construction with exact Python certificates; those generic lemmas alone do not
+formalize its seed, fiber allocation, or numerical assembly.
+
+The lightweight construction checks are:
+
+```sh
+python3 scripts/probes/astra_mca_four_cubic_check.py
+python3 scripts/probes/astra_mca_four_cubic_independent_check.py
+```
+
+See the [four-cubic construction](../kb/astra_mca_four_cubic-2026-09-06.md) for
+scope and retained receipts. A missing local Lean runtime is a failed validation
+prerequisite, even if an earlier transient cache supported a successful check.

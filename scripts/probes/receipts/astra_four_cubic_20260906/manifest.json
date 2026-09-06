@@ -1,0 +1,12 @@
+{
+  "scope": "Written production four-cubic construction, exact seed and count arithmetic, independent full polynomial controls at n=64 and128. The final production radius is not Lean-formalized.",
+  "sha256": {
+    "docs/kb/astra_mca_four_cubic-2026-09-06.md": "a6b704c91b58c37e0b2159600e19100568cb231cae082f6196b57f91e2313ac4",
+    "scripts/probes/astra_mca_four_cubic_check.py": "b25a6655202a22333d4355d83656876c39fb08ee084e1470caa72153d1a9699c",
+    "scripts/probes/astra_mca_four_cubic_independent_check.py": "cd55a2131eb8e64916db24f168b99b7e2c20509038f95a00e66e1cbf5ead042e",
+    "scripts/probes/receipts/astra_four_cubic_20260906/bracket_arithmetic.json": "2034a7aa6d6aecb7219e43be982f727828d61d825cf9d7af8405de55f36fc656",
+    "scripts/probes/receipts/astra_four_cubic_20260906/independent.json": "e69dfa7a0509610b80e2d61e5c99c71a8d541e775caa7f025ed6a9376cf4fb12",
+    "scripts/probes/receipts/astra_four_cubic_20260906/normalization.json": "b5aaca456310a28da986658ad2b710127fa6a3a7853df68103d628ff15b5bcf1",
+    "scripts/probes/receipts/astra_four_cubic_20260906/primary.json": "abebbe5857b25d79135da4dda1dc7f79283ffefed269046ed39768bcb78b2b29"
+  }
+}

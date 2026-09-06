@@ -15,6 +15,7 @@ on:
       - "scripts/probes/astra_mca_evaluations.lean"
       - "scripts/probes/astra_mca_scalar_projection.lean"
       - "scripts/probes/astra_mca_event_bridge.lean"
+      - "scripts/probes/astra_mca_root_relocation.lean"
       - "scripts/probes/astra_mca_production_events.lean"
       - "scripts/probes/astra_mca_production_upper.lean"
       - "scripts/probes/astra_mca_kkh26_upper.lean"
@@ -176,6 +177,13 @@ jobs:
               "specialized_degree_lt", "production_algebraic_solution",
               "production_quadratic_contact_zero")]
           if os.environ["CHECK_MCA_EVENT"] == "true":
+              expected += ["AstraMcaRootRelocation." + name for name in (
+                  "exists_fresh_directions", "exists_simultaneous_directions",
+                  "exists_counted_fresh_directions", "production_greedy_arithmetic",
+                  "mca_event_of_joint_core_extra", "mca_event_of_reciprocal_extra",
+                  "mca_event_of_good_local", "disjoint_event_union",
+                  "disjoint_event_card_le_bad_card", "disjoint_event_probability_lower",
+                  "disjoint_event_epsMCA_lower")]
               expected += ["AstraMcaEventBridge." + name for name in (
                   "mca_event_from_polynomial_support", "mca_event_of_core_insert")]
               expected += ["AstraMcaProductionEvents." + name for name in (
@@ -198,3 +206,10 @@ jobs:
                   raise SystemExit("Forbidden axioms: " + declaration)
               print("Allowed axioms:", declaration, sorted(reported[declaration]))
           PY
+      - name: Retain auxiliary proof log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: proximity-auxiliary-${{ matrix.project }}-${{ github.sha }}
+          path: ${{ runner.temp }}/strip-proof.log
+          if-no-files-found: ignore

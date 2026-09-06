@@ -1,5 +1,9 @@
 # A production MCA construction with n+8 bad scalars
 
+The later [four-cubic construction](astra_mca_four_cubic-2026-09-06.md)
+improves the written unsafe-radius bound to `335544321/2^30 = 5/16+1/2^30`.
+This page retains its earlier, weaker result and its original verification scope.
+
 The exact six-seed construction below supplies at least
 
     1073741832 = 2^30+8

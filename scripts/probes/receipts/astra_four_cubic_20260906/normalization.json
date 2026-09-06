@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "independent_to_primary_scalar": 187423545494197032991431185854788241866885135373,
+  "coefficientwise_equal": true,
+  "scope": "Common nonzero normalization of independently stored source cubics."
+}

@@ -1,0 +1,24 @@
+{
+  "status": "PASS_EXACT_ARITHMETIC",
+  "n": 1073741824,
+  "k": 536870912,
+  "minimum_distance": 536870913,
+  "udr_errors": 268435456,
+  "safe_radius": [
+    1,
+    4
+  ],
+  "supremum_lower": [
+    268435457,
+    1073741824
+  ],
+  "unsafe_radius": [
+    335544321,
+    1073741824
+  ],
+  "bracket_width": [
+    1,
+    16
+  ],
+  "scope": "Arithmetic only. Safe proof uses MCAUDRBound.epsMCA_rs_udr_le_full; the staircase argument is written in the accompanying note."
+}
