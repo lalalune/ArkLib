@@ -10,6 +10,33 @@ The mutual-correlated-agreement threshold programme: pin
 `δ*(C, ε*) = sup{δ : ε_mca(C, δ) ≤ ε*}` for explicit smooth-domain Reed–Solomon
 codes ([ABF26] Definition 4.3), with matching machine-checked bounds.
 
+## Current production checkpoint (2026-09-06)
+
+The research branch `codex/proximity-astra-20260904` now has a
+[four-cubic construction](../kb/astra_mca_four_cubic-2026-09-06.md) with
+`n+6` distinct MCA-bad scalars on the certified rate-one-half production code,
+at radius `335544321/2^30 = 5/16+1/2^30`. The seed arithmetic and counts have
+exact Python certificates and independently expanded finite controls. The
+complete numerical construction is a written proof; the generic Lean
+fresh-direction and original-event bridges do not yet instantiate its fibers
+and received word.
+
+Together with the existing full-UDR safety theorem and the Hamming staircase,
+the written bracket is
+`268435457/2^30 <= deltaStar <= 335544321/2^30`, of width `1/16`.
+The lower endpoint is a supremum bound, not an assertion of safety at that
+endpoint. In particular, historical proposed universal safety statements
+at `1/3` cannot establish this production target. Historical reductions below
+must be read with their stated hypotheses, rather than as evidence that a
+Paley/BGK result alone completes the present problem.
+
+The [exact fifth-cubic exclusion](../kb/astra_mca_fifth_cubic_exclusion-2026-09-06.md)
+closes one particular extension of this construction. Neither this exclusion
+nor the new unsafe bound determines the exact threshold or resolves either
+grand challenge. The older
+[kernel-checked numerical upper bound](../kb/astra_mca_production_upper-2026-09-05.md)
+remains valid with its separate verification scope.
+
 ## Where everything is
 
 | What | Where |

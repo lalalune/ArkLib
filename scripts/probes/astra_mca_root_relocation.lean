@@ -327,10 +327,10 @@ omit [Fintype F] in
 whose cardinality is the sum of the two contributions. -/
 theorem disjoint_event_union (code : Set (ι → F)) (δ : ℝ≥0) (u₀ u₁ : ι → F)
     (ordinary fresh : Finset F) (hdisj : Disjoint ordinary fresh)
-    (hordinary : ∀ γ ∈ ordinary, ProximityGap.mcaEvent code δ u₀ u₁ γ)
-    (hfresh : ∀ γ ∈ fresh, ProximityGap.mcaEvent code δ u₀ u₁ γ) :
+    (hordinary : ∀ γ ∈ ordinary, ProximityGap.mcaEvent (F := F) code δ u₀ u₁ γ)
+    (hfresh : ∀ γ ∈ fresh, ProximityGap.mcaEvent (F := F) code δ u₀ u₁ γ) :
     ∃ bad : Finset F, bad.card = ordinary.card + fresh.card ∧
-      ∀ γ ∈ bad, ProximityGap.mcaEvent code δ u₀ u₁ γ := by
+      ∀ γ ∈ bad, ProximityGap.mcaEvent (F := F) code δ u₀ u₁ γ := by
   refine ⟨ordinary ∪ fresh, Finset.card_union_of_disjoint hdisj, ?_⟩
   intro γ hγ
   exact (Finset.mem_union.mp hγ).elim (hordinary γ) (hfresh γ)
@@ -341,10 +341,10 @@ set for the same fixed received word, allowing additional unknown decoders. -/
 theorem disjoint_event_card_le_bad_card (code : Set (ι → F)) (δ : ℝ≥0)
     (u₀ u₁ : ι → F) (ordinary fresh : Finset F)
     (hdisj : Disjoint ordinary fresh)
-    (hordinary : ∀ γ ∈ ordinary, ProximityGap.mcaEvent code δ u₀ u₁ γ)
-    (hfresh : ∀ γ ∈ fresh, ProximityGap.mcaEvent code δ u₀ u₁ γ) :
+    (hordinary : ∀ γ ∈ ordinary, ProximityGap.mcaEvent (F := F) code δ u₀ u₁ γ)
+    (hfresh : ∀ γ ∈ fresh, ProximityGap.mcaEvent (F := F) code δ u₀ u₁ γ) :
     ordinary.card + fresh.card ≤
-      (Finset.univ.filter fun γ => ProximityGap.mcaEvent code δ u₀ u₁ γ).card := by
+      ((Finset.univ : Finset F).filter fun γ => ProximityGap.mcaEvent (F := F) code δ u₀ u₁ γ).card := by
   classical
   obtain ⟨bad, hcard, hbad⟩ := disjoint_event_union code δ u₀ u₁ ordinary fresh
     hdisj hordinary hfresh
@@ -358,10 +358,10 @@ for the single received pair used throughout the construction. -/
 theorem disjoint_event_probability_lower (code : Set (ι → F)) (δ : ℝ≥0)
     (u₀ u₁ : ι → F) (ordinary fresh : Finset F)
     (hdisj : Disjoint ordinary fresh)
-    (hordinary : ∀ γ ∈ ordinary, ProximityGap.mcaEvent code δ u₀ u₁ γ)
-    (hfresh : ∀ γ ∈ fresh, ProximityGap.mcaEvent code δ u₀ u₁ γ) :
+    (hordinary : ∀ γ ∈ ordinary, ProximityGap.mcaEvent (F := F) code δ u₀ u₁ γ)
+    (hfresh : ∀ γ ∈ fresh, ProximityGap.mcaEvent (F := F) code δ u₀ u₁ γ) :
     ((ordinary.card + fresh.card : ℕ) : ℝ≥0∞) / Fintype.card F ≤
-      Pr_{let γ ← $ᵖ F}[ProximityGap.mcaEvent code δ u₀ u₁ γ] := by
+      Pr_{let γ ← $ᵖ F}[ProximityGap.mcaEvent (F := F) code δ u₀ u₁ γ] := by
   classical
   rw [prob_uniform_eq_card_filter_div_card]
   have hc := disjoint_event_card_le_bad_card code δ u₀ u₁ ordinary fresh
@@ -373,8 +373,8 @@ MCA error; no full bad-scalar census is required. -/
 theorem disjoint_event_epsMCA_lower [Nonempty ι] (code : Set (ι → F)) (δ : ℝ≥0)
     (u₀ u₁ : ι → F) (ordinary fresh : Finset F)
     (hdisj : Disjoint ordinary fresh)
-    (hordinary : ∀ γ ∈ ordinary, ProximityGap.mcaEvent code δ u₀ u₁ γ)
-    (hfresh : ∀ γ ∈ fresh, ProximityGap.mcaEvent code δ u₀ u₁ γ) :
+    (hordinary : ∀ γ ∈ ordinary, ProximityGap.mcaEvent (F := F) code δ u₀ u₁ γ)
+    (hfresh : ∀ γ ∈ fresh, ProximityGap.mcaEvent (F := F) code δ u₀ u₁ γ) :
     ((ordinary.card + fresh.card : ℕ) : ℝ≥0∞) / Fintype.card F ≤
       ProximityGap.epsMCA (F := F) code δ := by
   classical
