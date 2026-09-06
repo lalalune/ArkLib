@@ -54038,3 +54038,21 @@ lifting argument is written, not Lean-formalized or independently reviewed.
 It yields at least five actual MCA-bad scalars at radius 5/16, but
 5/P < 2^-128. This is not an over-budget counterexample, a classification of
 the production list, a new numerical threshold, or a prize solution.
+
+---
+
+### Adjoining a fifth cubic does not strengthen the order-eight attack (2026-09-06)
+
+The [four-cubic production construction](../../../../docs/kb/astra_mca_four_cubic-2026-09-06.md)
+gives the written unsafe-radius bound `5/16+1/2^30`. The
+[fifth-cubic exclusion](../../../../docs/kb/astra_mca_fifth_cubic_exclusion-2026-09-06.md)
+proves that keeping those four sources and adding a distinct degree-at-most-three
+source cannot improve this bound through five large joint cores and one extra
+agreement per witness, with the same common factor and carrier `q_i=Xp_i`.
+
+A maximal-class count forces four specified interpolation matches. All seventy
+four-node choices produce forty-four cubics, including the original four.
+Forty exact rational allocation duals bound each remaining candidate's minimum
+normalized core by `43/8`, below the required production core. This excludes
+that particular extension route, not different families, additional scalar
+decoders, or the grand MCA challenge.

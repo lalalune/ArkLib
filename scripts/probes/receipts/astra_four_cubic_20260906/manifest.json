@@ -7,6 +7,10 @@
     "scripts/probes/receipts/astra_four_cubic_20260906/bracket_arithmetic.json": "2034a7aa6d6aecb7219e43be982f727828d61d825cf9d7af8405de55f36fc656",
     "scripts/probes/receipts/astra_four_cubic_20260906/independent.json": "e69dfa7a0509610b80e2d61e5c99c71a8d541e775caa7f025ed6a9376cf4fb12",
     "scripts/probes/receipts/astra_four_cubic_20260906/normalization.json": "b5aaca456310a28da986658ad2b710127fa6a3a7853df68103d628ff15b5bcf1",
-    "scripts/probes/receipts/astra_four_cubic_20260906/primary.json": "abebbe5857b25d79135da4dda1dc7f79283ffefed269046ed39768bcb78b2b29"
+    "scripts/probes/receipts/astra_four_cubic_20260906/primary.json": "abebbe5857b25d79135da4dda1dc7f79283ffefed269046ed39768bcb78b2b29",
+    "docs/kb/astra_mca_fifth_cubic_exclusion-2026-09-06.md": "2b8be95ba80144c0b05351d4223a806e2b62316d572b272909f00553bd2764cd",
+    "scripts/probes/astra_mca_fifth_cubic_certificate.json": "584e3827adfb828621d794e060a87394a471bb47ec707911dc0d775cf8f16931",
+    "scripts/probes/astra_mca_fifth_cubic_check.py": "5b4a84f13ee8c1b4cdab6f14fee1cb2b5234ba41bf840a6c4c6dedb5a0997351",
+    "scripts/probes/receipts/astra_four_cubic_20260906/fifth_extension.json": "efb7d4e3cae4a48e7428f28090515d3c682ebbfd8c59c4760b66468c52ee28f4"
   }
 }

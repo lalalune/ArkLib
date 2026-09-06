@@ -1,0 +1,13 @@
+{
+  "status": "PASS_EXACT_FIFTH_CUBIC_EXTENSION_EXCLUSION",
+  "interpolants": 44,
+  "distinct_fifth_sources": 40,
+  "checked_rational_duals": 40,
+  "largest_normalized_core_upper_bound": [
+    43,
+    8
+  ],
+  "production_improvement_required_core": 738197503,
+  "production_extension_core_upper_bound": 721420288,
+  "scope": "Five distinct cubics retaining the displayed four, common carrier q_i=Xp_i, nonzero common factor of degree at most n/8-2, all five joint cores large, and at least n+1 directions supplied by those sources. Does not exclude other source families or additional decoders."
+}

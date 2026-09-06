@@ -322,6 +322,7 @@ section EventCounting
 variable {F ι : Type} [Field F] [DecidableEq F] [Fintype F] [Fintype ι]
 open scoped ENNReal ProbabilityTheory
 
+omit [Fintype F] in
 /-- Disjoint ordinary and fresh contributions form one actual MCA-event set
 whose cardinality is the sum of the two contributions. -/
 theorem disjoint_event_union (code : Set (ι → F)) (δ : ℝ≥0) (u₀ u₁ : ι → F)
@@ -334,6 +335,7 @@ theorem disjoint_event_union (code : Set (ι → F)) (δ : ℝ≥0) (u₀ u₁ :
   intro γ hγ
   exact (Finset.mem_union.mp hγ).elim (hordinary γ) (hfresh γ)
 
+open Classical in
 /-- The ordinary-plus-fresh count is a lower bound on the complete bad-scalar
 set for the same fixed received word, allowing additional unknown decoders. -/
 theorem disjoint_event_card_le_bad_card (code : Set (ι → F)) (δ : ℝ≥0)
