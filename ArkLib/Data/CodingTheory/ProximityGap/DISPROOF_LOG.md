@@ -54076,3 +54076,14 @@ all local inequalities over the exact seed partition. This excludes only a
 better core-plus-one allocation within the four fixed sources; it neither
 bounds other decoder pencils nor establishes universal MCA safety. The
 production lifting and numerical upper bound are written, not Lean-checked.
+# 2026-09-06: Adding a fifth degree-seven source to the fixed order-sixteen seed
+
+The exact interpolation/dual certificate in
+`docs/kb/astra_mca_order16_fifth_exclusion-2026-09-06.md` rules out improving
+all five cores by adjoining one degree-at-most-seven source to the four
+current sources with common factor degree at most `s-2` and carrier `Xp_i`.
+An improving source must match a largest original class on at least ten
+fibers. The checker regenerates 47,619 interpolation assignments, leaving
+exactly five new candidates; their rational duals bound normalized common
+core by `45/4`, below the required production integer core. This is a finite
+fixed-family exclusion, not universal MCA safety or a numerical Lean theorem.

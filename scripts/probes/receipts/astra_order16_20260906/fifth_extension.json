@@ -1,0 +1,50 @@
+{
+  "status": "PASS_EXACT_FIXED_ORDER16_FIFTH_DEGREE7_EXCLUSION",
+  "scope": "Adding one degree<=7 polynomial to these four fixed sources, with a common factor of degree<=s-2 and q_i=Xp_i; all five cores must improve and these sources must supply at least n+1 directions. Not universal MCA safety.",
+  "census": {
+    "interpolation_assignments": 47619,
+    "distinct_interpolants": 43503,
+    "maximum_class_match_histogram": {
+      "8": 43254,
+      "9": 240,
+      "10": 5,
+      "12": 4
+    },
+    "existing_sources": 4,
+    "new_candidates": 5
+  },
+  "exact_dual_bounds": [
+    [
+      87,
+      8
+    ],
+    [
+      87,
+      8
+    ],
+    [
+      87,
+      8
+    ],
+    [
+      45,
+      4
+    ],
+    [
+      87,
+      8
+    ]
+  ],
+  "maximum_relaxed_core": [
+    45,
+    4
+  ],
+  "production": {
+    "s": 67108864,
+    "current_core": 760567124,
+    "proposed_core": 760567125,
+    "h_le_9_five_core_sum_bound": 3758096376,
+    "h_le_9_required_sum": 3802835625,
+    "h_ge_10_single_core_bound": 754974720
+  }
+}

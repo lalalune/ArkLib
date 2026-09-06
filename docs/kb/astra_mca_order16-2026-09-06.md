@@ -197,7 +197,7 @@ points. A matching universal bound is still missing.
 
 ## Restricted optimality and verification scope
 
-Within these fixed four sources with a common factor of degree at most `s-2`
+Within these fixed four sources with a nonzero common factor of degree at most `s-2`
 and carrier `q_i=Xp_i`, assign source weights `(3,0,3,0)` and fiber weights
 
 ```text
@@ -241,3 +241,9 @@ binds the note, checkers, certificate, and receipts. The existing
 verify generic finite-choice, same-support MCA, and probability steps. The
 order-sixteen seed, lifted allocation, and final numerical production
 instantiation remain to be formalized.
+
+The [fifth-source exclusion](astra_mca_order16_fifth_exclusion-2026-09-06.md)
+rules out improving all five joint cores by adjoining a degree-seven source
+while retaining the current four sources and common carrier. Its exact
+interpolation census and rational dual certificates cover that extension,
+not alternative source families or universal MCA safety.
