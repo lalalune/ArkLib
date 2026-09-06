@@ -16,6 +16,9 @@ on:
       - "scripts/probes/astra_mca_scalar_projection.lean"
       - "scripts/probes/astra_mca_event_bridge.lean"
       - "scripts/probes/astra_mca_root_relocation.lean"
+      - "scripts/probes/astra_mca_four_cubic_seed.lean"
+      - "scripts/probes/astra_mca_power_fibers.lean"
+      - "scripts/probes/astra_mca_received_assembly.lean"
       - "scripts/probes/astra_mca_production_events.lean"
       - "scripts/probes/astra_mca_production_upper.lean"
       - "scripts/probes/astra_mca_kkh26_upper.lean"
@@ -177,6 +180,38 @@ jobs:
               "specialized_degree_lt", "production_algebraic_solution",
               "production_quadratic_contact_zero")]
           if os.environ["CHECK_MCA_EVENT"] == "true":
+              expected += [
+                  "scalar_inverse_products",
+                  "raw_pair_factorization",
+                  "pair_factorization",
+                  "pairScalar_ne_zero",
+                  "pair_eval_eq_iff",
+                  "pair_power_eval_eq_iff",
+                  "seed_natDegree",
+                  "seed_normalization",
+                  "no_common_zero",
+                  "AstraMcaPowerFibers.eightFiberEquiv",
+                  "AstraMcaPowerFibers.fiberPoint_injective",
+                  "AstraMcaPowerFibers.powerFiber_card",
+                  "AstraMcaPowerFibers.powerFiber_cover",
+                  "AstraMcaPowerFibers.powerFiber_disjoint",
+                  "AstraMcaPowerFibers.orderOf_fiber_generator",
+                  "AstraMcaPowerFibers.mem_powerFiber_iff",
+                  "AstraMcaPowerFibers.fiberBlock_card",
+                  "AstraMcaPowerFibers.fiberBlocks_card",
+                  "AstraMcaPowerFibers.fiberBlocks_disjoint",
+                  "AstraMcaPowerFibers.fiberBlocks_three_cover",
+                  "AstraMcaPowerFibers.production_fiber_card",
+                  "AstraMcaPowerFibers.production_fibers_cover",
+                  "AstraMcaPowerFibers.production_fiber_mem_iff",
+                  "AstraMcaPowerFibers.production_common_roots_two_prefixes",
+                  "AstraMcaPowerFibers.production_common_roots_card",
+                  "AstraMcaPowerFibers.production_covered_card",
+                  "AstraMcaPowerFibers.production_uncovered_card",
+                  "AstraMcaPowerFibers.production_allocation_cover",
+                  "AstraMcaPowerFibers.production_allocation_disjoint",
+                  "AstraMcaReceivedAssembly.exists_received_word_and_events",
+              ]
               expected += ["AstraMcaRootRelocation." + name for name in (
                   "exists_fresh_directions", "exists_simultaneous_directions",
                   "exists_counted_fresh_directions", "production_greedy_arithmetic",

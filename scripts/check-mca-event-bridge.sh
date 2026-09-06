@@ -7,7 +7,8 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 auxiliary_lib="${1:?usage: check-mca-event-bridge.sh AUXILIARY_LIB [ARKLIB_LIB]}"
 arklib_lib="${2:-$repo_root/.lake/build/lib/lean}"
 modules=(astra_mca_event_bridge astra_mca_production_events astra_mca_production_upper
-  astra_mca_single_hole astra_mca_kkh26_upper astra_mca_root_relocation)
+  astra_mca_single_hole astra_mca_kkh26_upper astra_mca_root_relocation
+  astra_mca_four_cubic_seed astra_mca_power_fibers astra_mca_received_assembly)
 
 for module in "${modules[@]}"; do
   python3 "$repo_root/scripts/forbidden_tokens.py" "$repo_root/scripts/probes/$module.lean"
