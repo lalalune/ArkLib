@@ -1,0 +1,259 @@
+{
+  "status": "PASS_HOSTED_KERNEL_AND_AXIOM_CHECK",
+  "run_id": 34047016764,
+  "run_url": "https://github.com/lalalune/ArkLib/actions/runs/34047016764",
+  "checked_commit": "7414231b3c0e9c6dc0149996b2edb1dc862b89e2",
+  "pinned_toolchain": "leanprover/lean4:v4.30.0-rc2",
+  "verified_declarations": {
+    "AstraMcaFourCubicSeed.scalar_inverse_products": [
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaFourCubicSeed.raw_pair_factorization": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaFourCubicSeed.pair_factorization": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaFourCubicSeed.pairScalar_ne_zero": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaFourCubicSeed.pair_eval_eq_iff": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaFourCubicSeed.pair_power_eval_eq_iff": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaFourCubicSeed.seed_natDegree": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaFourCubicSeed.seed_normalization": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaFourCubicSeed.no_common_zero": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.eightFiberEquiv": [
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.fiberPoint_injective": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.powerFiber_card": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.powerFiber_cover": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.powerFiber_disjoint": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.orderOf_fiber_generator": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.mem_powerFiber_iff": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.fiberBlock_card": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.fiberBlocks_card": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.fiberBlocks_disjoint": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.fiberBlocks_three_cover": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.production_fiber_card": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.production_fibers_cover": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.production_fiber_mem_iff": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.production_common_roots_two_prefixes": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.production_common_roots_card": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.production_covered_card": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.production_uncovered_card": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.production_allocation_cover": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaPowerFibers.production_allocation_disjoint": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaReceivedAssembly.exists_received_word_and_events": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaScaledPolynomials.locator_natDegree": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaScaledPolynomials.locator_eval_eq_zero_iff": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaScaledPolynomials.scaledP_eval": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaScaledPolynomials.eval_on_fiber": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaScaledPolynomials.local_pair_eq_iff": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaScaledPolynomials.common_zero_iff_mem": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaScaledPolynomials.reciprocal_cancellation": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaScaledPolynomials.scaledP_natDegree_le": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaScaledPolynomials.scaledQ_natDegree_le": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaScaledPolynomials.degree_seven_budget": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaScaledPolynomials.degree_three_budget": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  "source_sha256": {
+    ".github/workflows/proximity-strip-proof.yml": "d8b71206c200a5204e1c298853de53203e76e3ec5e2cb0eed1293c59fba59aaa",
+    "ArkLib/Data/CodingTheory/Basic/DecodingRadius.lean": "4b62f38e7b43c4c801300e547ba31671f0c0c10e56d1e377f36daad219a140d2",
+    "ArkLib/Data/CodingTheory/Basic/Distance.lean": "ea49e655e11b9d0a64654cc2a02169a881373bfa39baeb89de43f88ce73df326",
+    "ArkLib/Data/CodingTheory/Basic/LinearCode.lean": "2b9332fe21f9c26854b5042a7672c59d4f95e8d060d02127bc877571da3bd7b4",
+    "ArkLib/Data/CodingTheory/Basic/RelativeDistance.lean": "3538f80eb09e4b8d405aed55a88a9d2f238eb2b0523b593f0e5e2cb7de099727",
+    "ArkLib/Data/CodingTheory/InterleavedCode.lean": "12c769cf4b5cafc4232d8d0ff8ad990f52bce1fc04ef8d40f5f267148f7ce7dc",
+    "ArkLib/Data/CodingTheory/ListDecodability.lean": "cb2e1dcbf02168e7fb714335ff1b6bb7f0bbc9670477993ff6257247e546718b",
+    "ArkLib/Data/CodingTheory/Prelims.lean": "65bf178d405e9f8e8d4c3aecb3fd1047aaae8fc09f560161de4bc2b3f338630f",
+    "ArkLib/Data/CodingTheory/ProximityGap/Basic.lean": "f16dd909a852a95bf1e9de571382af529ddb765af005181a4d24db760eac09af",
+    "ArkLib/Data/CodingTheory/ProximityGap/Errors.lean": "4034e1ecb827dfd24351e718231463c81d9d4a0492c6dafa2158c3d06d7bb53f",
+    "ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PrizeShapePrimeP30.lean": "b5f43c6c63d9bb0117033d29253961f8e8703f99a5676719a0070689ee50bb22",
+    "ArkLib/Data/CodingTheory/ProximityGap/MCALowerBound.lean": "47dcb2f8c77215d63ca504af5bbf595a78cd4a495693a2b81544b895a9337566",
+    "ArkLib/Data/CodingTheory/ProximityGap/MCAWitnessSpread.lean": "cdc98d64e2d233a4de7e3a17b600a31e371967328200a3aa44769ce3705068ce",
+    "ArkLib/Data/CodingTheory/ReedSolomon.lean": "9735f439ac97923b5333543a770f4abf2bec939cced223d211f2341b5786a933",
+    "ArkLib/Data/Fin/Basic.lean": "7868b297d38ee3651bda89d669082c449da13e8bd527a860b1b13d14d90d0785",
+    "ArkLib/Data/Fin/Lift.lean": "1a26db03831eb18b59ae5cafa037f63ef43dbf7bf4a438b5702a3aaf443d921e",
+    "ArkLib/Data/Matrix/Vandermonde.lean": "fd2b1ed36f85b6799640f52a5c29ee16277a54eb9d23b00e6ceea6edb5478b91",
+    "ArkLib/Data/MvPolynomial/Degrees.lean": "0fa274d1d41d9e7e50fed2bbb91562a11bf151559311c165fa13768924e19c09",
+    "ArkLib/Data/MvPolynomial/Interpolation.lean": "33e4584bb646f1c779e62becbe4a5c6f8816758ddf57d384db35662b1504c5fb",
+    "ArkLib/Data/MvPolynomial/LinearMvExtension.lean": "8eb8f99f0eb2cb01b423c79aab8fc32b7a82ef978161b37d40866491f4c79d10",
+    "ArkLib/Data/MvPolynomial/Multilinear.lean": "9494a0a96ebf1de51dd00cc208cc8a617e712b91d32fca4b56b963b40a78450c",
+    "ArkLib/Data/Polynomial/Interface.lean": "6852fdac5f6dc0ca1aa987992381ae6810b293e23c361499f34c8c8f01057305",
+    "ArkLib/Data/Probability/Instances.lean": "4e1affad45158b524bd9c9a5cc69555e0c3bbcf42e6bb9c265ed76b2f78aa575",
+    "ArkLib/Data/Probability/Notation.lean": "65907907d3ebb3e5bf7fb2a646d19d0190b0e3c7b2ade4c694800bd2ec2ed630",
+    "ArkLib/ToMathlib/Polynomial/DegreeLT.lean": "ecd5d61a9d06c68262867224cc5b4f6cbb4c747637da94ce1572d91ee7ccc330",
+    "lake-manifest.json": "83aa1b110b26e46d0c3ceaef2c77c97e4d383d767faf34acb318aac72b0648d0",
+    "lean-toolchain": "ce4c4e3d87434b9663f46de25ce34b48a0cf0d392e0a320a0787b4674a2d7b61",
+    "scripts/axiom_audit.py": "ad9fe1de474c828293c3c18c31d7bf1c31ac1f7ec99c55d0203dfde4d92f3864",
+    "scripts/check-mca-event-bridge.sh": "d4c338ff04660cd667d367221e0364380eb6b50371a2f55be6fc3672e6b0e4b9",
+    "scripts/check-mca-production-basis.sh": "3b14d4c1040b5dbbb58fb2189855113daa50b47b369255a839d58846be84e561",
+    "scripts/forbidden_tokens.py": "4fc7bf89e0c465a936d2ea8c8a0308b5e378f43afa7326a9f93a918dbfbd178d",
+    "scripts/lake-locked.sh": "4bff4e33a7302b79732deeaf6ea05837f41b3ccf592ac7773babe78b1aa8df2f",
+    "scripts/probes/astra_mca_evaluations.lean": "7f933d4718327b538645c801dffc6954e84c57fe2e61e2d9beda3adcd2e3c4af",
+    "scripts/probes/astra_mca_event_bridge.lean": "4e294f65273e23a7ff50b925331c2d1a17993b5ccf2dd5b16bca926f073b356f",
+    "scripts/probes/astra_mca_four_cubic_seed.lean": "253162d7986ad564105f13ee0b40189eb5ed0d90c93c02546af958d72bd6b950",
+    "scripts/probes/astra_mca_polynomial_basis.lean": "e0b2d66c3ebcc12a0bf3079d65ece07344dff2d801d5ba1db46330344557daba",
+    "scripts/probes/astra_mca_power_fibers.lean": "744a5b207e30fe867ffba100acc4f31760d040fdc34a8b56603d23fecdba9836",
+    "scripts/probes/astra_mca_production_basis.lean": "d338af0ac957afd597ca918b5aa275cbb974d41ce1b7c8c1caeaf0a74a207173",
+    "scripts/probes/astra_mca_production_events.lean": "fbe15b60b90120ae0e53c13ce8c6e44da9566742a6c548884a92f5d4d77f070d",
+    "scripts/probes/astra_mca_received_assembly.lean": "ae19595ba4d0d758da68d32429ef0a3219f9a35efecc1e85e63b2b2874edfe5c",
+    "scripts/probes/astra_mca_residual_rows.lean": "8a7c9c19e72717d885d173f32ad61b589d8fec5e55f8dad6380c034102dd53c7",
+    "scripts/probes/astra_mca_root_relocation.lean": "ab648a888e87699abf8ad32dc57a0364ce68116cf76e3092ddfc66976243327b",
+    "scripts/probes/astra_mca_scalar_projection.lean": "ac25b3886da22865fb41a8cc196171076d9949dc126f13ec60b8eaffd6ff84ec",
+    "scripts/probes/astra_mca_scaled_polynomials.lean": "29685509e032a782201359b949e441d7fb5d80e3011547c8ac304ef852182fb6"
+  },
+  "scope": "41 axiom reports across exact order8 cubic seed, production eight-fiber allocation, generic received-word/event assembly, and common-root/composition degree bounds. The order16 numerical production theorem and exact prize threshold are not instantiated."
+}

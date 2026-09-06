@@ -1,0 +1,137 @@
+{
+  "status": "PASS_EXACT_ANTIPODAL_ALGEBRA_AND_576_RESTRICTED_PATTERNS",
+  "quadratic_coefficient_controls": [
+    {
+      "prime": 3,
+      "projective_normalization": false,
+      "antipodal_pair_choices": 0,
+      "quadratic_pairs": 676,
+      "identically_even_ratios": 100
+    },
+    {
+      "prime": 5,
+      "projective_normalization": false,
+      "antipodal_pair_choices": 4,
+      "quadratic_pairs": 15376,
+      "identically_even_ratios": 976,
+      "two_pair_vanishing_controls": 3904
+    },
+    {
+      "prime": 7,
+      "projective_normalization": false,
+      "antipodal_pair_choices": 12,
+      "quadratic_pairs": 116964,
+      "identically_even_ratios": 4068,
+      "two_pair_vanishing_controls": 48816
+    }
+  ],
+  "forced_linear_factor_controls": [
+    {
+      "prime": 5,
+      "linear_classes": 6,
+      "first_ratio_cases": 432,
+      "first_ratio_even": 20,
+      "second_ratio_cases": 240,
+      "both_ratios_even_forced_roots": 24
+    },
+    {
+      "prime": 7,
+      "linear_classes": 8,
+      "first_ratio_cases": 1920,
+      "first_ratio_even": 54,
+      "second_ratio_cases": 1728,
+      "both_ratios_even_forced_roots": 120
+    },
+    {
+      "prime": 11,
+      "linear_classes": 12,
+      "first_ratio_cases": 12960,
+      "first_ratio_even": 170,
+      "second_ratio_cases": 16320,
+      "both_ratios_even_forced_roots": 720
+    },
+    {
+      "prime": 17,
+      "linear_classes": 18,
+      "first_ratio_cases": 77760,
+      "first_ratio_even": 464,
+      "second_ratio_cases": 116928,
+      "both_ratios_even_forced_roots": 3360
+    }
+  ],
+  "production_order32_controls": {
+    "prime": 365375409332725729550921208179070755120141565953,
+    "eta32": 60616617640587399731238504649262561904952465870,
+    "anchors": [
+      0,
+      16,
+      24,
+      8
+    ],
+    "checked_factor_assignments": 576,
+    "constraint_matrix_shape": [
+      14,
+      6
+    ],
+    "rank_histogram": {
+      "6": 576
+    },
+    "first_pattern": {
+      "quadratic_assignment": [
+        1,
+        3,
+        5,
+        7
+      ],
+      "quartic_assignment": [
+        1,
+        3,
+        5,
+        7
+      ],
+      "root_exponents": [
+        [
+          0,
+          2,
+          18,
+          1,
+          9,
+          17,
+          25
+        ],
+        [
+          16,
+          6,
+          22,
+          3,
+          11,
+          19,
+          27
+        ],
+        [
+          24,
+          10,
+          26,
+          5,
+          13,
+          21,
+          29
+        ],
+        [
+          8,
+          14,
+          30,
+          7,
+          15,
+          23,
+          31
+        ]
+      ],
+      "constraint_rank": 6
+    },
+    "scope": "Only the specified anchor/quadratic/quartic factor family; full rank rules out every nonzero degree15 tuple in that family.",
+    "primality": "Uses the existing repository certificate for P; not reproved here."
+  },
+  "proof_status": "Universal obstruction is a written algebraic proof, not Lean-verified.",
+  "scope": "No attack, universal MCA safety bound, or unrestricted order32 nonexistence claim."
+}

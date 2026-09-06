@@ -54087,3 +54087,14 @@ fibers. The checker regenerates 47,619 interpolation assignments, leaving
 exactly five new candidates; their rational duals bound normalized common
 core by `45/4`, below the required production integer core. This is a finite
 fixed-family exclusion, not universal MCA safety or a numerical Lean theorem.
+# 2026-09-06: The direct antipodal degree-fifteen recursion forces coincident sources
+
+`docs/kb/astra_mca_antipodal_recursion-2026-09-06.md` gives a written algebraic
+obstruction for four disjoint equal-size triple-root sets when the first three
+are one nonzero anchor times an even polynomial and the fourth contains two
+antipodal pairs. The required degree bound forces two source polynomials to
+coincide. The standalone checker independently verifies the quadratic algebra
+in finite controls and full rank of all 576 specified production-field
+order-32 constraint matrices. The universal symmetric obstruction is written,
+not Lean-verified; the finite census excludes only its specified factor
+family. Nonsymmetric supports and different degree allocations remain open.

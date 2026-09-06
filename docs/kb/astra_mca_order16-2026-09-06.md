@@ -242,8 +242,22 @@ verify generic finite-choice, same-support MCA, and probability steps. The
 order-sixteen seed, lifted allocation, and final numerical production
 instantiation remain to be formalized.
 
+The generic common-root, degree-seven composition, and received-word assembly
+lemmas have now passed the ArkLib job in
+[CI run 34047016764](https://github.com/lalalune/ArkLib/actions/runs/34047016764).
+The [kernel receipt](../../scripts/probes/receipts/astra_construction_lean_20260906/kernel_receipt.json)
+records 41 axiom reports across four supporting modules and checks their
+source provenance. That run also verifies the earlier order-eight cubic seed
+and fiber allocation; it does not verify this order-sixteen seed or its
+numerical production instantiation.
+
 The [fifth-source exclusion](astra_mca_order16_fifth_exclusion-2026-09-06.md)
 rules out improving all five joint cores by adjoining a degree-seven source
 while retaining the current four sources and common carrier. Its exact
 interpolation census and rational dual certificates cover that extension,
 not alternative source families or universal MCA safety.
+
+A separate [antipodal-recursion obstruction](astra_mca_antipodal_recursion-2026-09-06.md)
+explains why directly doubling the paired-root pattern fails. Its algebraic
+proof is written; exact production-field rank checks cover the specified
+576-pattern order-32 family. More general order-32 constructions remain open.

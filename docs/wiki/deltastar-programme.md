@@ -43,9 +43,12 @@ Four further proof sources are now wired into the same CI gate: the exact
 order-eight cubic seed, the production domain's eight fibers and allocation
 blocks, the generic assembly of one received word with an exactly counted
 union of ordinary and fresh MCA events, and the common-root/composition degree
-and evaluation formulas for cubic and degree-seven seeds. These sources await
-a successful kernel run; their addition does not by itself close the
-production theorem. The event-proof script checks the remaining modules after
+and evaluation formulas for cubic and degree-seven seeds. All 41 requested
+axiom reports passed in
+[run 34047016764](https://github.com/lalalune/ArkLib/actions/runs/34047016764),
+with [retained provenance](../../scripts/probes/receipts/astra_construction_lean_20260906/kernel_receipt.json)
+for the checked source. These supporting modules do not by themselves close
+the numerical production theorem. The event-proof script checks the remaining modules after
 a compiler failure and reports all failures together, while retaining a
 failing exit status.
 
@@ -55,6 +58,12 @@ nor the new unsafe bound determines the exact threshold or resolves either
 grand challenge. The older
 [kernel-checked numerical upper bound](../kb/astra_mca_production_upper-2026-09-05.md)
 remains valid with its separate verification scope.
+
+The newer [fifth-degree-seven exclusion](../kb/astra_mca_order16_fifth_exclusion-2026-09-06.md)
+and [antipodal-recursion obstruction](../kb/astra_mca_antipodal_recursion-2026-09-06.md)
+rule out two specific extensions of the order-sixteen construction. Their
+exact finite certificates and written arguments do not exclude other source
+patterns or provide universal safety.
 
 ## Where everything is
 

@@ -1,7 +1,7 @@
 {
   "scope": "Written order16 production construction and exact arithmetic; independent actual-polynomial controls. No full numerical Lean theorem.",
   "sha256": {
-    "docs/kb/astra_mca_order16-2026-09-06.md": "3de2e784251cacb8e307209f6e8d0de8efe153b06d007fb4f13b501d8c76414f",
+    "docs/kb/astra_mca_order16-2026-09-06.md": "cfff91bc8137505bd9fa6e51239296d9a5299de16a3f1102bd7bc258f0a5f72c",
     "scripts/probes/astra_mca_order16_check.py": "ae9fa686444fb75d736fd57a085fb6cfe38c6a40c7c58edfe1296278041d9d65",
     "scripts/probes/astra_mca_order16_certificate.json": "b389b22ad229de72349249985e1b37bd141ed23b2d6edc372a750895eea01662",
     "scripts/probes/astra_mca_order16_independent_check.py": "22ea41dfe0cd1eb556573d1be262e706b32c9eb5f792f558159d62338401720c",
@@ -11,6 +11,9 @@
     "docs/kb/astra_mca_order16_fifth_exclusion-2026-09-06.md": "6934ba439c8fd87c7f1b29747e911b65efe7b3623adb0abc850fe52e67b8a5ce",
     "scripts/probes/astra_mca_order16_fifth_check.py": "b7fc3bd2a83b4073cf9992322a0c38b9862177b7b4bef644dbd9bbcc972e0e86",
     "scripts/probes/astra_mca_order16_fifth_certificate.json": "3f66ce77c3a857e7b0b1425c90dead5fca397130f336e626941569658a68606e",
-    "scripts/probes/receipts/astra_order16_20260906/fifth_extension.json": "a43e03b5929c6b3e9315be6e3b5eb79d72204b18ef5f0d685c92720554665309"
+    "scripts/probes/receipts/astra_order16_20260906/fifth_extension.json": "a43e03b5929c6b3e9315be6e3b5eb79d72204b18ef5f0d685c92720554665309",
+    "docs/kb/astra_mca_antipodal_recursion-2026-09-06.md": "22a16746c01994b6752d4ef577e79dc59c1a40c1da39561bce0cf81fc79dd7db",
+    "scripts/probes/astra_mca_antipodal_recursion_check.py": "fe0f91e06c1fd384ae575826f19d390dbbce8e985f9fa99cbf0d5745149467f9",
+    "scripts/probes/receipts/astra_order16_20260906/antipodal_recursion.json": "542c9be3ce33a569817e4a44355f1c2f2c033e7dea8163b2881d29e5b5cc4c71"
   }
 }

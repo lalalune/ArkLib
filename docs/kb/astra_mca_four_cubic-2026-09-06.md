@@ -13,7 +13,7 @@ MCA-bad scalars at exact support size 738197503. Thus its MCA error exceeds 2^-1
 
     delta = 335544321/1073741824 = 5/16+1/n.
 
-This is a written construction with exact production-prime seed and parameter checks and independent actual-polynomial controls. The seed/fiber construction and final numerical bound are not Lean-formalized. Generic finite-choice and original-event bridges are kernel-checked separately; this is not a full bad-set census or an exact determination of the optimal MCA radius. The construction uses general polynomial pencils, not the separate single-hole value family.
+This is a written construction with exact production-prime seed and parameter checks and independent actual-polynomial controls. Its order-eight seed identities, production fiber allocation, and generic degree and received-word lemmas are now kernel-checked separately. The final production received-word instantiation and numerical bound are not yet Lean-formalized. This is not a full bad-set census or an exact determination of the optimal MCA radius. The construction uses general polynomial pencils, not the separate single-hole value family.
 
 For the repository's supremum convention, this gives
 
@@ -213,7 +213,7 @@ The [manifest](../../scripts/probes/receipts/astra_four_cubic_20260906/manifest.
 python3 scripts/probes/astra_mca_four_cubic_independent_check.py
 ```
 
-The [generic Lean bridges](../../scripts/probes/astra_mca_root_relocation.lean) prove simultaneous fresh-direction selection and the original MCA event from a joint core plus one point. They discharge those reusable steps under explicit hypotheses. The numerical production theorem still requires the seed, fiber, common-factor, received-word, and final counting instantiations.
+The [generic Lean bridges](../../scripts/probes/astra_mca_root_relocation.lean) prove simultaneous fresh-direction selection and the original MCA event from a joint core plus one point. They discharge those reusable steps under explicit hypotheses. The numerical production theorem still requires the polynomial cores and received word to be instantiated and the final count/probability inequality assembled.
 
 Two further exact restrictions help distinguish extensions of this example
 from a general solution. The [fifth-cubic exclusion](astra_mca_fifth_cubic_exclusion-2026-09-06.md)
@@ -233,3 +233,16 @@ source dependencies match that checked commit. The
 binds the retained raw proof log and run metadata. This confirms the reusable
 lemmas, including the conversion from disjoint scalar sets to the original
 worst-case MCA error; it does not instantiate the numerical construction.
+
+Four additional modules passed the ArkLib job in
+[run 34047016764](https://github.com/lalalune/ArkLib/actions/runs/34047016764),
+whose two jobs both succeeded, at commit
+`7414231b3c0e9c6dc0149996b2edb1dc862b89e2`: the
+[exact seed](../../scripts/probes/astra_mca_four_cubic_seed.lean),
+[production fibers](../../scripts/probes/astra_mca_power_fibers.lean),
+[received-word assembly](../../scripts/probes/astra_mca_received_assembly.lean),
+and [scaled polynomial formulas](../../scripts/probes/astra_mca_scaled_polynomials.lean).
+The [retained receipt](../../scripts/probes/receipts/astra_construction_lean_20260906/kernel_receipt.json)
+records 41 clean axiom reports and verifies 44 source files against the checked
+commit. These supporting facts have not yet been combined into the numerical
+production theorem.

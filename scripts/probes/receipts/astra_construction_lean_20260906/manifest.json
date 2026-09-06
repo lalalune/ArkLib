@@ -1,0 +1,7 @@
+{
+  "sha256": {
+    "scripts/probes/receipts/astra_construction_lean_20260906/kernel-output.txt": "130748ff342832cdfa4042d1d03746550762ce554c1a129b6a53a91b64ed30b1",
+    "scripts/probes/receipts/astra_construction_lean_20260906/kernel_receipt.json": "0a2b0e055bb325616d462dff18285c603f0c3d69c76db78ecdebe105b8813049",
+    "scripts/probes/receipts/astra_construction_lean_20260906/run.json": "da063b39411fb8bcb13f18167982db738e551d02a97974d476a99d8496bbd721"
+  }
+}

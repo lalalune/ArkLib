@@ -1,0 +1,259 @@
+'AstraCompanionStripProjection.index_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraCompanionStripProjection.mem_low_of_strip_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraCompanionStripProjection.strip_range_finrank_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraCompanionStripProjection.exists_low_subspace' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraCompanionOrdinary6804Gates.padded_identity_budget' depends on axioms: [propext, Quot.sound]
+'AstraCompanionOrdinary6804Gates.hybrid_identity_budget' depends on axioms: [propext, Quot.sound]
+'AstraCompanionOrdinary6804Gates.mixed_characteristic' does not depend on any axioms
+'AstraCompanionOrdinary6804Gates.product_characteristic' does not depend on any axioms
+'AstraCompanionOrdinary6804Gates.flag_characteristic' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraCompanionOrdinary6804Gates.rational_coordinate' depends on axioms: [propext, Quot.sound]
+'AstraCompanionOrdinary6804Gates.padded_coordinate' depends on axioms: [propext, Quot.sound]
+'AstraCompanionOrdinary6804Gates.weighted_cap_characteristic' does not depend on any axioms
+'AstraC2BudgetObstruction.exact_values' does not depend on any axioms
+'AstraC2BudgetObstruction.scalar_caps_do_not_imply_six_percent' does not depend on any axioms
+'AstraCompanionTKernelGates.row_166' does not depend on any axioms
+'AstraCompanionTKernelGates.row_194' does not depend on any axioms
+'AstraCompanionTKernelGates.row_197' does not depend on any axioms
+'AstraCompanionTKernelGates.ambient_and_cutoffs' does not depend on any axioms
+'AstraExactListProjection.avoid_proper_subspaces' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraExactListProjection.exists_separating_projection' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraExactListProjection.joint_agreements_le_projected' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraExactListProjection.scalar_budget_to_interleaved' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraExactListProjection.interleaved_budget_to_scalar' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraExactListProjection.exact_budget_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraExactListProjection.grand_field_gate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraExactListProjection.companion_field_gate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraExactListProjection.scalar_carrier_field_gate' depends on axioms: [propext, Classical.choice, Quot.sound]
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+'ArkLib.ProximityGap.PrizeShapePrimeP30.prime_P' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ArkLib.ProximityGap.PrizeShapePrimeP30.orderOf_g' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ArkLib.ProximityGap.PrizeShapePrimeP30.exists_orderOf_two_pow_30' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AstraMcaPolynomialBasis.initial_determinant' depends on axioms: [propext, Quot.sound]
+'AstraMcaPolynomialBasis.change_basis_determinant' depends on axioms: [propext, Quot.sound]
+'AstraMcaPolynomialBasis.divided_determinant' depends on axioms: [propext, Quot.sound]
+'AstraMcaPolynomialBasis.cofactor_pair_independent' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.exists_separated_at_anchor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.many_separated_at_anchor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.remove_root_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.remove_root_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.simple_locator_derivative' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.cofactor_row_nonzero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.remove_root_preserves_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.remove_root_preserves_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.killed_combination_roots' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.delete_at_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.delete_at_preserves' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.two_anchor_deleted_determinant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.deleted_locator_formula' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.cofactor_of_agreement' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.exists_basis_after_deletion' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.exists_basis_after_two_deletions' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.production_basis_after_four_deletions' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AstraMcaPolynomialBasis.initial_coefficient_relations' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.locator_eq_X_pow_sub_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.interpolate_power_fiber' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.initial_basis_from_interpolant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.initial_basis_of_quarter_partition' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.production_deleted_basis_of_quarter_partition' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AstraMcaPolynomialBasis.exists_balanced_quarter_partition' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.exists_fourth_root_parameters' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.production_deleted_basis_from_roots' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPolynomialBasis.production_anchor_margins' does not depend on any axioms
+'AstraMcaPairBasisComplete.basis_determinant_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPairBasisComplete.cramer_numerators_vanish' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPairBasisComplete.cramer_numerator_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPairBasisComplete.coefficient_from_locator' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPairBasisComplete.pair_basis_complete' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPairBasisComplete.pair_basis_coefficients_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPairBasisComplete.pair_basis_constant_span' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPairBasisComplete.production_two_deletion_constant_span' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AstraMcaPairBasisComplete.production_four_deletion_linear_span' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AstraMcaPairBasisComplete.constant_change_between_bases' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPairBasisComplete.projective_collisions_preserved' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPairBasisComplete.three_core_budget' depends on axioms: [propext, Quot.sound]
+'AstraMcaPairBasisComplete.production_sharp_core_budget' depends on axioms: [propext, Quot.sound]
+'AstraMcaResidualRows.row_lift_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaResidualRows.row_lift_same_coordinate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaResidualRows.determinant_nonzero_off_domain' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaResidualRows.basis_values_not_all_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaResidualRows.slot_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaResidualRows.base_row_nonzero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaResidualRows.slot_row_nonzero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaResidualRows.row_lift_determinant_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaResidualRows.slot_rows_projectively_distinct' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaEvaluations.row_dot_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaEvaluations.row_dot_smul' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaEvaluations.combine_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaEvaluations.combine_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaEvaluations.core_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaEvaluations.owner_polynomial_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaEvaluations.core_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaEvaluations.slot_discrepancy' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaEvaluations.received_affine' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaEvaluations.slot_cancellation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaEvaluations.slot_outside_core' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaEvaluations.no_explanation_on_core_insert' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaEvaluations.core_insert_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaScalarProjection.row_polynomial_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaScalarProjection.row_polynomial_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaScalarProjection.row_polynomial_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaScalarProjection.exists_common_nonroot' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaScalarProjection.exists_nonzero_denominators' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaScalarProjection.exists_injective_ratios' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaProductionBasis.power_domain_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaProductionBasis.power_domain_roots' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaProductionBasis.production_deleted_basis' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaProductionBasis.production_residual_rows' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaProductionBasis.production_projection_arithmetic' depends on axioms: [propext]
+'AstraMcaProductionBasis.production_moment_curve_arithmetic' does not depend on any axioms
+'AstraMcaProductionBasis.production_scalar_projection' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraRiccatiContactObstruction.riccati_contact_expansion' depends on axioms: [propext]
+'AstraRiccatiContactObstruction.local_derivative_divisibility' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AstraRiccatiContactObstruction.global_derivative_divisibility' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AstraRiccatiContactObstruction.forced_divisor_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraRiccatiContactObstruction.production_degree_gap' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraRiccatiContactObstruction.production_derivative_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraRiccatiContactObstruction.quadratic_coefficients_zero_of_three' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AstraRiccatiContactObstruction.production_riccati_zero_of_three' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AstraQuadraticContactObstruction.quadratic_contact_expansion' depends on axioms: [propext]
+'AstraQuadraticContactObstruction.local_square_divisibility' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraQuadraticContactObstruction.multiplicity_degree_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraQuadraticContactObstruction.production_square_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraQuadraticContactObstruction.local_cross_divisibility' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraQuadraticContactObstruction.production_cross_zero_except_three' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AstraQuadraticContactObstruction.augmented_root_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraQuadraticContactObstruction.production_order_three_relation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AstraQuadraticContactObstruction.production_order_three_zero' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AstraQuadraticContactObstruction.production_derivative_coefficients_zero' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AstraQuadraticContactObstruction.production_quadratic_zero_of_three' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AstraQuadraticContactObstruction.local_algebraic_divisibility' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AstraQuadraticContactObstruction.specialized_degree_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraQuadraticContactObstruction.production_algebraic_solution' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'AstraQuadraticContactObstruction.production_quadratic_contact_zero' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+'AstraMcaEventBridge.mca_event_from_polynomial_support' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaEventBridge.mca_event_of_core_insert' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaProductionEvents.core_subset_domain' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaProductionEvents.slot_coordinate_mem_domain' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaProductionEvents.mem_production_domain_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaProductionEvents.production_support_arithmetic' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaProductionEvents.production_slot_event' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaProductionEvents.production_many_events' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaProductionUpper.production_code_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaProductionUpper.production_mca_error_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaProductionUpper.production_security_exceeded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaProductionUpper.production_delta_star_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaSingleHole.codeword_iff_natDegree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaSingleHole.zero_of_indexed_roots' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaSingleHole.hole_direction_no_explanation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaSingleHole.mca_event_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaSingleHole.bad_values_card_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaSingleHole.value_count_le_epsMCA' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaSingleHole.production_single_hole_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaSingleHole.production_value_budget_of_security' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaKkh26Upper.production_code_eq_evalCode' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaKkh26Upper.first_prime_rate_half_delta_star_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaRootRelocation.exists_fresh_directions' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaRootRelocation.exists_simultaneous_directions' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaRootRelocation.exists_counted_fresh_directions' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaRootRelocation.production_greedy_arithmetic' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaRootRelocation.mca_event_of_joint_core_extra' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaRootRelocation.mca_event_of_reciprocal_extra' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaRootRelocation.mca_event_of_good_local' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaRootRelocation.disjoint_event_union' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaRootRelocation.disjoint_event_card_le_bad_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaRootRelocation.disjoint_event_probability_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaRootRelocation.disjoint_event_epsMCA_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaFourCubicSeed.scalar_inverse_products' depends on axioms: [propext, Quot.sound]
+'AstraMcaFourCubicSeed.raw_pair_factorization' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaFourCubicSeed.pair_factorization' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaFourCubicSeed.pairScalar_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaFourCubicSeed.pair_eval_eq_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaFourCubicSeed.pair_power_eval_eq_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaFourCubicSeed.seed_natDegree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaFourCubicSeed.seed_normalization' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaFourCubicSeed.no_common_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.eightFiberEquiv' depends on axioms: [propext, Quot.sound]
+'AstraMcaPowerFibers.fiberPoint_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.powerFiber_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.powerFiber_cover' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.powerFiber_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.orderOf_fiber_generator' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.mem_powerFiber_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.fiberBlock_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.fiberBlocks_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.fiberBlocks_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.fiberBlocks_three_cover' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.production_fiber_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.production_fibers_cover' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.production_fiber_mem_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.production_common_roots_two_prefixes' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.production_common_roots_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.production_covered_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.production_uncovered_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.production_allocation_cover' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaPowerFibers.production_allocation_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaReceivedAssembly.exists_received_word_and_events' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaScaledPolynomials.locator_natDegree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaScaledPolynomials.locator_eval_eq_zero_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaScaledPolynomials.scaledP_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaScaledPolynomials.eval_on_fiber' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaScaledPolynomials.local_pair_eq_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaScaledPolynomials.common_zero_iff_mem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaScaledPolynomials.reciprocal_cancellation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaScaledPolynomials.scaledP_natDegree_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaScaledPolynomials.scaledQ_natDegree_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaScaledPolynomials.degree_seven_budget' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AstraMcaScaledPolynomials.degree_three_budget' depends on axioms: [propext, Classical.choice, Quot.sound]
