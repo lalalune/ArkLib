@@ -20,6 +20,9 @@ on:
       - "scripts/probes/astra_mca_power_fibers.lean"
       - "scripts/probes/astra_mca_received_assembly.lean"
       - "scripts/probes/astra_mca_scaled_polynomials.lean"
+      - "scripts/probes/astra_mca_order16_seed.lean"
+      - "scripts/probes/astra_mca_order16_fibers.lean"
+      - "scripts/probes/astra_mca_order16_assembly.lean"
       - "scripts/probes/astra_mca_production_events.lean"
       - "scripts/probes/astra_mca_production_upper.lean"
       - "scripts/probes/astra_mca_kkh26_upper.lean"
@@ -223,6 +226,39 @@ jobs:
                   "AstraMcaPowerFibers.production_allocation_cover",
                   "AstraMcaPowerFibers.production_allocation_disjoint",
                   "AstraMcaReceivedAssembly.exists_received_word_and_events",
+              ]
+              expected += [
+                  "AstraMcaOrder16Seed.eta_eq_generator_pow",
+                  "AstraMcaOrder16Seed.eta_pow_eight",
+                  "AstraMcaOrder16Seed.eta_powers_injective",
+                  "AstraMcaOrder16Seed.value_table",
+                  "AstraMcaOrder16Seed.seed_table",
+                  "AstraMcaOrder16Seed.seed_injective",
+                  "AstraMcaOrder16Seed.seed_natDegree_le",
+                  "AstraMcaOrder16Seed.seed_natDegree",
+                  "AstraMcaOrder16Seed.no_common_zero_on_fibers",
+              ]
+              expected += [
+                  "AstraMcaOrder16Fibers.sixteenFiberEquiv",
+                  "AstraMcaOrder16Fibers.mem_powerFiber_iff",
+                  "AstraMcaOrder16Fibers.fiberBlocks_card",
+                  "AstraMcaOrder16Fibers.core_arithmetic",
+                  "AstraMcaOrder16Fibers.production_cardinalities",
+                  "AstraMcaOrder16Fibers.production_allocation_cover",
+                  "AstraMcaOrder16Fibers.production_allocation_disjoint",
+                  "AstraMcaOrder16Fibers.production_core_disjoint_uncovered",
+                  "AstraMcaOrder16Fibers.production_direction_count",
+                  "AstraMcaOrder16Fibers.fiberPoint_mem_fiberBlocks_iff",
+                  "AstraMcaOrder16Fibers.commonRoots_subset_core",
+                  "AstraMcaOrder16Fibers.production_core_subset_domain",
+              ]
+              expected += [
+                  "AstraMcaOrder16Assembly.overlapping_labels",
+                  "AstraMcaOrder16Assembly.core_overlap",
+                  "AstraMcaOrder16Assembly.many_events",
+                  "AstraMcaOrder16Assembly.mca_error_lower",
+                  "AstraMcaOrder16Assembly.security_exceeded",
+                  "AstraMcaOrder16Assembly.delta_star_upper",
               ]
               expected += ["AstraMcaRootRelocation." + name for name in (
                   "exists_fresh_directions", "exists_simultaneous_directions",

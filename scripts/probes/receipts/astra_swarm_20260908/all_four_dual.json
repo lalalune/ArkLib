@@ -1,0 +1,40 @@
+{
+  "status": "PASS_EXACT_LOCAL_DUAL_AND_REDUCTION_CONTROLS",
+  "local_states_checked": 67,
+  "dangerous_sorted_profiles": [
+    [
+      0,
+      [
+        4,
+        3,
+        3,
+        3
+      ]
+    ],
+    [
+      1,
+      [
+        3,
+        3,
+        3,
+        2
+      ]
+    ],
+    [
+      1,
+      [
+        3,
+        3,
+        3,
+        3
+      ]
+    ]
+  ],
+  "exceptional_profile_bounds": [
+    "67/6",
+    "131/12"
+  ],
+  "unexceptional_integer_core_cap": 760567124,
+  "exceptional_relaxed_integer_core_cap": 749382314,
+  "scope": "Exact independent checking of local/profile/integer reduction; field-census observations are read from its receipt, not independently regenerated here."
+}

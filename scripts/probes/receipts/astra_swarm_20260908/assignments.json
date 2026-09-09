@@ -1,0 +1,61 @@
+{
+  "started": "2026-09-09T00:53:53.546967+00:00",
+  "concurrency_limit_including_root": 4,
+  "requested_workers": 10,
+  "execution": "Ten distinct agents in batches, at most three children active",
+  "assignments": [
+    {
+      "id": 1,
+      "role": "Remote and collaboration audit",
+      "status": "completed"
+    },
+    {
+      "id": 2,
+      "role": "Universal safety above unique decoding",
+      "status": "completed"
+    },
+    {
+      "id": 3,
+      "role": "Nonsymmetric order32 construction search",
+      "status": "completed"
+    },
+    {
+      "id": 4,
+      "role": "Order16 seed formalization",
+      "status": "kernel_passed_9_reports"
+    },
+    {
+      "id": 5,
+      "role": "Order16 domain and allocation formalization",
+      "status": "kernel_passed_12_reports"
+    },
+    {
+      "id": 6,
+      "role": "Production theorem assembly",
+      "status": "kernel_passed_6_reports"
+    },
+    {
+      "id": 7,
+      "role": "Independent original-event and boundary audit",
+      "status": "completed"
+    },
+    {
+      "id": 8,
+      "role": "Joint covered and exceptional bad-scalar budget",
+      "status": "completed"
+    },
+    {
+      "id": 9,
+      "role": "Recent literature and companion comparison",
+      "status": "completed"
+    },
+    {
+      "id": 10,
+      "role": "Adversarial review and synthesis",
+      "status": "completed"
+    }
+  ],
+  "dispatch_model": "gpt-6-astra",
+  "dispatch_reasoning_effort": "ultra",
+  "remaining": "Global first-step safety for full high-core list of size at most two; matching exact threshold and other prize parameters."
+}

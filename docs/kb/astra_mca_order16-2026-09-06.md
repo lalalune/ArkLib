@@ -10,10 +10,14 @@ epsMCA(C,delta) >= (n+4)/P > 2^-128.
 ```
 
 This improves the [four-cubic construction](astra_mca_four_cubic-2026-09-06.md)
-from approximately 31.25% to 29.1666667%. It is a written proof with exact
-production-field certificates and two independently implemented dense
-controls. It is not a Lean-checked numerical production theorem, a complete
-bad-scalar census, an exact threshold, or a solution to either grand challenge.
+from approximately 31.25% to 29.1666667%. On September 8 the full numerical
+production upper bound was checked in Lean, in
+[`AstraMcaOrder16Assembly.delta_star_upper`](../../scripts/probes/astra_mca_order16_assembly.lean),
+with only the standard axioms and no residual hypotheses. The supporting
+seed, actual fiber allocation, and final assembly supply 27 clean axiom reports;
+[retained verification](../../scripts/probes/receipts/astra_order16_lean_20260908/kernel_receipt.json)
+records the exact sources. This is an upper bound, not a complete bad-scalar
+census, an exact threshold, or a solution to either grand challenge.
 The [official MCA challenge](https://proximityprize.org/) asks for the optimal
 threshold, including other specified constant rates and smooth domains.
 

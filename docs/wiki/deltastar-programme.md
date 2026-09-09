@@ -10,7 +10,7 @@ The mutual-correlated-agreement threshold programme: pin
 `δ*(C, ε*) = sup{δ : ε_mca(C, δ) ≤ ε*}` for explicit smooth-domain Reed–Solomon
 codes ([ABF26] Definition 4.3), with matching machine-checked bounds.
 
-## Current production checkpoint (2026-09-06)
+## Current production checkpoint (2026-09-08)
 
 The research branch `codex/proximity-astra-20260904` now has an
 [order-sixteen degree-seven construction](../kb/astra_mca_order16-2026-09-06.md)
@@ -19,15 +19,22 @@ code, at radius `313174699/2^30 = 7/24+1/(3*2^30)`, approximately 29.1666667%.
 It improves the earlier [four-cubic bound](../kb/astra_mca_four_cubic-2026-09-06.md)
 near 31.25%. Exact production-field certificates, independently reconstructed
 seed coefficients, and two independently expanded finite controls pass. The
-numerical production construction is a written proof, not a completed Lean
-theorem.
+numerical production construction is now a complete Lean upper-bound theorem:
+[`AstraMcaOrder16Assembly.delta_star_upper`](../../scripts/probes/astra_mca_order16_assembly.lean).
+Its explicit seed, sixteen fibers, received word, event count, and probability
+conversion have 27 clean axiom reports with
+[retained source provenance](../../scripts/probes/receipts/astra_order16_lean_20260908/kernel_receipt.json).
 
 Together with the existing full-UDR safety theorem and the Hamming staircase,
 the written bracket is
 `268435457/2^30 <= deltaStar <= 313174699/2^30`, of width
 `44739242/2^30`, approximately 4.167 percentage points.
 The lower endpoint is a supremum bound, not an assertion of safety at that
-endpoint. Historical proposed universal safety statements at `1/3` cannot
+endpoint. New [reviewed first-step arguments](../kb/astra_mca_first_step-2026-09-08.md)
+prove safety at that first unresolved endpoint when the full list of joint
+codeword pairs with sufficiently large cores has size three or four. Lists
+of size zero, one, or two remain open. These safety arguments are written
+proofs with exact controls, not yet Lean formalizations. Historical proposed universal safety statements at `1/3` cannot
 establish this production target. Historical reductions below must be read
 with their stated hypotheses, rather than as evidence that a Paley/BGK result
 alone completes the present problem.
@@ -36,8 +43,8 @@ The eleven supporting Lean lemmas now pass the complete ArkLib CI job in
 [run 34042420175](https://github.com/lalalune/ArkLib/actions/runs/34042420175),
 with retained [kernel provenance](../../scripts/probes/receipts/astra_root_relocation_lean_20260906/kernel_receipt.json).
 Their scope is generic finite choice, the original same-support event, and
-count/probability conversion; the numerical production instantiation remains
-open.
+count/probability conversion. The September 8 assembly now supplies the
+order-sixteen numerical production instantiation.
 
 Four further proof sources are now wired into the same CI gate: the exact
 order-eight cubic seed, the production domain's eight fibers and allocation
@@ -47,8 +54,8 @@ and evaluation formulas for cubic and degree-seven seeds. All 41 requested
 axiom reports passed in
 [run 34047016764](https://github.com/lalalune/ArkLib/actions/runs/34047016764),
 with [retained provenance](../../scripts/probes/receipts/astra_construction_lean_20260906/kernel_receipt.json)
-for the checked source. These supporting modules do not by themselves close
-the numerical production theorem. The event-proof script checks the remaining modules after
+for the checked source. These earlier supporting modules are consumed by the September 8 numerical
+production theorem. The event-proof script checks the remaining modules after
 a compiler failure and reports all failures together, while retaining a
 failing exit status.
 
@@ -64,6 +71,13 @@ and [antipodal-recursion obstruction](../kb/astra_mca_antipodal_recursion-2026-0
 rule out two specific extensions of the order-sixteen construction. Their
 exact finite certificates and written arguments do not exclude other source
 patterns or provide universal safety.
+
+The [all-four-source degree-seven census](../kb/astra_mca_order16_all_four-2026-09-08.md)
+now proves restricted optimality for the current common-factor/carrier family;
+an independent implementation checks every compatible partition. The
+[remote audit](../kb/astra_remote_audit-2026-09-08.md) and
+[literature refresh](../kb/astra_literature_audit-2026-09-08.md) record current
+upstream work and its remaining constant/quantifier gaps.
 
 ## Where everything is
 

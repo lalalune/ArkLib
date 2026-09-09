@@ -1,0 +1,42 @@
+{
+  "production": {
+    "n": 1073741824,
+    "k": 536870912,
+    "threshold": 805306367,
+    "security_budget": 1073741824,
+    "five_list_gap": 72057591353573381,
+    "four_list_puncture_gap": 268435456,
+    "determinant_degree": 1073741822,
+    "forced_multiplicity": 1342177277,
+    "three_source_bound": 805306371
+  },
+  "dense_controls": [
+    {
+      "n": 16,
+      "k": 8,
+      "threshold": 11,
+      "witness": 11,
+      "zero_joint_core": 12,
+      "spike_zero_constraints": 10,
+      "passed": true
+    },
+    {
+      "n": 64,
+      "k": 32,
+      "threshold": 47,
+      "witness": 47,
+      "zero_joint_core": 48,
+      "spike_zero_constraints": 46,
+      "passed": true
+    },
+    {
+      "n": 256,
+      "k": 128,
+      "threshold": 191,
+      "witness": 191,
+      "zero_joint_core": 192,
+      "spike_zero_constraints": 190,
+      "passed": true
+    }
+  ]
+}

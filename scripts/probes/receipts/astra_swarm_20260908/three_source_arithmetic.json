@@ -1,0 +1,83 @@
+{
+  "scope": "Exact arithmetic only; polynomial arguments are written in the first-step note",
+  "rows": [
+    {
+      "s": 20,
+      "n": 80,
+      "k": 40,
+      "t": 59,
+      "five_gap": 205,
+      "hole_gap": 20,
+      "defect_budget": 6,
+      "mixed_gap": 636,
+      "shared_double_core_min": 41,
+      "polynomial_degree_max": 40,
+      "two_exception_bound": 65
+    },
+    {
+      "s": 21,
+      "n": 84,
+      "k": 42,
+      "t": 62,
+      "five_gap": 236,
+      "hole_gap": 21,
+      "defect_budget": 6,
+      "mixed_gap": 668,
+      "shared_double_core_min": 44,
+      "polynomial_degree_max": 42,
+      "two_exception_bound": 68
+    },
+    {
+      "s": 32,
+      "n": 128,
+      "k": 64,
+      "t": 95,
+      "five_gap": 709,
+      "hole_gap": 32,
+      "defect_budget": 6,
+      "mixed_gap": 1020,
+      "shared_double_core_min": 77,
+      "polynomial_degree_max": 64,
+      "two_exception_bound": 101
+    },
+    {
+      "s": 64,
+      "n": 256,
+      "k": 128,
+      "t": 191,
+      "five_gap": 3461,
+      "hole_gap": 64,
+      "defect_budget": 6,
+      "mixed_gap": 2044,
+      "shared_double_core_min": 173,
+      "polynomial_degree_max": 128,
+      "two_exception_bound": 197
+    },
+    {
+      "s": 256,
+      "n": 1024,
+      "k": 512,
+      "t": 767,
+      "five_gap": 62981,
+      "hole_gap": 256,
+      "defect_budget": 6,
+      "mixed_gap": 8188,
+      "shared_double_core_min": 749,
+      "polynomial_degree_max": 512,
+      "two_exception_bound": 773
+    },
+    {
+      "s": 268435456,
+      "n": 1073741824,
+      "k": 536870912,
+      "t": 805306367,
+      "five_gap": 72057591353573381,
+      "hole_gap": 268435456,
+      "defect_budget": 6,
+      "mixed_gap": 8589934588,
+      "shared_double_core_min": 805306349,
+      "polynomial_degree_max": 536870912,
+      "two_exception_bound": 805306373
+    }
+  ]
+}

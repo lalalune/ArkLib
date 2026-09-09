@@ -1,0 +1,188 @@
+{
+  "status": "PASS_LOCAL_KERNEL_AND_AXIOM_CHECK",
+  "checked_at_utc": "2026-09-09T01:13:28.333460+00:00",
+  "pinned_toolchain": "leanprover/lean4:v4.30.0-rc2",
+  "verified_declarations": {
+    "AstraMcaOrder16Seed.eta_eq_generator_pow": [
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Seed.eta_pow_eight": [
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Seed.eta_powers_injective": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Seed.value_table": [
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Seed.seed_table": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Seed.seed_injective": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Seed.seed_natDegree_le": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Seed.seed_natDegree": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Seed.no_common_zero_on_fibers": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Fibers.sixteenFiberEquiv": [
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Fibers.mem_powerFiber_iff": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Fibers.fiberBlocks_card": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Fibers.core_arithmetic": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Fibers.production_cardinalities": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Fibers.production_allocation_cover": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Fibers.production_allocation_disjoint": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Fibers.production_core_disjoint_uncovered": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Fibers.production_direction_count": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Fibers.fiberPoint_mem_fiberBlocks_iff": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Fibers.commonRoots_subset_core": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Fibers.production_core_subset_domain": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Assembly.overlapping_labels": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Assembly.core_overlap": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Assembly.many_events": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Assembly.mca_error_lower": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Assembly.security_exceeded": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaOrder16Assembly.delta_star_upper": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  "source_hashes": {
+    ".github/workflows/proximity-strip-proof.yml": "bef22593982c1c23b1457a58c1b530859b52a4b8965df1fece8bb48703452be9",
+    "ArkLib/Data/CodingTheory/Basic/DecodingRadius.lean": "4b62f38e7b43c4c801300e547ba31671f0c0c10e56d1e377f36daad219a140d2",
+    "ArkLib/Data/CodingTheory/Basic/Distance.lean": "ea49e655e11b9d0a64654cc2a02169a881373bfa39baeb89de43f88ce73df326",
+    "ArkLib/Data/CodingTheory/Basic/LinearCode.lean": "2b9332fe21f9c26854b5042a7672c59d4f95e8d060d02127bc877571da3bd7b4",
+    "ArkLib/Data/CodingTheory/Basic/RelativeDistance.lean": "3538f80eb09e4b8d405aed55a88a9d2f238eb2b0523b593f0e5e2cb7de099727",
+    "ArkLib/Data/CodingTheory/InterleavedCode.lean": "12c769cf4b5cafc4232d8d0ff8ad990f52bce1fc04ef8d40f5f267148f7ce7dc",
+    "ArkLib/Data/CodingTheory/ListDecodability.lean": "cb2e1dcbf02168e7fb714335ff1b6bb7f0bbc9670477993ff6257247e546718b",
+    "ArkLib/Data/CodingTheory/Prelims.lean": "65bf178d405e9f8e8d4c3aecb3fd1047aaae8fc09f560161de4bc2b3f338630f",
+    "ArkLib/Data/CodingTheory/ProximityGap/Basic.lean": "f16dd909a852a95bf1e9de571382af529ddb765af005181a4d24db760eac09af",
+    "ArkLib/Data/CodingTheory/ProximityGap/Errors.lean": "4034e1ecb827dfd24351e718231463c81d9d4a0492c6dafa2158c3d06d7bb53f",
+    "ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PrizeShapePrimeP30.lean": "b5f43c6c63d9bb0117033d29253961f8e8703f99a5676719a0070689ee50bb22",
+    "ArkLib/Data/CodingTheory/ProximityGap/MCAGeneralLowerBound.lean": "bf0bb6853418fbd4b51bff4628177c4e069876fb421ddef47397608dbe3797ba",
+    "ArkLib/Data/CodingTheory/ProximityGap/MCALowerBound.lean": "47dcb2f8c77215d63ca504af5bbf595a78cd4a495693a2b81544b895a9337566",
+    "ArkLib/Data/CodingTheory/ProximityGap/MCAThresholdLedger.lean": "040c18d5d9dbdaf71d2ef0b0b6b86957a406b6a4e104daaa73851dbdc9e0e5c9",
+    "ArkLib/Data/CodingTheory/ProximityGap/MCAWitnessSpread.lean": "cdc98d64e2d233a4de7e3a17b600a31e371967328200a3aa44769ce3705068ce",
+    "ArkLib/Data/CodingTheory/ProximityGap/MCAWitnessSpreadExample.lean": "8e393d2019419dc6996eafa3a9f88108a4f86592f746933264df2c43e354fef8",
+    "ArkLib/Data/CodingTheory/ReedSolomon.lean": "9735f439ac97923b5333543a770f4abf2bec939cced223d211f2341b5786a933",
+    "ArkLib/Data/Fin/Basic.lean": "7868b297d38ee3651bda89d669082c449da13e8bd527a860b1b13d14d90d0785",
+    "ArkLib/Data/Fin/Lift.lean": "1a26db03831eb18b59ae5cafa037f63ef43dbf7bf4a438b5702a3aaf443d921e",
+    "ArkLib/Data/Matrix/Vandermonde.lean": "fd2b1ed36f85b6799640f52a5c29ee16277a54eb9d23b00e6ceea6edb5478b91",
+    "ArkLib/Data/MvPolynomial/Degrees.lean": "0fa274d1d41d9e7e50fed2bbb91562a11bf151559311c165fa13768924e19c09",
+    "ArkLib/Data/MvPolynomial/Interpolation.lean": "33e4584bb646f1c779e62becbe4a5c6f8816758ddf57d384db35662b1504c5fb",
+    "ArkLib/Data/MvPolynomial/LinearMvExtension.lean": "8eb8f99f0eb2cb01b423c79aab8fc32b7a82ef978161b37d40866491f4c79d10",
+    "ArkLib/Data/MvPolynomial/Multilinear.lean": "9494a0a96ebf1de51dd00cc208cc8a617e712b91d32fca4b56b963b40a78450c",
+    "ArkLib/Data/Polynomial/Interface.lean": "6852fdac5f6dc0ca1aa987992381ae6810b293e23c361499f34c8c8f01057305",
+    "ArkLib/Data/Probability/Instances.lean": "4e1affad45158b524bd9c9a5cc69555e0c3bbcf42e6bb9c265ed76b2f78aa575",
+    "ArkLib/Data/Probability/Notation.lean": "65907907d3ebb3e5bf7fb2a646d19d0190b0e3c7b2ade4c694800bd2ec2ed630",
+    "ArkLib/ToMathlib/Polynomial/DegreeLT.lean": "ecd5d61a9d06c68262867224cc5b4f6cbb4c747637da94ce1572d91ee7ccc330",
+    "lake-manifest.json": "83aa1b110b26e46d0c3ceaef2c77c97e4d383d767faf34acb318aac72b0648d0",
+    "lakefile.toml": "41afa91b1799c7d8c4183e5a217e6f5a5f4bafd529ef7f10026cfd751a3d95ee",
+    "lean-toolchain": "ce4c4e3d87434b9663f46de25ce34b48a0cf0d392e0a320a0787b4674a2d7b61",
+    "scripts/check-mca-event-bridge.sh": "f30265e41aa13f280ae9a7a2566b6e5dd21ce4a9aecde92d32f46e90865348b3",
+    "scripts/probes/astra_mca_evaluations.lean": "7f933d4718327b538645c801dffc6954e84c57fe2e61e2d9beda3adcd2e3c4af",
+    "scripts/probes/astra_mca_event_bridge.lean": "4e294f65273e23a7ff50b925331c2d1a17993b5ccf2dd5b16bca926f073b356f",
+    "scripts/probes/astra_mca_order16_assembly.lean": "d67ea412ec6b56a68f023cb899564b0b1180a56c5a172b4ac2bf9abcb6894c25",
+    "scripts/probes/astra_mca_order16_fibers.lean": "e0f5b71e0e1f7c75970b39757b6eba95404f8e03e02855b53ea3724d21d01dc8",
+    "scripts/probes/astra_mca_order16_seed.lean": "579f1b0a18152ede6f27e22d45f976b28f4680cb201a1af8f4d208b10a245dc2",
+    "scripts/probes/astra_mca_polynomial_basis.lean": "e0b2d66c3ebcc12a0bf3079d65ece07344dff2d801d5ba1db46330344557daba",
+    "scripts/probes/astra_mca_production_basis.lean": "d338af0ac957afd597ca918b5aa275cbb974d41ce1b7c8c1caeaf0a74a207173",
+    "scripts/probes/astra_mca_production_events.lean": "fbe15b60b90120ae0e53c13ce8c6e44da9566742a6c548884a92f5d4d77f070d",
+    "scripts/probes/astra_mca_production_upper.lean": "c18f679a17714ed441ec33d211bbbdc17b7c68f3e3afb324024b771a3f3d7810",
+    "scripts/probes/astra_mca_received_assembly.lean": "ae19595ba4d0d758da68d32429ef0a3219f9a35efecc1e85e63b2b2874edfe5c",
+    "scripts/probes/astra_mca_residual_rows.lean": "8a7c9c19e72717d885d173f32ad61b589d8fec5e55f8dad6380c034102dd53c7",
+    "scripts/probes/astra_mca_root_relocation.lean": "ab648a888e87699abf8ad32dc57a0364ce68116cf76e3092ddfc66976243327b",
+    "scripts/probes/astra_mca_scalar_projection.lean": "ac25b3886da22865fb41a8cc196171076d9949dc126f13ec60b8eaffd6ff84ec",
+    "scripts/probes/astra_mca_scaled_polynomials.lean": "29685509e032a782201359b949e441d7fb5d80e3011547c8ac304ef852182fb6"
+  },
+  "scope": "Complete explicit production rate-half upper bound313174699/1073741824 for original mcaDeltaStar at error1/2^128. Not an exact threshold or universal first-step safety.",
+  "verification": "Matching local Lean compiler; pinned dependencies; complete event-check runner exit0; no errors/warnings or unapproved axioms. Hosted CI receipt is separate."
+}

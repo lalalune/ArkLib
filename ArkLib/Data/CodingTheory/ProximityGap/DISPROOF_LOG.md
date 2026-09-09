@@ -54098,3 +54098,33 @@ in finite controls and full rank of all 576 specified production-field
 order-32 constraint matrices. The universal symmetric obstruction is written,
 not Lean-verified; the finite census excludes only its specified factor
 family. Nonsymmetric supports and different degree allocations remain open.
+
+# 2026-09-08: All four degree-seven sources reach the same restricted core cap
+
+The written reduction in `docs/kb/astra_mca_order16_all_four-2026-09-08.md`,
+with two independent production-field censuses, proves that no four distinct
+sources of degree at most seven improve core 760567124 through the same
+common-factor/carrier mechanism (`deg Q<=s-2`, `q_i=Xp_i`, at least n+1
+supplied directions). The independent checker evaluates all 616,000 full
+partitions without pruning. This excludes the whole stated four-source
+family, not arbitrary sources/carriers, more sources, or universal MCA events.
+Two further bounded order-32 relocation censuses found no nonzero tuple;
+they do not classify order-32 sources.
+
+The original order-sixteen numerical upper bound is now completely checked
+in `scripts/probes/astra_mca_order16_assembly.lean`, with no residual inputs.
+This supersedes the September 6 entry's written-only verification status.
+
+# 2026-09-08: Universal high-core decoder coverage fails at the first step
+
+The spike construction in `docs/kb/astra_mca_first_step-2026-09-08.md` works
+on the actual production domain: its full high-core pair list is exactly
+{(0,0)}, its covered bad-scalar set is {-c(a)}, and scalar zero is a genuine
+original-MCA exception outside that set. Thus a universal high-core cover
+cannot be assumed when extending unique-decoding safety.
+
+Reviewed written arguments nevertheless prove the full n-scalar bound when
+the full list has three or four sources. In the three-source case two
+exceptions force a common fourth source; three exceptions force its core
+large enough to complete the coordinate charge. Cases with at most two
+high-core pairs remain open. These safety arguments are not yet Lean proofs.

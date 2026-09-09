@@ -1,0 +1,23 @@
+{
+  "production_arithmetic_passed": true,
+  "controls": [
+    {
+      "n": 8,
+      "interpolated_candidates": 21,
+      "high_core_pairs": 1,
+      "zero_is_uncovered_bad": true,
+      "covered_bad_count": 1,
+      "gamma0_support": 5,
+      "covered_support": 7
+    },
+    {
+      "n": 16,
+      "interpolated_candidates": 5897,
+      "high_core_pairs": 1,
+      "zero_is_uncovered_bad": true,
+      "covered_bad_count": 1,
+      "gamma0_support": 11,
+      "covered_support": 13
+    }
+  ]
+}

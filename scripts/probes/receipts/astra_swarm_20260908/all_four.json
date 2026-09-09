@@ -1,0 +1,201 @@
+{
+  "scope": "Exact exhaustive seed compatibility for disjoint triple sets of sizes (4,3,3,2) on production mu16; every possible nonzero distinct tuple in this specified factor family is represented up to common scalar. The finite degree/root constraints and common-carrier allocation are the only claims.",
+  "prime": 365375409332725729550921208179070755120141565953,
+  "eta16": 357111556877444407914257742635116754287240874648,
+  "stats": {
+    "disjoint_unordered_B_C": 80080,
+    "ratio_tests": 3603600,
+    "ratio_equal_D_pairs": 8800,
+    "factor_assignments": 616000,
+    "triple_count_dual_prunes": 609280,
+    "quad_or_thirteenth_triple": 6720,
+    "has_quadruple": 6720,
+    "has_thirteenth_required_triple": 0,
+    "uniform_dual_cannot_improve": 6720
+  },
+  "unique_partition_uniform_upper_histogram": {
+    "67/6": 1152,
+    "131/12": 5568
+  },
+  "exceptional_profile_certificates": [
+    {
+      "profile": [
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          4,
+          1
+        ]
+      ],
+      "lambda": "3",
+      "beta": [
+        "4",
+        "4",
+        "4",
+        "7",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "13"
+      ],
+      "root_extra": "8",
+      "bound": "67/6"
+    },
+    {
+      "profile": [
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          4,
+          1
+        ]
+      ],
+      "lambda": "3",
+      "beta": [
+        "4",
+        "4",
+        "4",
+        "4",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "13"
+      ],
+      "root_extra": "8",
+      "bound": "131/12"
+    }
+  ],
+  "seconds": 3.008929967880249
+}
