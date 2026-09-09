@@ -32,8 +32,10 @@ the written bracket is
 The lower endpoint is a supremum bound, not an assertion of safety at that
 endpoint. New [reviewed first-step arguments](../kb/astra_mca_first_step-2026-09-08.md)
 prove safety at that first unresolved endpoint when the full list of joint
-codeword pairs with sufficiently large cores has size three or four. Lists
-of size zero, one, or two remain open. These safety arguments are written
+codeword pairs with sufficiently large cores has size two, three, or four. Lists
+of size zero or one with dense directions remain open. See also the
+[two-source argument](../kb/astra_mca_two_source-2026-09-08.md) and
+[sparse-direction bound](../kb/astra_mca_sparse_direction-2026-09-08.md). These safety arguments are written
 proofs with exact controls, not yet Lean formalizations. Historical proposed universal safety statements at `1/3` cannot
 establish this production target. Historical reductions below must be read
 with their stated hypotheses, rather than as evidence that a Paley/BGK result
@@ -106,7 +108,7 @@ scripts/pg-iterate.sh <file>.lean  # per attempt: ~30-75s, lock-free, parallel-s
 Develop in a detached `/tmp` worktree with `.lake` symlinked to the main checkout
 (see the agent guide §2 for the concurrency hazards on this shared tree).
 
-## The state in one paragraph
+## Historical programme snapshot (June–July 2026)
 
 The production conjecture remains open. The granularity ladder gives δ* in closed form on every
 band with `3(j−1)+k ≤ n`; exact finite-instance and deep-rung pins, the threshold ledger, the first

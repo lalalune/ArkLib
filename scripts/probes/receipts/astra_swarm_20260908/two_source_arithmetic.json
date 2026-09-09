@@ -1,0 +1,60 @@
+{
+  "scope": "Exact arithmetic only; see the reviewed two-source written proof",
+  "rows": [
+    {
+      "s": 52,
+      "n": 208,
+      "k": 104,
+      "t": 155,
+      "r": 154,
+      "constant_list_gap": 852,
+      "rational_list_gap": 20,
+      "constant_bad_bound": 110,
+      "linear_nonliftable_bad_bound": 162
+    },
+    {
+      "s": 53,
+      "n": 212,
+      "k": 106,
+      "t": 158,
+      "r": 157,
+      "constant_list_gap": 921,
+      "rational_list_gap": 73,
+      "constant_bad_bound": 112,
+      "linear_nonliftable_bad_bound": 165
+    },
+    {
+      "s": 64,
+      "n": 256,
+      "k": 128,
+      "t": 191,
+      "r": 190,
+      "constant_list_gap": 1812,
+      "rational_list_gap": 788,
+      "constant_bad_bound": 134,
+      "linear_nonliftable_bad_bound": 198
+    },
+    {
+      "s": 256,
+      "n": 1024,
+      "k": 512,
+      "t": 767,
+      "r": 766,
+      "constant_list_gap": 56340,
+      "rational_list_gap": 52244,
+      "constant_bad_bound": 518,
+      "linear_nonliftable_bad_bound": 774
+    },
+    {
+      "s": 268435456,
+      "n": 1073741824,
+      "k": 536870912,
+      "t": 805306367,
+      "r": 805306366,
+      "constant_list_gap": 72057584374251540,
+      "rational_list_gap": 72057580079284244,
+      "constant_bad_bound": 536870918,
+      "linear_nonliftable_bad_bound": 805306374
+    }
+  ]
+}

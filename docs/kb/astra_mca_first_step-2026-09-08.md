@@ -1,7 +1,7 @@
 # First-step MCA safety: covered scalars, a safe branch, and genuine exceptions
 
 2026-09-08. Repository HEAD inspected: `7941e60694f77346c0e375548737f8301695b8b3`.
-Reviewed written proofs and exact arithmetic probes establish the first-step bound when the full high-core list has three or four sources. Cases with at most two sources remain open. No Lean verification is claimed for these safety arguments.
+Reviewed written proofs and exact arithmetic probes establish the first-step bound when the full high-core list has two, three, or four sources. Zero-source and singleton cases with dense directions remain open. No Lean verification is claimed for these safety arguments.
 
 ## Parameters and security target
 
@@ -357,3 +357,18 @@ at some x in D. Coprimality means A(x),B(x) cannot both vanish, so each coordina
 For any field and distinct evaluation domain, n=4s, k=2s, t=3s-1, s>=20, the full same-support MCA scalar count is at most n whenever the full high-core joint list has cardinality three. The cardinality-four case was proved above. The |J|<=2 cases remain open here. This written proof was independently reviewed by a second agent, with no gap found; it still requires formalization; no global first-step safety theorem is claimed.
 
 Independent review: agent10 read the full proof and checked each main step on 2026-09-08, finding no gap. Its symbolic/arithmetic audit receipt is maintained in its separate assigned directory. This review is not Lean verification.
+
+## Two-source and sparse-direction extensions
+
+The [two-source proof](astra_mca_two_source-2026-09-08.md) now also bounds the
+full bad set by n for |J|=2. Dividing actual decoders by the primitive linear
+carrier produces at most four rational profiles; every profile that fails to
+lift to a valid joint pair occurs at most once. This argument was independently
+reviewed, and its exact inequalities are checked by a standalone probe.
+
+The [sparse-direction proof](astra_mca_sparse_direction-2026-09-08.md) gives
+at most four bad scalars for a one-point direction and at most n when the
+direction lies within floor(n/18) of the code, regardless of J. The actual
+singleton spike is therefore safe, despite its genuine exceptional scalar.
+The remaining universal cases are J empty or singleton with dense directions.
+These extensions are reviewed written proofs, not Lean results.

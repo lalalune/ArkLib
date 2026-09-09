@@ -16,10 +16,12 @@ bound, not a safety claim at that endpoint.
 
 The [first-step safety argument](astra_mca_first_step-2026-09-08.md) now
 proves the n-scalar bound when the full list of joint codeword pairs with
-cores of at least `3n/4-1` has three or four elements. Independent review
+cores of at least `3n/4-1` contains at least two elements. Independent review
 checked the three-source common-carrier argument, its exceptional decoders,
-and the final mixed-core coverage inequality. The zero-, one-, and two-source
-branches remain open. These safety proofs are reviewed written arguments;
+and the final mixed-core coverage inequality. The zero-source and singleton branches with dense directions remain open.
+The [two-source rational-list proof](astra_mca_two_source-2026-09-08.md) and
+[sparse-direction bounds](astra_mca_sparse_direction-2026-09-08.md) were also
+independently reviewed. These safety proofs are reviewed written arguments;
 their arithmetic and finite controls do not replace Lean formalization.
 
 The [degree-seven source optimum](astra_mca_order16_all_four-2026-09-08.md)
@@ -53,13 +55,13 @@ proof repair and independent review.
 | Agent | Completed assignment |
 |---|---|
 | 01 | Fork, upstream, branch, issue, and PR audit |
-| 02 | Covered-scalar theorem and first-step spike obstruction |
+| 02 | Covered-scalar theorem, genuine spike exception, and full sparse-direction safety |
 | 03 | Order-32 search and arbitrary-four-source degree-seven reduction |
 | 04 | Explicit order-sixteen seed, generator link and full equality table |
 | 05 | Actual sixteen-fiber allocation and production core cardinalities |
 | 06 | Complete production received-word, event, probability and threshold theorem |
 | 07 | Independent same-support, endpoint, and exceptional-scalar audit |
-| 08 | Four- and three-source safety branches and exceptional-decoder structure |
+| 08 | Four-, three-, and two-source safety branches and exceptional-decoder structure |
 | 09 | Current primary literature and official companion constants/quantifiers |
 | 10 | Independent full census, three-source proof review and final theorem semantic audit |
 
@@ -84,6 +86,6 @@ a matching substrate build fixed that setup error before the successful run.
 Hosted CI status is recorded separately from the local receipt.
 
 The remaining mathematical objective is a bound on all bad scalars in the
-at-most-two-source cases, then a matching unsafe/safe threshold and the other
+zero-source and singleton cases with dense directions, then a matching unsafe/safe threshold and the other
 challenge parameters. More source-pattern searches alone do not establish
 that universal bound.

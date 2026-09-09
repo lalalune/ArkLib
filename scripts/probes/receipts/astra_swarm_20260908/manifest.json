@@ -8,17 +8,22 @@
     "scripts/probes/astra_mca_order16_all_four_dual_check.py": "8c5f2f5eb6fa921a6d7776f763581971a527a7e9caebd570abaa2d7cbcbfeff0",
     "scripts/probes/astra_mca_order16_all_four_independent_check.py": "5ed9d37119e54fc9f84f339eaaa9dff54891dcf6ac889bc001dd1ffe5422a07f",
     "scripts/probes/astra_mca_order32_relocation_search.py": "cef737555363cdb3acbb6e052f57f7f0f6236cc635e2db89307245b81c07f710",
+    "scripts/probes/astra_mca_sparse_direction_check.py": "74e138274d09443b308ba3934d61427e4adba1305e7dc6a08ec4c9d24853947e",
     "scripts/probes/astra_mca_three_source_arithmetic_check.py": "465cf643f8faa2d2f7a7508345758307f3c9cd2074bcc4f4f3e93fed34fd978e",
+    "scripts/probes/astra_mca_two_source_arithmetic_check.py": "ff0d7c873a17bea54228d45a58b0cfc2cde5c0312288cf8e0c165d69daf946ae",
     "scripts/probes/receipts/astra_swarm_20260908/all_four.json": "af2a81ab9434f6ede3eea982f07a9fd7b1257756bf4dcf08b5cc0b6189b3b53b",
     "scripts/probes/receipts/astra_swarm_20260908/all_four_dual.json": "d90f2ed96f463455c1766270535baef172cfcf6b7a97b9434ccc597bb52ac111",
     "scripts/probes/receipts/astra_swarm_20260908/all_four_independent.json": "1cd473376d000f213f1ad91e3187eef41f8f04924dcf735cabcc3be597bcf87e",
-    "scripts/probes/receipts/astra_swarm_20260908/assignments.json": "dd9e8672c5cf41b9ccfaca261320a736eda1fc705aafc988e9f39fafb39a064f",
+    "scripts/probes/receipts/astra_swarm_20260908/assignments.json": "b4b390372296d5045fbc75ac2cee2ab77b14d51d205f4668b03251c09c96a4d6",
     "scripts/probes/receipts/astra_swarm_20260908/first_step.json": "c2cb5c6b927fda26ad242bf5dc322eb2e3d46f8df9c0feae9b7c448fe3215c66",
     "scripts/probes/receipts/astra_swarm_20260908/first_step_independent.json": "ee68514242c1b3010bfd455bc4cf8eada7abb08e278bdc2da650e617eda22207",
+    "scripts/probes/receipts/astra_swarm_20260908/followup-audit.md": "0cac4a51f9017ece68b77e0017413115fa61781122282a6b78ae321671bd82f2",
     "scripts/probes/receipts/astra_swarm_20260908/receipt-r3-a5-relabel0-limit0.json": "64e0c1e46917733c02e3e4a5a6750ddbc2ab7eaa73837c56e75476bf97b4866e",
     "scripts/probes/receipts/astra_swarm_20260908/receipt-r3-a5-relabel1-limit0.json": "8864a33e320a6dc7dba3bd65e8345fa82d3b43e6465c2bed31f6bd93b91e90fe",
+    "scripts/probes/receipts/astra_swarm_20260908/sparse_direction.json": "e2cea4f7b98dbc8fe52b2b5ff900cb67919e0b0903c2580a7af478078a3523db",
     "scripts/probes/receipts/astra_swarm_20260908/three-source-audit.md": "dd66d4f9b605d933730703406582fe5cb33a8cc2d7127d43826edd7c48d43af3",
-    "scripts/probes/receipts/astra_swarm_20260908/three_source_arithmetic.json": "da7d29b987603d145c0fd638ac2357cc2ab1cc424caa17d289ece5db1099270a"
+    "scripts/probes/receipts/astra_swarm_20260908/three_source_arithmetic.json": "da7d29b987603d145c0fd638ac2357cc2ab1cc424caa17d289ece5db1099270a",
+    "scripts/probes/receipts/astra_swarm_20260908/two_source_arithmetic.json": "cf1b576658d8294b3195019b3c7a5fcb8b9c9f7d2259f76d231a6988270d60f8"
   },
   "scope": "Reviewed written first-step safety branches and restricted four-source optimality; exact probes, not a universal threshold proof. Full order32 run receipts originated before the output-directory wrapper change, whose bounded prefix was replayed."
 }

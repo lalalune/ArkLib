@@ -54128,3 +54128,14 @@ the full list has three or four sources. In the three-source case two
 exceptions force a common fourth source; three exceptions force its core
 large enough to complete the coordinate charge. Cases with at most two
 high-core pairs remain open. These safety arguments are not yet Lean proofs.
+
+# 2026-09-08: Two high-core sources suffice; a spike does not overrun the budget
+
+The reviewed rational-profile proof in `docs/kb/astra_mca_two_source-2026-09-08.md`
+proves the first-step n-scalar bound whenever there exist two distinct joint
+pairs with cores of at least t. No exclusion of further sources is needed.
+This subsumes the earlier three/four-source branches.
+The full bad set of the singleton-spike example has at most four elements,
+and a direction within floor(n/18) of the code is also safe by a punctured
+list bound. Dense zero-source/singleton cases remain open; these follow-up
+safety proofs are written and reviewed, not Lean-formalized.

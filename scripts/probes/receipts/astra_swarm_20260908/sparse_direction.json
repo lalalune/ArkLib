@@ -1,0 +1,25 @@
+{
+  "production": {
+    "single_spike_bad_bound": 4,
+    "single_spike_five_list_gap": 72057587327041550,
+    "sparse_support_limit": 59652323,
+    "sparse_bad_bound": 1073741814,
+    "sparse_nineteen_list_gap": 8006399665635342
+  },
+  "complete_small_controls": [
+    {
+      "n": 8,
+      "root_subsets_tested": 20,
+      "nonzero_witness_decoders": 20,
+      "exact_bad_count": 13,
+      "actual_production_prime": true
+    },
+    {
+      "n": 16,
+      "root_subsets_tested": 792,
+      "nonzero_witness_decoders": 1,
+      "exact_bad_count": 2,
+      "actual_production_prime": true
+    }
+  ]
+}

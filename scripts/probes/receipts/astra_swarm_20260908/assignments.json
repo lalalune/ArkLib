@@ -57,5 +57,5 @@
   ],
   "dispatch_model": "gpt-6-astra",
   "dispatch_reasoning_effort": "ultra",
-  "remaining": "Global first-step safety for full high-core list of size at most two; matching exact threshold and other prize parameters."
+  "remaining": "Global first-step safety for zero or one high-core source with dense directions; matching exact threshold and other prize parameters."
 }
