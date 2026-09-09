@@ -24,6 +24,10 @@ numerical production construction is now a complete Lean upper-bound theorem:
 Its explicit seed, sixteen fibers, received word, event count, and probability
 conversion have 27 clean axiom reports with
 [retained source provenance](../../scripts/probes/receipts/astra_order16_lean_20260908/kernel_receipt.json).
+Both jobs also passed in
+[hosted run 34298493883](https://github.com/lalalune/ArkLib/actions/runs/34298493883);
+the [hosted receipt](../../scripts/probes/receipts/astra_order16_lean_20260908/hosted_kernel_receipt.json)
+checks all recorded source hashes against its exact commit.
 
 Together with the existing full-UDR safety theorem and the Hamming staircase,
 the written bracket is

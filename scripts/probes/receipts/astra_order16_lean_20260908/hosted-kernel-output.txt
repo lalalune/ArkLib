@@ -1,0 +1,736 @@
+check (arklib)	Check auxiliary proofs and axiom reports	﻿2026-09-09T01:20:26.8766575Z ##[group]Run set -euo pipefail
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8767666Z ^[[36;1mset -euo pipefail^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8768099Z ^[[36;1mlean --version^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8768572Z ^[[36;1m: > "$RUNNER_TEMP/strip-proof.log"^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8769975Z ^[[36;1mfor proof in astra_companion_strip_projection astra_companion_6804_ordinary_gates astra_c2_budget_obstruction astra_companion_t_kernel_gates astra_exact_list_projection; do^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8771769Z ^[[36;1m  python3 "$GITHUB_WORKSPACE/scripts/forbidden_tokens.py" "$GITHUB_WORKSPACE/scripts/probes/$proof.lean"^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8772558Z ^[[36;1m  lake env lean "$GITHUB_WORKSPACE/scripts/probes/$proof.lean" 2>&1 | tee -a "$RUNNER_TEMP/strip-proof.log"^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8773075Z ^[[36;1mdone^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8773421Z ^[[36;1mbash "$GITHUB_WORKSPACE/scripts/check-mca-production-basis.sh" \^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8773970Z ^[[36;1m  "$RUNNER_TEMP/proximity-aux-lib" 2>&1 | tee -a "$RUNNER_TEMP/strip-proof.log"^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8774436Z ^[[36;1mif [ "$CHECK_MCA_EVENT" = "true" ]; then^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8774859Z ^[[36;1m  bash "$GITHUB_WORKSPACE/scripts/check-mca-event-bridge.sh" \^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8775370Z ^[[36;1m    "$RUNNER_TEMP/proximity-aux-lib" 2>&1 | tee -a "$RUNNER_TEMP/strip-proof.log"^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8775781Z ^[[36;1mfi^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8776035Z ^[[36;1mpython3 - "$RUNNER_TEMP/strip-proof.log" <<'PY'^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8776345Z ^[[36;1mimport os^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8776552Z ^[[36;1mimport re^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8776758Z ^[[36;1mimport sys^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8776983Z ^[[36;1mfrom pathlib import Path^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8777363Z ^[[36;1msys.path.insert(0, str(Path(os.environ["GITHUB_WORKSPACE"]) / "scripts"))^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8777827Z ^[[36;1mfrom axiom_audit import ALLOWED, DEP_RE, NODEP_RE^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8778181Z ^[[36;1moutput = Path(sys.argv[1]).read_text()^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8778534Z ^[[36;1mif re.search(r"sorryAx|error:|warning:", output):^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8778976Z ^[[36;1m    raise SystemExit("Unexpected Lean diagnostic in auxiliary proofs")^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8779460Z ^[[36;1mreported = {m[1]: {a.strip() for a in m[2].split(",") if a.strip()}^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8779865Z ^[[36;1m            for m in DEP_RE.finditer(output)}^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8780260Z ^[[36;1mreported.update({m[1]: set() for m in NODEP_RE.finditer(output)})^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8780743Z ^[[36;1mexpected = ["AstraCompanionStripProjection." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8781517Z ^[[36;1m    "index_card", "mem_low_of_strip_zero", "strip_range_finrank_le", "exists_low_subspace")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8782080Z ^[[36;1mexpected += ["AstraCompanionOrdinary6804Gates." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8782611Z ^[[36;1m    "padded_identity_budget", "hybrid_identity_budget", "mixed_characteristic",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8783178Z ^[[36;1m    "product_characteristic", "flag_characteristic", "rational_coordinate",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8783653Z ^[[36;1m    "padded_coordinate", "weighted_cap_characteristic")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8784085Z ^[[36;1mexpected += ["AstraC2BudgetObstruction." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8784560Z ^[[36;1m    "exact_values", "scalar_caps_do_not_imply_six_percent")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8785002Z ^[[36;1mexpected += ["AstraCompanionTKernelGates." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8785424Z ^[[36;1m    "row_166", "row_194", "row_197", "ambient_and_cutoffs")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8785826Z ^[[36;1mexpected += ["AstraExactListProjection." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8786263Z ^[[36;1m    "avoid_proper_subspaces", "exists_separating_projection",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8786711Z ^[[36;1m    "joint_agreements_le_projected", "scalar_budget_to_interleaved",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8787425Z ^[[36;1m    "interleaved_budget_to_scalar", "exact_budget_iff", "grand_field_gate",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8787888Z ^[[36;1m    "companion_field_gate", "scalar_carrier_field_gate")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8788310Z ^[[36;1mexpected += ["AstraMcaPolynomialBasis." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8788964Z ^[[36;1m    "initial_determinant", "change_basis_determinant", "divided_determinant",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8789466Z ^[[36;1m    "cofactor_pair_independent", "exists_separated_at_anchor",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8789936Z ^[[36;1m    "many_separated_at_anchor", "remove_root_exact", "remove_root_degree",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8790396Z ^[[36;1m    "simple_locator_derivative", "cofactor_row_nonzero",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8790827Z ^[[36;1m    "remove_root_preserves_eval", "remove_root_preserves_relation",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8791533Z ^[[36;1m    "killed_combination_roots", "delete_at_degree", "delete_at_preserves",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8792014Z ^[[36;1m    "two_anchor_deleted_determinant", "deleted_locator_formula",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8792474Z ^[[36;1m    "cofactor_of_agreement", "exists_basis_after_deletion",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8792971Z ^[[36;1m    "exists_basis_after_two_deletions", "production_basis_after_four_deletions",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8793488Z ^[[36;1m    "initial_coefficient_relations", "locator_eq_X_pow_sub_one",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8793942Z ^[[36;1m    "interpolate_power_fiber", "initial_basis_from_interpolant",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8794467Z ^[[36;1m    "initial_basis_of_quarter_partition", "production_deleted_basis_of_quarter_partition",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8795037Z ^[[36;1m    "exists_balanced_quarter_partition", "exists_fourth_root_parameters",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8795465Z ^[[36;1m    "production_deleted_basis_from_roots",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8795776Z ^[[36;1m    "production_anchor_margins")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8796208Z ^[[36;1mexpected += ["ArkLib.ProximityGap.PrizeShapePrimeP30." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8796699Z ^[[36;1m    "prime_P", "orderOf_g", "exists_orderOf_two_pow_30")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8797130Z ^[[36;1mexpected += ["AstraMcaPairBasisComplete." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8797571Z ^[[36;1m    "basis_determinant_ne_zero", "cramer_numerators_vanish",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8797989Z ^[[36;1m    "cramer_numerator_degree", "coefficient_from_locator",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8798410Z ^[[36;1m    "pair_basis_complete", "pair_basis_coefficients_unique",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8798881Z ^[[36;1m    "pair_basis_constant_span", "production_two_deletion_constant_span",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8799391Z ^[[36;1m    "production_four_deletion_linear_span", "constant_change_between_bases",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8799874Z ^[[36;1m    "projective_collisions_preserved", "three_core_budget",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8800247Z ^[[36;1m    "production_sharp_core_budget")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8800612Z ^[[36;1mexpected += ["AstraMcaResidualRows." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8801359Z ^[[36;1m    "row_lift_ne_zero", "row_lift_same_coordinate", "determinant_nonzero_off_domain",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8801891Z ^[[36;1m    "basis_values_not_all_zero", "slot_count", "base_row_nonzero",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8802440Z ^[[36;1m    "slot_row_nonzero", "row_lift_determinant_zero", "slot_rows_projectively_distinct")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8802957Z ^[[36;1mexpected += ["AstraMcaEvaluations." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8803429Z ^[[36;1m    "row_dot_add", "row_dot_smul", "combine_eval", "combine_degree", "core_card",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8803982Z ^[[36;1m    "owner_polynomial_degree", "core_agrees", "slot_discrepancy", "received_affine",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8804534Z ^[[36;1m    "slot_cancellation", "slot_outside_core", "no_explanation_on_core_insert",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8804946Z ^[[36;1m    "core_insert_witness")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8805301Z ^[[36;1mexpected += ["AstraMcaScalarProjection." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8805790Z ^[[36;1m    "row_polynomial_degree", "row_polynomial_ne_zero", "row_polynomial_eval",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8806499Z ^[[36;1m    "exists_common_nonroot", "exists_nonzero_denominators", "exists_injective_ratios")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8807027Z ^[[36;1mexpected += ["AstraMcaProductionBasis." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8807617Z ^[[36;1m    "power_domain_card", "power_domain_roots", "production_deleted_basis",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8808112Z ^[[36;1m    "production_residual_rows", "production_projection_arithmetic",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8808612Z ^[[36;1m    "production_moment_curve_arithmetic", "production_scalar_projection")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8809126Z ^[[36;1mexpected += ["AstraRiccatiContactObstruction." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8809618Z ^[[36;1m    "riccati_contact_expansion", "local_derivative_divisibility",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8810068Z ^[[36;1m    "global_derivative_divisibility", "forced_divisor_degree",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8810499Z ^[[36;1m    "production_degree_gap", "production_derivative_zero",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8811258Z ^[[36;1m    "quadratic_coefficients_zero_of_three", "production_riccati_zero_of_three")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8811842Z ^[[36;1mexpected += ["AstraQuadraticContactObstruction." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8812338Z ^[[36;1m    "quadratic_contact_expansion", "local_square_divisibility",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8812776Z ^[[36;1m    "multiplicity_degree_bound", "production_square_zero",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8813222Z ^[[36;1m    "local_cross_divisibility", "production_cross_zero_except_three",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8813677Z ^[[36;1m    "augmented_root_degree", "production_order_three_relation",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8814168Z ^[[36;1m    "production_order_three_zero", "production_derivative_coefficients_zero",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8814696Z ^[[36;1m    "production_quadratic_zero_of_three", "local_algebraic_divisibility",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8815168Z ^[[36;1m    "specialized_degree_lt", "production_algebraic_solution",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8815557Z ^[[36;1m    "production_quadratic_contact_zero")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8815887Z ^[[36;1mif os.environ["CHECK_MCA_EVENT"] == "true":^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8816189Z ^[[36;1m    expected += [^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8816497Z ^[[36;1m        "AstraMcaScaledPolynomials.locator_natDegree",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8816925Z ^[[36;1m        "AstraMcaScaledPolynomials.locator_eval_eq_zero_iff",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8817337Z ^[[36;1m        "AstraMcaScaledPolynomials.scaledP_eval",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8817710Z ^[[36;1m        "AstraMcaScaledPolynomials.eval_on_fiber",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8818092Z ^[[36;1m        "AstraMcaScaledPolynomials.local_pair_eq_iff",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8818490Z ^[[36;1m        "AstraMcaScaledPolynomials.common_zero_iff_mem",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8818916Z ^[[36;1m        "AstraMcaScaledPolynomials.reciprocal_cancellation",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8819343Z ^[[36;1m        "AstraMcaScaledPolynomials.scaledP_natDegree_le",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8819752Z ^[[36;1m        "AstraMcaScaledPolynomials.scaledQ_natDegree_le",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8820164Z ^[[36;1m        "AstraMcaScaledPolynomials.degree_seven_budget",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8820562Z ^[[36;1m        "AstraMcaScaledPolynomials.degree_three_budget",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8821176Z ^[[36;1m        "AstraMcaFourCubicSeed.scalar_inverse_products",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8821580Z ^[[36;1m        "AstraMcaFourCubicSeed.raw_pair_factorization",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8821964Z ^[[36;1m        "AstraMcaFourCubicSeed.pair_factorization",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8822340Z ^[[36;1m        "AstraMcaFourCubicSeed.pairScalar_ne_zero",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8822703Z ^[[36;1m        "AstraMcaFourCubicSeed.pair_eval_eq_iff",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8823077Z ^[[36;1m        "AstraMcaFourCubicSeed.pair_power_eval_eq_iff",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8823451Z ^[[36;1m        "AstraMcaFourCubicSeed.seed_natDegree",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8823807Z ^[[36;1m        "AstraMcaFourCubicSeed.seed_normalization",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8824160Z ^[[36;1m        "AstraMcaFourCubicSeed.no_common_zero",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8824657Z ^[[36;1m        "AstraMcaPowerFibers.eightFiberEquiv",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8825023Z ^[[36;1m        "AstraMcaPowerFibers.fiberPoint_injective",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8825385Z ^[[36;1m        "AstraMcaPowerFibers.powerFiber_card",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8825839Z ^[[36;1m        "AstraMcaPowerFibers.powerFiber_cover",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8826199Z ^[[36;1m        "AstraMcaPowerFibers.powerFiber_disjoint",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8826583Z ^[[36;1m        "AstraMcaPowerFibers.orderOf_fiber_generator",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8826955Z ^[[36;1m        "AstraMcaPowerFibers.mem_powerFiber_iff",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8827309Z ^[[36;1m        "AstraMcaPowerFibers.fiberBlock_card",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8827658Z ^[[36;1m        "AstraMcaPowerFibers.fiberBlocks_card",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8828045Z ^[[36;1m        "AstraMcaPowerFibers.fiberBlocks_disjoint",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8828423Z ^[[36;1m        "AstraMcaPowerFibers.fiberBlocks_three_cover",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8828812Z ^[[36;1m        "AstraMcaPowerFibers.production_fiber_card",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8829198Z ^[[36;1m        "AstraMcaPowerFibers.production_fibers_cover",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8829591Z ^[[36;1m        "AstraMcaPowerFibers.production_fiber_mem_iff",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8830037Z ^[[36;1m        "AstraMcaPowerFibers.production_common_roots_two_prefixes",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8830493Z ^[[36;1m        "AstraMcaPowerFibers.production_common_roots_card",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8831100Z ^[[36;1m        "AstraMcaPowerFibers.production_covered_card",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8831515Z ^[[36;1m        "AstraMcaPowerFibers.production_uncovered_card",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8831916Z ^[[36;1m        "AstraMcaPowerFibers.production_allocation_cover",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8832339Z ^[[36;1m        "AstraMcaPowerFibers.production_allocation_disjoint",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8832796Z ^[[36;1m        "AstraMcaReceivedAssembly.exists_received_word_and_events",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8833169Z ^[[36;1m    ]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8833377Z ^[[36;1m    expected += [^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8833657Z ^[[36;1m        "AstraMcaOrder16Seed.eta_eq_generator_pow",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8834015Z ^[[36;1m        "AstraMcaOrder16Seed.eta_pow_eight",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8834365Z ^[[36;1m        "AstraMcaOrder16Seed.eta_powers_injective",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8834708Z ^[[36;1m        "AstraMcaOrder16Seed.value_table",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8835030Z ^[[36;1m        "AstraMcaOrder16Seed.seed_table",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8835360Z ^[[36;1m        "AstraMcaOrder16Seed.seed_injective",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8835699Z ^[[36;1m        "AstraMcaOrder16Seed.seed_natDegree_le",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8836041Z ^[[36;1m        "AstraMcaOrder16Seed.seed_natDegree",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8836396Z ^[[36;1m        "AstraMcaOrder16Seed.no_common_zero_on_fibers",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8836719Z ^[[36;1m    ]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8836918Z ^[[36;1m    expected += [^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8837212Z ^[[36;1m        "AstraMcaOrder16Fibers.sixteenFiberEquiv",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8837590Z ^[[36;1m        "AstraMcaOrder16Fibers.mem_powerFiber_iff",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8837951Z ^[[36;1m        "AstraMcaOrder16Fibers.fiberBlocks_card",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8838311Z ^[[36;1m        "AstraMcaOrder16Fibers.core_arithmetic",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8838698Z ^[[36;1m        "AstraMcaOrder16Fibers.production_cardinalities",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8839120Z ^[[36;1m        "AstraMcaOrder16Fibers.production_allocation_cover",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8839561Z ^[[36;1m        "AstraMcaOrder16Fibers.production_allocation_disjoint",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8840027Z ^[[36;1m        "AstraMcaOrder16Fibers.production_core_disjoint_uncovered",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8840482Z ^[[36;1m        "AstraMcaOrder16Fibers.production_direction_count",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8841115Z ^[[36;1m        "AstraMcaOrder16Fibers.fiberPoint_mem_fiberBlocks_iff",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8841576Z ^[[36;1m        "AstraMcaOrder16Fibers.commonRoots_subset_core",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8842135Z ^[[36;1m        "AstraMcaOrder16Fibers.production_core_subset_domain",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8842478Z ^[[36;1m    ]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8842679Z ^[[36;1m    expected += [^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8842978Z ^[[36;1m        "AstraMcaOrder16Assembly.overlapping_labels",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8843456Z ^[[36;1m        "AstraMcaOrder16Assembly.core_overlap",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8843803Z ^[[36;1m        "AstraMcaOrder16Assembly.many_events",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8844154Z ^[[36;1m        "AstraMcaOrder16Assembly.mca_error_lower",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8844530Z ^[[36;1m        "AstraMcaOrder16Assembly.security_exceeded",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8844912Z ^[[36;1m        "AstraMcaOrder16Assembly.delta_star_upper",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8845221Z ^[[36;1m    ]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8845517Z ^[[36;1m    expected += ["AstraMcaRootRelocation." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8845972Z ^[[36;1m        "exists_fresh_directions", "exists_simultaneous_directions",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8846463Z ^[[36;1m        "exists_counted_fresh_directions", "production_greedy_arithmetic",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8846954Z ^[[36;1m        "mca_event_of_joint_core_extra", "mca_event_of_reciprocal_extra",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8847383Z ^[[36;1m        "mca_event_of_good_local", "disjoint_event_union",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8847833Z ^[[36;1m        "disjoint_event_card_le_bad_card", "disjoint_event_probability_lower",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8848257Z ^[[36;1m        "disjoint_event_epsMCA_lower")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8848633Z ^[[36;1m    expected += ["AstraMcaEventBridge." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8849079Z ^[[36;1m        "mca_event_from_polynomial_support", "mca_event_of_core_insert")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8849561Z ^[[36;1m    expected += ["AstraMcaProductionEvents." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8850082Z ^[[36;1m        "core_subset_domain", "slot_coordinate_mem_domain", "mem_production_domain_iff",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8850691Z ^[[36;1m        "production_support_arithmetic", "production_slot_event", "production_many_events")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8851527Z ^[[36;1m    expected += ["AstraMcaProductionUpper." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8851972Z ^[[36;1m        "production_code_iff", "production_mca_error_lower",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8852436Z ^[[36;1m        "production_security_exceeded", "production_delta_star_upper")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8852900Z ^[[36;1m    expected += ["AstraMcaKkh26Upper." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8853376Z ^[[36;1m        "production_code_eq_evalCode", "first_prime_rate_half_delta_star_upper")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8853862Z ^[[36;1m    expected += ["AstraMcaSingleHole." + name for name in (^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8867420Z ^[[36;1m        "codeword_iff_natDegree", "zero_of_indexed_roots",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8867934Z ^[[36;1m        "hole_direction_no_explanation", "mca_event_iff", "bad_values_card_eq",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8868440Z ^[[36;1m        "value_count_le_epsMCA", "production_single_hole_iff",^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8868867Z ^[[36;1m        "production_value_budget_of_security")]^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8869193Z ^[[36;1mfor declaration in expected:^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8869488Z ^[[36;1m    if declaration not in reported:^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8869872Z ^[[36;1m        raise SystemExit("Missing axiom report: " + declaration)^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8870272Z ^[[36;1m    if reported[declaration] - ALLOWED:^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8870634Z ^[[36;1m        raise SystemExit("Forbidden axioms: " + declaration)^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8871353Z ^[[36;1m    print("Allowed axioms:", declaration, sorted(reported[declaration]))^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8871754Z ^[[36;1mPY^[[0m
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8935891Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8936241Z env:
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8936444Z   CHECK_MCA_EVENT: true
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.8936666Z ##[endgroup]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.9382482Z Lean (version 4.30.0-rc2, x86_64-unknown-linux-gnu, commit 3dc1a088b6d2d8eafe25a7cd7ec7b58d731bd7cc, Release)
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:26.9686636Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:41.1950013Z 'AstraCompanionStripProjection.index_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:41.1962051Z 'AstraCompanionStripProjection.mem_low_of_strip_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:41.1962910Z 'AstraCompanionStripProjection.strip_range_finrank_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:41.1963711Z 'AstraCompanionStripProjection.exists_low_subspace' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:41.4334770Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:45.1543765Z 'AstraCompanionOrdinary6804Gates.padded_identity_budget' depends on axioms: [propext, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:45.1544950Z 'AstraCompanionOrdinary6804Gates.hybrid_identity_budget' depends on axioms: [propext, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:45.1546123Z 'AstraCompanionOrdinary6804Gates.mixed_characteristic' does not depend on any axioms
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:45.1547130Z 'AstraCompanionOrdinary6804Gates.product_characteristic' does not depend on any axioms
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:45.1547848Z 'AstraCompanionOrdinary6804Gates.flag_characteristic' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:45.1548590Z 'AstraCompanionOrdinary6804Gates.rational_coordinate' depends on axioms: [propext, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:45.1549257Z 'AstraCompanionOrdinary6804Gates.padded_coordinate' depends on axioms: [propext, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:45.1549922Z 'AstraCompanionOrdinary6804Gates.weighted_cap_characteristic' does not depend on any axioms
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:45.2413165Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:46.7739361Z 'AstraC2BudgetObstruction.exact_values' does not depend on any axioms
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:46.7740050Z 'AstraC2BudgetObstruction.scalar_caps_do_not_imply_six_percent' does not depend on any axioms
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:46.8600628Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:48.8522988Z 'AstraCompanionTKernelGates.row_166' does not depend on any axioms
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:48.8523580Z 'AstraCompanionTKernelGates.row_194' does not depend on any axioms
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:48.8524042Z 'AstraCompanionTKernelGates.row_197' does not depend on any axioms
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:48.8524558Z 'AstraCompanionTKernelGates.ambient_and_cutoffs' does not depend on any axioms
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:48.9412296Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:55.8375874Z 'AstraExactListProjection.avoid_proper_subspaces' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:55.8376826Z 'AstraExactListProjection.exists_separating_projection' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:55.8377728Z 'AstraExactListProjection.joint_agreements_le_projected' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:55.8378567Z 'AstraExactListProjection.scalar_budget_to_interleaved' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:55.8379392Z 'AstraExactListProjection.interleaved_budget_to_scalar' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:55.8380172Z 'AstraExactListProjection.exact_budget_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:55.8381194Z 'AstraExactListProjection.grand_field_gate' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:55.8382023Z 'AstraExactListProjection.companion_field_gate' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:55.8383133Z 'AstraExactListProjection.scalar_carrier_field_gate' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:56.0773090Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:56.1290367Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:56.1631918Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:56.1969570Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:56.2309343Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:56.2623823Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:56.2951334Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:56.3271666Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:20:56.3651792Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:00.0509831Z 'ArkLib.ProximityGap.PrizeShapePrimeP30.prime_P' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:00.0511793Z 'ArkLib.ProximityGap.PrizeShapePrimeP30.orderOf_g' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:00.0513280Z 'ArkLib.ProximityGap.PrizeShapePrimeP30.exists_orderOf_two_pow_30' depends on axioms: [propext,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:00.0514204Z  Classical.choice,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:00.0514600Z  Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5920062Z 'AstraMcaPolynomialBasis.initial_determinant' depends on axioms: [propext, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5921719Z 'AstraMcaPolynomialBasis.change_basis_determinant' depends on axioms: [propext, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5922911Z 'AstraMcaPolynomialBasis.divided_determinant' depends on axioms: [propext, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5924224Z 'AstraMcaPolynomialBasis.cofactor_pair_independent' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5925690Z 'AstraMcaPolynomialBasis.exists_separated_at_anchor' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5927125Z 'AstraMcaPolynomialBasis.many_separated_at_anchor' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5928531Z 'AstraMcaPolynomialBasis.remove_root_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5929588Z 'AstraMcaPolynomialBasis.remove_root_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5930702Z 'AstraMcaPolynomialBasis.simple_locator_derivative' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5932047Z 'AstraMcaPolynomialBasis.cofactor_row_nonzero' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5933158Z 'AstraMcaPolynomialBasis.remove_root_preserves_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5934321Z 'AstraMcaPolynomialBasis.remove_root_preserves_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5935475Z 'AstraMcaPolynomialBasis.killed_combination_roots' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5936829Z 'AstraMcaPolynomialBasis.delete_at_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5937873Z 'AstraMcaPolynomialBasis.delete_at_preserves' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5939184Z 'AstraMcaPolynomialBasis.two_anchor_deleted_determinant' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5940329Z 'AstraMcaPolynomialBasis.deleted_locator_formula' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5941824Z 'AstraMcaPolynomialBasis.cofactor_of_agreement' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5943167Z 'AstraMcaPolynomialBasis.exists_basis_after_deletion' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5944579Z 'AstraMcaPolynomialBasis.exists_basis_after_two_deletions' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5945844Z 'AstraMcaPolynomialBasis.production_basis_after_four_deletions' depends on axioms: [propext,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5946646Z  Classical.choice,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5946977Z  Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5947809Z 'AstraMcaPolynomialBasis.initial_coefficient_relations' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5949162Z 'AstraMcaPolynomialBasis.locator_eq_X_pow_sub_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5950473Z 'AstraMcaPolynomialBasis.interpolate_power_fiber' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5952014Z 'AstraMcaPolynomialBasis.initial_basis_from_interpolant' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5953441Z 'AstraMcaPolynomialBasis.initial_basis_of_quarter_partition' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5954762Z 'AstraMcaPolynomialBasis.production_deleted_basis_of_quarter_partition' depends on axioms: [propext,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5955628Z  Classical.choice,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5955969Z  Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5956779Z 'AstraMcaPolynomialBasis.exists_balanced_quarter_partition' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5958112Z 'AstraMcaPolynomialBasis.exists_fourth_root_parameters' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5959656Z 'AstraMcaPolynomialBasis.production_deleted_basis_from_roots' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:08.5961110Z 'AstraMcaPolynomialBasis.production_anchor_margins' does not depend on any axioms
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:12.4120072Z 'AstraMcaPairBasisComplete.basis_determinant_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:12.4121350Z 'AstraMcaPairBasisComplete.cramer_numerators_vanish' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:12.4122177Z 'AstraMcaPairBasisComplete.cramer_numerator_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:12.4123016Z 'AstraMcaPairBasisComplete.coefficient_from_locator' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:12.4123802Z 'AstraMcaPairBasisComplete.pair_basis_complete' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:12.4124612Z 'AstraMcaPairBasisComplete.pair_basis_coefficients_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:12.4125423Z 'AstraMcaPairBasisComplete.pair_basis_constant_span' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:12.4126151Z 'AstraMcaPairBasisComplete.production_two_deletion_constant_span' depends on axioms: [propext,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:12.4126640Z  Classical.choice,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:12.4126845Z  Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:12.4127246Z 'AstraMcaPairBasisComplete.production_four_deletion_linear_span' depends on axioms: [propext,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:12.4127712Z  Classical.choice,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:12.4127917Z  Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:12.4128618Z 'AstraMcaPairBasisComplete.constant_change_between_bases' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:12.4129454Z 'AstraMcaPairBasisComplete.projective_collisions_preserved' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:12.4130310Z 'AstraMcaPairBasisComplete.three_core_budget' depends on axioms: [propext, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:12.4131191Z 'AstraMcaPairBasisComplete.production_sharp_core_budget' depends on axioms: [propext, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:15.9393379Z 'AstraMcaResidualRows.row_lift_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:15.9402054Z 'AstraMcaResidualRows.row_lift_same_coordinate' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:15.9403271Z 'AstraMcaResidualRows.determinant_nonzero_off_domain' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:15.9404431Z 'AstraMcaResidualRows.basis_values_not_all_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:15.9405497Z 'AstraMcaResidualRows.slot_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:15.9406476Z 'AstraMcaResidualRows.base_row_nonzero' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:15.9407489Z 'AstraMcaResidualRows.slot_row_nonzero' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:15.9408538Z 'AstraMcaResidualRows.row_lift_determinant_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:15.9409667Z 'AstraMcaResidualRows.slot_rows_projectively_distinct' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:19.0132346Z 'AstraMcaEvaluations.row_dot_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:19.0133246Z 'AstraMcaEvaluations.row_dot_smul' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:19.0133912Z 'AstraMcaEvaluations.combine_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:19.0134610Z 'AstraMcaEvaluations.combine_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:19.0135254Z 'AstraMcaEvaluations.core_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:19.0135944Z 'AstraMcaEvaluations.owner_polynomial_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:19.0136623Z 'AstraMcaEvaluations.core_agrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:19.0137271Z 'AstraMcaEvaluations.slot_discrepancy' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:19.0137959Z 'AstraMcaEvaluations.received_affine' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:19.0138628Z 'AstraMcaEvaluations.slot_cancellation' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:19.0139287Z 'AstraMcaEvaluations.slot_outside_core' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:19.0139996Z 'AstraMcaEvaluations.no_explanation_on_core_insert' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:19.0140705Z 'AstraMcaEvaluations.core_insert_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:21.6624013Z 'AstraMcaScalarProjection.row_polynomial_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:21.6625246Z 'AstraMcaScalarProjection.row_polynomial_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:21.6626356Z 'AstraMcaScalarProjection.row_polynomial_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:21.6627458Z 'AstraMcaScalarProjection.exists_common_nonroot' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:21.6628595Z 'AstraMcaScalarProjection.exists_nonzero_denominators' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:21.6630043Z 'AstraMcaScalarProjection.exists_injective_ratios' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:24.0304554Z 'AstraMcaProductionBasis.power_domain_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:24.0312111Z 'AstraMcaProductionBasis.power_domain_roots' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:24.0313093Z 'AstraMcaProductionBasis.production_deleted_basis' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:24.0313899Z 'AstraMcaProductionBasis.production_residual_rows' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:24.0314628Z 'AstraMcaProductionBasis.production_projection_arithmetic' depends on axioms: [propext]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:24.0315290Z 'AstraMcaProductionBasis.production_moment_curve_arithmetic' does not depend on any axioms
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:24.0316043Z 'AstraMcaProductionBasis.production_scalar_projection' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:26.9947215Z 'AstraRiccatiContactObstruction.riccati_contact_expansion' depends on axioms: [propext]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:26.9952065Z 'AstraRiccatiContactObstruction.local_derivative_divisibility' depends on axioms: [propext,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:26.9952720Z  Classical.choice,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:26.9952974Z  Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:26.9953464Z 'AstraRiccatiContactObstruction.global_derivative_divisibility' depends on axioms: [propext,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:26.9954039Z  Classical.choice,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:26.9954278Z  Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:26.9954850Z 'AstraRiccatiContactObstruction.forced_divisor_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:26.9956144Z 'AstraRiccatiContactObstruction.production_degree_gap' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:26.9957190Z 'AstraRiccatiContactObstruction.production_derivative_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:26.9958173Z 'AstraRiccatiContactObstruction.quadratic_coefficients_zero_of_three' depends on axioms: [propext,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:26.9958789Z  Classical.choice,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:26.9959028Z  Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:26.9959520Z 'AstraRiccatiContactObstruction.production_riccati_zero_of_three' depends on axioms: [propext,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:26.9960114Z  Classical.choice,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:26.9960351Z  Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8153223Z 'AstraQuadraticContactObstruction.quadratic_contact_expansion' depends on axioms: [propext]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8154143Z 'AstraQuadraticContactObstruction.local_square_divisibility' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8155042Z 'AstraQuadraticContactObstruction.multiplicity_degree_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8155906Z 'AstraQuadraticContactObstruction.production_square_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8156751Z 'AstraQuadraticContactObstruction.local_cross_divisibility' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8157573Z 'AstraQuadraticContactObstruction.production_cross_zero_except_three' depends on axioms: [propext,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8158088Z  Classical.choice,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8158310Z  Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8158796Z 'AstraQuadraticContactObstruction.augmented_root_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8159569Z 'AstraQuadraticContactObstruction.production_order_three_relation' depends on axioms: [propext,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8160055Z  Classical.choice,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8160263Z  Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8160666Z 'AstraQuadraticContactObstruction.production_order_three_zero' depends on axioms: [propext,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8161560Z  Classical.choice,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8161772Z  Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8162226Z 'AstraQuadraticContactObstruction.production_derivative_coefficients_zero' depends on axioms: [propext,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8162977Z  Classical.choice,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8163176Z  Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8163594Z 'AstraQuadraticContactObstruction.production_quadratic_zero_of_three' depends on axioms: [propext,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8164087Z  Classical.choice,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8164409Z  Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8164800Z 'AstraQuadraticContactObstruction.local_algebraic_divisibility' depends on axioms: [propext,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8165264Z  Classical.choice,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8165458Z  Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8165940Z 'AstraQuadraticContactObstruction.specialized_degree_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8166701Z 'AstraQuadraticContactObstruction.production_algebraic_solution' depends on axioms: [propext,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8167179Z  Classical.choice,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8167383Z  Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8167808Z 'AstraQuadraticContactObstruction.production_quadratic_contact_zero' depends on axioms: [propext,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8168304Z  Classical.choice,
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.8168507Z  Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.9665692Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:31.9985197Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:32.0297941Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:32.0642204Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:32.0942798Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:32.1315645Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:32.1701417Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:32.2099654Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:32.2423262Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:32.2773888Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:32.3111918Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:32.3522419Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:32.3870784Z forbidden-token precheck: clean (no native_decide / bv_decide / undocumented custom axiom / vacuous `: True` placebo; 0 allowlisted residual axiom(s))
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:36.2882855Z 'AstraMcaEventBridge.mca_event_from_polynomial_support' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:36.2884135Z 'AstraMcaEventBridge.mca_event_of_core_insert' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:39.6107528Z 'AstraMcaProductionEvents.core_subset_domain' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:39.6112602Z 'AstraMcaProductionEvents.slot_coordinate_mem_domain' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:39.6114055Z 'AstraMcaProductionEvents.mem_production_domain_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:39.6115580Z 'AstraMcaProductionEvents.production_support_arithmetic' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:39.6116563Z 'AstraMcaProductionEvents.production_slot_event' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:39.6117670Z 'AstraMcaProductionEvents.production_many_events' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:42.7054799Z 'AstraMcaProductionUpper.production_code_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:42.7056565Z 'AstraMcaProductionUpper.production_mca_error_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:42.7058229Z 'AstraMcaProductionUpper.production_security_exceeded' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:42.7059889Z 'AstraMcaProductionUpper.production_delta_star_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:46.2481866Z 'AstraMcaSingleHole.codeword_iff_natDegree' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:46.2511704Z 'AstraMcaSingleHole.zero_of_indexed_roots' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:46.2541963Z 'AstraMcaSingleHole.hole_direction_no_explanation' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:46.2562161Z 'AstraMcaSingleHole.mca_event_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:46.2563274Z 'AstraMcaSingleHole.bad_values_card_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:46.2564451Z 'AstraMcaSingleHole.value_count_le_epsMCA' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:46.2565844Z 'AstraMcaSingleHole.production_single_hole_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:46.2567333Z 'AstraMcaSingleHole.production_value_budget_of_security' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:51.4255722Z 'AstraMcaKkh26Upper.production_code_eq_evalCode' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:51.4256631Z 'AstraMcaKkh26Upper.first_prime_rate_half_delta_star_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:55.7003842Z 'AstraMcaRootRelocation.exists_fresh_directions' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:55.7004827Z 'AstraMcaRootRelocation.exists_simultaneous_directions' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:55.7005671Z 'AstraMcaRootRelocation.exists_counted_fresh_directions' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:55.7006486Z 'AstraMcaRootRelocation.production_greedy_arithmetic' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:55.7007257Z 'AstraMcaRootRelocation.mca_event_of_joint_core_extra' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:55.7008041Z 'AstraMcaRootRelocation.mca_event_of_reciprocal_extra' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:55.7008778Z 'AstraMcaRootRelocation.mca_event_of_good_local' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:55.7009530Z 'AstraMcaRootRelocation.disjoint_event_union' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:55.7010291Z 'AstraMcaRootRelocation.disjoint_event_card_le_bad_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:55.7011448Z 'AstraMcaRootRelocation.disjoint_event_probability_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:21:55.7012290Z 'AstraMcaRootRelocation.disjoint_event_epsMCA_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:02.2360239Z 'AstraMcaFourCubicSeed.scalar_inverse_products' depends on axioms: [propext, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:02.2361992Z 'AstraMcaFourCubicSeed.raw_pair_factorization' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:02.2363784Z 'AstraMcaFourCubicSeed.pair_factorization' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:02.2364961Z 'AstraMcaFourCubicSeed.pairScalar_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:02.2366373Z 'AstraMcaFourCubicSeed.pair_eval_eq_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:02.2367530Z 'AstraMcaFourCubicSeed.pair_power_eval_eq_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:02.2368682Z 'AstraMcaFourCubicSeed.seed_natDegree' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:02.2369828Z 'AstraMcaFourCubicSeed.seed_normalization' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:02.2371154Z 'AstraMcaFourCubicSeed.no_common_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0526953Z 'AstraMcaPowerFibers.eightFiberEquiv' depends on axioms: [propext, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0528338Z 'AstraMcaPowerFibers.fiberPoint_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0529594Z 'AstraMcaPowerFibers.powerFiber_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0530821Z 'AstraMcaPowerFibers.powerFiber_cover' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0532351Z 'AstraMcaPowerFibers.powerFiber_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0533619Z 'AstraMcaPowerFibers.orderOf_fiber_generator' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0534880Z 'AstraMcaPowerFibers.mem_powerFiber_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0536067Z 'AstraMcaPowerFibers.fiberBlock_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0537232Z 'AstraMcaPowerFibers.fiberBlocks_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0538448Z 'AstraMcaPowerFibers.fiberBlocks_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0539686Z 'AstraMcaPowerFibers.fiberBlocks_three_cover' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0541100Z 'AstraMcaPowerFibers.production_fiber_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0542356Z 'AstraMcaPowerFibers.production_fibers_cover' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0543590Z 'AstraMcaPowerFibers.production_fiber_mem_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0544911Z 'AstraMcaPowerFibers.production_common_roots_two_prefixes' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0546271Z 'AstraMcaPowerFibers.production_common_roots_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0547565Z 'AstraMcaPowerFibers.production_covered_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0548830Z 'AstraMcaPowerFibers.production_uncovered_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0550139Z 'AstraMcaPowerFibers.production_allocation_cover' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:06.0551659Z 'AstraMcaPowerFibers.production_allocation_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:09.1359045Z 'AstraMcaReceivedAssembly.exists_received_word_and_events' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:12.5192170Z 'AstraMcaScaledPolynomials.locator_natDegree' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:12.5202136Z 'AstraMcaScaledPolynomials.locator_eval_eq_zero_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:12.5203317Z 'AstraMcaScaledPolynomials.scaledP_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:12.5204649Z 'AstraMcaScaledPolynomials.eval_on_fiber' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:12.5205692Z 'AstraMcaScaledPolynomials.local_pair_eq_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:12.5206984Z 'AstraMcaScaledPolynomials.common_zero_iff_mem' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:12.5208114Z 'AstraMcaScaledPolynomials.reciprocal_cancellation' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:12.5209256Z 'AstraMcaScaledPolynomials.scaledP_natDegree_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:12.5210372Z 'AstraMcaScaledPolynomials.scaledQ_natDegree_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:12.5211670Z 'AstraMcaScaledPolynomials.degree_seven_budget' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:12.5212777Z 'AstraMcaScaledPolynomials.degree_three_budget' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:16.7992181Z 'AstraMcaOrder16Seed.eta_eq_generator_pow' depends on axioms: [propext, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:16.7993261Z 'AstraMcaOrder16Seed.eta_pow_eight' depends on axioms: [propext, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:16.7994268Z 'AstraMcaOrder16Seed.eta_powers_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:16.7995208Z 'AstraMcaOrder16Seed.value_table' depends on axioms: [propext, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:16.7996074Z 'AstraMcaOrder16Seed.seed_table' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:16.7997055Z 'AstraMcaOrder16Seed.seed_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:16.7998081Z 'AstraMcaOrder16Seed.seed_natDegree_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:16.7999076Z 'AstraMcaOrder16Seed.seed_natDegree' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:16.7999935Z 'AstraMcaOrder16Seed.no_common_zero_on_fibers' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:29.0293379Z 'AstraMcaOrder16Fibers.sixteenFiberEquiv' depends on axioms: [propext, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:29.0294721Z 'AstraMcaOrder16Fibers.mem_powerFiber_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:29.0295971Z 'AstraMcaOrder16Fibers.fiberBlocks_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:29.0296969Z 'AstraMcaOrder16Fibers.core_arithmetic' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:29.0297687Z 'AstraMcaOrder16Fibers.production_cardinalities' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:29.0298476Z 'AstraMcaOrder16Fibers.production_allocation_cover' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:29.0299267Z 'AstraMcaOrder16Fibers.production_allocation_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:29.0300103Z 'AstraMcaOrder16Fibers.production_core_disjoint_uncovered' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:29.0301275Z 'AstraMcaOrder16Fibers.production_direction_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:29.0302129Z 'AstraMcaOrder16Fibers.fiberPoint_mem_fiberBlocks_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:29.0302907Z 'AstraMcaOrder16Fibers.commonRoots_subset_core' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:29.0303669Z 'AstraMcaOrder16Fibers.production_core_subset_domain' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.6632827Z 'AstraMcaOrder16Assembly.overlapping_labels' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.6634031Z 'AstraMcaOrder16Assembly.core_overlap' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.6635386Z 'AstraMcaOrder16Assembly.many_events' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.6636399Z 'AstraMcaOrder16Assembly.mca_error_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.6637662Z 'AstraMcaOrder16Assembly.security_exceeded' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.6638708Z 'AstraMcaOrder16Assembly.delta_star_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8474970Z Allowed axioms: AstraCompanionStripProjection.index_card ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8476806Z Allowed axioms: AstraCompanionStripProjection.mem_low_of_strip_zero ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8478695Z Allowed axioms: AstraCompanionStripProjection.strip_range_finrank_le ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8480569Z Allowed axioms: AstraCompanionStripProjection.exists_low_subspace ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8482596Z Allowed axioms: AstraCompanionOrdinary6804Gates.padded_identity_budget ['Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8484131Z Allowed axioms: AstraCompanionOrdinary6804Gates.hybrid_identity_budget ['Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8485556Z Allowed axioms: AstraCompanionOrdinary6804Gates.mixed_characteristic []
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8486503Z Allowed axioms: AstraCompanionOrdinary6804Gates.product_characteristic []
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8487540Z Allowed axioms: AstraCompanionOrdinary6804Gates.flag_characteristic ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8488300Z Allowed axioms: AstraCompanionOrdinary6804Gates.rational_coordinate ['Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8488970Z Allowed axioms: AstraCompanionOrdinary6804Gates.padded_coordinate ['Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8489590Z Allowed axioms: AstraCompanionOrdinary6804Gates.weighted_cap_characteristic []
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8490100Z Allowed axioms: AstraC2BudgetObstruction.exact_values []
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8490587Z Allowed axioms: AstraC2BudgetObstruction.scalar_caps_do_not_imply_six_percent []
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8491393Z Allowed axioms: AstraCompanionTKernelGates.row_166 []
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8491984Z Allowed axioms: AstraCompanionTKernelGates.row_194 []
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8492578Z Allowed axioms: AstraCompanionTKernelGates.row_197 []
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8493247Z Allowed axioms: AstraCompanionTKernelGates.ambient_and_cutoffs []
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8494241Z Allowed axioms: AstraExactListProjection.avoid_proper_subspaces ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8495603Z Allowed axioms: AstraExactListProjection.exists_separating_projection ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8497075Z Allowed axioms: AstraExactListProjection.joint_agreements_le_projected ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8498503Z Allowed axioms: AstraExactListProjection.scalar_budget_to_interleaved ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8499352Z Allowed axioms: AstraExactListProjection.interleaved_budget_to_scalar ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8500149Z Allowed axioms: AstraExactListProjection.exact_budget_iff ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8500862Z Allowed axioms: AstraExactListProjection.grand_field_gate ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8501939Z Allowed axioms: AstraExactListProjection.companion_field_gate ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8502708Z Allowed axioms: AstraExactListProjection.scalar_carrier_field_gate ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8503398Z Allowed axioms: AstraMcaPolynomialBasis.initial_determinant ['Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8504016Z Allowed axioms: AstraMcaPolynomialBasis.change_basis_determinant ['Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8504917Z Allowed axioms: AstraMcaPolynomialBasis.divided_determinant ['Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8505613Z Allowed axioms: AstraMcaPolynomialBasis.cofactor_pair_independent ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8506519Z Allowed axioms: AstraMcaPolynomialBasis.exists_separated_at_anchor ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8507276Z Allowed axioms: AstraMcaPolynomialBasis.many_separated_at_anchor ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8508005Z Allowed axioms: AstraMcaPolynomialBasis.remove_root_exact ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8508713Z Allowed axioms: AstraMcaPolynomialBasis.remove_root_degree ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8509470Z Allowed axioms: AstraMcaPolynomialBasis.simple_locator_derivative ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8510232Z Allowed axioms: AstraMcaPolynomialBasis.cofactor_row_nonzero ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8511299Z Allowed axioms: AstraMcaPolynomialBasis.remove_root_preserves_eval ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8512172Z Allowed axioms: AstraMcaPolynomialBasis.remove_root_preserves_relation ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8512984Z Allowed axioms: AstraMcaPolynomialBasis.killed_combination_roots ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8513718Z Allowed axioms: AstraMcaPolynomialBasis.delete_at_degree ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8514426Z Allowed axioms: AstraMcaPolynomialBasis.delete_at_preserves ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8515184Z Allowed axioms: AstraMcaPolynomialBasis.two_anchor_deleted_determinant ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8515968Z Allowed axioms: AstraMcaPolynomialBasis.deleted_locator_formula ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8516721Z Allowed axioms: AstraMcaPolynomialBasis.cofactor_of_agreement ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8517494Z Allowed axioms: AstraMcaPolynomialBasis.exists_basis_after_deletion ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8518298Z Allowed axioms: AstraMcaPolynomialBasis.exists_basis_after_two_deletions ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8519137Z Allowed axioms: AstraMcaPolynomialBasis.production_basis_after_four_deletions ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8519971Z Allowed axioms: AstraMcaPolynomialBasis.initial_coefficient_relations ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8520748Z Allowed axioms: AstraMcaPolynomialBasis.locator_eq_X_pow_sub_one ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8521823Z Allowed axioms: AstraMcaPolynomialBasis.interpolate_power_fiber ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8522620Z Allowed axioms: AstraMcaPolynomialBasis.initial_basis_from_interpolant ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8523460Z Allowed axioms: AstraMcaPolynomialBasis.initial_basis_of_quarter_partition ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8524361Z Allowed axioms: AstraMcaPolynomialBasis.production_deleted_basis_of_quarter_partition ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8525244Z Allowed axioms: AstraMcaPolynomialBasis.exists_balanced_quarter_partition ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8526055Z Allowed axioms: AstraMcaPolynomialBasis.exists_fourth_root_parameters ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8526876Z Allowed axioms: AstraMcaPolynomialBasis.production_deleted_basis_from_roots ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8527542Z Allowed axioms: AstraMcaPolynomialBasis.production_anchor_margins []
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8528510Z Allowed axioms: ArkLib.ProximityGap.PrizeShapePrimeP30.prime_P ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8529915Z Allowed axioms: ArkLib.ProximityGap.PrizeShapePrimeP30.orderOf_g ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8531901Z Allowed axioms: ArkLib.ProximityGap.PrizeShapePrimeP30.exists_orderOf_two_pow_30 ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8533209Z Allowed axioms: AstraMcaPairBasisComplete.basis_determinant_ne_zero ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8534012Z Allowed axioms: AstraMcaPairBasisComplete.cramer_numerators_vanish ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8534791Z Allowed axioms: AstraMcaPairBasisComplete.cramer_numerator_degree ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8535569Z Allowed axioms: AstraMcaPairBasisComplete.coefficient_from_locator ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8536330Z Allowed axioms: AstraMcaPairBasisComplete.pair_basis_complete ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8537183Z Allowed axioms: AstraMcaPairBasisComplete.pair_basis_coefficients_unique ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8537988Z Allowed axioms: AstraMcaPairBasisComplete.pair_basis_constant_span ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8538821Z Allowed axioms: AstraMcaPairBasisComplete.production_two_deletion_constant_span ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8539699Z Allowed axioms: AstraMcaPairBasisComplete.production_four_deletion_linear_span ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8540540Z Allowed axioms: AstraMcaPairBasisComplete.constant_change_between_bases ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8541777Z Allowed axioms: AstraMcaPairBasisComplete.projective_collisions_preserved ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8542518Z Allowed axioms: AstraMcaPairBasisComplete.three_core_budget ['Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8543170Z Allowed axioms: AstraMcaPairBasisComplete.production_sharp_core_budget ['Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8543846Z Allowed axioms: AstraMcaResidualRows.row_lift_ne_zero ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8544552Z Allowed axioms: AstraMcaResidualRows.row_lift_same_coordinate ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8545313Z Allowed axioms: AstraMcaResidualRows.determinant_nonzero_off_domain ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8546082Z Allowed axioms: AstraMcaResidualRows.basis_values_not_all_zero ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8546761Z Allowed axioms: AstraMcaResidualRows.slot_count ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8547412Z Allowed axioms: AstraMcaResidualRows.base_row_nonzero ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8548081Z Allowed axioms: AstraMcaResidualRows.slot_row_nonzero ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8548776Z Allowed axioms: AstraMcaResidualRows.row_lift_determinant_zero ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8549541Z Allowed axioms: AstraMcaResidualRows.slot_rows_projectively_distinct ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8550245Z Allowed axioms: AstraMcaEvaluations.row_dot_add ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8550869Z Allowed axioms: AstraMcaEvaluations.row_dot_smul ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8551796Z Allowed axioms: AstraMcaEvaluations.combine_eval ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8552445Z Allowed axioms: AstraMcaEvaluations.combine_degree ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8553078Z Allowed axioms: AstraMcaEvaluations.core_card ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8553952Z Allowed axioms: AstraMcaEvaluations.owner_polynomial_degree ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8554623Z Allowed axioms: AstraMcaEvaluations.core_agrees ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8555272Z Allowed axioms: AstraMcaEvaluations.slot_discrepancy ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8556065Z Allowed axioms: AstraMcaEvaluations.received_affine ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8556729Z Allowed axioms: AstraMcaEvaluations.slot_cancellation ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8557394Z Allowed axioms: AstraMcaEvaluations.slot_outside_core ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8558099Z Allowed axioms: AstraMcaEvaluations.no_explanation_on_core_insert ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8558815Z Allowed axioms: AstraMcaEvaluations.core_insert_witness ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8559536Z Allowed axioms: AstraMcaScalarProjection.row_polynomial_degree ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8560291Z Allowed axioms: AstraMcaScalarProjection.row_polynomial_ne_zero ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8561263Z Allowed axioms: AstraMcaScalarProjection.row_polynomial_eval ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8562009Z Allowed axioms: AstraMcaScalarProjection.exists_common_nonroot ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8562776Z Allowed axioms: AstraMcaScalarProjection.exists_nonzero_denominators ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8563550Z Allowed axioms: AstraMcaScalarProjection.exists_injective_ratios ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8564284Z Allowed axioms: AstraMcaProductionBasis.power_domain_card ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8565007Z Allowed axioms: AstraMcaProductionBasis.power_domain_roots ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8565755Z Allowed axioms: AstraMcaProductionBasis.production_deleted_basis ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8566522Z Allowed axioms: AstraMcaProductionBasis.production_residual_rows ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8567209Z Allowed axioms: AstraMcaProductionBasis.production_projection_arithmetic ['propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8567785Z Allowed axioms: AstraMcaProductionBasis.production_moment_curve_arithmetic []
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8568462Z Allowed axioms: AstraMcaProductionBasis.production_scalar_projection ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8569168Z Allowed axioms: AstraRiccatiContactObstruction.riccati_contact_expansion ['propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8569908Z Allowed axioms: AstraRiccatiContactObstruction.local_derivative_divisibility ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8570776Z Allowed axioms: AstraRiccatiContactObstruction.global_derivative_divisibility ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8571865Z Allowed axioms: AstraRiccatiContactObstruction.forced_divisor_degree ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8572675Z Allowed axioms: AstraRiccatiContactObstruction.production_degree_gap ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8573505Z Allowed axioms: AstraRiccatiContactObstruction.production_derivative_zero ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8574388Z Allowed axioms: AstraRiccatiContactObstruction.quadratic_coefficients_zero_of_three ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8575288Z Allowed axioms: AstraRiccatiContactObstruction.production_riccati_zero_of_three ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8576053Z Allowed axioms: AstraQuadraticContactObstruction.quadratic_contact_expansion ['propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8576794Z Allowed axioms: AstraQuadraticContactObstruction.local_square_divisibility ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8577784Z Allowed axioms: AstraQuadraticContactObstruction.multiplicity_degree_bound ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8578740Z Allowed axioms: AstraQuadraticContactObstruction.production_square_zero ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8579579Z Allowed axioms: AstraQuadraticContactObstruction.local_cross_divisibility ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8580452Z Allowed axioms: AstraQuadraticContactObstruction.production_cross_zero_except_three ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8581551Z Allowed axioms: AstraQuadraticContactObstruction.augmented_root_degree ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8582417Z Allowed axioms: AstraQuadraticContactObstruction.production_order_three_relation ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8583309Z Allowed axioms: AstraQuadraticContactObstruction.production_order_three_zero ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8584223Z Allowed axioms: AstraQuadraticContactObstruction.production_derivative_coefficients_zero ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8585165Z Allowed axioms: AstraQuadraticContactObstruction.production_quadratic_zero_of_three ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8586063Z Allowed axioms: AstraQuadraticContactObstruction.local_algebraic_divisibility ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8586913Z Allowed axioms: AstraQuadraticContactObstruction.specialized_degree_lt ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8587777Z Allowed axioms: AstraQuadraticContactObstruction.production_algebraic_solution ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8588674Z Allowed axioms: AstraQuadraticContactObstruction.production_quadratic_contact_zero ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8589506Z Allowed axioms: AstraMcaScaledPolynomials.locator_natDegree ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8590260Z Allowed axioms: AstraMcaScaledPolynomials.locator_eval_eq_zero_iff ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8591240Z Allowed axioms: AstraMcaScaledPolynomials.scaledP_eval ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8591945Z Allowed axioms: AstraMcaScaledPolynomials.eval_on_fiber ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8592652Z Allowed axioms: AstraMcaScaledPolynomials.local_pair_eq_iff ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8593379Z Allowed axioms: AstraMcaScaledPolynomials.common_zero_iff_mem ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8594147Z Allowed axioms: AstraMcaScaledPolynomials.reciprocal_cancellation ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8594924Z Allowed axioms: AstraMcaScaledPolynomials.scaledP_natDegree_le ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8595667Z Allowed axioms: AstraMcaScaledPolynomials.scaledQ_natDegree_le ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8596418Z Allowed axioms: AstraMcaScaledPolynomials.degree_seven_budget ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8597151Z Allowed axioms: AstraMcaScaledPolynomials.degree_three_budget ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8597826Z Allowed axioms: AstraMcaFourCubicSeed.scalar_inverse_products ['Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8598490Z Allowed axioms: AstraMcaFourCubicSeed.raw_pair_factorization ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8599201Z Allowed axioms: AstraMcaFourCubicSeed.pair_factorization ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8599898Z Allowed axioms: AstraMcaFourCubicSeed.pairScalar_ne_zero ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8600724Z Allowed axioms: AstraMcaFourCubicSeed.pair_eval_eq_iff ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8601718Z Allowed axioms: AstraMcaFourCubicSeed.pair_power_eval_eq_iff ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8602553Z Allowed axioms: AstraMcaFourCubicSeed.seed_natDegree ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8603239Z Allowed axioms: AstraMcaFourCubicSeed.seed_normalization ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8603912Z Allowed axioms: AstraMcaFourCubicSeed.no_common_zero ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8604518Z Allowed axioms: AstraMcaPowerFibers.eightFiberEquiv ['Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8605143Z Allowed axioms: AstraMcaPowerFibers.fiberPoint_injective ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8605824Z Allowed axioms: AstraMcaPowerFibers.powerFiber_card ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8606495Z Allowed axioms: AstraMcaPowerFibers.powerFiber_cover ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8607174Z Allowed axioms: AstraMcaPowerFibers.powerFiber_disjoint ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8607891Z Allowed axioms: AstraMcaPowerFibers.orderOf_fiber_generator ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8608585Z Allowed axioms: AstraMcaPowerFibers.mem_powerFiber_iff ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8609250Z Allowed axioms: AstraMcaPowerFibers.fiberBlock_card ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8609913Z Allowed axioms: AstraMcaPowerFibers.fiberBlocks_card ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8610598Z Allowed axioms: AstraMcaPowerFibers.fiberBlocks_disjoint ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8611625Z Allowed axioms: AstraMcaPowerFibers.fiberBlocks_three_cover ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8612377Z Allowed axioms: AstraMcaPowerFibers.production_fiber_card ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8613121Z Allowed axioms: AstraMcaPowerFibers.production_fibers_cover ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8613857Z Allowed axioms: AstraMcaPowerFibers.production_fiber_mem_iff ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8614637Z Allowed axioms: AstraMcaPowerFibers.production_common_roots_two_prefixes ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8615428Z Allowed axioms: AstraMcaPowerFibers.production_common_roots_card ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8616165Z Allowed axioms: AstraMcaPowerFibers.production_covered_card ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8616893Z Allowed axioms: AstraMcaPowerFibers.production_uncovered_card ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8617641Z Allowed axioms: AstraMcaPowerFibers.production_allocation_cover ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8618407Z Allowed axioms: AstraMcaPowerFibers.production_allocation_disjoint ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8619198Z Allowed axioms: AstraMcaReceivedAssembly.exists_received_word_and_events ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8619884Z Allowed axioms: AstraMcaOrder16Seed.eta_eq_generator_pow ['Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8620421Z Allowed axioms: AstraMcaOrder16Seed.eta_pow_eight ['Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8621228Z Allowed axioms: AstraMcaOrder16Seed.eta_powers_injective ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8621845Z Allowed axioms: AstraMcaOrder16Seed.value_table ['Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8622399Z Allowed axioms: AstraMcaOrder16Seed.seed_table ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8623039Z Allowed axioms: AstraMcaOrder16Seed.seed_injective ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8623848Z Allowed axioms: AstraMcaOrder16Seed.seed_natDegree_le ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8624503Z Allowed axioms: AstraMcaOrder16Seed.seed_natDegree ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8625278Z Allowed axioms: AstraMcaOrder16Seed.no_common_zero_on_fibers ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8625920Z Allowed axioms: AstraMcaOrder16Fibers.sixteenFiberEquiv ['Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8626549Z Allowed axioms: AstraMcaOrder16Fibers.mem_powerFiber_iff ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8627255Z Allowed axioms: AstraMcaOrder16Fibers.fiberBlocks_card ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8627941Z Allowed axioms: AstraMcaOrder16Fibers.core_arithmetic ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8628660Z Allowed axioms: AstraMcaOrder16Fibers.production_cardinalities ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8629442Z Allowed axioms: AstraMcaOrder16Fibers.production_allocation_cover ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8630226Z Allowed axioms: AstraMcaOrder16Fibers.production_allocation_disjoint ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8631280Z Allowed axioms: AstraMcaOrder16Fibers.production_core_disjoint_uncovered ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8632095Z Allowed axioms: AstraMcaOrder16Fibers.production_direction_count ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8632876Z Allowed axioms: AstraMcaOrder16Fibers.fiberPoint_mem_fiberBlocks_iff ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8633650Z Allowed axioms: AstraMcaOrder16Fibers.commonRoots_subset_core ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8634413Z Allowed axioms: AstraMcaOrder16Fibers.production_core_subset_domain ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8635174Z Allowed axioms: AstraMcaOrder16Assembly.overlapping_labels ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8635873Z Allowed axioms: AstraMcaOrder16Assembly.core_overlap ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8636549Z Allowed axioms: AstraMcaOrder16Assembly.many_events ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8637254Z Allowed axioms: AstraMcaOrder16Assembly.mca_error_lower ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8637958Z Allowed axioms: AstraMcaOrder16Assembly.security_exceeded ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8638669Z Allowed axioms: AstraMcaOrder16Assembly.delta_star_upper ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8639391Z Allowed axioms: AstraMcaRootRelocation.exists_fresh_directions ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8640161Z Allowed axioms: AstraMcaRootRelocation.exists_simultaneous_directions ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8641169Z Allowed axioms: AstraMcaRootRelocation.exists_counted_fresh_directions ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8641973Z Allowed axioms: AstraMcaRootRelocation.production_greedy_arithmetic ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8642747Z Allowed axioms: AstraMcaRootRelocation.mca_event_of_joint_core_extra ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8643511Z Allowed axioms: AstraMcaRootRelocation.mca_event_of_reciprocal_extra ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8644373Z Allowed axioms: AstraMcaRootRelocation.mca_event_of_good_local ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8645411Z Allowed axioms: AstraMcaRootRelocation.disjoint_event_union ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8646293Z Allowed axioms: AstraMcaRootRelocation.disjoint_event_card_le_bad_card ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8660563Z Allowed axioms: AstraMcaRootRelocation.disjoint_event_probability_lower ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8662258Z Allowed axioms: AstraMcaRootRelocation.disjoint_event_epsMCA_lower ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8663347Z Allowed axioms: AstraMcaEventBridge.mca_event_from_polynomial_support ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8664116Z Allowed axioms: AstraMcaEventBridge.mca_event_of_core_insert ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8664842Z Allowed axioms: AstraMcaProductionEvents.core_subset_domain ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8665600Z Allowed axioms: AstraMcaProductionEvents.slot_coordinate_mem_domain ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8666377Z Allowed axioms: AstraMcaProductionEvents.mem_production_domain_iff ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8667178Z Allowed axioms: AstraMcaProductionEvents.production_support_arithmetic ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8667971Z Allowed axioms: AstraMcaProductionEvents.production_slot_event ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8668733Z Allowed axioms: AstraMcaProductionEvents.production_many_events ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8669477Z Allowed axioms: AstraMcaProductionUpper.production_code_iff ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8670235Z Allowed axioms: AstraMcaProductionUpper.production_mca_error_lower ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8671287Z Allowed axioms: AstraMcaProductionUpper.production_security_exceeded ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8672101Z Allowed axioms: AstraMcaProductionUpper.production_delta_star_upper ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8672866Z Allowed axioms: AstraMcaKkh26Upper.production_code_eq_evalCode ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8673654Z Allowed axioms: AstraMcaKkh26Upper.first_prime_rate_half_delta_star_upper ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8674429Z Allowed axioms: AstraMcaSingleHole.codeword_iff_natDegree ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8675159Z Allowed axioms: AstraMcaSingleHole.zero_of_indexed_roots ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8675885Z Allowed axioms: AstraMcaSingleHole.hole_direction_no_explanation ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8676582Z Allowed axioms: AstraMcaSingleHole.mca_event_iff ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8677256Z Allowed axioms: AstraMcaSingleHole.bad_values_card_eq ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8677928Z Allowed axioms: AstraMcaSingleHole.value_count_le_epsMCA ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8678642Z Allowed axioms: AstraMcaSingleHole.production_single_hole_iff ['Classical.choice', 'Quot.sound', 'propext']
+check (arklib)	Check auxiliary proofs and axiom reports	2026-09-09T01:22:57.8679421Z Allowed axioms: AstraMcaSingleHole.production_value_budget_of_security ['Classical.choice', 'Quot.sound', 'propext']

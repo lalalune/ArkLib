@@ -83,7 +83,11 @@ new. Independent production-field seed checks, all-four-source censuses,
 first-step controls, and three-source arithmetic checks passed. The first
 local event attempt lacked the prime olean in the main ArkLib namespace;
 a matching substrate build fixed that setup error before the successful run.
-Hosted CI status is recorded separately from the local receipt.
+Both jobs passed in [hosted CI run 34298493883](https://github.com/lalalune/ArkLib/actions/runs/34298493883),
+checked at commit `cbab84f1beb08d71f896f16e1af75dd45def7e9b`. The 27 new
+reports execute in the ArkLib job. All 46 recorded source hashes match
+the current tree; [hosted provenance](../../scripts/probes/receipts/astra_order16_lean_20260908/hosted_kernel_receipt.json)
+is retained separately from the local receipt.
 
 The remaining mathematical objective is a bound on all bad scalars in the
 zero-source and singleton cases with dense directions, then a matching unsafe/safe threshold and the other
