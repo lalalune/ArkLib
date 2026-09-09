@@ -23,6 +23,7 @@ on:
       - "scripts/probes/astra_mca_order16_seed.lean"
       - "scripts/probes/astra_mca_order16_fibers.lean"
       - "scripts/probes/astra_mca_order16_assembly.lean"
+      - "scripts/probes/astra_mca_rational_list.lean"
       - "scripts/probes/astra_mca_production_events.lean"
       - "scripts/probes/astra_mca_production_upper.lean"
       - "scripts/probes/astra_mca_kkh26_upper.lean"
@@ -80,6 +81,7 @@ jobs:
         run: >-
           "$GITHUB_WORKSPACE/scripts/lake-locked.sh" build
           ArkLib.Data.CodingTheory.ProximityGap.KKH26WitnessSpread
+          ArkLib.Data.CodingTheory.ProximityGap.CoveragePigeonhole
           ArkLib.Data.CodingTheory.ProximityGap.Frontier._PrizeShapePrimeP30
       - name: Check auxiliary proofs and axiom reports
         shell: bash
@@ -184,6 +186,12 @@ jobs:
               "specialized_degree_lt", "production_algebraic_solution",
               "production_quadratic_contact_zero")]
           if os.environ["CHECK_MCA_EVENT"] == "true":
+              expected += ["AstraMcaRationalList." + name for name in (
+                  "five_sets_impossible_of_gap", "degree_one_gap", "degree_two_gap",
+                  "five_sets_impossible", "indexed_sets_card_le_four_of_gap",
+                  "indexed_sets_card_le_four", "rational_agreement_inter_card_le",
+                  "rational_profile_list_le_four_of_gap", "rational_profile_list_le_four",
+                  "degree_two_rational_profile_list_le_four")]
               expected += [
                   "AstraMcaScaledPolynomials.locator_natDegree",
                   "AstraMcaScaledPolynomials.locator_eval_eq_zero_iff",

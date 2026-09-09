@@ -1,0 +1,40 @@
+{
+  "scope": "generic reduced toy over actual production prime; not structured punctured input",
+  "toy": {
+    "s": 3,
+    "n": 8,
+    "k": 3,
+    "t": 5,
+    "threshold_supports_checked": 56,
+    "joint_supports": 0,
+    "guaranteed_mca_scalars": 4,
+    "exact_mca_scalar_count": 8
+  },
+  "production_puncture_parameters": [
+    {
+      "length": 805306367,
+      "dimension": 268435456,
+      "threshold": 536870911,
+      "errors": 268435456,
+      "minimum_distance": 536870912,
+      "twice_error_minus_distance": 0
+    },
+    {
+      "length": 805306367,
+      "dimension": 268435455,
+      "threshold": 536870910,
+      "errors": 268435457,
+      "minimum_distance": 536870913,
+      "twice_error_minus_distance": 1
+    },
+    {
+      "length": 805306368,
+      "dimension": 268435456,
+      "threshold": 536870911,
+      "errors": 268435457,
+      "minimum_distance": 536870913,
+      "twice_error_minus_distance": 1
+    }
+  ],
+  "structured_class_exclusion": "first numerator would have at least 2s-2>=e roots, forcing zero"
+}

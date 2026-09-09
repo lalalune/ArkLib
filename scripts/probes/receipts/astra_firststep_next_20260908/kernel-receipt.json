@@ -1,0 +1,78 @@
+{
+  "status": "LEAN_VERIFIED_DEGREE_ONE_AND_TWO_RATIONAL_LIST_COMPONENTS",
+  "recorded_at_utc": "2026-09-09T01:37:56.128552+00:00",
+  "base_commit": "c9ec164fdcc4cb93842a03b7be0dada07ddb8e55",
+  "lean_exit_code": 0,
+  "warnings": 0,
+  "event_runner_axiom_reports": 111,
+  "new_axiom_reports": {
+    "AstraMcaRationalList.five_sets_impossible_of_gap": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRationalList.degree_one_gap": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRationalList.degree_two_gap": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRationalList.five_sets_impossible": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRationalList.indexed_sets_card_le_four_of_gap": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRationalList.indexed_sets_card_le_four": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRationalList.rational_agreement_inter_card_le": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRationalList.rational_profile_list_le_four_of_gap": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRationalList.rational_profile_list_le_four": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "AstraMcaRationalList.degree_two_rational_profile_list_le_four": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  "source_sha256": {
+    "scripts/probes/astra_mca_rational_list.lean": "ddb9ad963ec11f9d0cc3801df70db20bbf1cdfdab21591144abcad520b256527",
+    "ArkLib/Data/CodingTheory/ProximityGap/CoveragePigeonhole.lean": "9c4b2515db3ccd0be3cb5fc5a2d6fa310455f362169cd0ebfe6ad47f5c249526",
+    "scripts/check-mca-event-bridge.sh": "0d4fdfc483d044d206b5de59749ffb067fe50704e631a86ce3324be6833ca4da",
+    ".github/workflows/proximity-strip-proof.yml": "d871985d44d196b694e25b14cd5333dd8748a14a88b2074bd8dfd6a23d097de2",
+    "lean-toolchain": "ce4c4e3d87434b9663f46de25ce34b48a0cf0d392e0a320a0787b4674a2d7b61",
+    "lake-manifest.json": "83aa1b110b26e46d0c3ceaef2c77c97e4d383d767faf34acb318aac72b0648d0"
+  },
+  "log": "kernel-output.txt",
+  "log_sha256": "342c8facd9b99b2aff8603642e7e092ba4c204dd77ebd11fb03d8f53c792add1",
+  "scope": "Degree-one and degree-two rational list size at most four, with exact domain/degree/agreement hypotheses. Full near-source MCA safety and projective sparse extension are reviewed written proofs, not formalized here.",
+  "remote_refresh": {
+    "fork_research": "c9ec164fdcc4cb93842a03b7be0dada07ddb8e55",
+    "fork_main": "8e2fc19130e2fea9e175c52b0953b88804b8f333",
+    "upstream_main": "8d7e758b5c4421711358595870ff7fbcee2a3a9f",
+    "official_companion_main": "bac8e813cd07f0b73ff7d68402e3b1944b0927f3",
+    "new_external_commits_since_prior_checkpoint": false
+  }
+}

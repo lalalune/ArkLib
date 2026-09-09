@@ -1,0 +1,24 @@
+{
+  "n": 1073741824,
+  "k": 536870912,
+  "support_threshold": 805306367,
+  "sparse_combination_radius": 59652323,
+  "punctured_list_bound": 18,
+  "johnson_positive_gap": 8006399665635342,
+  "projective_bad_bound": 1073741815,
+  "finite_bad_bound": 1073741815,
+  "integer_budget_slack": 9,
+  "overbudget_necessary_minimum_distance": 59652324,
+  "bad_projected_word_maximum_distance": 268435457,
+  "security_numerator_margin": 3062541302288446171170371467092072333313,
+  "infinity_counterexample": {
+    "received_pair": "(0,X^k)",
+    "finite_bad_slots": [
+      0
+    ],
+    "swapped_pair": "(X^k,0)",
+    "swapped_finite_bad_slots": [],
+    "projective_count_both": 1,
+    "verification": "written polynomial root-bound proof"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "scope": "TOY n=16 over actual production P; not production n",
+  "n": 16,
+  "k": 8,
+  "t": 11,
+  "zero_joint_core": 11,
+  "gamma0_agreement": 12,
+  "gamma1_agreement": 12,
+  "both_original_mca": true,
+  "nonzero_joint_core_threshold": 10,
+  "exhaustive_candidate_cases": 6072,
+  "nonzero_joint_sources_at_threshold": 0,
+  "conclusion": "Two distinct exceptional scalars do not force a second joint core >=t-1, even over the actual production prime."
+}

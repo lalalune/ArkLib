@@ -10,7 +10,8 @@ modules=(astra_mca_event_bridge astra_mca_production_events astra_mca_production
   astra_mca_single_hole astra_mca_kkh26_upper astra_mca_root_relocation
   astra_mca_four_cubic_seed astra_mca_power_fibers astra_mca_received_assembly
   astra_mca_scaled_polynomials
-  astra_mca_order16_seed astra_mca_order16_fibers astra_mca_order16_assembly)
+  astra_mca_order16_seed astra_mca_order16_fibers astra_mca_order16_assembly
+  astra_mca_rational_list)
 
 for module in "${modules[@]}"; do
   python3 "$repo_root/scripts/forbidden_tokens.py" "$repo_root/scripts/probes/$module.lean"

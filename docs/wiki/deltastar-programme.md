@@ -39,8 +39,16 @@ prove safety at that first unresolved endpoint when the full list of joint
 codeword pairs with sufficiently large cores has size two, three, or four. Lists
 of size zero or one with dense directions remain open. See also the
 [two-source argument](../kb/astra_mca_two_source-2026-09-08.md) and
-[sparse-direction bound](../kb/astra_mca_sparse_direction-2026-09-08.md). These safety arguments are written
-proofs with exact controls, not yet Lean formalizations. Historical proposed universal safety statements at `1/3` cannot
+[sparse-direction bound](../kb/astra_mca_sparse_direction-2026-09-08.md).
+The follow-up [near-source proof](../kb/astra_mca_near_source-2026-09-08.md)
+only needs one core of size `t=3n/4-1` and a second of size `t-1`. Its
+[rational-list components](../../scripts/probes/astra_mca_rational_list.lean)
+now pass Lean with ten clean axiom reports; the full MCA safety argument
+remains a reviewed written proof. A
+[projective extension](../kb/astra_mca_projective_sparse-2026-09-08.md) handles
+any sufficiently sparse nonzero combination, with the infinity slot counted.
+These reductions have not changed the universal numerical bracket.
+Historical proposed universal safety statements at `1/3` cannot
 establish this production target. Historical reductions below must be read
 with their stated hypotheses, rather than as evidence that a Paley/BGK result
 alone completes the present problem.
