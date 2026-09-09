@@ -33,8 +33,12 @@ pass Lean in [a new module](../../scripts/probes/astra_mca_rational_list.lean),
 with ten clean axiom reports. The full MCA case split remains written.
 The updated local event runner passes all 111 reports with no warnings;
 [its receipt](../../scripts/probes/receipts/astra_firststep_next_20260908/kernel-receipt.json)
-pins the new source and runner. Hosted verification of this follow-up is
-separate from the earlier order-sixteen run below.
+pins the new source and runner. Both jobs passed in
+[hosted run 34299999022](https://github.com/lalalune/ArkLib/actions/runs/34299999022)
+at commit `737a604548f048220f56aecdc136d598ca58e734`. The ten new reports run
+in the ArkLib job, and all six source hashes in the
+[hosted receipt](../../scripts/probes/receipts/astra_firststep_next_20260908/hosted-kernel-receipt.json)
+match that checked commit and the recorded working tree.
 
 A [projective sparse-combination theorem](astra_mca_projective_sparse-2026-09-08.md)
 proves the finite bad count at most `n-9` whenever any nonzero combination
@@ -46,6 +50,16 @@ A [puncturing reduction](astra_mca_singleton_puncture-2026-09-08.md) identifies
 the remaining singleton subproblem as a structured rational-word problem;
 an exact control rules out discarding that structure. None of these reductions
 proves that a second near-high core or a sparse combination always exists.
+
+A further [two-near-core reduction](astra_mca_two_near_cores-2026-09-08.md)
+handles two cores of size `t-1` except for one four-polynomial realization
+problem. Its exact incidence census leaves three overlap patterns, with
+reduced Pluecker products of degree at most two (at most one in the middle
+pattern). Any realization on the fixed production subgroup would produce
+at least `n+2`, `n+3`, or `n+2` actual MCA scalars and pin this instance's
+threshold to the current lower endpoint. No such realization was found.
+This is a conditional counterexample route, not a disproof or a complete
+classification of the cases lacking two near cores.
 
 The [degree-seven source optimum](astra_mca_order16_all_four-2026-09-08.md)
 excludes a better core bound across every four-source family with the existing
@@ -97,6 +111,11 @@ Exact review refs were fetched without merging incompatible toolchains.
 The [literature audit](astra_literature_audit-2026-09-08.md) pins official
 companion main and explains why its constants do not supply the production
 n/P budget. The 68.04 companion direction was already known locally.
+The follow-up [ECCC TR26-169 audit](astra_eccc169_audit-2026-09-08.md)
+inspects a newly found capacity-MCA preprint. Its displayed exception bound
+and uninstantiated length condition do not certify this production budget.
+The latest fork, upstream main, and official-companion main refresh found
+no external commit changes since the prior audit.
 
 Local verification restored the matching Lean4.30.0-rc2 compiler and pinned
 Mathlib dependencies, built the actual MCA substrate and certified prime,

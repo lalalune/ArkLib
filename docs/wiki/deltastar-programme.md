@@ -44,7 +44,10 @@ The follow-up [near-source proof](../kb/astra_mca_near_source-2026-09-08.md)
 only needs one core of size `t=3n/4-1` and a second of size `t-1`. Its
 [rational-list components](../../scripts/probes/astra_mca_rational_list.lean)
 now pass Lean with ten clean axiom reports; the full MCA safety argument
-remains a reviewed written proof. A
+remains a reviewed written proof. Both jobs passed in
+[hosted run 34299999022](https://github.com/lalalune/ArkLib/actions/runs/34299999022)
+with [source provenance](../../scripts/probes/receipts/astra_firststep_next_20260908/hosted-kernel-receipt.json).
+A
 [projective extension](../kb/astra_mca_projective_sparse-2026-09-08.md) handles
 any sufficiently sparse nonzero combination, with the infinity slot counted.
 These reductions have not changed the universal numerical bracket.

@@ -1,6 +1,8 @@
 # Three exceptional decoders sharing k-2 roots force a near-high joint source
 
-Written argument, reviewed by the coordinator; not Lean formalized. This uses
+Written argument, reviewed by the coordinator and an independent agent;
+not Lean formalized. The [review](../../scripts/probes/receipts/astra_firststep_next_20260908/common-root-projective-review.md)
+records the exact scope. This uses
 the [near-source safety theorem](astra_mca_near_source-2026-09-08.md).
 
 Let n=4s, k=2s, t=3s-1, s>=6. Normalize one joint source to zero, with exact core A of size at least t and outside E=D\A of size m<=s+1. Suppose three distinct bad scalars gamma_i have chosen witness decoders f_i that are nonzero and have a common set R of at least k-2 roots in A.

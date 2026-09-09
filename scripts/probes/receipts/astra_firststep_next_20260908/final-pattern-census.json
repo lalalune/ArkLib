@@ -1,0 +1,277 @@
+{
+  "scope": "incidence and arithmetic only; no polynomial realization",
+  "edge_order": [
+    [
+      0,
+      1
+    ],
+    [
+      0,
+      2
+    ],
+    [
+      0,
+      3
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      1,
+      3
+    ],
+    [
+      2,
+      3
+    ]
+  ],
+  "patterns": {
+    "A": [
+      {
+        "edge_counts": [
+          0,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "triple_offsets": [
+          -2,
+          -2,
+          -1,
+          -1
+        ],
+        "pair_slack": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "edge_counts": [
+          1,
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "triple_offsets": [
+          -2,
+          -1,
+          -2,
+          -1
+        ],
+        "pair_slack": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ]
+      },
+      {
+        "edge_counts": [
+          1,
+          1,
+          0,
+          1,
+          1,
+          1
+        ],
+        "triple_offsets": [
+          -2,
+          -1,
+          -1,
+          -2
+        ],
+        "pair_slack": [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "edge_counts": [
+          1,
+          1,
+          1,
+          0,
+          1,
+          1
+        ],
+        "triple_offsets": [
+          -1,
+          -2,
+          -2,
+          -1
+        ],
+        "pair_slack": [
+          0,
+          0,
+          1,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "edge_counts": [
+          1,
+          1,
+          1,
+          1,
+          0,
+          1
+        ],
+        "triple_offsets": [
+          -1,
+          -2,
+          -1,
+          -2
+        ],
+        "pair_slack": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "edge_counts": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0
+        ],
+        "triple_offsets": [
+          -1,
+          -1,
+          -2,
+          -2
+        ],
+        "pair_slack": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "B": [
+      {
+        "edge_counts": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "triple_offsets": [
+          -2,
+          -1,
+          -1,
+          -1
+        ],
+        "pair_slack": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "C": [
+      {
+        "edge_counts": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "triple_offsets": [
+          -2,
+          -2,
+          -2,
+          -2
+        ],
+        "pair_slack": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "arithmetic": [
+    {
+      "s": 136,
+      "n": 544,
+      "rational_list_gap": 80,
+      "forbidden_line_bound": 2177,
+      "conditional_bad_counts": {
+        "A_min": 546,
+        "B": 547,
+        "C": 546
+      }
+    },
+    {
+      "s": 137,
+      "n": 548,
+      "rational_list_gap": 217,
+      "forbidden_line_bound": 2193,
+      "conditional_bad_counts": {
+        "A_min": 550,
+        "B": 551,
+        "C": 550
+      }
+    },
+    {
+      "s": 256,
+      "n": 1024,
+      "rational_list_gap": 30800,
+      "forbidden_line_bound": 4097,
+      "conditional_bad_counts": {
+        "A_min": 1026,
+        "B": 1027,
+        "C": 1026
+      }
+    },
+    {
+      "s": 268435456,
+      "n": 1073741824,
+      "rational_list_gap": 72057557530706000,
+      "forbidden_line_bound": 4294967297,
+      "conditional_bad_counts": {
+        "A_min": 1073741826,
+        "B": 1073741827,
+        "C": 1073741826
+      }
+    }
+  ],
+  "production_prime": 365375409332725729550921208179070755120141565953,
+  "production_prime_exceeds_forbidden_line_bound": true
+}

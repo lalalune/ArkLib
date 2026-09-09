@@ -7,6 +7,8 @@ The coordinator reviewed the proof. The
 [production arithmetic check](../../scripts/probes/astra_mca_projective_sparse_check.py)
 reproduces the [retained count](../../scripts/probes/receipts/astra_firststep_next_20260908/projective-sparse.json).
 The full projective safety instantiation is not Lean formalized.
+An [independent API review](../../scripts/probes/receipts/astra_firststep_next_20260908/common-root-projective-review.md)
+also checks the support threshold and affine-plus-infinity census.
 
 Let `n=4s`, `k=2s`, `t=3s-1`. C is RS of polynomial degree below k on
 any n distinct points over any finite field F. For a received pair (u,v),
@@ -97,6 +99,19 @@ This is a necessary condition and a safety branch, not a contradiction.
 It leaves a substantial dense-combination regime open. It also shows
 why choosing an arbitrary existing bad scalar as pivot is insufficient:
 its witness only ensures the much larger upper endpoint s+1.
+
+## Exact limit of this uniform-list certificate
+
+The radius 59652323 is globally optimal among all positive integer list caps
+L for this specific sufficient inequality and budget `L*m+1<=n`, with
+`0<=m<t`. An [exact check](../../scripts/probes/astra_mca_projective_sparse_optimum.py)
+reproduces the [certificate](../../scripts/probes/receipts/astra_firststep_next_20260908/sparse-optimum.json).
+For any larger m, the budget forces L at most seventeen. For each of those
+seventeen values the incidence gap is negative at both `m=59652324` and
+`m=t`. Its positive quadratic coefficient makes it convex, hence negative
+throughout that interval. This excludes every larger admissible m without
+searching an arbitrary upper range for L. It does not exclude a stronger
+structural counting argument.
 
 ## Exact dependent-coset classification
 
